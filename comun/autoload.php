@@ -6,13 +6,15 @@ ini_set('display_errors', '1');
 require_once 'config.php';
 require_once 'funciones.php';
 
-// Detectar entorno
+// Detectar entorno correctamente
 $basePath = dirname(__FILE__) . '/Clases/';
 
 // Autoload dinámico para clases
-spl_autoload_register(function ($clase) use ($basePath) {
+spl_autoload_register(function ($clase) {
+    // Buscar en la carpeta correcta sin importar el entorno
+    $basePath = __DIR__ . '/Clases/'; // Usa __DIR__ en lugar de $_SERVER['DOCUMENT_ROOT']
     $file = $basePath . ucwords($clase) . '.Class.php';
-    
+
     if (file_exists($file)) {
         include $file;
     } else {
