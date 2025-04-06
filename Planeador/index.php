@@ -96,7 +96,7 @@ if(!empty($_GET['asignacion'])){
 $materia=( $academico->consultar_materia($_GET['asignacion']));
 $miplaneacion->materia2=$materia[0]->id_asignatura;
 $mismaterias=(json_decode($mat->consultar_materias()));
-$periodo="1";
+$periodo="2";
 #$grado = extraerTextoEntreParentesisValida($materia[0]->nombre_materia);
 $grado=$materia[0]->nombre_categoria_curso;
 #echo "Texto extraído: $textoExtraido"; // Salida: Texto extraído: con contenido
@@ -148,6 +148,7 @@ if(!empty($_GET['asignacion']) and empty($_GET['edit']) or (!empty($_GET['asigna
       e.grado ASC,
       ea.id_evidencia_aprendizaje  limit 1;
   ";
+  #echo $sql_vallesol;
   echo "<h1 align='center'>Ingresar Planeación</h1>";
  $accion='ingresar';
 #echo $sql_vallesol;
@@ -546,12 +547,12 @@ echo $data['tiempo'];
 #echo "<pre>";
 #print_r($data);
 #echo "</pre>";
-$opciones = array($data['descripcion_dba']);
+$opciones = array($data['nombre_dba']);
 // Generar el datalist
-if(empty($data['descripcion_dba'])){
-  $data['descripcion_dba']='';
+if(empty($data['nombre_dba'])){
+  $data['nombre_dba']='';
 }
-echo "<input id='dba' title='".$data['descripcion_dba']."' value='".$data['descripcion_dba']."' name='dba' placeholder='Manifiesta actitud de goce ante el descubrimiento de sus condiciones de inventiva musical' class='form-control' list='dba'>";
+echo "<input id='dba' title='".$data['nombre_dba']."' value='".$data['nombre_dba']."' name='dba' placeholder='Manifiesta actitud de goce ante el descubrimiento de sus condiciones de inventiva musical' class='form-control' list='dba'>";
 echo "<datalist id='dba'>";
 foreach ($opciones as $opcion) {
     echo "<option value='$opcion'>";
