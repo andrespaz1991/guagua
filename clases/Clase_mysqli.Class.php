@@ -14,7 +14,9 @@ class Clase_mysqli extends Comun {
         // Detectar si estamos en local o producción
         if (in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1', '::1'])) {
           $this->con = $this->conectar('si');
+          echo "si";
         } else {
+            echo "no";
             $this->con = $this->conectar('no');
         }
         
