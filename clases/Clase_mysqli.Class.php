@@ -1,47 +1,55 @@
 <?php
-class Clase_mysqli extends Comun{
+class Clase_mysqli extends Comun {
 
-private $servidorbd = "localhost:7000";
-private $usuariobd = "root";
-private $clavebd = "";
-private $basededatos = "guagua";
-private $con;
-//$mysqli = new mysqli ('sql101.infinityfree.com','epiz_33170354','7KB2Kajq4e','epiz_33170354_guagua');
+    private $servidorbd;
+    private $usuariobd;
+    private $clavebd;
+    private $basededatos;
+    private $cona;
+    private $con;
 
-public  function real_escape($str){
-  $con = $this->conectar();
-  $escape = $con->real_escape_string($str);
-  return $escape;
-}
-function __construct( $Nombre = null ){
-    $this->con = $this->conectar();
-}
-public function conectar(){
-   $conexion_mysqli = new mysqli ($this->servidorbd,$this->usuariobd,$this->clavebd,$this->basededatos);
-   if (mysqli_connect_errno()){
-            echo "error".mysqli_connect_errno();
-    }else{
-            if($conexion_mysqli){
-                  mysqli_set_charset($conexion_mysqli,'utf8');
-                  
-            }
+    function __construct() {
+        // Eliminé el parámetro $Nombre que no se usaba
+        
+        // Detectar si estamos en local o producción
+        if (in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1', '::1'])) {
+          $this->con = $this->conectar('si');
+        } else {
+            $this->con = $this->conectar('no');
+        }
+        
     }
-    return $conexion_mysqli;
-}
 
+    public function conectar($nota='si') {
+        #echo "        conexion_mysqli = new mysqli($this->servidorbd, $this->usuariobd, $this->clavebd, $this->basededatos,'7000');";
+       # $conexion_mysqli = new mysqli($this->servidorbd, $this->usuariobd, $this->clavebd, $this->basededatos);
+       if($nota=="si"){
+        $conexion_mysqli = new mysqli("127.0.0.1", "root", "", "guagua", 7000);
+       }
+       if($nota=="no"){
+        $conexion_mysqli = new mysqli("srv765.hstgr.io", "u417538463_root", "Handres2025..", "u417538463_guagua");
+       } 
+       
+        if ($conexion_mysqli->connect_error) {
+            die("Error de conexión: " . $conexion_mysqli->connect_error);
+        } else {
+            mysqli_set_charset($conexion_mysqli, 'utf8');
+        }
+        
+        return $conexion_mysqli;
+    }
 
+    public function real_escape($str) {
+        return $this->con->real_escape_string($str);
+    }
 
+    public function desconectar() {
+        if ($this->con) {
+            $this->con->close();
+            $this->con = null;
+        }
+    }
 
-
-public function desconectar(&$mysqli)
-{
-  if(isset($mysqli))
-  {
-    mysqli_close($mysqli);
-    unset($mysqli);
-  }
-
-}
 
 /*------------------------------------------------------------- */
 /* function for clean string and avoid sql inyection (by Andrés Paz )
