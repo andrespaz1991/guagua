@@ -1,14 +1,10 @@
 <?php 
 
-$servidorbd = '127.0.0.1:7000';
-
-$usuariobd = 'root';
-
-$passwordbd = '';
-
-$basededatos = 'guagua';
-
-$mysqli = new mysqli ('127.0.0.1:7000','root','','guagua');
+error_reporting(E_ALL);
+$rutaPrincipal = $_SERVER['DOCUMENT_ROOT'].'/guagua/comun/';
+require_once ($rutaPrincipal."/funciones.php");
+require_once ($rutaPrincipal."/config.php");
+$mysqli = new mysqli (SERVIDORBD, USUARIOBD, CLAVEBD, BASEDEDATOS);
 
 if (mysqli_connect_errno()){
 

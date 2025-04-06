@@ -1,11 +1,9 @@
 <?php
 error_reporting(E_ALL);
-require_once (dirname(__FILE__)."/funciones.php");
-require_once (dirname(__FILE__)."/config.php");
-#require_once ($_SERVER['DOCUMENT_ROOT']."//guagua/clases/Backup_Database.Class.php");
-
-#$mysqli = new mysqli ('sql101.infinityfree.com','epiz_33170354','7KB2Kajq4e','epiz_33170354_guagua');
-$mysqli = new mysqli ('localhost:7000','root','','guagua');
+$rutaPrincipal = $_SERVER['DOCUMENT_ROOT'].'/guagua/comun/';
+require_once ($rutaPrincipal."/funciones.php");
+require_once ($rutaPrincipal."/config.php");
+$mysqli = new mysqli (SERVIDORBD, USUARIOBD, CLAVEBD, BASEDEDATOS);
 if (mysqli_connect_errno()){
 echo "error".mysqli_connect_errno();
 }else{

@@ -1,14 +1,9 @@
 <?php 
-$servidorbd = "localhost:7000";
-$usuariobd = "root";
-$clavebd = "";
-$basededatos = "guagua";
-
-#$servidorbd = "sql101.infinityfree.com";
-#$usuariobd = "epiz_33170354";
-#$clavebd = "7KB2Kajq4e";
-#$basededatos = "epiz_33170354_guagua";
-$mysqli = new mysqli ($servidorbd,$usuariobd,$clavebd,$basededatos);
+error_reporting(E_ALL);
+$rutaPrincipal = $_SERVER['DOCUMENT_ROOT'].'/guagua/comun/';
+require_once ($rutaPrincipal."/funciones.php");
+require_once ($rutaPrincipal."/config.php");
+$mysqli = new mysqli (SERVIDORBD, USUARIOBD, CLAVEBD, BASEDEDATOS);
 if (mysqli_connect_errno()){
 echo "error".mysqli_connect_errno();}else{
 if($mysqli){

@@ -1,11 +1,22 @@
 <?php
 @session_start();
 date_default_timezone_set('America/Bogota'); 
+
+
+
 #Configuración para conexion a Base de datos
-define ('SERVIDORBD','localhost');
-define ('USUARIOBD','root');
-define ('CLAVEBD','');
-define ('BASEDEDATOS','guagua');
+if (in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1', '::1'])) {
+    define('SERVIDORBD', 'localhost:7000');
+    define('USUARIOBD', 'root');
+    define('CLAVEBD', '');
+    define('BASEDEDATOS', 'guagua');
+} else {
+    // Configuración para el entorno de producción
+    define('SERVIDORBD', 'srv765.hstgr.io');
+    define('USUARIOBD', 'u417538463_root');
+    define('CLAVEBD', 'Handres2025..');
+    define('BASEDEDATOS', 'u417538463_guagua');
+}
 
 /*
 define ('SERVIDORBD','5.145.174.49');
@@ -19,7 +30,9 @@ define ('TIME_ZONE_OFFSET','-5:00');
 #
 #Configuración para ruta de carpetas comunes y modulos
 define ("SGA_COMUN_SERVER",dirname(__FILE__));
-$url_comun = str_replace("\\","/",dirname(__FILE__)); $url_comun = str_replace($_SERVER['DOCUMENT_ROOT'],"",$url_comun); $url_comun = "//".$_SERVER['SERVER_NAME']."/".$url_comun;
+$url_comun = str_replace("\\","/",dirname(__FILE__)); 
+$url_comun = str_replace($_SERVER['DOCUMENT_ROOT'],"",$url_comun); 
+$url_comun = "//".$_SERVER['SERVER_NAME']."/".$url_comun;
 $url =  str_replace("/comun","",$url_comun);                                    
 $url_server =  str_replace("/comun","",SGA_COMUN_SERVER);
 $ruta_sga_data = "/sga-data/";
