@@ -182,30 +182,16 @@ $data=[];
      ?>
 
 </div>
-
+<script>
+function copiarPrompt() {
+  const textarea = document.getElementById("promptTextarea");
+  textarea.select();
+  document.execCommand("copy");
+  window.getSelection().removeAllRanges(); // Deseleccionar el texto después de copiar
+ // alert("¡El prompt ha sido copiado al portapapeles!"); // Opcional: Mostrar una confirmación
+}
+</script>
 <?php
-
-echo "
-<br>
-     <br>
-     <br>";
- echo '<p>
-  <a style="margin-left:20%;margin-top:2%" class="btn btn-success copy-button" data-toggle="collapse" data-clipboard-target=".copy-container pre" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-    Planeador con IA
-  </a>
-</p>
-  <a style="postion:relative;margin-left:35%;margin-top:-7%" class="btn btn-primary copy-button"  onclick="completarPlanClase()">
-    Guagua IA
-  </a>
-<div class="collapse" id="collapseExample">
-  <div class="card card-body">';    
-echo "<div class='copy-container'>
-
-
-
-<div style='display:none' id='guia_ia2'>
-<pre>";
-#echo $sql_vallesol;
 $data2=[];
 
 while($row=$consulta->fetch_assoc()){ 
@@ -241,6 +227,77 @@ while($row=$consulta->fetch_assoc()){
 $descripcion_dba = $data['descripcion_dba'];
 $data_materia=$academico->consultar_materia($_GET['asignacion']);
 $nombre_materia=$data_materia[0]->nombre_materia;
+echo "
+<br>
+     <br>
+     <br>";
+ echo '<p>
+ <p>
+  
+</p>
+
+  <a style="margin-left:20%;margin-top:2%" class="btn btn-success copy-button" data-toggle="collapse" data-clipboard-target=".copy-container pre" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+    Planeador con IA
+  </a>
+   <a style="margin-left:2%;margin-top:2%" class="btn btn-success" onclick="copiarPrompt()" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+    Prompt
+  </a>
+</p>
+  <a style="postion:relative;margin-left:35%;margin-top:-7%" class="btn btn-primary copy-button"  onclick="completarPlanClase()">
+    Guagua IA
+  </a>
+  <div class="collapse" id="collapseExample">
+  <div class="card card-body">
+  <textarea id="promptTextarea" autofocus rows="15" cols="130"> ';
+  echo 'Eres un experto en pedagogía dialógica especializado en el sistema educativo colombiano. Tu misión es asistir a docentes en el diseño de planes de clase interactivos centrados en el estudiante, siguiendo los lineamientos oficiales educativos de Colombia.
+
+CONTEXTO DEL DOCENTE:
+- Soy un profesor colombiano que busca crear experiencias de aprendizaje significativas.
+- Necesito diseñar planes de clase que integren los principios del aprendizaje activo, colaborativo y reflexivo .
+- Mis planes deben alinearse con los Derechos Básicos de Aprendizaje (DBA) y estándares nacionales.
+
+INSTRUCCIONES:
+Cuando solicite un componente específico del plan de clase, proporciona ÚNICAMENTE el contenido solicitado sin texto introductorio ni explicativo adicional. Los componentes posibles son:
+
+1. "objetivo": Genera un objetivo de aprendizaje claro, medible y alineado con el DBA y el eje temático.
+2. "estrategia": Proporciona el nombre de una estrategia pedagógica dialógica adecuada y una breve descripción de cómo implementarla (máximo 2 líneas).
+3. "momentos": Estructura detallada de la clase en tres fases: Inicio, Desarrollo y Cierre. Incluye actividades específicas que promuevan el diálogo , la participación y la reflexión crítica en caso de ser necesario. No debe exceder 2000 caracteres y no especifiques el tiempo por cada momento.
+4. "recursos": Lista concisa de materiales físicos y digitales necesarios para implementar efectivamente las actividades propuestas.
+5. "reflexion": Breve reflexión pedagógica (máximo 3 líneas) sobre el valor formativo de la clase propuesta y su alineación con principios dialógicos.
+6. "completo": Genera el plan completo incluyendo todos los componentes anteriores en formato estructurado.
+
+IMPORTANTE:
+- Adapta todas las propuestas al contexto colombiano y al nivel cognitivo de estudiantes del grado especificado.
+- Prioriza actividades que fomenten el diálogo, la construcción colectiva del conocimiento y el desarrollo del pensamiento crítico.
+- Considera aspectos de inclusión y diversidad en el aula colombiana.
+- Ten en cuenta la propuesta del docente y formalizala
+
+INFORMACIÓN DEL PLAN DE CLASE:';
+$texto_prompt="  
+1) Grado: ".$data['grado']."
+2) Periodo: ".$data['id_periodo']." 
+3) Nombre materia: ".$nombre_materia." 
+4) DBA (Derecho básico de aprendizaje): ".$data['descripcion_dba']." 
+5) Nombre_estandar: ".$data['nombre_estandar']." 
+6) Eje tematico: ".$data['nombre_eje_tematico']." " ;
+echo $texto_prompt;
+echo 'propuesta del docente:
+yo propongo un plan de clase en el que ';
+
+echo '</textarea>
+  </div>
+</div>
+<div class="collapse" id="collapseExample">
+  <div class="card card-body">';    
+echo "<div class='copy-container'>
+
+
+
+<div style='display:none' id='guia_ia2'>
+<pre>";
+#echo $sql_vallesol;
+
+
 $texto="Eres un experto en pedagogía dialógica. Actúas como un colaborador para docentes que implementan este modelo educativo. Mi rol es el de un profesor colombiano que busca diseñar planes de clase  interactivos y centrados en el estudiante. Necesito tu apoyo para:
 Optimizar el diseño de mis planes de clase: Asegurando que exista una excelente redacción e  integren de manera efectiva los principios del aprendizaje activo, colaborativo y reflexivo.
 Profundizar el enfoque pedagógico: Proporcionando estrategias y recursos que fomenten el diálogo significativo, la construcción colectiva del conocimiento y el desarrollo del pensamiento crítico en mis estudiantes.
