@@ -1,0 +1,179 @@
+
+
+CREATE TABLE `usuario` (
+  `id_usuario` varchar(255) NOT NULL,
+  `usuario` varchar(255) NOT NULL,
+  `clave` varchar(255) NOT NULL DEFAULT '58e43d5511a2f7de5c0172543b5d2dca0d4d18b7',
+  `mascota` varchar(5) DEFAULT 'NO',
+  `nombre` varchar(255) NOT NULL,
+  `apellido` varchar(255) NOT NULL,
+  `rol` varchar(255) NOT NULL DEFAULT 'estudiante',
+  `foto` varchar(255) NOT NULL DEFAULT 'user-icon.png',
+  `direccion` varchar(255) NOT NULL,
+  `telefono` varchar(25) DEFAULT NULL,
+  `correo` varchar(255) DEFAULT NULL,
+  `ultima_sesion` varchar(255) DEFAULT NULL,
+  `num_visitas` varchar(255) DEFAULT NULL,
+  `puntos` varchar(255) DEFAULT NULL COMMENT 'Son los puntos que un usuario acumula',
+  `estado` varchar(255) NOT NULL DEFAULT 'activo',
+  `tipo_sangre` varchar(255) DEFAULT NULL,
+  `genero` varchar(2) NOT NULL DEFAULT 'f',
+  `observaciones` text DEFAULT NULL,
+  `fecha_nacimiento` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE `inscripcion` (
+  `id_inscripcion` int(16) NOT NULL,
+  `id_asignacion` int(10) NOT NULL,
+  `id_estudiante` varchar(255) NOT NULL,
+  `fecha_inscripcion` date NOT NULL,
+  `estado_inscripcion` enum('Aprobado','No aprobado','En curso','Retirado') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+INSERT INTO `asignacion` (`id_asignacion`, `institucion_educativa`, `id_curso`, `id_asignatura`, `id_docente`, `ano_lectivo`, `descripcion`, `id_categoria_curso`, `visible`, `portada_asignacion`, `icono_asignacion`, `asistencia`) VALUES
+(1, 7, 1, 1, 1085290375, 16, NULL, 6, 'si', NULL, 'agenda.png', 0),
+(2, 7, 1, 1, 1085290375, 16, NULL, 9, 'si', NULL, 'agenda.png', 0),
+(3, 7, 3, 3, 1085290375, 16, NULL, 6, 'si', NULL, 'agenda.png', 0),
+(4, 7, 3, 3, 1085290375, 16, NULL, 9, 'si', NULL, 'agenda.png', 0),
+(5, 7, 5, 5, 1085290375, 16, NULL, 6, 'si', NULL, 'agenda.png', 0),
+(6, 7, 5, 5, 1085290375, 16, NULL, 9, 'si', NULL, 'agenda.png', 0),
+(7, 7, 8, 8, 1085290375, 16, NULL, 6, 'si', NULL, 'agenda.png', 0),
+(8, 7, 8, 8, 1085290375, 16, NULL, 9, 'si', NULL, 'agenda.png', 0),
+(9, 7, 4, 4, 1085290375, 16, NULL, 6, 'si', NULL, 'agenda.png', 0),
+(10, 7, 4, 4, 1085290375, 16, NULL, 9, 'si', NULL, 'agenda.png', 0),
+(11, 7, 7, 7, 1085290375, 16, NULL, 6, 'si', NULL, 'agenda.png', 0),
+(12, 7, 7, 7, 1085290375, 16, NULL, 9, 'si', NULL, 'agenda.png', 0),
+(13, 7, 9, 9, 1085290375, 16, NULL, 6, 'si', NULL, 'agenda.png', 0),
+(14, 7, 9, 9, 1085290375, 16, NULL, 9, 'si', NULL, 'agenda.png', 0),
+(15, 7, 6, 6, 1085290375, 16, NULL, 10, 'si', NULL, 'agenda.png', 0),
+(16, 7, 2, 2, 1085290375, 16, NULL, 10, 'si', NULL, 'agenda.png', 0);
+
+
+INSERT INTO `materia_oficial` (`id_materia`, `nombre_materia`, `descripcion`) VALUES
+(1, 'Matemáticas', NULL),
+(2, 'Economia/politica', NULL),
+(3, 'Ciencias Sociales', NULL),
+(4, 'Educación Física', NULL),
+(5, 'Geometria', NULL),
+(6, 'Fisica', NULL),
+(7, 'Tecnología e informática', NULL),
+(8, 'Urbanidad', NULL),
+(9, 'Emprendimiento', NULL);
+
+--
+
+Necesito:
+*tengo los siguientes estudiantes de la imagen los datos que no tengas dejalos nulos o en cero según el tipo de dato,,en clave colocale "58e43d5511a2f7de5c0172543b5d2dca0d4d18b7".
+*Que crees sql para importar los estudiantes en la tabla de usuarios
+* Necesito que crees una sql que inscriba a los estudiantes en la asignación correspondiente por ejemplo Bolivar Giraldo Darly Vanesa que se encuentra en grado 6 debe estar matriculada en la asignación de  Matematicas
+Ciencias Sociales
+Geometria
+Urbanidad
+Educaciòn Fisica
+Tecnologia
+Emprendimiento que corresponden a su grado, de esta manera con cada estudiante en las materias de su grado 
+Nota: ten en cuenta la siguiente observación los estudiantes que esten en su grado 6 o 8 se matriculan a las materias del grado 6 pero en el caso de los estudiantes que tengan grado 9 serán matriculados en las materia de 9 , los estudiantes que estan en el grado 10 serán matriculado en las materias de grado 9 y en la materia de fiscia de grado 10
+ 
+
+_____________________
+-- Eliminamos la tabla temporal si existe
+DROP TEMPORARY TABLE IF EXISTS temp_inscripciones;
+
+-- Creamos tabla temporal para los estudiantes
+CREATE TEMPORARY TABLE temp_inscripciones (
+    id_estudiante VARCHAR(255),
+    nombre VARCHAR(255),
+    grado INT
+);
+
+-- Insertamos los estudiantes con sus grados correctos
+INSERT INTO temp_inscripciones VALUES
+-- Grado 6
+('N1', 'Bolivar Giraldo Darly Vanesa', 6),
+('2', 'Chavarria Valencia Dilan Alexis', 6),
+('3', 'Daza Mazo Emily Alexandra', 6),
+('1058198933', 'Diaz Rosso Freddy De Jesus', 6),
+('5', 'Dubian Esteban Rodriguez', 6),
+('6', 'Giraldo Ceballos Miguel Angel', 6),
+('1036258563', 'Giraldo Mazo Santiago', 6),
+('8', 'Valencia Virgen Alexandra', 6),
+-- Grado 7
+('9', 'Caviedez Hemanez Juan Manuel', 7),
+('1115576678', 'Herazo Valeria Areiza', 7),
+('1066845161', 'Orozco Chavarria Cristobal', 7),
+('1037975509', 'Velazques Muñoz Anyeli Tatiana', 7),
+-- Grado 8
+('1127955146', 'Duque Aristizabal Angel Gabriel', 8),
+('14', 'Fusses Castañeda Maria Fernanda', 8),
+('1050038422', 'Giraldo Giraldo Juan Camilo', 8),
+('1037974417', 'Lopez Aguirre Alexis', 8),
+-- Grado 9
+('1127955147', 'Duque Aristizabal Jennyfer Tatiana', 9), -- Reasignado a grado 9
+('1037974770', 'Gallego Giraldo Marlon', 9),
+('1131284071', 'Garcia Navarro Sebastian Camilo', 9),
+('1036937985', 'Giraldo Mazo Sara Paulina', 9),
+('1037974896', 'Gomez Pamplona Juliet', 9),
+('1022006639', 'Gonzalez Martinez Salome', 9),
+('23', 'Marulanda Castro Yureidy Yised', 9),
+-- Grado 10
+('1045396829', 'Valencia Vasquez Jefferson', 10),
+('25', 'Caviedez Hemanez Cristina', 10),
+('1045626133', 'Zapata Amaya Manuel Salvador', 10),
+-- Grado 11
+('1018236286', 'Duque Gil Julio Cesar', 11),
+('1045231584', 'Garcia Navarro Sharith Michell', 11),
+('1022149324', 'Perez Ana Sofia', 11),
+('1026565029', 'Sierra Chavarria Hojan Estiven', 11),
+('1036941865', 'Valencia Marin Karli Maritza', 11),
+('1035770602', 'Villegas Sanchez Jesus Nothey', 11);
+
+-- Inscripción para materias de categoría 6 (grados 6, 7 y 8)
+INSERT INTO inscripcion (id_asignacion, id_estudiante, fecha_inscripcion, estado_inscripcion)
+SELECT DISTINCT 
+    a.id_asignacion,
+    t.id_estudiante,
+    CURDATE(),
+    'En curso'
+FROM temp_inscripciones t
+INNER JOIN asignacion a ON a.id_categoria_curso = 6
+WHERE t.grado IN (6, 7, 8)
+AND NOT EXISTS (
+    SELECT 1 
+    FROM inscripcion i 
+    WHERE i.id_estudiante = t.id_estudiante 
+    AND i.id_asignacion = a.id_asignacion
+);
+
+-- Inscripción para materias de categoría 9 (grados 9, 10 y 11)
+INSERT INTO inscripcion (id_asignacion, id_estudiante, fecha_inscripcion, estado_inscripcion)
+SELECT DISTINCT 
+    a.id_asignacion,
+    t.id_estudiante,
+    CURDATE(),
+    'En curso'
+FROM temp_inscripciones t
+INNER JOIN asignacion a ON a.id_categoria_curso = 9
+WHERE t.grado IN (9, 10, 11)
+AND NOT EXISTS (
+    SELECT 1 
+    FROM inscripcion i 
+    WHERE i.id_estudiante = t.id_estudiante 
+    AND i.id_asignacion = a.id_asignacion
+);
+
+-- Inscripción para materias de categoría 10 (solo grados 10 y 11)
+INSERT INTO inscripcion (id_asignacion, id_estudiante, fecha_inscripcion, estado_inscripcion)
+SELECT DISTINCT 
+    a.id_asignacion,
+    t.id_estudiante,
+    CURDATE(),
+    'En curso'
+FROM temp_inscripciones t
+INNER JOIN asignacion a ON a.id_categoria_curso = 10
+WHERE t.grado IN (10, 11) -- Solo grados 10 y 11
+AND NOT EXISTS (
+    SELECT 1 
+    FROM inscripcion i 
+    WHERE i.id_estudiante = t.id_estudiante 
+    AND i.id_asignacion = a.id_asignacion
+);

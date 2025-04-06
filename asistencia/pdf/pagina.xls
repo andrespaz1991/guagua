@@ -1,0 +1,73 @@
+<?php 
+require("../comun/autoload.php");
+if (isset($_POST['descargar'])) {
+header("Content-type: application/vnd.ms-excel");
+header("Content-Disposition: attachment; Filename=reporte.xls");
+}
+
+
+
+$control_ingreso =new control_ingreso;
+$institucion=new Institucion($_SESSION['institucion']);
+$datos= $control_ingreso->consultar_control(5);
+if (!isset($_POST['descargar'])) {
+?>
+<form action="" method="post">
+<input class="print" type="submit" name="enviar" value="Enviar">
+<input class="print" type="submit" name="descargar" value="Descargar">
+<input class="print" type="submit" onclick="window.print();" name="imprimir" value="Imprimir">
+</form>
+<?php } ?>
+
+<table border="2">
+	<tr><th colspan="5">Reporte de horas Abril <?php echo $institucion->nombre_institucion?></th>	</tr>
+	<tr>
+	<th>Grupo</th>
+	<th>Fecha</th>
+	<th>Hora Entrada</th>
+	<th>Hora salida</th>
+	<th>Número de horas</th>
+	</tr>
+<?php 	
+$contador=0;
+
+foreach ($datos as $key => $asistencia) { ?>
+	<tr>
+	<th><?php 
+$materia = new Curso($asistencia['grupo']);
+echo $materia->nombre_materia; ?> </th>
+	<th><?php echo Fecha::formato_fecha($asistencia['fecha_ingreso']); ?></th>
+	<th><?php echo Fecha::formato_hora($asistencia['hora_ingreso']); ?></th>
+	<th><?php echo Fecha::formato_hora($asistencia['hora_salida']); ?></th>
+	<th><?php list($horas,$minutos,$segundos)= Fecha::RestarHoras($asistencia['hora_ingreso'],$asistencia['hora_salida']); 
+	echo $horas;
+	?></th> 
+	</tr>
+<?php $contador=$contador+$horas; } ?>
+<tr>
+		<td align="center" colspan="5" align="rigth">
+Total:<?php echo "(".$contador.") ".Comun::formato_moneda($contador*8000); ?>
+		</td>
+</tr>
+</table>
+<?php 
+if (isset($_POST['enviar'])) {
+/*
+$mail= new GuaguaMailer();
+$mail->para="andres.paz1991@gmail.com";
+$mail->asunto="Prueba de mail";
+$mail->ruta="pdf/word.pdf";
+$mail->archivo="word.pdf";
+$mail->tipo="application/pdf";
+$mail->enviar_mail();
+*/
+#header("Content-Disposition: ;form-data=reporte.xls");
+$shtml= file_get_contents('reporte_asistencia_docente.php');
+	$scarpeta=getcwd()."/pdf/"; 
+	$sfile=$scarpeta."pagina.xls"; 
+	$fp=fopen($sfile,"w" );
+	fwrite($fp,$shtml);
+	fclose($fp);
+
+}
+?>

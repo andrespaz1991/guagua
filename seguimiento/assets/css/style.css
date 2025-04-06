@@ -1,0 +1,101 @@
+﻿
+
+/*===============================
+
+    GENERAL STYLES
+
+ ================================*/
+
+
+
+body {
+
+    
+
+}
+
+
+
+/* DASHBOARD STYLE ONE */
+
+
+
+.style-box-one {
+
+    text-align: center;
+
+    padding: 20px;
+
+    border-radius: 5px;
+
+    -moz-border-radius: 5px;
+
+    -webkit-border-radius: 5px;
+
+    margin-bottom: 40px;
+
+}
+
+
+
+    .style-box-one a, .style-box-one a:hover {
+
+        color: #fff;
+
+        text-decoration: none;
+
+    }
+
+
+
+    .style-box-one span {
+
+        font-size: 50px;
+
+        padding-bottom: 10px;
+
+    }
+
+
+
+.Style-one-clr-one {
+
+    background-color: #d96614;
+
+}
+
+
+
+.Style-one-clr-two {
+
+    background-color: #2bbeb5;
+
+}
+
+
+
+.Style-one-clr-three {
+
+    background-color: #e83dab;
+
+}
+
+
+
+.Style-one-clr-four {
+
+    background-color: #adab36;
+
+}
+
+
+
+/* DASHBOARD STYLE TWO */
+
+.style-box-two span {
+
+    font-size:50px;
+
+    padding-bottom:10px;
+
+}

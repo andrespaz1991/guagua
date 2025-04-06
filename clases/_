@@ -1,0 +1,74 @@
+<?php
+
+class control_ingreso extends Clase_mysqli{
+
+ public $fecha_ingreso="";
+
+ public $hora_ingreso="";
+
+ public $grupo="";
+
+ public $id="";
+
+ public $fecha_salida="";
+
+ public $hora_salida="";
+
+
+
+public function __SET($atributo,$valor){
+
+	return	$this-> $atributo= $valor ;
+
+}
+
+
+
+public function __construct($id_control=""){
+
+		if ($id_control!=""){
+
+				$this->id_control = $id_control;
+
+		#$this->listar_persona();
+
+	}
+
+}
+
+
+
+public function insertar_control(){
+$sql='INSERT INTO `control_ingreso` (`fecha_ingreso`, `hora_ingreso`, `grupo`, `fecha_salida`, `hora_salida`) VALUES ("'.$this->fecha_ingreso.'",
+"'.$this->hora_ingreso.'","'.$this->grupo.'","'.$this->fecha_salida.'","'.$this->hora_salida.'")' ;
+	return $this->query_insertar($sql);  
+ }
+
+
+
+public function consultar_control($mes="4",$year="2020"){
+ $sql='select * from control_ingreso where YEAR(fecha_salida) ="'.$year.'" and MONTH(fecha_salida) ="'.$mes.'" order by grupo,fecha_ingreso asc';
+return $datos = json_decode($this->consultar_datos($sql,true),true);
+}
+
+public function control_materia(){
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+?>

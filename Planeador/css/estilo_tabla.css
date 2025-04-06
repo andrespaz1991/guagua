@@ -1,0 +1,53 @@
+/*estilo de tabla*/
+table {
+  font: .9em Arial, Helvetica, sans-serif;
+  border: 1px solid #333;
+  border-collapse: collapse;
+  text-align: center;
+  
+}
+#tbdiagnosticos, #tbpacientes{
+  margin: 0px 10px;
+}
+table th {
+  padding: 0 .3em;
+  text-decoration: none;
+  color: #FFFFFF;
+  background-color:#363636;
+}
+table th, table td {
+  	/*border: 2px solid #000;*/
+  	line-height: 2em;
+	border-collapse: collapse;
+	/*border: #FFA500 2px solid;*/
+	border: 2px  #ccc solid;
+	vertical-align: middle;
+}
+table td {
+  padding: 0 .7em;
+}
+tr {
+  text-align: left;
+}
+tr:nth-child(even) {
+  background-color:#CDDAFC;
+}
+tr:nth-child(odd) {
+  background-color:#FFFFFF;
+}
+table tr:hover {
+  background: #DAF2AF !important;
+}
+th input{
+  color:#000000;
+}
+th,td{
+  text-align:center;
+}
+/*
+th {
+    text-decoration: none;
+    color: #FFFFFF;
+    background-color:#363636;
+}*/
+/*termina estilo de tabla*/

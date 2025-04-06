@@ -1,0 +1,342 @@
+.table-container
+{
+    width: 90%;
+
+}
+.h {
+  font-family: Comic Sans MS, cursive;
+}
+#contenedor{
+  margin: 10px auto;
+  width: 540px;
+  height: 115px;
+}
+.reloj{
+  float: left;
+  font-size: 80px;
+  font-family: Courier,sans-serif;
+  color: #363431;
+}
+.boton{
+  outline: none;
+  border: 1px solid #363431;
+  color: white;
+  width: 128px;
+  height: 30px;
+  text-shadow: 0px -1px 1px black;
+  font-size: 20px;
+  border-radius: 5px;
+  font-family: Helvetica;
+  cursor: pointer;
+  background-image: linear-gradient(#3aad02,#2c6f05);
+}
+.boton:active{
+  background-image: linear-gradient(#2c6f05,#3aad02);
+}
+.boton:hover{
+  box-shadow: 0px 0px 14px #3aad02;
+}
+.btn-success {
+    color: #fff;
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+body,td,th {
+	font-size: 16px;
+}
+
+body {
+	background-color: #DFDEB3;
+}
+body {
+	background-color: #f9f9f9;
+}
+/*estilo de tabla*/
+table {
+width: 93%;
+  font: .9em Arial, Helvetica, sans-serif;
+   border-collapse: collapse;
+  text-align: center;
+
+}
+#tbdiagnosticos, #tbpacientes{
+    margin: 1% 1% 1% 1%;
+}
+
+table th {
+  padding: 0 .0em;
+  text-decoration: none;
+  color: #FFFFFF;
+  background-color:#363636;
+}
+
+
+.color {
+  
+  background-color:white;
+}
+
+
+table th, table td {
+  	/*border: 2px solid #000;*/
+  	line-height: 2em;
+	border-collapse: collapse;
+	/*border: #FFA500 2px solid;*/
+	border: 2px  #ccc solid;
+	vertical-align: middle;
+}
+table td {
+  padding: 0 .7em;
+}
+.fila {
+  text-align: center;
+}
+.par {
+  background-color:#CDDAFC;
+}
+.impar {
+  background-color:#FFFFFF;
+}
+table tr:hover {
+  background: #DAF2AF !important;
+}
+.proyecto{
+  maxlength:20;
+}
+/*
+th {
+    text-decoration: none;
+    color: #FFFFFF;
+    background-color:#363636;
+}*/
+/*termina estilo de tabla*/
+body {
+	/*background-color: #FFC;*/
+	text-align: center;
+}
+#form1 p {
+	font-weight: bold;
+}
+#form1 p {
+	font-size: 18px;
+}
+#form1 p {
+	font-size: 24px;
+}
+
+body {
+/*	background: #DCDDDF url(http://cssdeck.com/uploads/media/items/7/7AF2Qzt.png); */
+	color: #000;
+	font: 18px Arial;
+	margin: 0 auto;
+	padding: 0;
+	position: relative;
+}
+h1{ font-size:28px;}
+h2{ font-size:26px;}
+h3{ font-size:18px;}
+h4{ font-size:16px;}
+h5{ font-size:14px;}
+h6{ font-size:12px;}
+h1,h2,h3,h4,h5,h6{ color:#563D64;}
+small{ font-size:10px;}
+b, strong{ font-weight:bold;}
+.left { float:left; }
+.right { float:right; }
+.alignleft { float: left; margin-right: 15px; }
+.alignright { float: right; margin-left: 15px; }
+.clearfix:after,
+form:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+.container {
+ margin: -12px auto; padding: 0px ;position: relative; width: 94% ;
+
+ height: -15%; font-size: 20px;  }
+
+
+section{
+
+position:relative;
+top:2px;	
+
+
+}
+section{
+	width: 100%;
+	background-color: #FFF;
+}
+section>h1{
+	margin: 0 auto;
+	position:relative;
+	/*left:-150px;*/
+	margin-top:10px;
+	color: #105e1d;
+	text-transform: uppercase;
+}
+section>h1 a{
+	text-decoration:none;
+	color: #105e1d;
+	text-transform: uppercase;
+}
+section>table{
+ margin: 0 auto;
+            }
+}
+footer{
+  margin: 0 auto;
+  text-align:center;
+  position: fixed;
+  left: 0%;
+  bottom: 0px;
+  width: 100%;
+  height: 25px;
+  background-color:#072d66;
+   color: #F8FBEF;
+  font-size:10px;
+  
+}
+.azul{
+  display: line;
+ 
+  width: 80%;
+  font-family: sans-serif;
+  font-size: 18px;
+  appearance: none;
+  box-shadow: none;
+  border-radius: none;
+  
+}
+input[type="text"].azul {
+  display: line;
+  margin: 0;
+  width: 80%;
+  font-family: sans-serif;
+  font-size: 18px;
+  appearance: none;
+  box-shadow: none;
+  border-radius: none;
+}
+input[type="text"] {
+  display: line;
+  margin: 0;
+  width: 30%;
+  font-family: sans-serif;
+  font-size: 18px;
+  appearance: none;
+  box-shadow: none;
+  border-radius: none;
+}
+input[type="number"] {
+  display: line;
+  margin: 0;
+  width: 30%;
+  font-family: sans-serif;
+  font-size: 18px;
+  appearance: none;
+  box-shadow: none;
+  border-radius: none;
+}
+
+
+textarea {
+	 font-size: 18px;
+}
+
+.f1 {
+ /*  border: 1px solid #CCC;*/
+ font-size: 18px;
+ text-align: center;
+  padding: -100em;
+  margin-top: 0px;
+  margin-right: 50%;
+  height: 50%;
+  
+  width: 50%;
+ /* width: 300px; */
+  position: absolute;
+word-wrap: break-word;  
+
+}
+.f2 {
+
+/*  border: 1px solid #CCC;*/
+ font-size: 18px;
+  width: 50%;
+  padding: 2em;
+  margin-right: 50%;
+  margin: 1em 0 1em 35em;
+    position: relative;
+  text-align:left;
+}
+
+
+.f3 {
+
+/* background-color: #fff; */
+border: 1px solid #fff;
+ /*  padding: 1em;*/
+  margin: 1em 3 50em 4em;
+ /* width: 300px; */
+ position: absolute;
+bottom: -15%;
+}
+.f4 {
+
+/*  border: 1px solid #CCC;*/
+  width: 100%;
+  padding: 0em;
+    margin-top: 2%;
+  margin-right: 0%;
+   margin-left: 48%;
+    position: absolute;
+  text-align:center;
+}
+.f5 {
+background-color: #fff;
+  border: 1px solid #CCC;
+  width: 100%;
+  padding: 0em;
+    margin-top: 2%;
+  margin-right: 0%;
+   margin-left: 48%;
+    position: absolute;
+  text-align:center;
+}
+
+#button{
+    background:#e5e5e5;
+    display:inline-block;
+    margin:0 6px;
+    padding:7px 20px 7px;
+    color:#333;
+    text-decoration:none;
+    text-shadow: 0 1px 1px #FFF;
+    border:1px solid #ccc;
+ 
+    /* Bordes redondenados - Border Radius */
+    -webkit-border-radius:4px;
+    -moz-border-radius:4px;
+    border-radius:4px;
+ 
+    /* Fondo Degradado - Background Gradient */
+    background:-webkit-linear-gradient(top, #fefefe, #e5e5e5); /* Chrome 10+ */
+    background:   -moz-linear-gradient(top, #fefefe, #e5e5e5); /* Firefox 3.6+ */
+    background:    -ms-linear-gradient(top, #fefefe, #e5e5e5); /* IE10 */
+    background:        linear-gradient(top, #fefefe, #e5e5e5);
+ 
+    /* Aplcamos sombras al boton - Box Shadow */
+    -webkit-box-shadow:inset 0 1px 0 rgba(255,255,255, .3), inset 0 0 0 1px rgba(255,255,255, .6), 0 1px 2px rgba(0, 0, 0, .1);
+    -moz-box-shadow:inset 0 1px 0 rgba(255,255,255, .3), inset 0 0 0 1px rgba(255,255,255, .6), 0 1px 2px rgba(0, 0, 0, .1);
+    box-shadow:inset 0 1px 0 rgba(255,255,255, .3), inset 0 0 0 1px rgba(255,255,255, .6), 0 1px 2px rgba(0, 0, 0, .1);
+ 
+    /* Animacion - Transition */
+    -webkit-transition: all ease-in-out .3s;
+    -moz-transition: all ease-in-out .3s;
+    transition: all ease-in-out .3s;
+}

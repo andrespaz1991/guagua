@@ -1,0 +1,29 @@
+cantidad de estudiantes 
+select count (*) from estudiante 
+_*_
+*
+LISTO PARA ENVIAR
+SELECT count (*) FROM `estudiante` WHERE `enviado` LIKE '%SI%' ORDER BY `nombre` ASC
+__
+CANTIDAD DE ASESORIAS TECNICAS
+SELECT COUNT(*) FROM seguimiento where `asesoria_tecnica` = "SI"
+__
+Cantidad de estudiantes que solicitan asesorias tecnicas
+SELECT COUNT(distinct(identificacion)) FROM seguimiento where `asesoria_tecnica` = "SI"
+__
+Cantidad de estudiantes aprobados 
+SELECT COUNT(*) FROM estudiante where `aprobado` = "SI"
+__
+Estudiantes convocatoria 2013-2 han sacado cita 
+SELECT COUNT(*) FROM `estudiante` WHERE `convocatoria` = '2013 - 2'
+___
+Cantidad de estudiantes que han firmado acta de inicio
+SELECT COUNT(*) FROM `estudiante` WHERE `acta_inicio` like '%SI%'
+__
+Cantidad de estudiantes sin proyecto o pendiente por cambiar 
+
+SELECT COUNT(distinct(identificacion)) FROM `estudiante` WHERE proyecto = "" or proyecto like "%N/A%"
+___
+Cantidad de estudiantes con RQ3 listo
+SELECT COUNT(*) FROM estudiante where `rq3` = "SI"
+___

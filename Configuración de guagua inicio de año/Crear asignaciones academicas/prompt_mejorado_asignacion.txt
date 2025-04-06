@@ -1,0 +1,51 @@
+
+Tengo la siguiente tabla creada en SQL:
+
+```sql
+CREATE TABLE `asignacion` (
+  `id_asignacion` int(255) NOT NULL,
+  `institucion_educativa` int(12) NOT NULL DEFAULT 1,
+  `id_curso` int(11) NOT NULL,
+  `id_asignatura` int(11) NOT NULL,
+  `id_docente` int(12) NOT NULL DEFAULT 1085290375,
+  `ano_lectivo` int(8) NOT NULL,
+  `descripcion` varchar(240) DEFAULT NULL,
+  `id_categoria_curso` int(11) NOT NULL,
+  `visible` varchar(2) DEFAULT NULL,
+  `portada_asignacion` varchar(255) DEFAULT NULL,
+  `icono_asignacion` varchar(255) NOT NULL DEFAULT 'agenda.png',
+  `asistencia` int(1) NOT NULL DEFAULT 0
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+```
+
+También tengo la siguiente lista de materias oficiales:
+
+```sql
+INSERT INTO `materia_oficial` (`id_materia`, `nombre`, `descripcion`) VALUES
+(1, 'Matemáticas', NULL),
+(2, 'Economía/Política', NULL),
+(3, 'Ciencias Sociales', NULL),
+(4, 'Educación Física', NULL),
+(5, 'Geometría', NULL),
+(6, 'Física', NULL),
+(7, 'Tecnología e Informática', NULL),
+(8, 'Urbanidad', NULL),
+(9, 'Emprendimiento', NULL);
+```
+
+Los detalles para realizar las asignaciones son los siguientes:
+1. La institución educativa tiene el `id` **7**.
+2. El `id_curso` y el `id_asignatura` son iguales.
+3. El año lectivo tiene el `id` **16**.
+4. La categoría del curso corresponde al grado, como se muestra en la imagen adjunta.
+   - En la imagen, cada materia está relacionada con uno o más grados específicos (categorías de curso).
+5. Las siguientes condiciones aplican a las asignaciones:
+   - `descripcion`: vacío.
+   - `visible`: "si".
+   - `portada_asignacion`: vacío.
+   - `icono_asignacion`: "agenda.png".
+   - `asistencia`: 0.
+
+Por favor, genera un script SQL que inserte las asignaciones correspondientes, asegurándote de que cada materia se asigne al grado (categoría de curso) especificado en la imagen.
+
+

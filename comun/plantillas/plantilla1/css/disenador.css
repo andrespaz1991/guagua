@@ -1,0 +1,53 @@
+#disenador input[type="text"],#disenador input[type="date"], #disenador textarea, #disenador p[contenteditable],#disenador input[type="number"],#disenador select,#disenador select option {
+  padding: 10px;
+  border: none;
+  border-bottom: solid 2px #c9c9c9;
+  transition: border 0.3s;
+  text-align: center;
+  background-color: transparent;
+}
+#disenador input[type="text"]:focus,#disenador input[type="date"]:focus,#disenador input[type="number"]:focus,#disenador select:focus, #disenador textarea:focus,#disenador select option:focus, #disenador p[contenteditable]:focus{
+	border: none;
+ 	border-bottom: solid 2px #969696;
+ 	text-shadow: #AAAAAA 0 -1px 0;
+}
+#disenador p > label{
+	color: #000000;
+}
+#disenador #mas:hover{
+    transition:5s;
+    background-color:  #4DC781;
+}
+#titulo{
+	font-size:250%;
+	text-align: center;
+}
+#disenador p[contenteditable]{
+  color: #000000;
+}
+option {
+	background-color: transparent;
+}
+#contenedor_disenador{
+    background-color: #FFF;
+    /*width:80%;
+    margin:0 auto;*/
+}
+#disenador input[type=text], #disenador p[contenteditable]{
+    width: 70%;
+}
+ul li{
+list-style:none;
+}
+input[name*="txtop"]{
+    width: 450px;
+}
+#preguntas section{
+border-top:.2px gray solid;
+border-bottom:.2px gray solid;
+margin-top:16px;
+margin-bottom:16px;
+padding-top:10px;
+padding-bottom:2px;
+box-shadow: 10px 10px 5px #999;
+}

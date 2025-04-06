@@ -1,0 +1,38 @@
+Prompt:
+
+Estoy desarrollando un sistema de gestión de aprendizaje propio, cuya estructura académica está organizada de la siguiente manera:
+
+Estructura jerárquica:
+
+Estándar: Es el nivel principal y define objetivos generales de aprendizaje.
+DBA (Derechos Básicos de Aprendizaje): Cada estándar está relacionado con uno o varios DBA, que detallan los aprendizajes específicos que se deben alcanzar.
+Evidencia de Aprendizaje: Cada DBA tiene evidencias asociadas que verifican su cumplimiento.
+Ejes Temáticos: Son las áreas o temas centrales relacionados con cada evidencia de aprendizaje.
+Relaciones:
+
+Un estándar puede tener múltiples DBA.
+Un DBA puede tener múltiples evidencias de aprendizaje.
+Una evidencia de aprendizaje puede abarcar múltiples ejes temáticos.
+Requerimientos:
+
+Tengo un ejemplo en formato de tabla donde cada estándar tiene múltiples DBA, cada DBA incluye evidencias de aprendizaje, y cada evidencia tiene varios ejes temáticos en formato de viñetas.
+Necesito un script SQL que inserte los datos en las tablas previamente definidas:
+estandar
+dba
+evidencia_de_aprendizaje
+eje_tematico
+Todas las viñetas de las evidencias de aprendizaje y ejes temáticos deben concatenarse en un solo registro por cada DBA o evidencia.
+Detalles técnicos:
+
+Las tablas están diseñadas con claves foráneas que relacionan las jerarquías (ver diseño previo de tablas en SQL).
+Los textos de viñetas deben concatenarse con un separador como "; " para que se almacenen en un único campo por registro.
+El script debe ser completamente funcional, respetando las relaciones entre las tablas y asegurando la consistencia referencial.
+Entradas disponibles:
+
+Un ejemplo en formato de tabla de un estándar con sus respectivos DBA, evidencias y ejes temáticos.
+Salida esperada:
+
+Un script SQL que:
+Inserte cada estándar con sus DBA, evidencias y ejes temáticos concatenados.
+Mantenga las relaciones correctas entre las tablas.
+Sea legible, bien estructurado y fácil de modificar si se necesitan ajustes futuros.

@@ -1,0 +1,250 @@
+.ac-custom {
+	padding: 0 3em;
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+.ac-custom h2 {
+	font-size: 3em;
+	font-weight: 300;
+	padding: 0 0 0.5em;
+	margin: 0 0 30px;
+}
+
+.ac-custom ul,
+.ac-custom ol {
+	list-style: none;
+	padding: 0;
+	margin: 0 auto;
+	max-width: 800px;
+}
+
+.ac-custom li {
+	margin: 0 auto;
+	padding: 2em 0;
+	position: relative;
+}
+
+.ac-custom label {
+	display: inline-block;
+	position: relative;
+	font-size: 2em;
+	padding: 0 0 0 80px;
+	vertical-align: top;
+	color: #000;
+	cursor: pointer;
+	-webkit-transition: color 0.3s;
+	transition: color 0.3s;
+}
+
+.ac-custom input[type="checkbox"],
+.ac-custom input[type="radio"],
+.ac-custom label::before {
+	width: 50px;
+	height: 50px;
+	top: 50%;
+	left: 0;
+	margin-top: -25px;
+	position: absolute;
+	cursor: pointer;
+}
+
+.ac-custom input[type="checkbox"],
+.ac-custom input[type="radio"] {
+	opacity: 0;
+	-webkit-appearance: none;
+	display: inline-block;
+	vertical-align: middle;
+	z-index: 100;
+}
+
+.ac-custom label::before {
+	content: '';
+	border: 4px solid #000;
+	-webkit-transition: opacity 0.3s;
+	transition: opacity 0.3s;
+}
+
+.ac-radio label::before {
+	border-radius: 50%;
+}
+
+.ac-custom input[type="checkbox"]:checked + label,
+.ac-custom input[type="radio"]:checked + label {
+	color: #000;
+} 
+
+.ac-custom input[type="checkbox"]:checked + label::before,
+.ac-custom input[type="radio"]:checked + label::before {
+	opacity: 0.8;
+}
+
+/* General SVG and path styles */
+
+.ac-custom svg {
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	top: 50%;
+	margin-top: -20px;
+	left: 5px;
+	pointer-events: none;
+}
+
+.ac-custom svg path {
+	stroke: #000;/* #fdfcd3;*/
+	stroke-width: 13px;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	fill: none;
+}
+
+/* Specific input, SVG and path styles */
+
+/* Circle */
+.ac-circle input[type="checkbox"],
+.ac-circle input[type="radio"],
+.ac-circle label::before {
+	width: 30px;
+	height: 30px;
+	margin-top: -15px;
+	left: 10px;
+	position: absolute;
+}
+
+.ac-circle label::before {
+	background-color: #000;
+	border: none;
+}
+
+.ac-circle svg {
+	width: 70px;
+	height: 70px;
+	margin-top: -35px;
+	left: -10px;
+}
+
+.ac-circle svg path {
+	stroke-width: 5px;
+} 
+
+/* Box Fill */
+.ac-boxfill svg path {
+	stroke-width: 8px;
+} 
+
+/* Swirl */
+.ac-swirl svg path {
+	stroke-width: 8px;
+}
+
+/* List */
+.ac-list ol {
+	list-style: decimal;
+	list-style-position: inside;
+}
+
+.ac-list ol li {
+	font-size: 2em;
+	padding: 1em 1em 0 2em;
+	text-indent: -40px;
+}
+
+.ac-list ol li label {
+	font-size: 1em;
+	text-indent: 0;
+	padding-left: 30px;
+}
+
+.ac-list label::before {
+	display: none;
+}
+
+.ac-list svg {
+	width: 100%;
+	height: 80px;
+	left: 0;
+	top: 1.2em;
+	margin-top: 0px;
+}
+
+.ac-list svg path {
+	stroke-width: 4px;
+}
+
+/*Estilo*/
+@font-face {
+	font-family: 'codropsicons';
+	src:url('../fonts/codropsicons/codropsicons.eot');
+	src:url('../fonts/codropsicons/codropsicons.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/codropsicons/codropsicons.woff') format('woff'),
+		url('../fonts/codropsicons/codropsicons.ttf') format('truetype'),
+		url('../fonts/codropsicons/codropsicons.svg#codropsicons') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+mipergunta a {
+	color: #000;
+	opacity: 0.7;
+	text-decoration: none;
+}
+
+mipergunta a:hover, mipergunta a:focus {
+	opacity: 1;
+}
+
+
+/* To Navigation Style */
+.codrops-top {
+	text-transform: uppercase;
+	width: 100%;
+	font-size: 0.69em;
+	line-height: 2.2;
+	font-weight: 700;
+}
+
+.codrops-top a {
+	text-decoration: none;
+	padding: 0 1em;
+	letter-spacing: 0.1em;
+	display: inline-block;
+}
+
+.codrops-top span.right {
+	float: right;
+}
+
+.codrops-top span.right a {
+	float: left;
+	display: block;
+}
+
+.codrops-icon:before {
+	font-family: 'codropsicons';
+	color:#000;
+	margin: 0 4px;
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+}
+
+.codrops-icon-drop:before {
+	content: "\e001";
+}
+
+.codrops-icon-prev:before {
+	content: "\e004";
+}
+
+@media screen and (max-width: 25em) {
+
+	.codrops-icon span {
+		display: none;
+	}
+
+}

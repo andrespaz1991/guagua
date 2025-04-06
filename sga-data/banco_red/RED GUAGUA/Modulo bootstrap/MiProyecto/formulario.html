@@ -1,0 +1,86 @@
+<?php <?php ob_start();?>
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+<head>
+<meta charset="utf-8">
+    <title>Bootstrap Mi primer Template</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script> 
+    <script type="text/javascript" src="css/MiEstilo.css"></script>
+  
+</head>
+  <body>
+        
+    <div class="container">      
+        <div class="row">
+          <div class="col-xs-12">          
+            
+            <form action="">
+                <label>ID</label>
+                <p class="form-control-static">12</p>
+                <label for="nombre_usuario">Nombre de usuario</label>
+                <input type="text" class="form-control" name="nombre_usuario">
+              
+                <label for="email">E-mail</label>
+                <input id="email" type="text" class="form-control">
+
+              <span class="clearfix"></span>
+
+              <div class="form-group">
+                <label for="passwd">Contraseña</label>
+                <input id="passwd" type="password" class="form-control">      
+              </div>
+
+              <div class="form-group">
+                <label for="detalle">Detalle</label>
+                <textarea id="detalle" class="form-control" rows="10"></textarea>
+              </div>
+
+                <label>                </label>              
+
+                  <input type="checkbox" id="item-a" value="a"> Opción A
+              </div>   
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" id="item-b" value="b"> Opción B
+                </label>              
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" id="item-c" value="c"> Opción C
+                </label>
+              </div>
+              
+              <div class="radio">
+                <label>
+                  <input type="radio" name="opcionNumero" id="opcionPrimera" value="1" checked>
+                  Opción primera
+                </label>
+              </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="opcionNumero" id="opcionSegunda" value="2">
+                  Opción segunda
+                </label>
+              </div>
+
+              <select class="form-control">
+                <option>Rojo</option>
+                <option>Amarillo</option>
+                <option>Azul</option>
+                <option>Verde</option>
+                <option>Violeta</option>
+              </select>
+            </form>
+
+          </div>
+        </div>
+      </div>    
+  </body>
+</html>
