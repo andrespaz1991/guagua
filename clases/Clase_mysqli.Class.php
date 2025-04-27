@@ -15,16 +15,18 @@ class Clase_mysqli extends Comun {
       //  if ($_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1' || $_SERVER['SERVER_NAME'] == '::1') {
         $server = $_SERVER['SERVER_NAME'];
         print_r($server);
-        if (($server=='pcomputacional.space')) {
-          //  echo "no";
-            $this->con = $this->conectar('no');
-        } 
-        else {
-        // Detectar si estamos en local o producción
-              $this->con = $this->conectar('si');
-         // echo "si";
+        switch ($nota) {
+            case "pcomputacional.space":
+                $this->con = $this->conectar('no');
+                echo "i es una no";
+                break;
+            default:
+                echo "i es una si";
+            $conexion_mysqli = new mysqli("127.0.0.1", "root", "", "guagua", 7000);
+                break;
+
         }
-    }
+       }
 
     public function conectar($nota='si') {
         #echo "        conexion_mysqli = new mysqli($this->servidorbd, $this->usuariobd, $this->clavebd, $this->basededatos,'7000');";
