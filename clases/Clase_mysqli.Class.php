@@ -12,14 +12,18 @@ class Clase_mysqli extends Comun {
         // Eliminé el parámetro $Nombre que no se usaba
        // $servidor_actual = $_SERVER['SERVER_NAME'];
     
-        if ($_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1' || $_SERVER['SERVER_NAME'] == '::1') {
-        
+      //  if ($_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1' || $_SERVER['SERVER_NAME'] == '::1') {
+        $server = $_SERVER['SERVER_NAME'];
+        if (in_array($server, ['localhost', '127.0.0.1', '::1'])) {
+   
         // Detectar si estamos en local o producción
               $this->con = $this->conectar('si');
          // echo "si";
-        } else {
+        }elseif (strpos($server, 'pcomputacional.space') !== false) {
           //  echo "no";
             $this->con = $this->conectar('no');
+        } else {
+            die("Entorno no reconocido: $server");
         }
         
     }
