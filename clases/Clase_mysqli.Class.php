@@ -18,7 +18,6 @@ class Clase_mysqli extends Comun {
         if (($server=='pcomputacional.space')) {
           //  echo "no";
             $this->con = $this->conectar('no');
-            exit();
         } 
         elseif (in_array($server, ['localhost', '127.0.0.1', '::1'])) {
         // Detectar si estamos en local o producción
