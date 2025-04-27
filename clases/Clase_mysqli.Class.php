@@ -21,7 +21,7 @@ class Clase_mysqli extends Comun {
               $this->con = $this->conectar('si');
          // echo "si";
         }elseif (strpos($server, 'pcomputacional.space') !== false) {
-          //  echo "no";
+            echo "no";
             $this->con = $this->conectar('no');
         } else {
             die("Entorno no reconocido: $server");
