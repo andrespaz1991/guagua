@@ -18,16 +18,13 @@ class Clase_mysqli extends Comun {
         if (($server=='pcomputacional.space')) {
           //  echo "no";
             $this->con = $this->conectar('no');
-
+            exit();
         } 
         elseif (in_array($server, ['localhost', '127.0.0.1', '::1'])) {
         // Detectar si estamos en local o producción
               $this->con = $this->conectar('si');
          // echo "si";
-        }else {
-            die("Entorno no reconocido: $server");
         }
-        
     }
 
     public function conectar($nota='si') {
@@ -35,7 +32,7 @@ class Clase_mysqli extends Comun {
        # $conexion_mysqli = new mysqli($this->servidorbd, $this->usuariobd, $this->clavebd, $this->basededatos);
        if($nota=="si"){
         //$conexion_mysqli = new mysqli("srv765.hstgr.io", "u417538463_root", "Handres2025..", "u417538463_guagua");
-        $conexion_mysqli = new mysqli("127.0.0.1", "root", "", "guagua", 7000);
+      //  $conexion_mysqli = new mysqli("127.0.0.1", "root", "", "guagua", 7000);
        }
        elseif($nota=="no"){
         echo 'no';
