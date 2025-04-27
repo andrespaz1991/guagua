@@ -15,7 +15,7 @@ class Clase_mysqli extends Comun {
       //  if ($_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1' || $_SERVER['SERVER_NAME'] == '::1') {
         $server = $_SERVER['SERVER_NAME'];
         print_r($server);
-        switch ($nota) {
+        switch ($server) {
             case "pcomputacional.space":
                 $this->con = $this->conectar('no');
                 echo "i es una no";
