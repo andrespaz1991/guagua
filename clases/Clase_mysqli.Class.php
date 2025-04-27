@@ -21,7 +21,7 @@ class Clase_mysqli extends Comun {
                 $this->con = $this->conectar('no');
                 break;
             case "localhost":
-                define('NOTA', 'no');
+                define('NOTA', 'si');
                 $this->con = $this->conectar('si');
                 break;
 
