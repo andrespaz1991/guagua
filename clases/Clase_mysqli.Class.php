@@ -29,15 +29,17 @@ class Clase_mysqli extends Comun {
     public function conectar($nota='si') {
         #echo "        conexion_mysqli = new mysqli($this->servidorbd, $this->usuariobd, $this->clavebd, $this->basededatos,'7000');";
        # $conexion_mysqli = new mysqli($this->servidorbd, $this->usuariobd, $this->clavebd, $this->basededatos);
+       if($nota=="no"){
+        echo 'no';
+        $conexion_mysqli = new mysqli("srv765.hstgr.io", "u417538463_root", "Handres2025..", "u417538463_guagua");
+       } 
+       
        if($nota=="si"){
         echo $nota.'-';
   $conexion_mysqli = new mysqli("srv765.hstgr.io", "u417538463_root", "Handres2025..", "u417538463_guagua");
 //        $conexion_mysqli = new mysqli("127.0.0.1", "root", "", "guagua", 7000);
        }
-       elseif($nota=="no"){
-        echo 'no';
-        $conexion_mysqli = new mysqli("srv765.hstgr.io", "u417538463_root", "Handres2025..", "u417538463_guagua");
-       } 
+       
        
         if ($conexion_mysqli->connect_error) {
             die("Error de conexión: " . $conexion_mysqli->connect_error);
