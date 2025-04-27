@@ -28,14 +28,14 @@ class Clase_mysqli extends Comun {
         }
        }
 
-    public function conectar($nota='si') {
+    public function conectar($nota) {
         #echo "        conexion_mysqli = new mysqli($this->servidorbd, $this->usuariobd, $this->clavebd, $this->basededatos,'7000');";
        # $conexion_mysqli = new mysqli($this->servidorbd, $this->usuariobd, $this->clavebd, $this->basededatos);
       
        switch ($nota) {
         case "no":
             $conexion_mysqli = new mysqli("srv765.hstgr.io", "u417538463_root", "Handres2025..", "u417538463_guagua");
-            echo "i es una no";
+            echo "i es una no <br>";
             break;
         case "si":
             echo "i es una si";
