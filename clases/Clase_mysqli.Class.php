@@ -37,14 +37,14 @@ class Clase_mysqli extends Comun {
             break;
         case "si":
             echo "i es una si";
-            $conexion_mysqli = new mysqli("srv765.hstgr.io", "u417538463_root", "Handres2025..", "u417538463_guagua");
+        $conexion_mysqli = new mysqli("127.0.0.1", "root", "", "guagua", 7000);
             break;
         case "pastel":
             echo "i es un pastel";
             break;
     }
       
-    
+
        
        
         if ($conexion_mysqli->connect_error) {
