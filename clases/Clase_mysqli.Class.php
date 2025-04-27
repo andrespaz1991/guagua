@@ -14,12 +14,13 @@ class Clase_mysqli extends Comun {
     
       //  if ($_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1' || $_SERVER['SERVER_NAME'] == '::1') {
         $server = $_SERVER['SERVER_NAME'];
-        print_r($server);
+        //print_r($server);
         if (($server=='pcomputacional.space')) {
-            echo "no";
+          //  echo "no";
             $this->con = $this->conectar('no');
+
         } 
-        if (in_array($server, ['localhost', '127.0.0.1', '::1'])) {
+        elseif (in_array($server, ['localhost', '127.0.0.1', '::1'])) {
         // Detectar si estamos en local o producción
               $this->con = $this->conectar('si');
          // echo "si";
