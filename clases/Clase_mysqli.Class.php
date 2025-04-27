@@ -14,25 +14,27 @@ class Clase_mysqli extends Comun {
     
       //  if ($_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1' || $_SERVER['SERVER_NAME'] == '::1') {
         $server = $_SERVER['SERVER_NAME'];
-       // print_r($server);
-        switch ($server) {
-            case "pcomputacional.space":
-                define('NOTA', 'no');
-                $this->con = $this->conectar('no');
-                break;
-            case "localhost":
-                define('NOTA', 'si');
-                $this->con = $this->conectar('si');
-                break;
-
-        }
+        // print_r($server);
+        @session_start();
+         switch ($server) {
+             case "pcomputacional.space":
+                 $_SESSION["nota"]='no';
+                 $this->con = $this->conectar('no');
+                 break;
+             case "localhost":
+                 $_SESSION["nota"]='si';
+                 $this->con = $this->conectar('si');
+                 break;
+ 
+         }
        }
 
     public function conectar() {
         #echo "        conexion_mysqli = new mysqli($this->servidorbd, $this->usuariobd, $this->clavebd, $this->basededatos,'7000');";
        # $conexion_mysqli = new mysqli($this->servidorbd, $this->usuariobd, $this->clavebd, $this->basededatos);
-      
-       switch (NOTA) {
+
+
+       switch ($_SESSION['nota']) {
         case "no":
             $conexion_mysqli = new mysqli("srv765.hstgr.io", "u417538463_root", "Handres2025..", "u417538463_guagua");
             break;

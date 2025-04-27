@@ -154,7 +154,7 @@ CREATE TABLE `area` (
 
 LOCK TABLES `area` WRITE;
 /*!40000 ALTER TABLE `area` DISABLE KEYS */;
-INSERT INTO `area` VALUES (1,'Ciencias naturales y educaci??n ambiental'),(2,'Ciencias sociales, historia, geograf??a, constituci??n pol??tica y democracia'),(3,'Educaci??n art??stica'),(4,'Educaci??n ??tica y en valores humanos'),(5,'Educaci??n f??sica, recreaci??n y deportes'),(6,'Educaci??n religiosa'),(7,'Humanidades, lengua castellana e idiomas extranjeros'),(8,'Matem??ticas'),(9,'Tecnolog??a e inform??tica'),(10,'Transici??n');
+INSERT INTO `area` VALUES (1,'Ciencias naturales y educaci??n ambiental'),(2,'Ciencias sociales, historia, geograf??a, constituci??n pol??tica y democracia'),(3,'Educaci??n art??stica'),(4,'Educaci??n ??tica y en valores humanos'),(5,'Educaci??n f??sica, recreaci??n y deportes'),(6,'Educaci??n religiosa'),(7,'Humanidades, lengua castellana e idiomas extranjeros'),(8,'Matemáticas'),(9,'Tecnolog??a e inform??tica'),(10,'Transici??n');
 /*!40000 ALTER TABLE `area` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1249,7 +1249,7 @@ CREATE TABLE `materia_oficial` (
 
 LOCK TABLES `materia_oficial` WRITE;
 /*!40000 ALTER TABLE `materia_oficial` DISABLE KEYS */;
-INSERT INTO `materia_oficial` VALUES (1,'matem??ticas',NULL),(2,'Economia/politica',NULL),(3,'Ciencias Sociales',NULL),(4,'Educaci??n F??sica',NULL),(5,'Geometria',NULL),(6,'Fisica',NULL),(7,'Tecnolog??a e inform??tica',NULL),(8,'Urbanidad',NULL),(9,'Emprendimiento',NULL);
+INSERT INTO `materia_oficial` VALUES (1,'matemáticas',NULL),(2,'Economia/politica',NULL),(3,'Ciencias Sociales',NULL),(4,'Educaci??n F??sica',NULL),(5,'Geometria',NULL),(6,'Fisica',NULL),(7,'Tecnolog??a e inform??tica',NULL),(8,'Urbanidad',NULL),(9,'Emprendimiento',NULL);
 /*!40000 ALTER TABLE `materia_oficial` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1954,4 +1954,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-27 16:45:03
+-- Dump completed on 2025-04-27 17:03:19
