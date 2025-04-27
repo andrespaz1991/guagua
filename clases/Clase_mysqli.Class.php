@@ -11,7 +11,9 @@ class Clase_mysqli extends Comun {
     function __construct() {
         // Eliminé el parámetro $Nombre que no se usaba
         $servidor_actual = $_SERVER['SERVER_NAME'];
-
+        echo "<pre>";
+        print_r($_SERVER);
+        echo "</pre>";
         if (in_array($servidor_actual, ['localhost', '127.0.0.1', '::1'])) {
         
         // Detectar si estamos en local o producción
