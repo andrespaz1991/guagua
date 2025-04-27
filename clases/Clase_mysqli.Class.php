@@ -22,7 +22,7 @@ class Clase_mysqli extends Comun {
                 break;
             default:
                 echo "i es una si";
-            $conexion_mysqli = new mysqli("127.0.0.1", "root", "", "guagua", 7000);
+                $this->con = $this->conectar('si');
                 break;
 
         }
