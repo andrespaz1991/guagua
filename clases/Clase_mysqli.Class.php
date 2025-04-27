@@ -17,22 +17,22 @@ class Clase_mysqli extends Comun {
         print_r($server);
         switch ($server) {
             case "pcomputacional.space":
-                
+                define('NOTA', 'no');
                 $this->con = $this->conectar('no');
                 break;
             case "localhost":
-                echo "i es una si";
+                define('NOTA', 'no');
                 $this->con = $this->conectar('si');
                 break;
 
         }
        }
 
-    public function conectar($nota) {
+    public function conectar() {
         #echo "        conexion_mysqli = new mysqli($this->servidorbd, $this->usuariobd, $this->clavebd, $this->basededatos,'7000');";
        # $conexion_mysqli = new mysqli($this->servidorbd, $this->usuariobd, $this->clavebd, $this->basededatos);
       
-       switch ($nota) {
+       switch (NOTA) {
         case "no":
             $conexion_mysqli = new mysqli("srv765.hstgr.io", "u417538463_root", "Handres2025..", "u417538463_guagua");
             echo "i es una no <br>";
