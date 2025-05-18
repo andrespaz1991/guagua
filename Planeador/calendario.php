@@ -277,8 +277,13 @@ $.extend(Date.prototype, {
         monthAddEvent(index, event);
         return;
       }
-      var $event = $('<div/>', {'class': 'event', text: event.title, title: event.title, 'data-index': index}),
-          start = event.start,
+var classes = 'event';
+if (event.className) {
+    classes += ' ' + event.className;
+}
+var $event = $('<div/>', {'href': 'planeador.php?pdf=1&idplan='+event.id_plan+'','class': classes, text: event.title+'('+event.grado+')', title: event.title+'('+event.grado+')'+'('+event.text+')', 'data-index': index}),
+
+      start = event.start,
           end = event.end || start,
           time = event.start.toTimeString(),
           hour = start.getHours(),
@@ -303,8 +308,14 @@ $.extend(Date.prototype, {
     }
     
     function monthAddEvent(index, event) {
-      var $event = $('<div/>', {'class': 'event', text: event.title, title: event.title, 'data-index': index}),
-          e = new Date(event.start),
+      console.log(event);
+var classes = 'event';
+if (event.className) {
+    classes += ' ' + event.className;
+}
+var $event = $('<div/>', {'class': classes, text: '', title: event.title+'('+event.grado+')'+'('+event.text+')', 'data-index': index}),
+
+      e = new Date(event.start),
           dateclass = e.toDateCssClass(),
           day = $('.' + e.toDateCssClass()),
           empty = $('<div/>', {'class':'clear event', html:' '}), 
@@ -314,12 +325,16 @@ $.extend(Date.prototype, {
           checkanyway = new Date(e.getFullYear(), e.getMonth(), e.getDate()+40),
           existing,
           i;
-      $event.toggleClass('all-day', !!event.allDay);
+          
+      $event.toggleClass(event.className, !!event.allDay);
+      console.log('------'+event.id_plan);
+        $event.html('<a style="text-decoration: none; color: inherit;" target="_blank" href="planeador.php?pdf=1&idplan='+event.id_plan+'">'+event.title+'('+event.grado+')'+'<a> ' + $event.html());
+
       if (!!time) {
         $event.html('<strong>' + time + '</strong> ' + $event.html());
       }
       if (!event.end) {
-        $event.addClass('begin end');
+        $event.addClass('materia-matematicas');
         $('.' + event.start.toDateCssClass()).append($event);
         return;
       }
@@ -497,17 +512,20 @@ $resultado = fechasQueCaenEnDia($r['fecha_iniciop'], $r['fecha_finp'], $r['dia']
 $fecha->modify('-1 month');
  $mes = $fdata[1]; // Imprime: 2025-04-09
     $dia = $fdata[2];
-    $hora_parts = explode(':', $r['hora_inicio']);
+    $hora_parts = explode(':', $r['horario_hora_inicio']);
     $hora =   $hora_parts[0];
 $minutos = $hora_parts[1] ;
+
+#########################
+
+
 //$resultado=$fecha->format('Y-m-d');
 #print_r($resultado);
 
-
 // Imprimir el array de fechas y horas (opcional para verificar)
     // Construir DateTime PHP a partir de fecha + hora
-    $startDt = new DateTime("{$resultado} {$r['hora_inicio']}");
-    $endDt   = new DateTime("{$resultado} {$r['hora_fin']}");
+    $startDt = new DateTime("{$resultado} {$r['horario_hora_inicio']}");
+    $endDt   = new DateTime("{$resultado} {$r['horario_hora_fin']}");
 
     // Detectar evento all-day (00:00 a 23:59)
     $allDay = $startDt->format('H:i') === '00:00' && $endDt->format('H:i') === '23:59';
@@ -516,6 +534,7 @@ $minutos = $hora_parts[1] ;
         $endDt = clone $startDt;
         $endDt->modify('+1 day');
     }
+    
     // Formato ISO‑8601 garantizado
     $startIso = $startDt->format('c'); 
     $endIso   = $endDt->format('c');
@@ -524,10 +543,14 @@ $minutos = $hora_parts[1] ;
 
     $eventos[] = [
         'title'  => $r['nombre_materia'],
+        'grado'  =>  $r['grado'] ,
+        'id_plan'  =>  $r['id_plan'] ,
         'start'  =>  $startIso ,
         'end'    => $endIso,
         'allDay' => 'false',
         'text'   => $r['texto_planeacion'],
+        'className' => 'materia-'.$r['nombre_materia'],
+
     ];
     
     $conta=$conta+1;
@@ -548,12 +571,50 @@ console.log(rawData);
   <?php $contador=0; ?>
   var data = rawData.map(function(e, index) {
     console.log(`Procesando evento ${index + 1}/${rawData.length}`);
+////////
+
+switch (e.title) {
+  case "Educación Física":
+miclase='Educacion_Fisica'; 
+    break;
+  case "matematicas":
+miclase='matematicas'; 
+
+    break;
+  case "Ciencias Sociales":
+miclase='Sociales'; 
+    break;
+  case "Emprendimiento":
+miclase='Emprendimiento'; 
+
+    break;
+  case "Tecnología e informática":
+miclase='tecnologia'; 
+    break;
+    case "Urbanidad":
+miclase='urbanidad'; 
+    break;
+  default:
+    miclase='matematicas';
+   // console.log("Lo lamentamos, por el momento no disponemos de " + miclase + ".");
+}
+
+
+//////
+
+
+
+
     return {
         title: e.title,
+        id_plan: e.id_plan,
         start: new Date(e.start),
+        grado: e.grado,
         end: new Date(e.end),
         allDay: e.allDay,
-        text: e.text
+        text: e.text,
+      className: 'materia-'+miclase,
+
     };
 });
   console.log('Parsed:', data);

@@ -1,4 +1,43 @@
-    .calendar-day {
+.event.materia-Educacion_Fisica {
+  background-image: linear-gradient(to bottom, #4af3ed 0px, #4af3ed 100%);
+  color: #000;
+}
+.event.materia-matematicas {
+  background-image: linear-gradient(to bottom, #85c1e9 0px, #85c1e9 100%);
+  color: #000;
+}
+
+.event.materia-emprendimiento {
+  background-image: linear-gradient(to bottom, #22b1ea 0px, #22b1ea 100%);
+  color: #000;
+}
+
+.event.materia-urbanidad {
+  background-image: linear-gradient(to bottom, #82e0aa 0px, #82e0aa 100%);
+  color: #000;
+}
+
+.event.materia-tecnologia {
+  background-image: linear-gradient(to bottom, #2ecc71 0px, #2ecc71 100%);
+  color: #000;
+}
+
+
+.event.materia-ciencias-naturales {
+  background-color: #98fb98; /* verde claro */
+  color: #000;
+}
+
+.event.materia-sociales {
+  background-color: #add8e6; /* azul claro */
+  color: #000;
+}
+
+.event.materia-ingles {
+  background-color: #ffb6c1; /* rosado claro */
+  color: #000;
+}
+.calendar-day {
   width: 100px;
   min-width: 100px;
   max-width: 100px;
@@ -21,7 +60,7 @@
 .event {
   border-top: 1px solid #b2dba1;
   border-bottom: 1px solid #b2dba1;
-  background-image: linear-gradient(to bottom, #dff0d8 0px, #c8e5bc 100%);
+  /*background-image: linear-gradient(to bottom, #dff0d8 0px, #c8e5bc 100%);*/
   background-repeat: repeat-x;
   color: #3c763d;
   border-width: 1px;
