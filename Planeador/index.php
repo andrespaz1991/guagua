@@ -729,7 +729,11 @@ if(!empty($miorden[0])){
  
   <input type="hidden" name="id_plantilla" value="<?php if(isset($_GET['idplan'])){ echo $_GET['idplan']; } ?>">
   <div class="col-md-12">
-  <div align="center" id="resultado" class="text-bg-warning  p-3">Planeador   
+  <div align="center" id="resultado" class="text-bg-warning  p-4">Planeador 
+    <?php 
+      $datos_materia=$academico->consultar_materia($_GET['asignacion']);
+
+   print_r($datos_materia[0]->nombre_materia); ?>  
   <div id="loadingMessage" style="display: none;">Generando contenido...</div>
   <div id="loadingSpinner" style="display: none;">
     <div class="spinner"></div>

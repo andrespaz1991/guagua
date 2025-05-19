@@ -1,18 +1,17 @@
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="cssjscalendar/jquery.min.js"></script>
 <script
-  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  src="cssjscalendar/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
 
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="cssjscalendar/bootstrap.min.js"></script>
+<script src="cssjscalendar/bootstrap.bundle.min.js"></script>
   
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<link href="cssjscalendar/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <!------ Include the above in your HEAD tag ---------->
 <link href="style.css" rel="stylesheet" >
 
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<link href="cssjscalendar/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 
 
 
@@ -541,6 +540,25 @@ $minutos = $hora_parts[1] ;
     $datainicio="$anio,$mes, $dia, $hora, $minutos";
     $datafin="$anio,$mes, $dia, $hora, $minutos";
 
+$messages = [
+    [
+        "role" => "system",
+        "content" => "You are a assistant."
+    ],
+    [
+        "role" => "user",
+        "content" => "Dime el tema resumen unicamente en una palabra en español nunca en inglés y devuelve unicamente esa palabra de esta clase :".$r['objetivo']
+    ]
+];
+require_once '../ia/index.php';
+if(isset($_get['ia'])){
+$response = call_lm_studio_api($messages);
+}else{
+$response = $r['objetivo'];
+}
+
+#echo $response;
+
     $eventos[] = [
         'title'  => $r['nombre_materia'],
         'grado'  =>  $r['grado'] ,
@@ -548,7 +566,7 @@ $minutos = $hora_parts[1] ;
         'start'  =>  $startIso ,
         'end'    => $endIso,
         'allDay' => 'false',
-        'text'   => $r['texto_planeacion'],
+        'text'   => $response,
         'className' => 'materia-'.$r['nombre_materia'],
 
     ];
