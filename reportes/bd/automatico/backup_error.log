@@ -183,3 +183,4 @@
 2025-05-17 11:00:08 - Error: Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
 2025-05-19 21:15:06 - Error: Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
 2025-05-20 07:00:07 - Error: Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-05-21 07:00:08 - Error: Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect

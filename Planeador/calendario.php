@@ -452,7 +452,7 @@ function fechasQueCaenEnDia($fechaInicio, $fechaFin, $diaBuscado) {
         }
         $fecha->modify('+1 day');
     }
-
+   
     return $fechasCoinciden;
 }
 
@@ -490,7 +490,7 @@ if (!$result) {
 // 2) Construir el array de eventos, generando ISO‑strings
 $eventos = [];
 $conta=0;
-while ($r = $result->fetch_assoc()) {
+while ($r = $result->fetch_assoc() and $r['fecha_iniciop']<>'') {
 #$inicio = '2025-05-12';
 #$fin = '2025-05-16';
 #$dia = $r['dia'];
@@ -514,18 +514,8 @@ $fecha->modify('-1 month');
     $hora_parts = explode(':', $r['horario_hora_inicio']);
     $hora =   $hora_parts[0];
 $minutos = $hora_parts[1] ;
-
-#########################
-
-
-//$resultado=$fecha->format('Y-m-d');
-#print_r($resultado);
-
-// Imprimir el array de fechas y horas (opcional para verificar)
-    // Construir DateTime PHP a partir de fecha + hora
     $startDt = new DateTime("{$resultado} {$r['horario_hora_inicio']}");
     $endDt   = new DateTime("{$resultado} {$r['horario_hora_fin']}");
-
     // Detectar evento all-day (00:00 a 23:59)
     $allDay = $startDt->format('H:i') === '00:00' && $endDt->format('H:i') === '23:59';
     if ($allDay) {
@@ -572,25 +562,17 @@ $response = $r['objetivo'];
     ];
     
     $conta=$conta+1;
+  
 }
-
-
-
-// 3) Inyectar el JSON en JS
 ?>
 <script>
-  // rawData: array de objetos con campos title, start (ISO), end (ISO|null), allDay, text
-
 var rawData = <?php
 echo json_encode($eventos);
   ?>;
 console.log(rawData);
-  // 4) Convertir cadenas ISO a objetos Date
   <?php $contador=0; ?>
   var data = rawData.map(function(e, index) {
     console.log(`Procesando evento ${index + 1}/${rawData.length}`);
-////////
-
 switch (e.title) {
   case "Educación Física":
 miclase='Educacion_Fisica'; 
