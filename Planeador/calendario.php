@@ -1,3 +1,12 @@
+<?php #ob_start();
+#ini_set('display_errors', 1);
+#ini_set('display_startup_errors', 1);
+#error_reporting(E_ALL);
+
+#require_once("../comun/autoload.php");
+#require_once("../comun/conexion.php");
+?>
+
 <script src="cssjscalendar/jquery.min.js"></script>
 <script
   src="cssjscalendar/jquery-3.3.1.min.js"
@@ -64,7 +73,7 @@
               <td>
                 <span class="btn-group btn-group-lg">
                   {{ if (mode !== 'day') { }}
-                    {{ if (mode === 'month') { }}<button class="js-cal-option btn btn-link" data-mode="year">{{: months[month] }}</button>{{ } }}
+                    {{ if (mode === 'month') { }}<a target="_blank" href="planeador.php?mes={{: months[month] }}"><button class="" data-mode="year">{{: months[month] }}</button></a>{{ } }}
                     {{ if (mode ==='week') { }}
                       <button class="btn btn-link disabled">{{: shortMonths[first.getMonth()] }} {{: first.getDate() }} - {{: shortMonths[last.getMonth()] }} {{: last.getDate() }}</button>
                     {{ } }}
@@ -253,7 +262,7 @@ $.extend(Date.prototype, {
           l = y + 5;
       if (haspop) { return true; }
       for (; y < l; y++) {
-        s += '<button type="button" class="btn btn-default btn-lg btn-block js-cal-option" data-date="' + (new Date(y, 1, 1)).toISOString() + '" data-mode="year">'+y + '</button>';
+        s += '<button type="button" href="" class="btn btn-default btn-lg btn-block js-cal-option" data-date="' + (new Date(y, 1, 1)).toISOString() + '" data-mode="year">'+y + '</button>';
       }
       $t.popover({content: s, html: true, placement: 'auto top'}).popover('toggle');
       return false;
@@ -627,3 +636,9 @@ miclase='urbanidad';
     $('#holder').calendar({ data: data });
   });
 </script>
+
+<?php
+#$contenido = ob_get_contents();
+#ob_clean();
+#include ("../comun/plantilla.php");
+?>

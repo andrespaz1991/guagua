@@ -1629,6 +1629,12 @@ if (isset($_POST['accion']) && $_POST['accion'] == "ingresar") {
   if (isset($_GET['id'])) {
       $contenidoLeido = leerContenido($_GET['id']);
   }
+  $_POST['observaciones']=str_replace("'", '', $_POST['observaciones']);
+$_POST['contenido']=str_replace("'", '', $_POST['contenido']);
+  $_POST['observaciones']=str_replace('"', '', $_POST['observaciones']);
+$_POST['contenido']=str_replace('"', '', $_POST['contenido']);
+
+  
     // Consulta para insertar en planeador_vallesol
   $sql = "INSERT INTO `planeador_vallesol` (
       `fecha_inicio`,
@@ -1663,25 +1669,29 @@ if (isset($_POST['accion']) && $_POST['accion'] == "ingresar") {
   )";
 
   // "Limpiar" la consulta para que no contenga comillas (alternativa: escapar usando real_escape_string)
-  $consulta_limpia = str_replace(["'", '"'], "", $sql);
+ 
+
   // Si deseas conservar las comillas pero escaparlas, usa:
   // $consulta_limpia = $mysqli->real_escape_string($sql);
   
   // Construir la consulta para auditoría. 
   // Se encierran entre comillas los campos de texto (por ejemplo, texo_sql y observaciones)
-  $sql_auditoria = "INSERT INTO `auditoria_planeador_vallesol` (`texo_sql`, `materia`, `grado`, `observaciones`) VALUES (
-      '" . $consulta_limpia . "',
-      " . $_POST['asignacion'] . ",
+  $sql_auditoria = "INSERT INTO `auditoria_planeador_vallesol` (`texo_sql`, `materia`, `grado`, `observaciones`) VALUES (";
+  $sql_auditoria.='"'.$sql.'",';
+  $sql_auditoria.=" " . $_POST['asignacion'] . ",
       " . $_POST['grado'] . ",
       '" . $_POST['observaciones'] . "'
   )";
   
-
+#$consulta_limpia_auditoria = str_replace("'", "", $sql_auditoria);
+#$consulta_limpia_auditoria = str_replace("'", "\\", $sql_auditoria);
+#$consulta_limpia_auditoria = $mysqli->real_escape_string($consulta_limpia_auditoria);
   // Ejecutar la consulta de auditoría
   if (!$mysqli->query($sql_auditoria)) {
+    echo $sql_auditoria.'<br>';
       echo "Error en auditoría: " . $mysqli->error;
+      exit();
   }
-  
 
   if($mysqli->query($sql)){
       $sql = urldecode($sql);

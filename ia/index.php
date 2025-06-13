@@ -1,5 +1,45 @@
 <?php
 
+function gemini($apiKey, $prompt) {
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" . urlencode($apiKey);
+
+    $data = [
+        "contents" => [
+            [
+                "parts" => [
+                    [
+                        "text" => $prompt
+                    ]
+                ]
+            ]
+        ]
+    ];
+
+    $jsonData = json_encode($data);
+
+    $ch = curl_init($url);
+
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json'
+    ]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        return 'Curl error: ' . curl_error($ch);
+    }
+
+    curl_close($ch);
+
+    return $response;
+}
+
+// Ejemplo de uso:
+
+
 function call_lm_studio_api($messages, $temperature = 0.7, $max_tokens = -1, $stream = true) {
     // URL de la API de LM Studio
     $url = 'http://localhost:1234/v1/chat/completions';
@@ -49,7 +89,10 @@ function call_lm_studio_api($messages, $temperature = 0.7, $max_tokens = -1, $st
     return $response;
 }
 
-// Ejemplo de uso de la función
-
+// Ejemplo de uso de la función#
+#$prompt = 'Creame un ensayo de una pagina sobre el amor';
+#$api='AIzaSyB1ZbitpmioDkWOPWOlHJ-p_SORmxUYUrM';
+#$response = gemini($api, $prompt);
+#echo $response;
 
 ?>
