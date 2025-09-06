@@ -1,0 +1,16 @@
+2025-08-31 14:30:06 - Error en backup para 'moodle': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 1049: "Unknown database 'moodle'" when selecting the database
+2025-08-31 14:45:03 - Error en backup para 'moodle': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 1049: "Unknown database 'moodle'" when selecting the database
+2025-08-31 18:15:14 - Error en backup para 'moodle': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 15:25:26 - Error en backup para 'moodle': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 15:30:11 - Error en backup para 'moodle': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 16:09:18 - Error en backup para 'moodle': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 16:15:11 - Error en backup para 'moodle': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 16:30:12 - Error en backup para 'moodle': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 16:45:11 - Error en backup para 'moodle': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 17:00:12 - Error en backup para 'moodle': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 17:15:15 - Error en backup para 'moodle': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 17:30:14 - Error en backup para 'moodle': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 17:47:20 - Error en backup para 'moodle': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 18:00:12 - Error en backup para 'moodle': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 18:15:12 - Error en backup para 'moodle': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 21:30:15 - Error en backup para 'moodle': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect

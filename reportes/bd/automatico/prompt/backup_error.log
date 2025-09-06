@@ -1,0 +1,18 @@
+2025-08-31 14:30:06 - Error en backup para 'prompt': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 1049: "Unknown database 'prompt'" when selecting the database
+2025-08-31 14:45:03 - Error en backup para 'prompt': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 1049: "Unknown database 'prompt'" when selecting the database
+2025-08-31 18:15:18 - Error en backup para 'prompt': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-08-31 19:12:34 - Error en backup para 'prompt': Validación fallida: El archivo de backup no contiene sentencias 'CREATE TABLE' o 'INSERT INTO'. Parece estar vacío de datos reales.
+2025-08-31 19:15:16 - Error en backup para 'prompt': Validación fallida: El archivo de backup no contiene sentencias 'CREATE TABLE' o 'INSERT INTO'. Parece estar vacío de datos reales.
+2025-09-02 15:25:30 - Error en backup para 'prompt': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 15:30:15 - Error en backup para 'prompt': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 16:09:22 - Error en backup para 'prompt': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 16:15:15 - Error en backup para 'prompt': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 16:30:16 - Error en backup para 'prompt': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 16:45:15 - Error en backup para 'prompt': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 17:00:16 - Error en backup para 'prompt': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 17:15:19 - Error en backup para 'prompt': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 17:30:18 - Error en backup para 'prompt': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 17:47:24 - Error en backup para 'prompt': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 18:00:16 - Error en backup para 'prompt': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 18:15:16 - Error en backup para 'prompt': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-02 21:30:19 - Error en backup para 'prompt': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect

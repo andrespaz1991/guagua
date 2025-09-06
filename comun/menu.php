@@ -165,6 +165,8 @@ if (isset($_SESSION['barra_busqueda']) and $_SESSION['barra_busqueda'] == "curso
   <li id="menu_iconos"><a href="<?php echo SGA_COMUN_URL ?>/iconos.php">Iconos</a></li>
   <li id="menu_admin"><a href="<?php echo SGA_URL; ?>/usuario/usuario.php?u=admin">Administradores</a></li>
   <li id="menu_docente" ><a href="<?php echo SGA_URL; ?>/usuario/usuario.php?u=docente">Docentes</a></li>
+    <li id="menu_estudiante" ><a href="<?php echo SGA_URL; ?>/usuario/matrimonio.php?u=estudiante">Matrimonio</a></li>
+
   <li id="menu_estudiante" ><a href="<?php echo SGA_URL; ?>/usuario/usuario.php?u=estudiante">Estudiantes</a></li>
   <li id="menu_acudiente" ><a href="<?php echo SGA_URL; ?>/usuario/usuario.php?u=acudiente">Acudientes</a></li>
   <li id="menu_acudiente" ><a href="<?php echo SGA_EVAL_URL; ?>/php/matricula.php">Inscripciones</a></li>

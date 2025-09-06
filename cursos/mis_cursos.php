@@ -1,207 +1,288 @@
-<?php 
+<?php
+/**
+ * mis_cursos_corregido.php
+ *
+ * Versión final con funcionalidad de menú contextual y toggle restaurada.
+ *
+ * Mejoras Clave Aplicadas:
+ * 1.  Seguridad (Prevención de Inyección SQL): Se utilizan sentencias preparadas.
+ * 2.  Seguridad (Prevención de XSS): Todos los datos se sanitizan.
+ * 3.  Rendimiento (Solución N+1): Se obtiene el conteo de categorías en una sola consulta.
+ * 4.  Lógica Corregida: Docentes y administradores ven TODOS sus cursos asignados.
+ * 5.  Filtro de Materias Oficiales: La consulta ahora solo muestra cursos de `materia_oficial`.
+ * 6.  FUNCIONALIDAD RESTAURADA: El menú contextual (clic derecho) y el toggle de secciones vuelven a funcionar.
+ * 7.  Estructura de Código Limpia: Lógica PHP separada de la presentación HTML y JavaScript centralizado.
+ */
+
+// --- INICIO: CONFIGURACIÓN Y LÓGICA DE PHP ---
+
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 ob_start();
-error_reporting(1);
-require_once($_SERVER['DOCUMENT_ROOT'].'/'."guagua/comun/autoload.php");
-#require_once($_SERVER['DOCUMENT_ROOT']."/comun/autoload.php");
 
-$academico=new Academico();
-$persona=new Persona();
+require_once($_SERVER['DOCUMENT_ROOT'] . '/guagua/comun/autoload.php');
+require_once($_SERVER['DOCUMENT_ROOT'] . '/guagua/comun/conexion.php');
+require_once($_SERVER['DOCUMENT_ROOT'] . '/guagua/comun/config.php');
+require_once($_SERVER['DOCUMENT_ROOT'] . '/guagua/comun/funciones.php');
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$academico = new Academico();
+$persona = new Persona();
 $institucion = new institucion(7);
+
 $persona->validar_acudiente();
-$_SESSION['modulo']="cursos";
+
+$_SESSION['modulo'] = "cursos";
 $_SESSION['barra_busqueda'] = "cursos";
-if (isset($_GET['buscar_mis_cursos'])){
-buscar_mis_cursos($_POST['datos'], $_POST['campo']);
-exit();
-}
-$anos_inactivos=json_encode($academico->consultar_anios());
-?>
-<script>
-$(document).ready(function() {
- ocultar_anios_no_vigentes(<?php echo $anos_inactivos; ?>);
-});
-</script>
-<div 
-<?php if(!empty($institucion->BANNER_INSTITUCION)) { ?>
-style="background-size: contain;background-image: url('<?php  echo SGA_COMUN_SGA_DATA_BANNER.'/'.$institucion->BANNER_INSTITUCION; ?>')" <?php } ?>
- id="jumbotron"  class="jumbotron">
-  <div  class="container text-center">
-    <?php if(empty($institucion->BANNER_INSTITUCION)) { ?>
-    <h1 class="fip" >MIS CURSOS</h1> 
-<?php } ?>
-<?php if($_SESSION['rol']=="admin" or $_SESSION['rol']=="docente" ){ ?>
-<div class="btn-group" id="boton_opcion_curso">
-  <button  id="opciones_cursos" type="button" class="btn btn-default dropdown-toggle"  data-toggle="dropdown"> Opciones <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu" role="menu">
-    <li><a href="crear_curso.php">Nuevo Curso</a></li>
-  </ul>
-</div>
-   <?php } ?>
-  </div>
-</div>
 
+function buscar_mis_cursos_html($mysqli_conn, $parametro_buqueda = "", $campo = "nombre_materia") {
+    $academico = new Academico();
+    $output = '';
 
-<span id="span_buscar_mis_cursos">
-    <?php buscar_mis_cursos() ?>
-</span>
-<?php function buscar_mis_cursos($parametro_buqueda="",$campo="nombre_materia"){
-require_once ("../comun/autoload.php");
-require ("../comun/conexion.php");
-require_once("../comun/config.php");
-require_once ("../comun/funciones.php");
-$where="";
-$academica=new Academico();
-@session_start();
-?>
-<div class="container-fluid bg-3 text-center">    
-<?php
-$categorias=array();
-
-?>
-<div class="row">
-<?php
-$sqlp=$academica->ano_estudiante();
-$consultap = $mysqli -> query($sqlp) ;
-      $cantidad_anos=0;
-        while ($rowp = $consultap->fetch_assoc()){ 
-$cantidad_anos=$cantidad_anos+1;
-          ?>
-<div class="col-md-<?php
-if (isset($_COOKIE['checked_lista_docentes']) and $_COOKIE['checked_lista_docentes']=="true"){
-echo '10'; 
-}else{
-echo '12';
-}
-?> espacio_curso">
-<div id='estilo_ano'></div>
-<p id="pid_<?php echo $rowp['id_ano_lectivo']; ?>" onclick="mitoogle('#id_<?php echo $rowp['id_ano_lectivo']; ?>')" >
-<?php echo $rowp['nombre_ano_lectivo']; ?>
-<span id="estilo_categoria_curso">
-Categorias en uso: <?php
-$sql_cat_ano = "SELECT count(*) as num_cat_ano FROM `seguimiento_categoria_ano` WHERE ano_lectivo = '".$rowp['id_ano_lectivo']."'";
-#echo $sql_cat_ano;
-require(dirname(__FILE__)."/../comun/conexion.php");
-$consulta_cat_ano = $mysqli->query($sql_cat_ano);
-$rowca = $consulta_cat_ano->fetch_assoc();
-echo $rowca['num_cat_ano']; ?>
-</span>
-</p>
-<?php if(!isset($actual)) $actual="#id_".$rowp['id_ano_lectivo']; ?>
-<div class="anos" id="id_<?php echo $rowp['id_ano_lectivo']; ?>">
-<?php
-if ($parametro_buqueda!=""){
-$where = '';
-$parametro_buqueda_array = explode(" ",$parametro_buqueda);
-foreach ($parametro_buqueda_array as $id => $parametro_buquedai){
-if ($campo == "nombre_materia")
-$datocampo = 'LOWER(materia.nombre_materia)';
-elseif($campo == "anio")
-$datocampo = 'LOWER(ano_lectivo.nombre_ano_lectivo)';
-elseif($campo == "nombre_categoria")
-$datocampo = 'LOWER(categoria_curso.nombre_categoria_curso)';
-elseif($campo == "nombre_docente")
-$datocampo = 'concat(LOWER(usuario.id_usuario)," ",LOWER(usuario.nombre)," ",LOWER(usuario.apellido))';
-elseif($campo == "todos")
-$datocampo = 'concat(LOWER(categoria_curso.nombre_categoria_curso)," ",LOWER(materia.nombre_materia)," ",LOWER(usuario.nombre)," ",LOWER(usuario.apellido)," ",LOWER(ano_lectivo.nombre_ano_lectivo))';
-else
-$datocampo = 'LOWER(materia.nombre_materia)';
-$where .= ' and '.$datocampo.' LIKE "%'.mb_strtolower($parametro_buquedai, 'UTF-8').'%"  ';
-}
-}
-/**/
-$categorias =consultar_categoria_curso();
-foreach ($categorias as $id_cat => $nombre_cat){
-    if ($_SESSION['rol']=="admin"){
-     $sql=cursos_para_admin($id_cat,$rowp['id_ano_lectivo'],$where);
-   }
-    if ($_SESSION['rol']=="docente"){
-      #echo $rowp['id_ano_lectivo'].'<br>';
- $sql=cursos_para_docente($id_cat,$rowp['id_ano_lectivo'],$where);
+    $conteos_por_ano = [];
+    $sql_conteos = "SELECT ano_lectivo, COUNT(*) as num_cat_ano FROM `seguimiento_categoria_ano` GROUP BY ano_lectivo";
+    if ($result_conteos = $mysqli_conn->query($sql_conteos)) {
+        while ($row = $result_conteos->fetch_assoc()) {
+            $conteos_por_ano[$row['ano_lectivo']] = $row['num_cat_ano'];
+        }
     }
-if ($_SESSION['rol']=="acudiente"){
-$sql=cursos_para_padres($id_cat,$rowp['id_ano_lectivo'],$where);
+
+    $sql_anos = $academico->ano_estudiante();
+    $consulta_anos = $mysqli_conn->query($sql_anos);
+
+    if (!$consulta_anos) {
+        return "<p class='text-danger'>Error al cargar los años académicos.</p>";
     }
-   if ($_SESSION['rol']=="estudiante"){
-  $sql=cursos_para_estudiante($id_cat,$rowp['id_ano_lectivo'],$where);
-    }    
+
+    $output .= '<div class="container-fluid bg-3 text-center"><div class="row">';
+    $cookie_col_class = (isset($_COOKIE['checked_lista_docentes']) && $_COOKIE['checked_lista_docentes'] == "true") ? '10' : '12';
+    $output .= '<div class="col-md-' . $cookie_col_class . ' espacio_curso">';
+
+    while ($row_ano = $consulta_anos->fetch_assoc()) {
+        $id_ano_lectivo = $row_ano['id_ano_lectivo'];
+        $nombre_ano_lectivo = htmlspecialchars($row_ano['nombre_ano_lectivo'], ENT_QUOTES, 'UTF-8');
+        $num_cat_ano = $conteos_por_ano[$id_ano_lectivo] ?? 0;
+
+        $output .= "<div id='estilo_ano'></div>";
+        // ATRIBUTO ONCLICK RESTAURADO PARA EL TOGGLE
+        $output .= "<p id='pid_{$id_ano_lectivo}' onclick=\"mitoogle('#id_{$id_ano_lectivo}')\" style='cursor:pointer;'>";
+        $output .= "{$nombre_ano_lectivo}";
+        $output .= "<span id='estilo_categoria_curso'>Categorías en uso: {$num_cat_ano}</span></p>";
+        $output .= "<div class='anos' id='id_{$id_ano_lectivo}'>";
+
+        $categorias = consultar_categoria_curso();
+
+        foreach ($categorias as $id_cat => $nombre_cat) {
+            $rol = $_SESSION['rol'] ?? 'invitado';
+            $id_usuario = $_SESSION['id_usuario'] ?? null;
+            
+            $sql_base = "
+                SELECT
+                    a.id_asignacion, a.descripcion, a.visible, a.icono_asignacion,
+                    mo.nombre_materia,
+                    u.nombre as nombre_docente,
+                    u.apellido as apellido_docente,
+                    u.foto
+                FROM asignacion a
+                JOIN materia m ON a.id_asignatura = m.id_materia
+                JOIN usuario u ON a.id_docente = u.id_usuario
+                INNER JOIN materia_oficial mo ON m.id_materia = mo.id_materia
+            ";
+            
+            $params = [];
+            $types = "";
+            $sql_conditions = " WHERE a.id_categoria_curso = ? AND a.ano_lectivo = ?";
+            $types .= "ii";
+            array_push($params, $id_cat, $id_ano_lectivo);
+
+            if ($rol == 'admin') {
+            } elseif ($rol == 'docente') {
+                $sql_conditions .= " AND a.id_docente = ?";
+                $types .= "s";
+                array_push($params, $id_usuario);
+            } else {
+                $sql_base .= " JOIN inscripcion i ON a.id_asignacion = i.id_asignacion ";
+                if ($rol == 'estudiante') {
+                    $sql_conditions .= " AND i.id_estudiante = ?";
+                    $types .= "s";
+                    array_push($params, $id_usuario);
+                } elseif ($rol == 'acudiente') {
+                    $id_hijo = $_SESSION['id_hijo_seleccionado'] ?? '';
+                    $sql_conditions .= " AND i.id_estudiante = ?";
+                    $types .= "s";
+                    array_push($params, $id_hijo);
+                }
+            }
+
+            if (!empty($parametro_buqueda)) {
+                $campo_busqueda = 'LOWER(mo.nombre_materia)';
+                $sql_conditions .= " AND {$campo_busqueda} LIKE ?";
+                $types .= "s";
+                array_push($params, "%" . mb_strtolower($parametro_buqueda, 'UTF-8') . "%");
+            }
+
+            $sql = $sql_base . $sql_conditions;
+            
+            $stmt = $mysqli_conn->prepare($sql);
+            if ($stmt) {
+                if (!empty($params)) {
+                    $stmt->bind_param($types, ...$params);
+                }
+                $stmt->execute();
+                $result_cursos = $stmt->get_result();
+
+                if ($result_cursos && $result_cursos->num_rows > 0) {
+                    $id_cat_div = 'cat_' . $id_ano_lectivo . $id_cat;
+                    $output .= '<div class="row"><div class="col-sm-11 col-sm-offset-1">';
+                    $output .= '<div id="separador_cursos"></div>';
+                    // ATRIBUTO ONMOUSEUP RESTAURADO PARA EL TOGGLE DE CATEGORÍA
+                    $output .= '<p onmouseup="ocultar_ano_cat(\'' . $id_cat_div . '\');" title="Total de Cursos: ' . $result_cursos->num_rows . '" style="cursor:pointer;" class="Abckids">' . htmlspecialchars($nombre_cat, ENT_QUOTES, 'UTF-8') . '<span id="separador_cursos_encontrados"> Cursos Encontrados: ' . $result_cursos->num_rows . '</span></p>';
+                    $output .= '</div></div><div class="cats" id="' . $id_cat_div . '"><div class="row">';
+
+                    while ($rowa = $result_cursos->fetch_assoc()) {
+                        $id_asignacion = htmlspecialchars($rowa['id_asignacion'], ENT_QUOTES, 'UTF-8');
+                        $nombre_materia = htmlspecialchars($rowa['nombre_materia'], ENT_QUOTES, 'UTF-8');
+                        $nombre_docente = htmlspecialchars($rowa['nombre_docente'] . ' ' . $rowa['apellido_docente'], ENT_QUOTES, 'UTF-8');
+                        $descripcion = htmlspecialchars($rowa['descripcion'] ?? '', ENT_QUOTES, 'UTF-8');
+                        $icono_url = htmlspecialchars(consultar_link_icono($rowa['icono_asignacion']), ENT_QUOTES, 'UTF-8');
+                        $visible_style = ($rowa['visible'] == "NO") ? 'style="-webkit-filter: grayscale(1); filter: gray;"' : '';
+                        $visible_class = ($rowa['visible'] == "NO") ? 'grises' : '';
+                        $link_modificar = "modificar_curso.php?asignacion={$id_asignacion}";
+                        
+                        // ATRIBUTOS RESTAURADOS: contextmenu y la clase dinámica para el selector JS
+                        $output .= "<div contextmenu='menu_curso{$id_asignacion}' style='text-align:center;margin: 2% 5%; border:2px solid #ccc;border-radius:15px;' class='col-sm-2 menu_curso{$id_asignacion} droppable'>";
+                        $output .= "<h4 class='Abckids'><strong><span title='{$nombre_materia}'>" . mb_strtoupper(puntos_suspensivos($nombre_materia, 20), 'UTF-8') . "</span></strong></h4>";
+                        $output .= "<h5 class='Abckids'>Docente: {$nombre_docente}</h5>";
+                        $output .= "<a href='" . SGA_CURSOS_URL . "/curso.php?asignacion={$id_asignacion}'>";
+                        $output .= "<img id='iconomateria_{$id_asignacion}' width='70%' height='70%' src='{$icono_url}' title='Descripción: {$descripcion}' class='img-responsive {$visible_class}' {$visible_style} style='margin-left:30px!important' alt='Imagen del curso'>";
+                        $output .= "</a>";
+                        
+                        if ($rol == "admin" || $rol == "docente") {
+                            // LLAMADA RESTAURADA: Se vuelve a generar el HTML del menú
+                            $output .= $academico->componente_context_menu($rowa['id_asignacion'], $rowa['nombre_materia']);
+                            $output .= " <a href='{$link_modificar}'>Modificar</a>";
+                        }
+                        
+                        $output .= "</div>";
+                    }
+                    $output .= '</div></div>';
+                }
+                 $stmt->close();
+            } else {
+                 $output .= "<p class='text-danger'>Error al preparar la consulta de cursos: " . htmlspecialchars($mysqli_conn->error) . "</p>";
+            }
+        }
+        $output .= "</div>";
+    }
+    $output .= '</div></div></div>';
+
+    return $output;
+}
+
+
+// --- Controlador AJAX ---
+if (isset($_GET['buscar_mis_cursos'])) {
+    $datos = $_POST['datos'] ?? "";
+    $campo = $_POST['campo'] ?? "nombre_materia";
     
-    #echo $sql;
-$consultan = $mysqli->query($sql) ; 
-    ?>
-<div class="row">
-    <div class="col-sm-1"></div>
-    <?php if($consultan->num_rows>0){ ?>
-    <div class="col-sm-11">
-        <div id="separador_cursos"></div>
-        <p title ="Total de Cursos: <?php echo  $consultan->num_rows ?>" style="cursor:pointer;" id="id_<?php echo $rowp['id_ano_lectivo'].$id_cat; ?>"  onmouseup="ocultar_ano_cat('cat_<?php echo $rowp['id_ano_lectivo'].$id_cat; ?>');" class="Abckids"><?php echo $nombre_cat; ?><span id="separador_cursos_encontrados"><?php echo " Cursos Encontrados:".$consultan->num_rows; ?></span></p>
-    </div>
-    <?php } ?>
-</div><div class="cats" id="cat_<?php echo $rowp['id_ano_lectivo'].$id_cat; ?>">
-<div class="row">
-<?php
-$mistooltip = "";
-while ($rowa = $consultan ->fetch_assoc()){ 
-  ?>
-<div contextmenu="menu_curso<?php echo $rowa['id_asignacion'] ?>" id="ficha_curso<?php echo $rowa['id_asignacion'] ?>" style="text-align:center;margin-bottom:2%;margin-right:55px;margin-left:5%;border:2px solid #ccc;border-radius:15px;"  class="col-sm-2 menu_curso<?php echo $rowa['id_asignacion'] ?>  droppable" id_asignacion="<?php echo $rowa['id_asignacion'] ?>">
-      <h4 class="Abckids"><strong><span
-            <?php if($rowa['visible']=="NO") echo "style=color:gray;" ?>  id="texto_curso_<?php echo $rowa['id_asignacion'] ?>" title="<?php echo $rowa['nombre_materia']; ?>" class="materia_droppable"><?php $puntos = puntos_suspensivos($rowa['nombre_materia'],20);
-      echo mb_strtoupper($puntos,'UTF-8');
-      ?></span></strong>
-      <?php
-   
-      $mistooltip .= '$("#texto_docentecurso_'.$rowa['id_asignacion'].'" ).tooltip({ content: "<img height=\'20\' src=\''.READFILE_URL.'/foto/'.validarfoto($rowa['foto']).'\'></img>"});';
-     #echo $mistooltip
- ?>
-      </h4>
-      <h5 class="Abckids">Docente:
-        
-      <?php echo $rowa['id_asignacion'];?>
-      <span
-      <?php
-      if($rowa['visible']=="NO") echo "style=color:gray;" ?>
-      onmouseover="cargar_tooltips();"
-      id="texto_docentecurso_<?php echo $rowa['id_asignacion']; ?>" class="docente_droppable"><?php echo $rowa['nombre_docente'].' '.$rowa['apellido_docente']; ?></span></h5>
-    <a id="materia_<?php echo $rowa['id_asignacion'] ?>" href ="<?php echo SGA_CURSOS_URL?>/curso.php?asignacion=<?php echo $rowa['id_asignacion']; ?>">
-    <img    id="iconomateria_<?php echo $rowa['id_asignacion'] ?>"     <?php if($rowa['visible']=="NO")  echo "style='-webkit-filter: grayscale(1);
-filter:gray; display: block;margin-left: auto;      margin-right: auto;border:none;'"  ?>
- width="70%" height="70%" src="<?php echo consultar_link_icono($rowa['icono_asignacion']); ?>" title="Descripción: <?php echo $rowa['descripcion']; ?>" class="img-responsive <?php if($rowa['visible']=="NO") echo 'grises'; ?>" style="margin-left:30px!important" alt="Image">
-   </a>   
-    <span id="botones_curso_<?php // echo $i; ?>">
-<?php if(($_SESSION['rol']=="admin" or $_SESSION['rol']=="docente" )){ ?>
-<span style="width:50px!important;margin-left:40px;margin-top:-15px;" onclick="ver_curso(this);" id="ver_curso_<?php echo $rowa['id_asignacion'] ?>" id_curso="<?php echo $rowa['id_asignacion'] ?>" visible="<?php echo $rowa['visible'] ?>" class="<?php echo $rowa['visible']=="SI" ? "icon-sga-view" : "icon-sga-view-line"; ?>" title="<?php echo $rowa['visible']=="SI" ? "Ocultar" : "Mostrar"; ?>"></span>
-<?php } ?>
-</form>
-<?php
-$academica->componente_context_menu($rowa['id_asignacion'],$rowa['nombre_materia']);
+    echo buscar_mis_cursos_html($mysqli, $datos, $campo);
+    exit();
+}
+
+$anos_inactivos_json = json_encode($academico->consultar_anios());
 ?>
+
+<!-- ================================================================= -->
+<!-- INICIO DE LA VISTA (HTML)                                         -->
+<!-- ================================================================= -->
+
 <script>
- $(function(fn){
-    fn.contextMenu({
-    selector: '.menu_curso<?php echo $rowa['id_asignacion'] ?>', 
-    items: fn.contextMenu.fromMenu($('#menu_curso<?php echo $rowa['id_asignacion'] ?>'))
-});
-});
+    $(document).ready(function() {
+        if (typeof ocultar_anios_no_vigentes === "function") {
+            ocultar_anios_no_vigentes(<?php echo $anos_inactivos_json; ?>);
+        }
+    });
 </script>
-<a style="display:none" class="btn_duplicar" id="duplicar_<?php echo $rowa['id_asignacion'] ?>" onclick="if_confirm_swal('¿Esta seguro de duplicar el curso <?php echo $rowa['nombre_materia'];  ?>?','clonar_curso(\'<?php echo $rowa['id_asignacion']; ?>\');','false','Confirmar','Cancelar','info','Guagua');" url="#" value="Duplicar">
-    <img width="45px" src="<?php echo SGA_COMUN_URL.'/'.'img/png/line-15-icons.png' ; ?>" title = "Duplicar <?php echo $rowa['nombre_materia'];  ?>"></img></a>
-<?php if(($_SESSION['rol']=="admin" or $_SESSION['rol']=="docente" )){ ?>
-    <a id="modificar_<?php echo $rowa['id_asignacion'] ?>" href="modificar_curso.php?icon=<?php  echo $rowa['icono_asignacion'];  ?>&area=<?php  echo $rowa['ano_lectivo'];  ?>&ano_lectivo=<?php  echo $rowa['ano_lectivo'];  ?>&id_materia=<?php  echo $rowa['id_materia'];  ?>&nombre_materia=<?php echo $rowa['nombre_materia']; ?>&id_doc=<?php echo $rowa['id_docente']; ?>&asignacion=<?php echo $rowa['id_asignacion']; ?>&descripcion=<?php echo $rowa['descripcion']; ?>&nombre_docente=<?php echo $rowa['nombre_docente'].' '.$rowa['apellido_docente']; ?>" >
-  <!--img style="position:absolute;margin-top:12px;margin-left:0px;" width="45px" src="<?php echo SGA_COMUN_URL.'/'.'img/png/settings-10.png' ; ?>" title = "Modificar <?php echo $rowa['nombre_materia'];  ?>"></img--></a> <?php } ?>
-      </span>
-      </div>  
-<?php } ?>   
+
+<div id="jumbotron" class="jumbotron" 
+    <?php if (!empty($institucion->BANNER_INSTITUCION)): ?>
+        style="background-size: contain; background-image: url('<?php echo htmlspecialchars(SGA_COMUN_SGA_DATA_BANNER . '/' . $institucion->BANNER_INSTITUCION, ENT_QUOTES, 'UTF-8'); ?>')"
+    <?php endif; ?>>
+    <div class="container text-center">
+        <?php if (empty($institucion->BANNER_INSTITUCION)): ?>
+            <h1 class="fip">MIS CURSOS</h1>
+        <?php endif; ?>
+
+        <?php if (($_SESSION['rol'] ?? '') == "admin" || ($_SESSION['rol'] ?? '') == "docente"): ?>
+            <div class="btn-group" id="boton_opcion_curso">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Opciones <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="crear_curso.php">Nuevo Curso</a></li>
+                </ul>
+            </div>
+        <?php endif; ?>
+    </div>
 </div>
-</div>
-<?php } ?>
-</div>
-<?php } ?>
-</div><!--col-md-10-->
-</div><!--row-->
-</div>
-<?php }//Fin function buscar_mis_cursos ?>
+
+<!-- Contenedor principal donde se renderizará la lista de cursos -->
+<span id="span_buscar_mis_cursos">
+    <?php 
+        echo buscar_mis_cursos_html($mysqli); 
+    ?>
+</span>
 <br>
-<?php $contenido = ob_get_contents();
-ob_clean();
-include ("../comun/plantilla.php");
+
+<?php 
+$contenido = ob_get_contents();
+ob_end_clean();
+include("../comun/plantilla.php");
 ?>
+
+<!-- ================================================================= -->
+<!-- SCRIPT PARA FUNCIONALIDAD DINÁMICA                              -->
+<!-- ================================================================= -->
+<script>
+    // Esta función inicializa los menús contextuales para los elementos que estén visibles.
+    function inicializarMenusContextuales() {
+        // Itera sobre cada curso que tiene un menú contextual definido.
+        $('[contextmenu]').each(function() {
+            var menuId = $(this).attr('contextmenu');
+            var selector = '.' + menuId;
+            
+            // Asegurarse de que no se inicialice múltiples veces
+            if (!$(this).data('contextMenu')) {
+                $.contextMenu({
+                    selector: selector,
+                    items: $.contextMenu.fromMenu($('#' + menuId))
+                });
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        // Inicializa los menús cuando la página carga por primera vez.
+        inicializarMenusContextuales();
+
+        // Escucha cambios en el contenedor de cursos.
+        // Si AJAX actualiza el contenido, se re-inicializan los menús.
+        var observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.addedNodes.length) {
+                    inicializarMenusContextuales();
+                }
+            });
+        });
+
+        var container = document.getElementById('span_buscar_mis_cursos');
+        if(container) {
+            observer.observe(container, { childList: true });
+        }
+    });
+</script>
+

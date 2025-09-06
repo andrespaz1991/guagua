@@ -4,3 +4,33 @@
 [26/05/2025 19:26:11] Error: No se pudo crear la base de datos guagua.
 [06/06/2025 19:07:28] Error: No se pudo crear la base de datos guagua.
 [08/06/2025 08:44:02] Error: No se pudo crear la base de datos guagua.
+[07/07/2025 15:32:38] Error: La importación de guagua_20250707_001503.sql falló.
+[08/07/2025 15:58:27] Error: No se pudo crear la base de datos guagua.
+[11/07/2025 19:43:03] ERROR: No se pudo crear la base de datos 'guagua'.
+[02/08/2025 17:26:21] ERROR: No se pudo crear la base de datos 'guagua'.
+[02/08/2025 17:26:40] ERROR: No se pudo renombrar la carpeta 'D:\xampp\mysql\data'. Error: El proceso no puede obtener acceso al archivo porque est� siendo utilizado en otro proceso.
+[17/08/2025 17:22:45] ERROR: No se pudo crear la base de datos 'guagua'.
+[23/08/2025 20:12:17] ERROR: No se pudo crear la base de datos 'guagua'.
+[24/08/2025 19:02:56] Error: La importación de guagua.sql falló.
+[31/08/2025 14:24:55] ERROR: No se pudo crear la base de datos 'guagua'.
+[31/08/2025 14:45:47] No se pudo crear la base de datos 'cronos'.
+[31/08/2025 14:45:47] No se pudo crear la base de datos 'moodle'.
+[31/08/2025 14:45:47] No se pudo crear la base de datos 'prompt'.
+[31/08/2025 14:46:00] No se pudo crear la base de datos 'cronos'.
+[31/08/2025 14:46:00] No se pudo crear la base de datos 'moodle'.
+[31/08/2025 14:46:00] No se pudo crear la base de datos 'prompt'.
+[31/08/2025 14:50:45] La ruta de respaldo 'C:\backups\sistema_cronos\' para la base de datos 'cronos' no existe.
+[31/08/2025 14:50:45] La ruta de respaldo 'D:\respaldos\moodle\' para la base de datos 'moodle' no existe.
+[31/08/2025 14:51:51] La ruta de respaldo 'C:\backups\sistema_cronos\' para la base de datos 'cronos' no existe.
+[31/08/2025 14:51:51] La ruta de respaldo 'D:\respaldos\moodle\' para la base de datos 'moodle' no existe.
+[31/08/2025 14:52:41] La ruta de respaldo 'D:\respaldos\moodle\' para la base de datos 'moodle' no existe.
+[31/08/2025 18:22:43] ERROR: No se pudo crear la base de datos 'guagua'.
+[31/08/2025 18:23:13] No se pudo crear la base de datos 'cronos'.
+[31/08/2025 18:23:16] No se pudo crear la base de datos 'guagua'.
+[31/08/2025 18:23:18] No se pudo crear la base de datos 'moodle'.
+[31/08/2025 18:23:20] No se pudo crear la base de datos 'prompt'.
+[02/09/2025 21:32:13] ERROR: No se pudo crear la base de datos 'guagua'.
+[02/09/2025 21:32:33] No se pudo crear la base de datos 'cronos'.
+[02/09/2025 21:32:35] No se pudo crear la base de datos 'guagua'.
+[02/09/2025 21:32:38] No se pudo crear la base de datos 'moodle'.
+[02/09/2025 21:32:40] No se pudo crear la base de datos 'prompt'.

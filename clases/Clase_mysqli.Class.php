@@ -32,8 +32,8 @@ class Clase_mysqli extends Comun {
     public function conectar() {
         #echo "        conexion_mysqli = new mysqli($this->servidorbd, $this->usuariobd, $this->clavebd, $this->basededatos,'7000');";
        # $conexion_mysqli = new mysqli($this->servidorbd, $this->usuariobd, $this->clavebd, $this->basededatos);
-
-
+@session_start();
+if(!empty($_SESSION['nota'])){
        switch ($_SESSION['nota']) {
         case "no":
             $conexion_mysqli = new mysqli("srv765.hstgr.io", "u417538463_root", "Handres2025..", "u417538463_guagua");
@@ -41,6 +41,10 @@ class Clase_mysqli extends Comun {
         case "si":
         $conexion_mysqli = new mysqli("127.0.0.1", "root", "", "guagua", 7000);
             break;
+}
+    } else{
+                $conexion_mysqli = new mysqli("127.0.0.1", "root", "", "guagua", 7000);
+
     }
       
 
