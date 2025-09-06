@@ -684,69 +684,70 @@ public function seguimiento_actividades($actividad,$inscripcion){
 }
 
 public function mis_cursos_otros() {
-    // Obtener datos del usuario desde la sesión.
-    $rol = $_SESSION['rol'] ?? 'invitado';
-    $id_usuario = $_SESSION['id_usuario'] ?? null;
+        // Obtener datos del usuario desde la sesión.
+        $rol = $_SESSION['rol'] ?? 'invitado';
+        $id_usuario = $_SESSION['id_usuario'] ?? null;
 
-    if (!$id_usuario) {
-        return []; // Si no hay usuario, no se pueden mostrar cursos.
-    }
-    
-    // --- INICIO DE LA CONSULTA CORREGIDA Y AJUSTADA ---
-    // Esta consulta es una fusión de la lógica de `mis_cursos.php` (que funciona)
-    // y el propósito de esta función (mostrar un resumen en el home).
-
-    // 1. La base de la consulta une todas las tablas necesarias, incluyendo `materia_oficial`
-    //    y `ano_lectivo` para poder filtrar.
-    $sql_base = "
-        SELECT
-            a.id_asignacion,
-            a.icono_asignacion,
-            a.descripcion,
-            mo.nombre_materia,
-            cg.nombre_categoria_curso as mid_categoria_curso
-        FROM asignacion a
-        INNER JOIN materia m ON a.id_asignatura = m.id_materia
-        INNER JOIN materia_oficial mo ON m.id_materia = mo.id_materia
-        INNER JOIN ano_lectivo al ON a.ano_lectivo = al.id_ano_lectivo
-        LEFT JOIN categoria_curso cg ON a.id_categoria_curso = cg.id_categoria_curso
-    ";
-
-    // 2. Se añade la condición CRÍTICA de filtrar solo por el año lectivo activo.
-    //    Esto probablemente era la causa de que no se mostrara nada.
-    $sql_conditions = " WHERE al.estado = 'Activo' ";
-
-    // 3. Se construye el resto de condiciones según el ROL, de forma similar a su función
-    //    `listar_estudiantes_asignacion`.
-    //    ADVERTENCIA: Concatenar así las variables es inseguro.
-    if (in_array($rol, ['admin', 'docente'])) {
-        $sql_conditions .= " AND a.id_docente = '" . $id_usuario . "'";
-    } else {
-        $sql_base .= " JOIN inscripcion i ON a.id_asignacion = i.id_asignacion ";
-        if ($rol == 'estudiante') {
-            $sql_conditions .= " AND i.id_estudiante = '" . $id_usuario . "'";
-        } elseif ($rol == 'acudiente') {
-            $id_hijo = $_SESSION['id_hijo_seleccionado'] ?? '';
-            if (empty($id_hijo)) return [];
-            $sql_conditions .= " AND i.id_estudiante = '" . $id_hijo . "'";
-        } else {
-            return [];
+        if (!$id_usuario) {
+            return []; // Si no hay usuario, no se pueden mostrar cursos.
         }
+        
+        // --- INICIO DE LA CONSULTA AJUSTADA ---
+        // Se utiliza la estructura de la consulta que proporcionaste como base.
+        // Se ha simplificado el JOIN, uniendo 'asignacion' directamente con 'materia_oficial'.
+        $sql_base = "
+            SELECT
+                a.id_asignacion,
+                a.icono_asignacion,
+                a.descripcion,
+                mo.nombre_materia,
+                cg.nombre_categoria_curso AS mid_categoria_curso
+            FROM
+                asignacion a
+            INNER JOIN
+                materia_oficial mo ON a.id_asignatura = mo.id_materia
+            INNER JOIN
+                ano_lectivo al ON a.ano_lectivo = al.id_ano_lectivo
+            LEFT JOIN
+                categoria_curso cg ON a.id_categoria_curso = cg.id_categoria_curso
+        ";
+
+        // Se mantiene la lógica PHP para añadir condiciones dinámicas.
+        // 1. Condición CRÍTICA para filtrar solo por el año lectivo activo.
+        $sql_conditions = " WHERE al.estado = 'Activo' ";
+
+        // 2. Se construye el resto de condiciones según el ROL.
+        // ADVERTENCIA: Se recomienda usar sentencias preparadas para evitar inyección SQL.
+        if (in_array($rol, ['admin', 'docente'])) {
+            $sql_conditions .= " AND a.id_docente = '" . $id_usuario . "'";
+        } else {
+            // Para estudiantes y acudientes, es necesario unir con la tabla de inscripciones.
+            $sql_base .= " JOIN inscripcion i ON a.id_asignacion = i.id_asignacion ";
+            if ($rol == 'estudiante') {
+                $sql_conditions .= " AND i.id_estudiante = '" . $id_usuario . "'";
+            } elseif ($rol == 'acudiente') {
+                $id_hijo = $_SESSION['id_hijo_seleccionado'] ?? '';
+                if (empty($id_hijo)) return [];
+                $sql_conditions .= " AND i.id_estudiante = '" . $id_hijo . "'";
+            } else {
+                return []; // Rol no reconocido para esta consulta.
+            }
+        }
+        
+        // 3. Se une toda la consulta, se agrupa y se limita a 5 para la vista "home".
+        $sql = $sql_base . $sql_conditions . " GROUP BY a.id_asignacion ORDER BY a.id_asignacion DESC LIMIT 100";
+
+        // 4. Se llama al método para ejecutar la consulta.
+        $resultado_json = $this->consultar_datos($sql, true);
+        
+        // El método devuelve un JSON, así que lo decodificamos.
+        $datos = json_decode($resultado_json, true);
+
+        // Se añade una verificación por si el JSON está mal formado o vacío.
+        return is_array($datos) ? $datos : [];
     }
-    
-    // 4. Se une toda la consulta, se agrupa y se limita a 5 para la vista "home".
-    $sql = $sql_base . $sql_conditions . " GROUP BY a.id_asignacion ORDER BY a.id_asignacion DESC LIMIT 5";
 
-    // 5. Se llama al método de su clase `consultar_datos` en lugar de usar `$this->db` directamente.
-    //    Esto debería solucionar el error crítico.
-    $resultado_json = $this->consultar_datos($sql, true);
-    
-    // El método devuelve un JSON, así que lo decodificamos como en su otra función.
-    $datos = json_decode($resultado_json, true);
 
-    // Se añade una verificación por si el JSON está mal formado o vacío.
-    return is_array($datos) ? $datos : [];
-}
 public function area(){
 $sql= "SELECT * FROM area;";
 return $datos = json_decode($this->consultar_datos($sql,true),true);

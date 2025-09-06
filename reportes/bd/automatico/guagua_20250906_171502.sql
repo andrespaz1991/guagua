@@ -474,6 +474,33 @@ INSERT INTO `docente` VALUES (1085290375,'Andres','Paz','abc','apaz','','');
 UNLOCK TABLES;
 
 --
+-- Table structure for table `educational_apps`
+--
+
+DROP TABLE IF EXISTS `educational_apps`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `educational_apps` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `icon` varchar(10) NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `display_order` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `educational_apps`
+--
+
+LOCK TABLES `educational_apps` WRITE;
+/*!40000 ALTER TABLE `educational_apps` DISABLE KEYS */;
+INSERT INTO `educational_apps` VALUES (1,'Ruleta','🔡','Ruleta/index.html',0),(2,'generación de cursos','','../generacion_cursos/',1);
+/*!40000 ALTER TABLE `educational_apps` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `edunotas`
 --
 
@@ -1585,4 +1612,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-09-06 14:30:04
+-- Dump completed on 2025-09-06 17:15:04
