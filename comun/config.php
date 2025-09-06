@@ -47,6 +47,7 @@ define ("SGA_COMUN_SOLOSGA_DATA","//".$url."/sga-data/foto");
 define ("SGA_COMUN_SGA_DATA_BANNER","//".$url."/comun/sga-data/foto");
 define ("SGA_COMUN_IMAGES_URL","//".$url."/comun/img");
 define ("SGA_CURSOS_URL","//".$url."/cursos");
+define ("SGA_APPS_URL","//".$url."/apps");
 define ("SGA_PLANEADOR_URL","//".$url."/Planeador");
 define ("SGA_CONTROL_URL","//".$url."/control_ingreso");
 define ("SGA_SEGUIMIENTO_URL","//".$url."/seguimiento");

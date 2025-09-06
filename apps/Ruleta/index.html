@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta Educativa Avanzada</title>
+    <script src="taiwland.css"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="google.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f8fc;
+            background-image: radial-gradient(circle at top left, #e0f2fe 0%, #f7f8fc 30%);
+        }
+        canvas {
+            transform: rotate(0deg);
+            transition: transform 6s cubic-bezier(0.2, 0.8, 0.2, 1); /* Transición más suave */
+        }
+        .pointer {
+            clip-path: polygon(50% 100%, 10% 0, 90% 0); /* Forma de flecha más estilizada */
+            filter: drop-shadow(0 4px 3px rgba(0,0,0,0.2));
+        }
+        .modal-enter {
+            opacity: 0;
+            transform: scale(0.95) translateY(10px);
+        }
+        .modal-enter-active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* Estilos para el interruptor (toggle) personalizado */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #22c55e; /* green-500 */
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #22c55e; /* green-500 */
+        }
+    </style>
+</head>
+<body class="text-gray-800 flex flex-col items-center justify-center min-h-screen p-4 antialiased">
+
+    <div id="setup-screen" class="w-full max-w-4xl text-center">
+        <div class="bg-white/70 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-lg ring-1 ring-gray-200">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-2 text-green-700">Ruleta Educativa 🎯</h1>
+            <p class="text-gray-500 mb-8">Configura la sesión para comenzar a jugar.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 md:gap-8">
+                <div class="text-left mb-8 md:mb-0">
+                    <label for="participants-input" class="block text-lg font-medium mb-2 text-gray-700">Participantes</label>
+                    <p class="text-sm text-gray-500 mb-3">Escribe un nombre por línea o sube un archivo CSV.</p>
+                    <textarea id="participants-input" rows="8" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:outline-none transition-shadow" placeholder="Ana Torres&#10;Carlos Soto&#10;Luisa Pardo..."></textarea>
+                    <label for="csv-upload-participants" class="mt-4 w-full flex items-center justify-center bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-lg cursor-pointer transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                        Subir Participantes (CSV)
+                    </label>
+                    <input type="file" id="csv-upload-participants" class="hidden" accept=".csv,.txt">
+                    <p id="file-name-participants" class="text-sm text-gray-500 mt-2 h-5"></p>
+                </div>
+
+                <div class="text-left">
+                    <label for="questions-input" class="block text-lg font-medium mb-2 text-gray-700">Preguntas</label>
+                    <p class="text-sm text-gray-500 mb-3">Una pregunta por línea. Déjalo en blanco para usar las preguntas por defecto.</p>
+                    <textarea id="questions-input" rows="8" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-orange-500 focus:outline-none transition-shadow" placeholder="¿Cuál es la capital de Colombia?&#10;Describe el proceso de fotosíntesis..."></textarea>
+                    <label for="csv-upload-questions" class="mt-4 w-full flex items-center justify-center bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-lg cursor-pointer transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                        Subir Preguntas (CSV)
+                    </label>
+                    <input type="file" id="csv-upload-questions" class="hidden" accept=".csv,.txt">
+                    <p id="file-name-questions" class="text-sm text-gray-500 mt-2 h-5"></p>
+                </div>
+            </div>
+
+            <div class="mt-8 border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-medium text-gray-700 mb-4">Opciones de Juego</h3>
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-gray-600">Eliminar participante al ser seleccionado</span>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggle-participant" id="remove-participant-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                            <label for="remove-participant-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span class="text-gray-600">Eliminar pregunta al ser usada</span>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggle-question" id="remove-question-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                            <label for="remove-question-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="start-button" class="mt-8 w-full max-w-md mx-auto bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg text-lg transition-all transform hover:scale-105 shadow-lg shadow-green-500/30">
+                Comenzar a Jugar
+            </button>
+        </div>
+    </div>
+
+    <div id="game-screen" class="hidden w-full max-w-5xl text-center">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-3xl sm:text-4xl font-bold text-green-700">Ruleta de Participantes</h1>
+             <button id="reset-config-button" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors text-sm">
+                Configurar de Nuevo
+            </button>
+        </div>
+        
+        <div id="participant-counter" class="mb-4">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-600">Participantes Restantes: <span id="remaining-count" class="font-bold text-green-700"></span></h2>
+        </div>
+        <div class="relative w-80 h-80 sm:w-96 sm:h-96 mx-auto mb-16">
+            <canvas id="participants-canvas" width="500" height="500" class="rounded-full shadow-2xl"></canvas>
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-10 h-10 bg-green-600 pointer border-4 border-white rounded-b-full"></div>
+        </div>
+        <button id="spin-participants-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-12 rounded-full text-xl transition-all transform hover:scale-105 shadow-lg shadow-green-500/30">
+            GIRAR
+        </button>
+    </div>
+
+    <div id="winner-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div id="modal-content" class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 w-full max-w-2xl text-center ring-1 ring-gray-200 modal-enter max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-700">El participante seleccionado es:</h2>
+            <p id="winner-name" class="text-3xl sm:text-5xl font-extrabold my-4 text-green-600"></p>
+            <hr class="border-gray-200 my-6">
+            <h3 class="text-2xl font-bold text-gray-700 mb-4">¡Es hora de la pregunta!</h3>
+            
+            <button id="spin-questions-button" class="my-6 bg-orange-400 hover:bg-orange-500 text-white font-bold py-3 px-8 rounded-full text-lg transition-all transform hover:scale-105 shadow-lg shadow-orange-500/30">
+                GIRAR PREGUNTA
+            </button>
+
+            <div class="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto">
+                <canvas id="questions-canvas" width="500" height="500" class="rounded-full shadow-2xl"></canvas>
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-8 h-8 bg-orange-400 pointer border-4 border-white rounded-b-full"></div>
+            </div>
+
+            <div id="question-display" class="hidden mt-6 bg-gray-50 p-4 rounded-lg ring-1 ring-gray-200">
+                <h4 class="text-lg font-semibold text-gray-500">La pregunta es:</h4>
+                <p id="selected-question" class="text-xl sm:text-2xl font-medium text-orange-600"></p>
+            </div>
+            
+            <button id="next-participant-button" class="hidden mt-8 w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg text-lg transition-colors">
+                Siguiente Participante
+            </button>
+        </div>
+    </div>
+    
+    <div id="game-over-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md text-center ring-1 ring-gray-200">
+             <h2 class="text-3xl font-bold text-green-700 mb-4">¡Juego Terminado!</h2>
+             <p class="text-gray-600 mb-6">Todos los participantes han sido seleccionados. ¿Quieres jugar de nuevo?</p>
+             <button id="play-again-button" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg text-lg transition-colors">
+                 Jugar de Nuevo
+             </button>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Referencias a Elementos del DOM ---
+    const setupScreen = document.getElementById('setup-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const startButton = document.getElementById('start-button');
+    const participantsInput = document.getElementById('participants-input');
+    const questionsInput = document.getElementById('questions-input');
+    const participantsCanvas = document.getElementById('participants-canvas');
+    const questionsCanvas = document.getElementById('questions-canvas');
+    const spinParticipantsButton = document.getElementById('spin-participants-button');
+    const spinQuestionsButton = document.getElementById('spin-questions-button');
+    const winnerModal = document.getElementById('winner-modal');
+    const modalContent = document.getElementById('modal-content');
+    const winnerName = document.getElementById('winner-name');
+    const questionDisplay = document.getElementById('question-display');
+    const selectedQuestion = document.getElementById('selected-question');
+    const nextParticipantButton = document.getElementById('next-participant-button');
+    const remainingCountSpan = document.getElementById('remaining-count');
+    const resetConfigButton = document.getElementById('reset-config-button');
+    const gameOverModal = document.getElementById('game-over-modal');
+    const playAgainButton = document.getElementById('play-again-button');
+    const removeParticipantToggle = document.getElementById('remove-participant-toggle');
+    const removeQuestionToggle = document.getElementById('remove-question-toggle');
+    const csvUploadParticipants = document.getElementById('csv-upload-participants');
+    const fileNameParticipants = document.getElementById('file-name-participants');
+    const csvUploadQuestions = document.getElementById('csv-upload-questions');
+    const fileNameQuestions = document.getElementById('file-name-questions');
+
+    // --- Estado del Juego ---
+    let participants = [];
+    let questions = [];
+    let availableParticipants = [];
+    // availableQuestions ahora almacenará objetos { text, originalNumber }
+    let availableQuestions = []; 
+    let participantColors = [];
+    let questionColors = [];
+    
+    const defaultQuestions = [
+        "¿Cuál es la capital de Francia?",
+        "¿Quién escribió 'Cien años de soledad'?",
+        "¿Cuál es el río más largo del mundo?",
+        "Describe el proceso de la fotosíntesis.",
+        "¿En qué año llegó el hombre a la luna?",
+        "¿Qué es la teoría de la relatividad?",
+        "Nombra tres obras de William Shakespeare.",
+        "¿Cuál es el océano más grande?",
+    ];
+
+    // --- Funciones ---
+
+    /**
+     * Dibuja una ruleta en el canvas especificado.
+     * @param {HTMLCanvasElement} canvas - El elemento canvas donde dibujar.
+     * @param {string[]} items - La lista de elementos a mostrar en la ruleta.
+     * @param {string[]} colors - La lista de colores para los segmentos.
+     */
+    const drawRoulette = (canvas, items, colors) => {
+        const ctx = canvas.getContext('2d');
+        const numSegments = items.length;
+        if (numSegments === 0) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            return;
+        }
+        const anglePerSegment = 2 * Math.PI / numSegments;
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = canvas.width / 2 - 10;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.font = '16px Poppins, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        items.forEach((item, i) => {
+            const startAngle = i * anglePerSegment;
+            const endAngle = (i + 1) * anglePerSegment;
+
+            // Dibuja el segmento
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+            ctx.closePath();
+            ctx.fillStyle = colors[i % colors.length];
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Dibuja el texto
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(startAngle + anglePerSegment / 2);
+            ctx.fillStyle = '#fff';
+            
+            // Trunca el texto si es muy largo
+            const maxTextWidth = radius * 0.8;
+            let textToDraw = item;
+            if (ctx.measureText(textToDraw).width > maxTextWidth) {
+                while(ctx.measureText(textToDraw + '...').width > maxTextWidth && textToDraw.length > 0) {
+                    textToDraw = textToDraw.slice(0, -1);
+                }
+                textToDraw += '...';
+            }
+            
+            ctx.fillText(textToDraw, radius * 0.6, 0);
+            ctx.restore();
+        });
+    };
+    
+    /**
+     * Genera un array de colores pastel aleatorios.
+     * @param {number} count - El número de colores a generar.
+     * @returns {string[]} Un array de colores en formato HSL.
+     */
+    const generateColors = (count) => {
+        const colors = [];
+        const hueStep = 360 / count;
+        for (let i = 0; i < count; i++) {
+            const hue = i * hueStep;
+            colors.push(`hsl(${hue}, 70%, 60%)`);
+        }
+        return colors;
+    };
+
+    /**
+     * Inicia el juego, configurando las listas y cambiando de pantalla.
+     */
+    const startGame = () => {
+        participants = participantsInput.value.split('\n').map(p => p.trim()).filter(p => p);
+        questions = questionsInput.value.split('\n').map(q => q.trim()).filter(q => q);
+
+        if (participants.length < 2) {
+            console.error("Se necesitan al menos 2 participantes.");
+            participantsInput.focus();
+            participantsInput.classList.add('border-red-500', 'ring-red-500');
+            return;
+        }
+         participantsInput.classList.remove('border-red-500', 'ring-red-500');
+
+
+        if (questions.length === 0) {
+            questions = [...defaultQuestions];
+        }
+
+        availableParticipants = [...participants];
+        // Convertimos las preguntas en objetos para mantener su número original.
+        availableQuestions = questions.map((text, index) => ({ text, originalNumber: index + 1 }));
+        
+        participantColors = generateColors(availableParticipants.length);
+
+        drawRoulette(participantsCanvas, availableParticipants, participantColors);
+        updateParticipantCounter();
+
+        setupScreen.classList.add('hidden');
+        gameScreen.classList.remove('hidden');
+    };
+
+    /**
+     * Gira la ruleta y determina el ganador.
+     * @param {HTMLCanvasElement} canvas - El canvas de la ruleta a girar.
+     * @param {string[]} items - La lista de items en la ruleta.
+     * @param {function} onSpinEnd - Callback que se ejecuta al final del giro.
+     */
+   const spinRoulette = (canvas, items, onSpinEnd) => {
+    if (items.length === 0) return;
+
+    const numSegments = items.length;
+    const degreesPerSegment = 360 / numSegments;
+    const randomStopAngle = Math.random() * 360;
+    const fullSpins = 5 * 360; // 5 giros completos
+    const finalAngle = fullSpins + randomStopAngle;
+
+    canvas.style.transition = 'none';
+    canvas.style.transform = `rotate(0deg)`;
+    void canvas.offsetWidth; 
+
+    canvas.style.transition = 'transform 6s cubic-bezier(0.2, 0.8, 0.2, 1)';
+    canvas.style.transform = `rotate(${finalAngle}deg)`;
+
+    setTimeout(() => {
+        const currentRotation = finalAngle % 360;
+
+        // 👇 Ajuste por la flecha en la parte superior
+        let adjustedRotation = (currentRotation + 90) % 360; 
+        const winningSegmentIndex = Math.floor(adjustedRotation / degreesPerSegment) % numSegments;
+
+        const winner = items[winningSegmentIndex];
+        onSpinEnd(winner, winningSegmentIndex);
+    }, 6100); 
+};
+    const updateParticipantCounter = () => {
+        remainingCountSpan.textContent = availableParticipants.length;
+    };
+
+    const showWinner = (winner, winnerIndex) => {
+        winnerName.textContent = winner;
+        
+        questionColors = generateColors(availableQuestions.length);
+        // Usamos el `originalNumber` para las etiquetas de la ruleta de preguntas.
+  const questionLabels = availableQuestions.map((q, i) => `Pregunta ${i + 1}`);
+drawRoulette(questionsCanvas, questionLabels, questionColors);
+        
+        winnerModal.classList.remove('hidden');
+        setTimeout(() => modalContent.classList.add('modal-enter-active'), 10);
+        
+        if (removeParticipantToggle.checked) {
+            availableParticipants.splice(winnerIndex, 1);
+            participantColors = generateColors(availableParticipants.length);
+            drawRoulette(participantsCanvas, availableParticipants, participantColors);
+        }
+        updateParticipantCounter();
+    };
+    
+    /**
+     * Muestra la pregunta seleccionada y la elimina de la lista si la opción está activada.
+     * @param {object} selectedQuestionObject - El objeto de la pregunta seleccionada {text, originalNumber}.
+     */
+    const showQuestion = (selectedQuestionObject) => {
+    selectedQuestion.textContent = selectedQuestionObject.text;
+    questionDisplay.classList.remove('hidden');
+    spinQuestionsButton.classList.add('hidden');
+    nextParticipantButton.classList.remove('hidden');
+
+    if (removeQuestionToggle.checked) {
+        // Re-asigna el array global a un nuevo array filtrado, excluyendo la pregunta seleccionada.
+        availableQuestions = availableQuestions.filter(q => q.originalNumber !== selectedQuestionObject.originalNumber);
+
+        // Redibujar la ruleta sin la pregunta eliminada
+        questionColors = generateColors(availableQuestions.length);
+        const questionLabels = availableQuestions.map(q => `Pregunta ${q.originalNumber}`);
+        drawRoulette(questionsCanvas, questionLabels, questionColors);
+    }
+};
+
+    const resetForNextTurn = () => {
+        winnerModal.classList.add('hidden');
+        modalContent.classList.remove('modal-enter-active');
+        questionDisplay.classList.add('hidden');
+        spinQuestionsButton.classList.remove('hidden');
+        nextParticipantButton.classList.add('hidden');
+        spinParticipantsButton.disabled = false;
+        
+        if (availableParticipants.length === 0) {
+            gameOverModal.classList.remove('hidden');
+        }
+    };
+    
+    const resetGame = () => {
+        gameScreen.classList.add('hidden');
+        winnerModal.classList.add('hidden');
+        gameOverModal.classList.add('hidden');
+        setupScreen.classList.remove('hidden');
+        
+        participants = [];
+        questions = [];
+        availableParticipants = [];
+        availableQuestions = [];
+        participantsInput.value = '';
+        questionsInput.value = '';
+        fileNameParticipants.textContent = '';
+        fileNameQuestions.textContent = '';
+    };
+
+    const handleFileUpload = (event, textarea, fileNameElement) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        fileNameElement.textContent = file.name;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const text = e.target.result;
+            const items = text.split(/[\n,]/).map(item => item.trim()).filter(Boolean);
+            textarea.value = items.join('\n');
+        };
+        reader.readAsText(file);
+    };
+
+    // --- Event Listeners ---
+    startButton.addEventListener('click', startGame);
+
+    spinParticipantsButton.addEventListener('click', () => {
+        spinParticipantsButton.disabled = true;
+        spinRoulette(participantsCanvas, availableParticipants, showWinner);
+    });
+    
+    spinQuestionsButton.addEventListener('click', () => {
+        spinQuestionsButton.disabled = true;
+        const questionLabels = availableQuestions.map(q => `Pregunta ${q.originalNumber}`);
+        
+    spinRoulette(questionsCanvas, questionLabels, (_, winningIndex) => {
+    const selectedObject = availableQuestions[winningIndex];
+    showQuestion(selectedObject);
+});
+    });
+    
+    nextParticipantButton.addEventListener('click', resetForNextTurn);
+    resetConfigButton.addEventListener('click', resetGame);
+    playAgainButton.addEventListener('click', resetGame);
+
+    csvUploadParticipants.addEventListener('change', (e) => handleFileUpload(e, participantsInput, fileNameParticipants));
+    csvUploadQuestions.addEventListener('change', (e) => handleFileUpload(e, questionsInput, fileNameQuestions));
+});
+</script>
+</body>
+</html>

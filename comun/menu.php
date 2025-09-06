@@ -60,7 +60,7 @@ $array_roles = array("admin"=>"Administrador","docente"=>"Docente","estudiante"=
 <li><a href="<?php echo SGA_URL ?>/Planeador/calendario.php"><span data-text="PLAN" class="icon-sga-archive-1"></span></a></li>
 <?php } ?>
 <li><a href="<?php echo SGA_REPORTES_URL ?>/informe_docente.php"><span data-text="Datos" class="icon-sga-time"></span></a></li>
-<li><a href="<?php echo SGA_SEGUIMIENTO_URL ?>/"><span data-text="APPS" class="icon-sga-smartphone-7"></span></a></li>
+<li><a href="<?php echo SGA_APPS_URL ?>/"><span data-text="APPS" class="icon-sga-smartphone-7"></span></a></li>
 <?php
 #print_r($institucion);
 } ?>

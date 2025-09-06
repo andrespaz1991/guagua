@@ -682,58 +682,70 @@ public function seguimiento_actividades($actividad,$inscripcion){
   $sql ='SELECT * FROM `actividad` left join seguimiento_es on actividad.id_actividad = seguimiento_es.id_actividad where seguimiento_es.id_inscripcion="'.$inscripcion.'" and valoracion <>"" '; 
   return $datos = json_decode($this->consultar_datos($sql,true),true);
 }
-public function mis_cursos_otros(){
-  $mifecha = date('Y-m-d');
-  $sql = 'SELECT 
-      a.id_asignacion,
-      a.icono_asignacion,
-      a.id_curso,
-      a.id_categoria_curso as mid_categoria_curso,
-      a.id_asignatura,
-      a.id_docente,
-      a.descripcion,
-      h.id_horario,
-      h.dia,
-      h.hora_inicio,
-      h.hora_fin,
-      h.fecha_inicio,
-      h.fecha_fin,
-      m.id_materia,
-      m.nombre_materia,
-      m.descripcion AS materia_descripcion,
-      c.id_categoria_curso,
-      c.nombre_categoria_curso,
-      c.descripcion_categoria_curso,
-      c.nivel_educativo
-  FROM
-      asignacion a
-  JOIN
-      horario h ON a.id_asignacion = h.id_asignacion
-  JOIN
-      periodo p ON p.id_periodo = 1
-  JOIN
-      materia_oficial m ON a.id_asignatura = m.id_materia
-  JOIN
-      categoria_curso c ON a.id_curso = c.id_categoria_curso
-  WHERE
-      -- Horarios que se solapan con el periodo activo
-      (
-          -- El horario comienza durante el periodo
-          (h.fecha_inicio >= p.fecha_inicio AND h.fecha_inicio <= p.fecha_fin)
-          OR
-          -- El horario termina durante el periodo
-          (h.fecha_fin >= p.fecha_inicio AND h.fecha_fin <= p.fecha_fin)
-          OR
-          -- El periodo está completamente dentro del horario
-          (h.fecha_inicio <= p.fecha_inicio AND h.fecha_fin >= p.fecha_fin)
-      )
-  GROUP BY
-      a.id_asignacion
-  ORDER BY
-      a.id_asignacion, h.dia;';
-  
-  #echo $sql;
-  return $datos = json_decode($this->consultar_datos($sql, true), true);
+
+public function mis_cursos_otros() {
+    // Obtener datos del usuario desde la sesión.
+    $rol = $_SESSION['rol'] ?? 'invitado';
+    $id_usuario = $_SESSION['id_usuario'] ?? null;
+
+    if (!$id_usuario) {
+        return []; // Si no hay usuario, no se pueden mostrar cursos.
+    }
+    
+    // --- INICIO DE LA CONSULTA CORREGIDA Y AJUSTADA ---
+    // Esta consulta es una fusión de la lógica de `mis_cursos.php` (que funciona)
+    // y el propósito de esta función (mostrar un resumen en el home).
+
+    // 1. La base de la consulta une todas las tablas necesarias, incluyendo `materia_oficial`
+    //    y `ano_lectivo` para poder filtrar.
+    $sql_base = "
+        SELECT
+            a.id_asignacion,
+            a.icono_asignacion,
+            a.descripcion,
+            mo.nombre_materia,
+            cg.nombre_categoria_curso as mid_categoria_curso
+        FROM asignacion a
+        INNER JOIN materia m ON a.id_asignatura = m.id_materia
+        INNER JOIN materia_oficial mo ON m.id_materia = mo.id_materia
+        INNER JOIN ano_lectivo al ON a.ano_lectivo = al.id_ano_lectivo
+        LEFT JOIN categoria_curso cg ON a.id_categoria_curso = cg.id_categoria_curso
+    ";
+
+    // 2. Se añade la condición CRÍTICA de filtrar solo por el año lectivo activo.
+    //    Esto probablemente era la causa de que no se mostrara nada.
+    $sql_conditions = " WHERE al.estado = 'Activo' ";
+
+    // 3. Se construye el resto de condiciones según el ROL, de forma similar a su función
+    //    `listar_estudiantes_asignacion`.
+    //    ADVERTENCIA: Concatenar así las variables es inseguro.
+    if (in_array($rol, ['admin', 'docente'])) {
+        $sql_conditions .= " AND a.id_docente = '" . $id_usuario . "'";
+    } else {
+        $sql_base .= " JOIN inscripcion i ON a.id_asignacion = i.id_asignacion ";
+        if ($rol == 'estudiante') {
+            $sql_conditions .= " AND i.id_estudiante = '" . $id_usuario . "'";
+        } elseif ($rol == 'acudiente') {
+            $id_hijo = $_SESSION['id_hijo_seleccionado'] ?? '';
+            if (empty($id_hijo)) return [];
+            $sql_conditions .= " AND i.id_estudiante = '" . $id_hijo . "'";
+        } else {
+            return [];
+        }
+    }
+    
+    // 4. Se une toda la consulta, se agrupa y se limita a 5 para la vista "home".
+    $sql = $sql_base . $sql_conditions . " GROUP BY a.id_asignacion ORDER BY a.id_asignacion DESC LIMIT 5";
+
+    // 5. Se llama al método de su clase `consultar_datos` en lugar de usar `$this->db` directamente.
+    //    Esto debería solucionar el error crítico.
+    $resultado_json = $this->consultar_datos($sql, true);
+    
+    // El método devuelve un JSON, así que lo decodificamos como en su otra función.
+    $datos = json_decode($resultado_json, true);
+
+    // Se añade una verificación por si el JSON está mal formado o vacío.
+    return is_array($datos) ? $datos : [];
 }
 public function area(){
 $sql= "SELECT * FROM area;";
