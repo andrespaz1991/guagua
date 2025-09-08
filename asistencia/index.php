@@ -4,7 +4,7 @@ require_once("../comun/autoload.php");
 require_once('../clases/Academico.Class.php');
 require_once('../clases/Persona.Class.php');
 date_default_timezone_set('America/Bogota');
-require_once __DIR__ . "/config.php";
+require_once "../comun/config.php";
 
 // --- DETALLES DE CONEXIÓN A LA BASE DE DATOS ---
 
