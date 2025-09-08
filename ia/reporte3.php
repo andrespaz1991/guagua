@@ -9,12 +9,19 @@ actualizar_Asistencia_Vallesol('C:\Users\Andres\OneDrive - UNIVERSIDAD DE SANTAN
 function obtenerObservacionesPorEstudiante($documento){
     require '../comun/conexion.php'; // Conexión a la base de datos
     // Consulta SQL
-    $sql =' select * from seguimiento innner join inscripcion on 
-    seguimiento.id_inscripcion=inscripcion.id_inscripcion inner join usuario on 
-    inscripcion.id_usuario = usuario.id_usuario
+    $sql =" SELECT *
+FROM periodo
+WHERE fecha_inicio IS NOT NULL AND fecha_inicio != '0000-00-00'
+ORDER BY
+    CASE
+        WHEN CURDATE() BETWEEN fecha_inicio AND fecha_fin THEN 1
+        ELSE 2
+    END ASC,
+    fecha_fin DESC
+LIMIT 1;
 
     
-    ';
+    ";
 
 }
 
@@ -23,6 +30,7 @@ function obtenerAsistenciasPorEstudiante($documento) {
     // Consulta SQL
     $academico=new Academico();
     $fechas_periodo=$academico->periodo_academico();
+    #print_r($fechas_periodo);
     $fecha_inicio=Fecha::formato_fecha_corta($fechas_periodo[0]['fecha_inicio']);
     $fecha_fin=Fecha::formato_fecha_corta($fechas_periodo[0]['fecha_fin']);
     $sql = "

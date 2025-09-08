@@ -1,393 +1,336 @@
 <?php
-
-ob_start();
-
-
-session_start();
-
-// Desactivar toda notificación de error
-error_reporting(0);
+// Muestra todos los errores de PHP. Útil para depuración.
+ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-unset($_SESSION['barra_busqueda']);
+// --- CONFIGURACIÓN DE LA BASE DE DATOS ---
+$servername = "localhost:7000";
+$username = "root";
+$password = "";
+$dbname = "guagua";
 
-require_once("../comun/config.php");
-require_once("../comun/funciones.php");
-require("../comun/conexion.php");
+// --- LÓGICA DE API ASINCRÓNICA (Responde con JSON) ---
+if (isset($_GET['action']) && $_GET['action'] === 'search_students') {
+    header('Content-Type: application/json; charset=utf-8');
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    if ($conn->connect_error) {
+        // Enviar error en JSON y salir
+        echo json_encode(['error' => 'Error de Conexión: ' . $conn->connect_error]);
+        exit();
+    }
+    $conn->set_charset("utf8mb4");
 
-setcookie('miruta', $_SERVER["QUERY_STRING"]);
-
-if (isset($_GET['asignacion'])) {
-    setcookie('asignacion', $_GET['asignacion']);
-}
-
-?>
-
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-
-<script type="text/javascript">
-    $(function() {
-        $('#lista_docentes').mitoogle();
-    });
-</script>
-
-<?php
-
-if (isset($_GET['asignacion'])) {
-    $_GET['asignacion'] = mysqli_real_escape_string($mysqli, $_GET['asignacion']);
-
-    $SqlAsignacion = 'SELECT * FROM categoria_curso, asignacion, materia, usuario WHERE ' .
-                     'asignacion.id_categoria_curso=categoria_curso.id_categoria_curso AND ' .
-                     'asignacion.id_docente = usuario.id_usuario AND ' .
-                     'asignacion.id_asignatura = materia.id_materia AND';
-
-    if (!isset($_GET['categoria'])) {
-        $SqlAsignacion .= ' asignacion.id_asignacion="'.$_GET['asignacion'].'"';
-    } else {
-        $SqlAsignacion .= ' categoria_curso.id_categoria_curso="'.$_GET['categoria'].'"';
+    $id_asignacion = isset($_GET['id_asignacion']) ? (int)$_GET['id_asignacion'] : 0;
+    if ($id_asignacion === 0 && isset($_GET['asignacion'])) {
+        $id_asignacion = (int)$_GET['asignacion'];
     }
 
-    $consultaAsignacion = $mysqli->query($SqlAsignacion);
+    $search_term = isset($_GET['search']) ? trim($_GET['search']) : '';
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $results_per_page = 8;
+    $offset = ($page - 1) * $results_per_page;
 
-    while ($RowAsignacion = $consultaAsignacion->fetch_assoc()) {
-        $portada_asignacion = $RowAsignacion['portada_asignacion'];
-        $nombre_cate = $RowAsignacion['nombre_categoria_curso'];
-        $curso = $RowAsignacion['nombre_materia'];
-        $cate = $RowAsignacion['id_categoria_curso'];
+    $response = ['students' => [], 'totalPages' => 0, 'currentPage' => $page, 'error' => null];
 
-        setcookie('asignacion', $RowAsignacion['id_asignacion']);
-        $_SESSION['docente'] = $RowAsignacion['foto'];
-        $_SESSION['nombre_docente'] = $RowAsignacion['nombre'].' '.$RowAsignacion['apellido'];
-    }
-}
+    if ($id_asignacion > 0) {
+        // Contar total de resultados
+        $count_sql_base = "SELECT COUNT(u.id_usuario) FROM usuario u JOIN inscripcion i ON u.id_usuario = i.id_estudiante WHERE i.id_asignacion = ? AND u.rol = 'estudiante'";
+        $search_like = '%' . $search_term . '%';
 
-?>
-
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<link rel="stylesheet" href="/resources/demos/style.css">
-
-<script>
-    $(function() {
-        $("#draggable").draggable();
-        $("#droppable").droppable({
-            drop: function(event, ui) {
-                var req = new XMLHttpRequest();
-                req.open("GET", "inscribir_estudiante.php?estudiante=" + $("#draggable").attr("value") +
-                          "&asignacion=<?php echo $_GET['asignacion']; ?>", false);
-                req.send();
-                alert($("#draggable").attr("value") + " Registro exitoso");
-                buscar();
-            }
-        });
-    });
-</script>
-
-<?php
-
-function buscar_estudiante($datos = "", $asignacion = "", $cate = "") {
-    require("../comun/conexion.php");
-    require_once("../comun/funciones.php");
-    require_once("../comun/lib/Zebra_Pagination/Zebra_Pagination.php");
-####################
-$sql_asistencia="SELECT usuario.id_usuario, usuario.nombre, usuario.apellido, SUM(CASE WHEN asistencia.asistencia = 'no' THEN 1 ELSE 0 END) AS inasistencias, SUM(CASE WHEN asistencia.asistencia = 'si' THEN 1 ELSE 0 END) AS asistencias, SUM(CASE WHEN asistencia.asistencia = 'permiso' THEN 1 ELSE 0 END) AS permisos FROM inscripcion INNER JOIN usuario ON usuario.id_usuario = inscripcion.id_estudiante INNER JOIN asistencia ON asistencia.id_estudiante = inscripcion.id_estudiante INNER JOIN asignacion ON asignacion.id_asignacion = inscripcion.id_asignacion WHERE inscripcion.id_asignacion = '".$_GET['asignacion']."' GROUP BY usuario.id_usuario, usuario.nombre, usuario.apellido ORDER BY usuario.apellido, usuario.nombre LIMIT 0, 4;";
-$consultainasistencia = $mysqli->query($sql_asistencia);
-$data=array();
-while ($rowinasistencia = $consultainasistencia->fetch_assoc()) {
-    $data[$rowinasistencia['id_usuario']]=$rowinasistencia;
-
-}
-#echo "<pre>";
-#print_r($data);
-#echo "</pre>";
-###################
-    $records_per_page =10;
-    $pagination = new Zebra_Pagination();
-    $pagination->records_per_page($records_per_page);
-    $cookiepage = "page_motivo";
-    $funcionjs = "buscar();";
-    $pagination->fn_js_page("$funcionjs");
-    $pagination->cookie_page($cookiepage);
-    $pagination->padding(false);
-
-    if (isset($_COOKIE["$cookiepage"])) $_GET['page'] = $_COOKIE["$cookiepage"];
-
-    $sql = 'SELECT * FROM inscripcion, usuario ';
-    $datosrecibidos = $datos;
-    $datos = explode(" ", $datosrecibidos);
-    $cont = 0;
-
-    $sql .= ' WHERE inscripcion.id_asignacion= "'.$_GET['asignacion'].'" ';
-
-    foreach ($datos as $id => $dato) {
-        $sql .= ' AND usuario.id_usuario = inscripcion.id_estudiante AND ' .
-                'CONCAT(usuario.id_usuario, " ", usuario.clave, " ", LOWER(usuario.nombre), " ", ' .
-                'LOWER(usuario.apellido), " ", LOWER(usuario.direccion), " ", usuario.direccion, " ", ' .
-                'LOWER(usuario.direccion), " ") LIKE LOWER("%'.utf8_decode($dato).'%" ) ';
-
-        $consuta = $mysqli->query($sql);
-        echo $pagination->records($consuta->num_rows);
-        $cont++;
-
-        if (count($datos) > 1 && count($datos) != $cont) {
-            $sql .= "";
+        if (!empty($search_term)) {
+            $stmt_count = $conn->prepare($count_sql_base . " AND (u.nombre LIKE ? OR u.apellido LIKE ?)");
+            if ($stmt_count === false) { $response['error'] = "Error al preparar conteo: " . $conn->error; } 
+            else { $stmt_count->bind_param('iss', $id_asignacion, $search_like, $search_like); }
+        } else {
+            $stmt_count = $conn->prepare($count_sql_base);
+            if ($stmt_count === false) { $response['error'] = "Error al preparar conteo: " . $conn->error; }
+            else { $stmt_count->bind_param('i', $id_asignacion); }
         }
-    }
+        
+        if (!$response['error'] && $stmt_count->execute()) {
+            $stmt_count->bind_result($total_results);
+            $stmt_count->fetch();
+            $stmt_count->close();
+            $response['totalPages'] = ceil($total_results / $results_per_page);
 
-    if (isset ($_COOKIE['asignacion'])) {
-        $miasignada = $_COOKIE['asignacion'];
-    } else {
-        $_COOKIE['asignacion'] = $_GET['asignacion'];
-    }
-
-    $sql .= '  ORDER BY usuario.apellido, usuario.nombre ASC  LIMIT ';
-
-    if (isset($_COOKIE['numeroresultados']) && $_COOKIE['numeroresultados'] != "") {
-        $sql .= $_COOKIE['numeroresultados'];
-    }
-
-    $sql .= " " . (($pagination->get_page() - 1) * $records_per_page) . ", " . $records_per_page;
-   #echo $sql;
-    $consulta = $mysqli->query($sql);
-?>
-
-<center><p><?php echo "Resultados de "; echo $consulta->num_rows; ?>   <?php echo  "del total de en página ".$pagination->get_page(); ?></p></center>
-
-<div class="table-responsive">       
-
-<script>
-    $(function() {
-        function createSomeMenu() {
-            return {
-                callback: function(key, options) {
-                    if (key == "Nuevo") {
-                        window.location = 'actividad.php?asignacion=<?php echo $_GET['asignacion']; ?>';
-                    }
-                    if (key == "Modificar") {
-                        window.location = 'modificar_curso.php?asignacion=<?php echo $_GET['asignacion']; ?>';
-                    }
-                    if (key == "Estudiantes del curso") {
-                        window.location = 'estudiante_curso.php?asignacion=<?php echo $_GET['asignacion']; ?>';
-                    }
-                    if (key == "Reporte Valorativo") {
-                        window.location = 'ver_rep_valorativo.php?asignacion=<?php echo $_GET['asignacion']; ?>';
-                    }
-                    if (key == "Copiar") {
-                        window.location = 'copiar_asignatura.php?asignacion=<?php echo $_GET['asignacion']; ?>';
-                    }
-                    if (key == "Eliminar") {
-                        var con = confirm("Esta seguro que desea eliminar el registro?");
-                        if (con == true) {
-                            window.location = 'eliminar_asignatura.php?asignacion=<?php echo $_GET['asignacion']; ?>';
-                        }
-                    }
-                    if (key == "Crear Nueva Categoria") {
-                        window.location = 'agregar_nueva_categoria_curso.php?asignacion=<?php echo $_GET['asignacion']; ?>';
-                    }
-                    if (key == "Subir Archivo") {
-                        window.location = 'subir_archivo.php?asignacion=<?php echo $_GET['asignacion']; ?>';
-                    }
-                },
-                items: {
-                    "Nuevo": {
-                        name: "Nuevo",
-                        icon: "edit"
-                    },
-                    "Modificar": {
-                        name: "Modificar",
-                        icon: "copy"
-                    },
-                    "Estudiantes del curso": {
-                        name: "Estudiantes del curso",
-                        icon: "paste"
-                    },
-                    "Reporte Valorativo": {
-                        name: "Reporte Valorativo",
-                        icon: "cut"
-                    },
-                    "Copiar": {
-                        name: "Copiar",
-                        icon: "copy"
-                    },
-                    "Eliminar": {
-                        name: "Eliminar",
-                        icon: "paste"
-                    },
-                    "Crear Nueva Categoria": {
-                        name: "Crear Nueva Categoria",
-                        icon: "copy"
-                    },
-                    "Subir Archivo": {
-                        name: "Subir Archivo",
-                        icon: "paste"
-                    }
-                }
-            };
-        }
-
-        $(".context-menu-one").on("click", function(e) {
-            console.log("clicked", this);
-        }).contextMenu({
-            selector: ".context-menu-one",
-            callback: function(key, options) {
-                var m = "clicked: " + key;
-                console.log(m);
-            },
-            items: {
-                "Nuevo": {
-                    name: "Nuevo",
-                    icon: "edit"
-                },
-                "Modificar": {
-                    name: "Modificar",
-                    icon: "copy"
-                },
-                "Estudiantes del curso": {
-                    name: "Estudiantes del curso",
-                    icon: "paste"
-                },
-                "Reporte Valorativo": {
-                    name: "Reporte Valorativo",
-                    icon: "cut"
-                },
-                "Copiar": {
-                    name: "Copiar",
-                    icon: "copy"
-                },
-                "Eliminar": {
-                    name: "Eliminar",
-                    icon: "paste"
-                },
-                "Crear Nueva Categoria": {
-                    name: "Crear Nueva Categoria",
-                    icon: "copy"
-                },
-                "Subir Archivo": {
-                    name: "Subir Archivo",
-                    icon: "paste"
-                }
+            // Obtener estudiantes para la página actual
+            $students_sql_base = "SELECT u.nombre, u.apellido, u.foto, u.correo, u.telefono FROM usuario u JOIN inscripcion i ON u.id_usuario = i.id_estudiante WHERE i.id_asignacion = ? AND u.rol = 'estudiante'";
+            if (!empty($search_term)) {
+                $stmt_students = $conn->prepare($students_sql_base . " AND (u.nombre LIKE ? OR u.apellido LIKE ?) ORDER BY u.apellido, u.nombre LIMIT ? OFFSET ?");
+                if ($stmt_students === false) { $response['error'] = "Error al preparar búsqueda: " . $conn->error; }
+                else { $stmt_students->bind_param('issii', $id_asignacion, $search_like, $search_like, $results_per_page, $offset); }
+            } else {
+                $stmt_students = $conn->prepare($students_sql_base . " ORDER BY u.apellido, u.nombre LIMIT ? OFFSET ?");
+                 if ($stmt_students === false) { $response['error'] = "Error al preparar búsqueda: " . $conn->error; }
+                else { $stmt_students->bind_param('iii', $id_asignacion, $results_per_page, $offset); }
             }
-        });
-    });
-</script>
 
-<table id="mi_tabla" class="table table-striped">
-<thead>
-<tr>
-
-<th>Documento</th>
-<th>Foto</th>
-<th>Nombre</th>
-<th>Correo</th>
-<th>Estado</th>
-<th>Asistencia</th>
-<th>Inasistencia</th>
-<th>Permiso</th>
-<!--th></th-->
-</tr>
-</thead>
-<tbody>
-
-<?php
-    while ($row = $consulta->fetch_assoc()) {
-        $id_estudiante = $row['id_usuario'];
-        $estudiante = utf8_decode($row['nombre']." ".$row['apellido']);
-        $correo = $row['correo'];
-        $estado = $row['estado_inscripcion'];
-?>
-
-<tr>
+            if (!$response['error'] && $stmt_students->execute()) {
+                 $result_students = $stmt_students->get_result();
+                 $response['students'] = $result_students->fetch_all(MYSQLI_ASSOC);
+                 $stmt_students->close();
+            } elseif(!$response['error']) {
+                $response['error'] = "Error al ejecutar la búsqueda: " . $stmt_students->error;
+            }
+        } elseif(!$response['error']) {
+            $response['error'] = "Error al ejecutar el conteo: " . $stmt_count->error;
+        }
+    } else {
+        $response['error'] = "ID de asignación no válido.";
+    }
     
-<td><?php echo $row['id_usuario']; ?></td>
-<td><?php echo $row['foto']; ?></td>
-<td><?php echo $estudiante; ?></td>
-<td><?php echo $correo; ?></td>
-<td><?php echo $estado; ?></td>
-<td><?php 
- if(empty($data[$id_estudiante]['inasistencias'])) {
-     echo 0;
-     } else {
-        echo $data[$id_estudiante]['inasistencias'];
-    }
-         ?></td>
-<td><?php 
-if(empty($data[$id_estudiante]['asistencias'])) {
-    echo 0;
-    } else {
-       echo $data[$id_estudiante]['asistencias'];
-   }
-?></td>
-<td><?php  
-if(empty($data[$id_estudiante]['permiso'])) {
-    echo 0;
-    } else {
-       echo $data[$id_estudiante]['permiso'];
-   }
-?></td>
-
-<!--td><input id="opciones_cursos2" type="button" value="Opciones" class="btn btn-warning context-menu-one" name=""/></td-->
-</tr>
-
-<?php
-    }
-?>
-
-</tbody>
-</table>
-</div>
-
-<?php
-    echo "<center>".($pagination->render())."</center>";
-   # require_once("../comun/footer.php");
+    $conn->close();
+    echo json_encode($response);
+    exit(); 
 }
 
+// --- LÓGICA PARA LA CARGA INICIAL DE LA PÁGINA (Renderiza HTML) ---
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) { die("Error de Conexión: " . $conn->connect_error); }
+$conn->set_charset("utf8mb4");
+
+$id_asignacion = 0;
+if (isset($_GET['id_asignacion'])) { $id_asignacion = (int)$_GET['id_asignacion']; } 
+elseif (isset($_GET['asignacion'])) { $id_asignacion = (int)$_GET['asignacion']; }
+
+$titulo_lista = isset($_GET['Lista_de_Estudiantes']) ? htmlspecialchars($_GET['Lista_de_Estudiantes'], ENT_QUOTES, 'UTF-8') : 'Estudiantes de la Asignación';
+$asignacion_info = ['curso' => 'Desconocido', 'materia' => 'Desconocida'];
+
+if ($id_asignacion > 0) {
+    $info_sql = "SELECT c.nombre_categoria_curso, m.nombre_materia FROM asignacion a LEFT JOIN materia m ON a.id_asignatura = m.id_materia LEFT JOIN categoria_curso c ON a.id_categoria_curso = c.id_categoria_curso WHERE a.id_asignacion = ?";
+    $stmt_info = $conn->prepare($info_sql);
+    if ($stmt_info) {
+        $stmt_info->bind_param('i', $id_asignacion);
+        $stmt_info->execute();
+        $result_info = $stmt_info->get_result();
+        if ($result_info->num_rows > 0) {
+            $row_info = $result_info->fetch_assoc();
+            $asignacion_info['curso'] = $row_info['nombre_categoria_curso'];
+            $asignacion_info['materia'] = $row_info['nombre_materia'];
+        }
+        $stmt_info->close();
+    }
+}
+$conn->close();
 ?>
-<div id="droppable">Matricular estudiante</div>
-<div class="jumbotron" style="background-image: url('<?php echo SGA_CURSOS_URL.'/'.$portada_asignacion; ?>');no-repeat left center; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;">
-    <form method="post" action="<?php echo SGA_MENSAJE_URL ?>/redactar.php" target="_blank">
-        <input type="hidden" name="responder_a" value="<?php echo $_SESSION['id_usuario']; ?>">
-        <input type="hidden" name="responder_n" value="<?php echo $_SESSION['nombre_docente']; ?>">
-        <input type="image" style="margin-left: 900px; width: 10%; position: absolute; border-radius: 80%;" title="Enviar Mensaje al docente <?php echo $_SESSION['nombre_docente']; ?>" src="<?php echo READFILE_URL.'/foto/'.$_SESSION['docente']; ?>">
-    </form>
-    <input id="opciones_cursos2" type="button" value="Opciones" class="btn btn-warning context-menu-one" name=""/>
-    <div class="container text-center">
-        <h1 style="font-size:45px; <?php if(isset($portada_asignacion) && $portada_asignacion<>"") echo 'opacity:0.01'; ?>" id="estudiantes_curso" class="fip"><?php echo isset($curso) ? strtoupper($curso.' ('.$nombre_cate.')') : ''; ?></h1>
-    </div>
-</div>
 
-<div class="container-fluid bg-3 text-center">
-    <div class="row">
-        <div id="lista_docentes" class="col-md-2">
-            <?php
-            if ($_SESSION['rol'] == "admin" || $_SESSION['rol'] == "docente") { ?>
-                <br><br>
-                <input type="search" id="datos_buscar_acudiente_para_asignar" placeholder="Buscar estudiante..." onkeyup="buscar_acudiente_para_asignar(this.value)">
-                <ul id="ul_buscar_acudiente_para_asignar">
-                    <?php buscar_acudiente_para_asignar(); ?>
-                </ul>
-            <?php } ?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $titulo_lista; ?></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .loader {
+            border: 4px solid #f3f3f3; border-top: 4px solid #3498db;
+            border-radius: 50%; width: 40px; height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Encabezado y Barra de Búsqueda -->
+        <div class="bg-white shadow-sm rounded-lg p-6 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800" id="page-title"><?php echo $titulo_lista; ?></h1>
+                    <p class="text-gray-500 mt-1">
+                        Curso: <?php echo htmlspecialchars($asignacion_info['curso']); ?> | 
+                        Materia: <?php echo htmlspecialchars($asignacion_info['materia']); ?> | 
+                        Asignación ID: <span id="asignacion-id-display"><?php echo htmlspecialchars($id_asignacion); ?></span>
+                    </p>
+                </div>
+                <div class="w-full md:w-1/3 mt-4 md:mt-0">
+                    <div class="relative">
+                         <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none"><path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                        </span>
+                        <input type="text" id="search-input" placeholder="Buscar por nombre o apellido..." class="w-full pl-10 pr-4 py-2 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
         </div>
-        <div id="lista_docentes" class="col-md-10">
-            <span id="txtsugerencias">
-                <?php buscar_estudiante(); ?>
-            </span>
+
+        <div id="student-grid-container">
+            <!-- El contenido de los estudiantes y el loader se insertará aquí -->
         </div>
+        
+        <div id="pagination-controls" class="mt-10 flex justify-center items-center space-x-2">
+            <!-- Los controles de paginación se insertarán aquí -->
+        </div>
+
+        <?php if ($id_asignacion == 0): ?>
+            <div id="param-missing-error" class="text-center bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 rounded-lg shadow p-8">
+                <h2 class="text-xl font-medium">Parámetro Faltante</h2>
+                <p class="mt-2">Por favor, especifica un `id_asignacion` o `asignacion` en la URL para ver los estudiantes.</p>
+                <p class="mt-1 text-sm">Ejemplo: <code class="bg-yellow-200 p-1 rounded">listar_estudiantes.php?id_asignacion=1</code></p>
+            </div>
+        <?php endif; ?>
     </div>
-</div>
 
-<script>
-    $(document).ready(function() {
-        setTimeout(function() {
-            cargar_tooltips();
-        }, 4000);
-    });
-    buscar();
-</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search-input');
+            const studentGridContainer = document.getElementById('student-grid-container');
+            const paginationControls = document.getElementById('pagination-controls');
+            const errorContainer = document.getElementById('param-missing-error');
 
-<?php
-$contenido = ob_get_clean();
+            // Función para obtener parámetros de la URL de forma segura
+            function getUrlParam(name) {
+                const params = new URLSearchParams(window.location.search);
+                return params.get(name);
+            }
+            
+            const idAsignacion = getUrlParam('id_asignacion') || getUrlParam('asignacion');
+            const tituloLista = getUrlParam('Lista_de_Estudiantes') || 'Estudiantes de la Asignación';
 
-require ("../comun/plantilla.php");
+            let debounceTimer;
 
-?>
+            async function fetchStudents(page = 1, searchTerm = '') {
+                // Solo proceder si tenemos un id de asignación válido
+                if (!idAsignacion || idAsignacion === '0') {
+                    if (errorContainer) errorContainer.style.display = 'block';
+                    studentGridContainer.innerHTML = '';
+                    paginationControls.innerHTML = '';
+                    return;
+                }
+                if (errorContainer) errorContainer.style.display = 'none';
+
+                showLoader();
+                
+                const params = new URLSearchParams({
+                    action: 'search_students',
+                    id_asignacion: idAsignacion,
+                    search: searchTerm,
+                    page: page
+                });
+
+                try {
+                    // CORRECCIÓN: La llamada fetch ahora es a la URL actual (`?`), no a un nombre de archivo fijo.
+                    const response = await fetch(`?${params.toString()}`);
+                    if (!response.ok) {
+                        throw new Error(`Error de red (${response.status}): ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.error) {
+                         throw new Error(`Error del servidor: ${data.error}`);
+                    }
+                    
+                    renderStudents(data.students, searchTerm);
+                    renderPagination(data.currentPage, data.totalPages, searchTerm);
+
+                    // Actualizar URL sin recargar la página
+                    const newUrl = `?id_asignacion=${idAsignacion}&Lista_de_Estudiantes=${encodeURIComponent(tituloLista)}&search=${encodeURIComponent(searchTerm)}&page=${page}`;
+                    window.history.pushState({ path: newUrl }, '', newUrl);
+
+                } catch (error) {
+                    studentGridContainer.innerHTML = `<div class="text-center bg-red-100 text-red-700 p-4 rounded-lg"><strong>Error al cargar los datos.</strong><p class="mt-2 text-sm">${error.message}</p></div>`;
+                    console.error('Fetch error:', error);
+                }
+            }
+            
+            function showLoader() {
+                studentGridContainer.innerHTML = '<div class="loader"></div>';
+                paginationControls.innerHTML = '';
+            }
+
+            function renderStudents(students, searchTerm) {
+                if (students.length === 0) {
+                    const message = searchTerm 
+                        ? `No hay estudiantes que coincidan con la búsqueda "${searchTerm}".`
+                        : `No hay estudiantes inscritos en esta asignación.`;
+                    studentGridContainer.innerHTML = `
+                        <div class="text-center bg-white rounded-lg shadow p-8">
+                            <h2 class="text-xl font-medium text-gray-700">No se encontraron estudiantes</h2>
+                            <p class="text-gray-500 mt-2">${message}</p>
+                        </div>`;
+                    return;
+                }
+
+                let studentsHTML = '<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">';
+                students.forEach(student => {
+                    const studentName = `${student.nombre || ''} ${student.apellido || ''}`.trim();
+                    const studentPhoto = student.foto ? `assets/${student.foto}` : 'https://placehold.co/100x100/EBF4FF/7F9CF5?text=Sin+Foto';
+                    const studentEmail = student.correo || 'No disponible';
+                    const studentPhone = student.telefono || 'No disponible';
+
+                    studentsHTML += `
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
+                            <div class="p-6 flex flex-col items-center text-center">
+                                <img class="w-24 h-24 rounded-full object-cover border-4 border-gray-200 shadow-md" src="${studentPhoto}" alt="Foto de ${studentName}" onerror="this.onerror=null;this.src='https://placehold.co/100x100/EBF4FF/7F9CF5?text=Sin+Foto';">
+                                <h3 class="mt-4 text-xl font-semibold text-gray-800">${studentName}</h3>
+                                <div class="mt-4 w-full space-y-2 text-sm text-gray-600">
+                                    <div class="flex items-center justify-center break-all">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                        <span>${studentEmail}</span>
+                                    </div>
+                                    <div class="flex items-center justify-center">
+                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                                        <span>${studentPhone}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+                studentsHTML += '</div>';
+                studentGridContainer.innerHTML = studentsHTML;
+            }
+
+            function renderPagination(currentPage, totalPages, searchTerm) {
+                if (totalPages <= 1) {
+                    paginationControls.innerHTML = '';
+                    return;
+                }
+
+                let paginationHTML = '';
+                if (currentPage > 1) {
+                    paginationHTML += `<button data-page="${currentPage - 1}" class="page-link px-4 py-2 text-sm text-gray-700 bg-white border rounded-md hover:bg-gray-100">Anterior</button>`;
+                }
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const activeClass = (i == currentPage) ? 'bg-blue-500 text-white' : 'bg-white text-gray-700';
+                    paginationHTML += `<button data-page="${i}" class="page-link px-4 py-2 text-sm ${activeClass} border rounded-md hover:bg-gray-100">${i}</button>`;
+                }
+
+                if (currentPage < totalPages) {
+                    paginationHTML += `<button data-page="${currentPage + 1}" class="page-link px-4 py-2 text-sm text-gray-700 bg-white border rounded-md hover:bg-gray-100">Siguiente</button>`;
+                }
+                paginationControls.innerHTML = paginationHTML;
+            }
+
+            searchInput.addEventListener('keyup', (e) => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    fetchStudents(1, e.target.value);
+                }, 300); 
+            });
+
+            paginationControls.addEventListener('click', (e) => {
+                if (e.target.classList.contains('page-link')) {
+                    e.preventDefault();
+                    const page = e.target.dataset.page;
+                    fetchStudents(page, searchInput.value);
+                }
+            });
+
+            // Carga inicial
+            if (idAsignacion && idAsignacion !== '0') {
+                const initialSearch = getUrlParam('search') || '';
+                const initialPage = getUrlParam('page') || 1;
+                searchInput.value = initialSearch;
+                fetchStudents(initialPage, initialSearch);
+            }
+        });
+    </script>
+</body>
+</html>
 

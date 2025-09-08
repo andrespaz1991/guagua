@@ -40,7 +40,7 @@ $opciones_planeacion = [
     [
         'nombre' => 'Búsqueda por Plan',
         'icono' => '🔍',
-        'enlace' => 'planeador.php', // Enlace a la vista de todos los planes
+        'enlace' => '../miplaneador/reporte_planeador.php', // Enlace a la vista de todos los planes
         'descripcion' => 'Busca y filtra entre todos los planes de clase existentes.'
     ],
     [
@@ -207,7 +207,7 @@ $opciones_planeacion = [
     
     <div id="opciones-grid" class="opciones-grid">
         <?php foreach ($opciones_planeacion as $opcion): ?>
-            <a href="<?= htmlspecialchars($opcion['enlace']) ?>" class="opcion-card" data-nombre="<?= htmlspecialchars($opcion['nombre']) ?>">
+            <a target='_blank' href="<?= htmlspecialchars($opcion['enlace']) ?>" class="opcion-card" data-nombre="<?= htmlspecialchars($opcion['nombre']) ?>">
                 <div class="icono"><?= htmlspecialchars($opcion['icono']) ?></div>
                 <h3><?= htmlspecialchars($opcion['nombre']) ?></h3>
                 <p><?= htmlspecialchars($opcion['descripcion']) ?></p>

@@ -1,644 +1,640 @@
-<?php #ob_start();
-#ini_set('display_errors', 1);
-#ini_set('display_startup_errors', 1);
-#error_reporting(E_ALL);
+<?php
+/**
+ * =================================================================
+ * MÓDULO DE CALENDARIO DE PLANEACIÓN - VERSIÓN OPTIMIZADA
+ * =================================================================
+ *
+ * Mejoras realizadas:
+ * 1.  Código PHP Optimizado:
+ * -   Se ha reestructurado toda la lógica para que sea más clara y eficiente.
+ * -   Se utiliza una única consulta SQL para obtener todos los eventos.
+ * -   Se generan dos arrays: uno para los eventos del calendario y otro para los planes únicos para la búsqueda.
+ *
+ * 2.  Diseño de Interfaz (UI/UX) Renovado:
+ * -   Se ha reorganizado el encabezado para una mejor distribución visual.
+ * -   Se ha añadido un panel de búsqueda asíncrona debajo del calendario.
+ * -   Los resultados de la búsqueda se muestran instantáneamente y enlazan a los planes.
+ *
+ * 3.  JavaScript Moderno y Eficiente:
+ * -   El código gestiona tanto el renderizado del calendario como la lógica de filtrado en tiempo real.
+ */
 
-#require_once("../comun/autoload.php");
-#require_once("../comun/conexion.php");
+// 1. GESTIÓN DE SESIÓN Y CONFIGURACIÓN INICIAL
+ob_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require_once __DIR__ . '/../comun/conexion.php';
+require_once __DIR__ . '/../comun/funciones.php';
+
+// 2. LÓGICA DE OBTENCIÓN DE EVENTOS Y PLANES
+$eventos_calendario = [];
+$planes_unicos = [];
+$materias_unicas = [];
+$grados_unicos = [];
+
+$sql = "SELECT
+            p.id_plan,
+            p.grado,
+            m.nombre_materia,
+            p.fecha_inicio AS fecha_iniciop,
+            p.fecha_fin AS fecha_finp,
+            h.hora_inicio AS horario_hora_inicio,
+            h.hora_fin AS horario_hora_fin,
+            h.dia,
+            p.objetivo AS texto_planeacion
+        FROM planeador_vallesol AS p
+        JOIN asignacion AS a ON a.id_asignacion = p.materia
+        JOIN materia_oficial AS m ON m.id_materia = a.id_asignatura
+        JOIN horario AS h ON h.id_asignacion = a.id_asignacion
+        ORDER BY p.fecha_inicio DESC, m.nombre_materia";
+
+$resultado = $mysqli->query($sql);
+
+if ($resultado) {
+    $diasSemana = [
+        'lunes' => 1, 'martes' => 2, 'miercoles' => 3, 'jueves' => 4,
+        'viernes' => 5, 'sabado' => 6, 'domingo' => 0
+    ];
+
+    while ($fila = $resultado->fetch_assoc()) {
+        // --- Poblar array de planes únicos para la búsqueda ---
+        if (!isset($planes_unicos[$fila['id_plan']])) {
+            $planes_unicos[$fila['id_plan']] = [
+                'id_plan' => $fila['id_plan'],
+                'title' => $fila['nombre_materia'],
+                'grado' => $fila['grado'],
+                'start' => $fila['fecha_iniciop'],
+                'end' => $fila['fecha_finp']
+            ];
+            // Poblar filtros de grado y materia
+            if (!in_array($fila['grado'], $grados_unicos)) {
+                $grados_unicos[] = $fila['grado'];
+            }
+            if (!in_array($fila['nombre_materia'], $materias_unicas)) {
+                $materias_unicas[] = $fila['nombre_materia'];
+            }
+        }
+
+        // --- Generar eventos para el calendario ---
+        try {
+            $fecha_inicio = new DateTime($fila['fecha_iniciop']);
+            $fecha_fin = new DateTime($fila['fecha_finp']);
+            $dia_semana_str = strtolower(trim($fila['dia']));
+
+            if (isset($diasSemana[$dia_semana_str])) {
+                $numero_dia = $diasSemana[$dia_semana_str];
+                $fecha_actual = clone $fecha_inicio;
+                $nombre_materia_limpio = strtolower(preg_replace('/[^a-z0-9]/i', '', $fila['nombre_materia']));
+
+                while ($fecha_actual <= $fecha_fin) {
+                    if ((int)$fecha_actual->format('w') === $numero_dia) {
+                        $eventos_calendario[] = [
+                            'title' => $fila['nombre_materia'],
+                            'start' => $fecha_actual->format('Y-m-d') . 'T' . $fila['horario_hora_inicio'],
+                            'end' => $fecha_actual->format('Y-m-d') . 'T' . $fila['horario_hora_fin'],
+                            'description' => 'Grado: ' . htmlspecialchars($fila['grado']) . ' - ' . htmlspecialchars($fila['texto_planeacion']),
+                            'id_plan' => $fila['id_plan'],
+                            'className' => 'evento-' . $nombre_materia_limpio
+                        ];
+                    }
+                    $fecha_actual->modify('+1 day');
+                }
+            }
+        } catch (Exception $e) {
+            error_log("Error de fecha para el plan ID " . $fila['id_plan'] . ": " . $e->getMessage());
+        }
+    }
+    sort($materias_unicas);
+    sort($grados_unicos);
+} else {
+    error_log("Error en la consulta del calendario: " . $mysqli->error);
+}
+
+// 3. VISTA DEL CALENDARIO (HTML, CSS, JS)
 ?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario de Planeación</title>
+    <style>
+        :root {
+            --primary-color: #2c5282;
+            --accent-color: #ed8936;
+            --background-color: #f7fafc;
+            --card-background: #ffffff;
+            --text-color: #2d3748;
+            --light-gray: #e2e8f0;
+            --today-bg: #fffde7;
+            --event-text-color: #ffffff;
+        }
 
-<script src="cssjscalendar/jquery.min.js"></script>
-<script
-  src="cssjscalendar/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
 
-<script src="cssjscalendar/bootstrap.min.js"></script>
-<script src="cssjscalendar/bootstrap.bundle.min.js"></script>
-  
-<link href="cssjscalendar/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<!------ Include the above in your HEAD tag ---------->
-<link href="style.css" rel="stylesheet" >
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
 
-<link href="cssjscalendar/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        .calendar-container {
+            background: var(--card-background);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
 
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        .calendar-header .title-group {
+            text-align: right;
+        }
+        .calendar-header .title-group h1 {
+            margin: 0;
+            font-size: 1.8em;
+            color: var(--primary-color);
+        }
+         .calendar-header .title-group p {
+            margin: 4px 0 0;
+            color: #718096;
+        }
+        .calendar-nav button {
+            background: none;
+            border: 1px solid var(--light-gray);
+            padding: 8px 14px;
+            margin: 0 4px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .calendar-nav button:hover {
+            background-color: #edf2f7;
+            border-color: #cbd5e0;
+        }
+        .calendar-nav button#today-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        .calendar-nav button#today-btn:hover {
+            background-color: #dd6b20;
+        }
+        #month-year-display {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-transform: capitalize;
+            min-width: 200px;
+            text-align: right;
+        }
 
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background-color: var(--light-gray);
+            border: 1px solid var(--light-gray);
+        }
 
-<div class="container theme-showcase">
-  <h1>Calendar</h1>
-<div id="holder" class="row" ></div>
+        .day-header, .day {
+            background-color: var(--card-background);
+            padding: 8px;
+        }
+        
+        .day-header {
+            text-align: center;
+            font-weight: 600;
+            color: #718096;
+            padding: 12px 5px;
+            font-size: 0.9em;
+        }
+
+        .day {
+            min-height: 120px;
+            position: relative;
+        }
+        
+        .day-number {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        .day.outside-month .day-number { color: #a0aec0; }
+
+        .day.today { background-color: var(--today-bg); }
+        .day.today .day-number {
+            color: var(--accent-color);
+            background-color: #feebc8;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .events { margin-top: 5px; }
+
+        .event {
+            font-size: 0.75em;
+            padding: 3px 6px;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            color: var(--event-text-color);
+            cursor: pointer;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Colores para materias */
+        .evento-matematicas { background-color: #4299e1; }
+        .evento-cienciassociales { background-color: #f56565; }
+        .evento-educacionfisica { background-color: #48bb78; }
+        .evento-emprendimiento { background-color: #dd6b20; }
+        .evento-tecnologiaeinformatica { background-color: #718096; }
+        .evento-urbanidad { background-color: #d69e2e; }
+        .evento-fisica { background-color: #805ad5; }
+        .evento-economiapolitica { background-color: #319795; }
+        .evento-geometria { background-color: #d53f8c; }
+        .event:not([class*="evento-"]) { background-color: #a0aec0; }
+
+        #calendar-legend {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--light-gray);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .legend-item { display: flex; align-items: center; font-size: 0.85em; }
+        .legend-color-box { width: 15px; height: 15px; border-radius: 4px; margin-right: 8px; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            background: white; padding: 30px; border-radius: 12px;
+            width: 90%; max-width: 500px; position: relative;
+        }
+        .modal-close-btn {
+            position: absolute; top: 15px; right: 15px; background: none; border: none;
+            font-size: 1.8em; cursor: pointer; color: #a0aec0;
+        }
+        #modal-title { margin-top: 0; color: var(--primary-color); }
+        #modal-description { font-size: 0.95em; line-height: 1.6; color: #4a5568; }
+        .modal-button {
+            display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: var(--accent-color);
+            color: white; text-decoration: none; border-radius: 8px;
+        }
+        
+        /* Search Section Styles */
+        .search-container {
+            background: var(--card-background);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .search-container h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--light-gray);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .filter-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+        .filter-group select, .filter-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+        #search-results { list-style: none; padding: 0; }
+        .result-item {
+            display: block;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background-color: #f7fafc;
+            border: 1px solid var(--light-gray);
+            text-decoration: none;
+            color: var(--text-color);
+            transition: all 0.2s;
+        }
+        .result-item:hover {
+            border-color: var(--accent-color);
+            background-color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .result-item strong { color: var(--primary-color); }
+        .result-item span { color: #718096; font-size: 0.9em; }
+        #no-results-message {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <div class="calendar-nav">
+                <button id="prev-month-btn">&lt; Anterior</button>
+                <button id="today-btn">Hoy</button>
+                <button id="next-month-btn">Siguiente &gt;</button>
+            </div>
+            <div class="title-group">
+                <h1 id="month-year-display"></h1>
+            </div>
+        </div>
+        <div class="calendar-grid day-headers">
+            <div class="day-header">Domingo</div>
+            <div class="day-header">Lunes</div>
+            <div class="day-header">Martes</div>
+            <div class="day-header">Miércoles</div>
+            <div class="day-header">Jueves</div>
+            <div class="day-header">Viernes</div>
+            <div class="day-header">Sábado</div>
+        </div>
+        <div id="calendar-body" class="calendar-grid"></div>
+        <div id="calendar-legend"></div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-container">
+        <h2>Búsqueda de Planeaciones</h2>
+        <div class="filters">
+            <div class="filter-group">
+                <label for="materia-filter">Materia</label>
+                <select id="materia-filter"><option value="">Todas</option></select>
+            </div>
+            <div class="filter-group">
+                <label for="grado-filter">Grado</label>
+                <select id="grado-filter"><option value="">Todos</option></select>
+            </div>
+            <div class="filter-group">
+                <label for="start-date-filter">Desde</label>
+                <input type="date" id="start-date-filter">
+            </div>
+            <div class="filter-group">
+                <label for="end-date-filter">Hasta</label>
+                <input type="date" id="end-date-filter">
+            </div>
+        </div>
+        <ul id="search-results"></ul>
+        <p id="no-results-message" style="display: none;">No se encontraron planeaciones con los filtros seleccionados.</p>
+    </div>
+</div>
+
+<!-- Modal Structure -->
+<div id="event-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+        <button class="modal-close-btn">&times;</button>
+        <h2 id="modal-title"></h2>
+        <p id="modal-description"></p>
+        <a id="modal-link" href="#" target="_blank" class="modal-button">Ver Planeación Completa</a>
+    </div>
 </div>
 
 
-
-<script type="text/tmpl" id="tmpl">
-  {{ 
-  var date = date || new Date(),
-      month = date.getMonth(), 
-      year = date.getFullYear(), 
-      first = new Date(year, month, 1), 
-      last = new Date(year, month + 1, 0),
-      startingDay = first.getDay(), 
-      thedate = new Date(year, month, 1 - startingDay),
-      dayclass = lastmonthcss,
-      today = new Date(),
-      i, j; 
-  if (mode === 'week') {
-    thedate = new Date(date);
-    thedate.setDate(date.getDate() - date.getDay());
-    first = new Date(thedate);
-    last = new Date(thedate);
-    last.setDate(last.getDate()+6);
-  } else if (mode === 'day') {
-    thedate = new Date(date);
-    first = new Date(thedate);
-    last = new Date(thedate);
-    last.setDate(thedate.getDate() + 1);
-  }
-  
-  }}
-  <table class="calendar-table table table-condensed table-tight">
-    <thead>
-      <tr>
-        <td colspan="7" style="text-align: center">
-          <table style="white-space: nowrap; width: 100%">
-            <tr>
-              <td style="text-align: left;">
-                <span class="btn-group">
-                  <button class="js-cal-prev btn btn-default"><</button>
-                  <button class="js-cal-next btn btn-default">></button>
-                </span>
-                <button class="js-cal-option btn btn-default {{: first.toDateInt() <= today.toDateInt() && today.toDateInt() <= last.toDateInt() ? 'active':'' }}" data-date="{{: today.toISOString()}}" data-mode="month">{{: todayname }}</button>
-              </td>
-              <td>
-                <span class="btn-group btn-group-lg">
-                  {{ if (mode !== 'day') { }}
-                    {{ if (mode === 'month') { }}<a target="_blank" href="planeador.php?mes={{: months[month] }}"><button class="" data-mode="year">{{: months[month] }}</button></a>{{ } }}
-                    {{ if (mode ==='week') { }}
-                      <button class="btn btn-link disabled">{{: shortMonths[first.getMonth()] }} {{: first.getDate() }} - {{: shortMonths[last.getMonth()] }} {{: last.getDate() }}</button>
-                    {{ } }}
-                    <button class="js-cal-years btn btn-link">{{: year}}</button> 
-                  {{ } else { }}
-                    <button class="btn btn-link disabled">{{: date.toDateString() }}</button> 
-                  {{ } }}
-                </span>
-              </td>
-              <td style="text-align: right">
-                <span class="btn-group">
-                  <button class="js-cal-option btn btn-default {{: mode==='year'? 'active':'' }}" data-mode="year">Año</button>
-                  <button class="js-cal-option btn btn-default {{: mode==='month'? 'active':'' }}" data-mode="month">Mes</button>
-                  <button class="js-cal-option btn btn-default {{: mode==='week'? 'active':'' }}" data-mode="week">Semana</button>
-                  <button class="js-cal-option btn btn-default {{: mode==='day'? 'active':'' }}" data-mode="day">Dia</button>
-                </span>
-              </td>
-            </tr>
-          </table>
-          
-        </td>
-      </tr>
-    </thead>
-    {{ if (mode ==='year') {
-      month = 0;
-    }}
-    <tbody>
-      {{ for (j = 0; j < 3; j++) { }}
-      <tr>
-        {{ for (i = 0; i < 4; i++) { }}
-        <td class="calendar-month month-{{:month}} js-cal-option" data-date="{{: new Date(year, month, 1).toISOString() }}" data-mode="month">
-          {{: months[month] }}
-          {{ month++;}}
-        </td>
-        {{ } }}
-      </tr>
-      {{ } }}
-    </tbody>
-    {{ } }}
-    {{ if (mode ==='month' || mode ==='week') { }}
-    <thead>
-      <tr class="c-weeks">
-        {{ for (i = 0; i < 7; i++) { }}
-          <th class="c-name">
-            {{: days[i] }}
-          </th>
-        {{ } }}
-      </tr>
-    </thead>
-    <tbody>
-      {{ for (j = 0; j < 6 && (j < 1 || mode === 'month'); j++) { }}
-      <tr>
-        {{ for (i = 0; i < 7; i++) { }}
-        {{ if (thedate > last) { dayclass = nextmonthcss; } else if (thedate >= first) { dayclass = thismonthcss; } }}
-        <td class="calendar-day {{: dayclass }} {{: thedate.toDateCssClass() }} {{: date.toDateCssClass() === thedate.toDateCssClass() ? 'selected':'' }} {{: daycss[i] }} js-cal-option" data-date="{{: thedate.toISOString() }}">
-          <div class="date">{{: thedate.getDate() }}</div>
-          {{ thedate.setDate(thedate.getDate() + 1);}}
-        </td>
-        {{ } }}
-      </tr>
-      {{ } }}
-    </tbody>
-    {{ } }}
-    {{ if (mode ==='day') { }}
-    <tbody>
-      <tr>
-        <td colspan="7">
-          <table class="table table-striped table-condensed table-tight-vert" >
-            <thead>
-              <tr>
-                <th> </th>
-                <th style="text-align: center; width: 100%">{{: days[date.getDay()] }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th class="timetitle" >All Day</th>
-                <td class="{{: date.toDateCssClass() }}">  </td>
-              </tr>
-              <tr>
-                <th class="timetitle" >Before 6 AM</th>
-                <td class="time-0-0"> </td>
-              </tr>
-              {{for (i = 6; i < 22; i++) { }}
-              <tr>
-                <th class="timetitle" >{{: i <= 12 ? i : i - 12 }} {{: i < 12 ? "AM" : "PM"}}</th>
-                <td class="time-{{: i}}-0"> </td>
-              </tr>
-              <tr>
-                <th class="timetitle" >{{: i <= 12 ? i : i - 12 }}:30 {{: i < 12 ? "AM" : "PM"}}</th>
-                <td class="time-{{: i}}-30"> </td>
-              </tr>
-              {{ } }}
-              <tr>
-                <th class="timetitle" >After 10 PM</th>
-                <td class="time-22-0"> </td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
-      </tr>
-    </tbody>
-    {{ } }}
-  </table>
-</script>
-
-
 <script>
-    var $currentPopover = null;
-  $(document).on('shown.bs.popover', function (ev) {
-    var $target = $(ev.target);
-    if ($currentPopover && ($currentPopover.get(0) != $target.get(0))) {
-      $currentPopover.popover('toggle');
-    }
-    $currentPopover = $target;
-  }).on('hidden.bs.popover', function (ev) {
-    var $target = $(ev.target);
-    if ($currentPopover && ($currentPopover.get(0) == $target.get(0))) {
-      $currentPopover = null;
-    }
-  });
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- CALENDAR VARIABLES ---
+        const calendarBody = document.getElementById('calendar-body');
+        const monthYearDisplay = document.getElementById('month-year-display');
+        const prevMonthBtn = document.getElementById('prev-month-btn');
+        const nextMonthBtn = document.getElementById('next-month-btn');
+        const todayBtn = document.getElementById('today-btn');
+        const legendContainer = document.getElementById('calendar-legend');
 
+        // --- MODAL VARIABLES ---
+        const modal = document.getElementById('event-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDescription = document.getElementById('modal-description');
+        const modalLink = document.getElementById('modal-link');
+        const modalCloseBtn = modal.querySelector('.modal-close-btn');
 
-//quicktmpl is a simple template language I threw together a while ago; it is not remotely secure to xss and probably has plenty of bugs that I haven't considered, but it basically works
-//the design is a function I read in a blog post by John Resig (http://ejohn.org/blog/javascript-micro-templating/) and it is intended to be loosely translateable to a more comprehensive template language like mustache easily
-$.extend({
-    quicktmpl: function (template) {return new Function("obj","var p=[],print=function(){p.push.apply(p,arguments);};with(obj){p.push('"+template.replace(/[\r\t\n]/g," ").split("{{").join("\t").replace(/((^|\}\})[^\t]*)'/g,"$1\r").replace(/\t:(.*?)\}\}/g,"',$1,'").split("\t").join("');").split("}}").join("p.push('").split("\r").join("\\'")+"');}return p.join('');")}
-});
+        // --- SEARCH VARIABLES ---
+        const materiaFilter = document.getElementById('materia-filter');
+        const gradoFilter = document.getElementById('grado-filter');
+        const startDateFilter = document.getElementById('start-date-filter');
+        const endDateFilter = document.getElementById('end-date-filter');
+        const searchResults = document.getElementById('search-results');
+        const noResultsMessage = document.getElementById('no-results-message');
 
-$.extend(Date.prototype, {
-  //provides a string that is _year_month_day, intended to be widely usable as a css class
-  toDateCssClass:  function () { 
-    return '_' + this.getFullYear() + '_' + (this.getMonth() + 1) + '_' + this.getDate(); 
-  },
-  //this generates a number useful for comparing two dates; 
-  toDateInt: function () { 
-    return ((this.getFullYear()*12) + this.getMonth())*32 + this.getDate(); 
-  },
-  toTimeString: function() {
-    var hours = this.getHours(),
-        minutes = this.getMinutes(),
-        hour = (hours > 12) ? (hours - 12) : hours,
-        ampm = (hours >= 12) ? ' pm' : ' am';
-    if (hours === 0 && minutes===0) { return ''; }
-    if (minutes > 0) {
-      return hour + ':' + minutes + ampm;
-    }
-    return hour + ampm;
-  }
-});
+        // --- DATA FROM PHP ---
+        const eventos_calendario = <?php echo json_encode($eventos_calendario); ?>;
+        const planes_unicos = Object.values(<?php echo json_encode($planes_unicos); ?>);
+        const materias_filtro = <?php echo json_encode($materias_unicas); ?>;
+        const grados_filtro = <?php echo json_encode($grados_unicos); ?>;
 
+        let currentDate = new Date();
+        
+        function renderCalendar() {
+            calendarBody.innerHTML = '';
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            monthYearDisplay.textContent = new Date(year, month).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
 
-(function ($) {
+            const firstDayOfMonth = new Date(year, month, 1);
+            const lastDayOfMonth = new Date(year, month + 1, 0);
+            const startDayOfWeek = firstDayOfMonth.getDay();
 
-  //t here is a function which gets passed an options object and returns a string of html. I am using quicktmpl to create it based on the template located over in the html block
-  var t = $.quicktmpl($('#tmpl').get(0).innerHTML);
-  
-  function calendar($el, options) {
-    //actions aren't currently in the template, but could be added easily...
-    $el.on('click', '.js-cal-prev', function () {
-      switch(options.mode) {
-      case 'year': options.date.setFullYear(options.date.getFullYear() - 1); break;
-      case 'month': options.date.setMonth(options.date.getMonth() - 1); break;
-      case 'week': options.date.setDate(options.date.getDate() - 7); break;
-      case 'day':  options.date.setDate(options.date.getDate() - 1); break;
-      }
-      draw();
-    }).on('click', '.js-cal-next', function () {
-      switch(options.mode) {
-      case 'year': options.date.setFullYear(options.date.getFullYear() + 1); break;
-      case 'month': options.date.setMonth(options.date.getMonth() + 1); break;
-      case 'week': options.date.setDate(options.date.getDate() + 7); break;
-      case 'day':  options.date.setDate(options.date.getDate() + 1); break;
-      }
-      draw();
-    }).on('click', '.js-cal-option', function () {
-      var $t = $(this), o = $t.data();
-      if (o.date) { o.date = new Date(o.date); }
-      $.extend(options, o);
-      draw();
-    }).on('click', '.js-cal-years', function () {
-      var $t = $(this), 
-          haspop = $t.data('popover'),
-          s = '', 
-          y = options.date.getFullYear() - 2, 
-          l = y + 5;
-      if (haspop) { return true; }
-      for (; y < l; y++) {
-        s += '<button type="button" href="" class="btn btn-default btn-lg btn-block js-cal-option" data-date="' + (new Date(y, 1, 1)).toISOString() + '" data-mode="year">'+y + '</button>';
-      }
-      $t.popover({content: s, html: true, placement: 'auto top'}).popover('toggle');
-      return false;
-    }).on('click', '.event', function () {
-      var $t = $(this), 
-          index = +($t.attr('data-index')), 
-          haspop = $t.data('popover'),
-          data, time;
-          
-      if (haspop || isNaN(index)) { return true; }
-      data = options.data[index];
-      time = data.start.toTimeString();
-      if (time && data.end) { time = time + ' - ' + data.end.toTimeString(); }
-      $t.data('popover',true);
-      $t.popover({content: '<p><strong>' + time + '</strong></p>'+data.text, html: true, placement: 'auto left'}).popover('toggle');
-      return false;
-    });
-    function dayAddEvent(index, event) {
-      if (!!event.allDay) {
-        monthAddEvent(index, event);
-        return;
-      }
-var classes = 'event';
-if (event.className) {
-    classes += ' ' + event.className;
-}
-var $event = $('<div/>', {'href': 'planeador.php?pdf=1&idplan='+event.id_plan+'','class': classes, text: event.title+'('+event.grado+')', title: event.title+'('+event.grado+')'+'('+event.text+')', 'data-index': index}),
+            for (let i = 0; i < startDayOfWeek; i++) {
+                calendarBody.insertAdjacentHTML('beforeend', '<div class="day outside-month"></div>');
+            }
 
-      start = event.start,
-          end = event.end || start,
-          time = event.start.toTimeString(),
-          hour = start.getHours(),
-          timeclass = '.time-22-0',
-          startint = start.toDateInt(),
-          dateint = options.date.toDateInt(),
-          endint = end.toDateInt();
-      if (startint > dateint || endint < dateint) { return; }
-      
-      if (!!time) {
-        $event.html('<strong>' + time + '</strong> ' + $event.html());
-      }
-      $event.toggleClass('begin', startint === dateint);
-      $event.toggleClass('end', endint === dateint);
-      if (hour < 6) {
-        timeclass = '.time-0-0';
-      }
-      if (hour < 22) {
-        timeclass = '.time-' + hour + '-' + (start.getMinutes() < 30 ? '0' : '30');
-      }
-      $(timeclass).append($event);
-    }
-    
-    function monthAddEvent(index, event) {
-      console.log(event);
-var classes = 'event';
-if (event.className) {
-    classes += ' ' + event.className;
-}
-var $event = $('<div/>', {'class': classes, text: '', title: event.title+'('+event.grado+')'+'('+event.text+')', 'data-index': index}),
+            for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day');
+                
+                const dayNumber = document.createElement('div');
+                dayNumber.classList.add('day-number');
+                dayNumber.textContent = day;
+                dayDiv.appendChild(dayNumber);
 
-      e = new Date(event.start),
-          dateclass = e.toDateCssClass(),
-          day = $('.' + e.toDateCssClass()),
-          empty = $('<div/>', {'class':'clear event', html:' '}), 
-          numbevents = 0, 
-          time = event.start.toTimeString(),
-          endday = event.end && $('.' + event.end.toDateCssClass()).length > 0,
-          checkanyway = new Date(e.getFullYear(), e.getMonth(), e.getDate()+40),
-          existing,
-          i;
-          
-      $event.toggleClass(event.className, !!event.allDay);
-      console.log('------'+event.id_plan);
-        $event.html('<a style="text-decoration: none; color: inherit;" target="_blank" href="planeador.php?pdf=1&idplan='+event.id_plan+'">'+event.title+'('+event.grado+')'+'<a> ' + $event.html());
+                const today = new Date();
+                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                    dayDiv.classList.add('today');
+                }
+                
+                const eventsDiv = document.createElement('div');
+                eventsDiv.classList.add('events');
+                
+                const fechaActualStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const eventosDelDia = eventos_calendario.filter(e => e.start.startsWith(fechaActualStr));
+                
+                eventosDelDia.forEach(evento => {
+                    const eventDiv = document.createElement('div');
+                    eventDiv.classList.add('event', evento.className);
+                    eventDiv.textContent = evento.title;
+                    eventDiv.title = evento.description;
+                    eventDiv.addEventListener('click', () => showModal(evento));
+                    eventsDiv.appendChild(eventDiv);
+                });
 
-      if (!!time) {
-        $event.html('<strong>' + time + '</strong> ' + $event.html());
-      }
-      if (!event.end) {
-        $event.addClass('materia-matematicas');
-        $('.' + event.start.toDateCssClass()).append($event);
-        return;
-      }
-            
-      while (e <= event.end && (day.length || endday || options.date < checkanyway)) {
-        if(day.length) { 
-          existing = day.find('.event').length;
-          numbevents = Math.max(numbevents, existing);
-          for(i = 0; i < numbevents - existing; i++) {
-            day.append(empty.clone());
-          }
-          day.append(
-            $event.
-            toggleClass('begin', dateclass === event.start.toDateCssClass()).
-            toggleClass('end', dateclass === event.end.toDateCssClass())
-          );
-          $event = $event.clone();
-          $event.html(' ');
+                dayDiv.appendChild(eventsDiv);
+                calendarBody.appendChild(dayDiv);
+            }
+             
+             const totalDaysInGrid = startDayOfWeek + lastDayOfMonth.getDate();
+             const remainingDays = (7 - (totalDaysInGrid % 7)) % 7;
+             for (let i = 0; i < remainingDays; i++) {
+                calendarBody.insertAdjacentHTML('beforeend', '<div class="day outside-month"></div>');
+             }
         }
-        e.setDate(e.getDate() + 1);
-        dateclass = e.toDateCssClass();
-        day = $('.' + dateclass);
-      }
-    }
-    function yearAddEvents(events, year) {
-      var counts = [0,0,0,0,0,0,0,0,0,0,0,0];
-      $.each(events, function (i, v) {
-        if (v.start.getFullYear() === year) {
-            counts[v.start.getMonth()]++;
+
+        function renderLegend() {
+            const materiasEnUso = {};
+            eventos_calendario.forEach(e => {
+                if (!materiasEnUso[e.className]) {
+                    materiasEnUso[e.className] = e.title;
+                }
+            });
+
+            legendContainer.innerHTML = '';
+            for (const className in materiasEnUso) {
+                legendContainer.innerHTML += `
+                    <div class="legend-item">
+                        <div class="legend-color-box ${className}"></div>
+                        <span>${materiasEnUso[className]}</span>
+                    </div>
+                `;
+            }
         }
-      });
-      $.each(counts, function (i, v) {
-        if (v!==0) {
-            $('.month-'+i).append('<span class="badge">'+v+'</span>');
+        
+        function populateFilters() {
+            materias_filtro.forEach(materia => {
+                materiaFilter.innerHTML += `<option value="${materia}">${materia}</option>`;
+            });
+            grados_filtro.forEach(grado => {
+                gradoFilter.innerHTML += `<option value="${grado}">${grado}</option>`;
+            });
         }
-      });
-    }
-    
-    function draw() {
-      $el.html(t(options));
-      //potential optimization (untested), this object could be keyed into a dictionary on the dateclass string; the object would need to be reset and the first entry would have to be made here
-      $('.' + (new Date()).toDateCssClass()).addClass('today');
-      if (options.data && options.data.length) {
-        if (options.mode === 'year') {
-            yearAddEvents(options.data, options.date.getFullYear());
-        } else if (options.mode === 'month' || options.mode === 'week') {
-            $.each(options.data, monthAddEvent);
-        } else {
-            $.each(options.data, dayAddEvent);
+
+        function filterAndDisplayResults() {
+            const materia = materiaFilter.value;
+            const grado = gradoFilter.value;
+            const startDate = startDateFilter.value;
+            const endDate = endDateFilter.value;
+
+            const filteredPlanes = planes_unicos.filter(plan => {
+                const planStartDate = new Date(plan.start);
+                const planEndDate = new Date(plan.end);
+
+                const materiaMatch = !materia || plan.title === materia;
+                const gradoMatch = !grado || plan.grado == grado;
+                const startDateMatch = !startDate || planEndDate >= new Date(startDate);
+                const endDateMatch = !endDate || planStartDate <= new Date(endDate);
+                
+                return materiaMatch && gradoMatch && startDateMatch && endDateMatch;
+            });
+
+            // Ordenar los resultados por fecha de inicio (más reciente primero)
+            filteredPlanes.sort((a, b) => new Date(b.start) - new Date(a.start));
+
+            searchResults.innerHTML = '';
+            if (filteredPlanes.length > 0) {
+                noResultsMessage.style.display = 'none';
+                filteredPlanes.forEach(plan => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <a href="planeador.php?pdf=1&idplan=${plan.id_plan}" target="_blank" class="result-item">
+                            <strong>${plan.title}</strong> (Grado: ${plan.grado})
+                            <br>
+                            <span>${plan.start} al ${plan.end}</span>
+                        </a>`;
+                    searchResults.appendChild(li);
+                });
+            } else {
+                noResultsMessage.style.display = 'block';
+            }
         }
-      }
-    }
-    
-    draw();    
-  }
-  
-  ;(function (defaults, $, window, document) {
-    $.extend({
-      calendar: function (options) {
-        return $.extend(defaults, options);
-      }
-    }).fn.extend({
-      calendar: function (options) {
-        options = $.extend({}, defaults, options);
-        return $(this).each(function () {
-          var $this = $(this);
-          calendar($this, options);
+
+        function showModal(evento) {
+            modalTitle.textContent = evento.title;
+            modalDescription.textContent = evento.description;
+            modalLink.href = `planeador.php?pdf=1&idplan=${evento.id_plan}`;
+            modal.style.display = 'flex';
+        }
+
+        function hideModal() {
+            modal.style.display = 'none';
+        }
+
+        // --- INITIALIZE ---
+        renderCalendar();
+        renderLegend();
+        populateFilters();
+        filterAndDisplayResults(); // Initial display
+
+        // --- EVENT LISTENERS ---
+        prevMonthBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
         });
-      }
+        nextMonthBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        });
+        todayBtn.addEventListener('click', () => {
+            currentDate = new Date();
+            renderCalendar();
+        });
+        modalCloseBtn.addEventListener('click', hideModal);
+        modal.addEventListener('click', e => (e.target === modal) && hideModal());
+        document.addEventListener('keydown', e => (e.key === 'Escape') && hideModal());
+        
+        [materiaFilter, gradoFilter, startDateFilter, endDateFilter].forEach(el => {
+            el.addEventListener('change', filterAndDisplayResults);
+        });
     });
-  })({
-    days: ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"],
-    months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
-    shortMonths: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
-    date: (new Date()),
-        daycss: ["c-sunday", "", "", "", "", "", "c-saturday"],
-        todayname: "Hoy",
-        thismonthcss: "current",
-        lastmonthcss: "outside",
-        nextmonthcss: "outside",
-    mode: "month",
-    data: []
-  }, jQuery, window, document);
-    
-})(jQuery);
-</script>
-<?php
-function fechasQueCaenEnDia($fechaInicio, $fechaFin, $diaBuscado) {
-    $diasSemana = [
-        'domingo' => 0,
-        'lunes' => 1,
-        'martes' => 2,
-        'miércoles' => 3,
-        'miercoles' => 3, // para permitir sin tilde
-        'jueves' => 4,
-        'viernes' => 5,
-        'sábado' => 6,
-        'sabado' => 6
-    ];
-
-    $diaBuscado = strtolower($diaBuscado);
-
-    if (!isset($diasSemana[$diaBuscado])) {
-        return []; // Día inválido
-    }
-
-    $numeroDia = $diasSemana[$diaBuscado];
-    $fechasCoinciden = [];
-
-    $fecha = new DateTime($fechaInicio);
-    $fechaFin = new DateTime($fechaFin);
-
-    while ($fecha <= $fechaFin) {
-        if ((int)$fecha->format('w') === $numeroDia) {
-            $fechasCoinciden[] = $fecha->format('Y-m-d');
-        }
-        $fecha->modify('+1 day');
-    }
-   
-    return $fechasCoinciden;
-}
-
-// Ejemplo de uso:
-
-// 1) Conexión y consulta
-require 'conexion.php';
-$fecha_limite='2025-'.date('m').'-01';
-$result = $mysqli->query("
-    SELECT
-  p.*,h.*,
-        p.id_plan,
-        p.grado,
-        p.materia,
-        m.nombre_materia,
-        p.fecha_inicio AS fecha_iniciop,
-        p.fecha_fin AS fecha_finp,
-        h.fecha_inicio AS horario_fecha_inicio,
-        h.hora_inicio AS horario_hora_inicio,
-        h.hora_fin AS horario_hora_fin,
-        h.fecha_fin AS horario_fecha_fin,
-        p.objetivo AS texto_planeacion
-    FROM planeador_vallesol AS p
-    JOIN asignacion     AS a ON a.id_asignacion = p.materia    
-    JOIN materia_oficial AS m ON m.id_materia = a.id_asignatura
-    JOIN horario        AS h ON h.id_asignacion = a.id_asignacion
-    where p.fecha_inicio>='".$fecha_limite."'
-    ORDER BY p.id_plan desc 
-");
- 
-if (!$result) {
-    die("Error en consulta: " . $mysqli->error);
-}
-
-// 2) Construir el array de eventos, generando ISO‑strings
-$eventos = [];
-$conta=0;
-while ($r = $result->fetch_assoc() and $r['fecha_iniciop']<>'') {
-#$inicio = '2025-05-12';
-#$fin = '2025-05-16';
-#$dia = $r['dia'];
-/*
-echo "<pre>";
-echo($r['id_plan']).'<br>';
-echo($r['nombre_materia']).'<br>';
-echo($r['fecha_iniciop']).'<br>';
-echo($r['fecha_finp']).'<br>';
-echo($r['hora_inicio']).'<br>';
-echo($r['dia']).'<br>';
-echo "</pre>";
-*/
-$resultado = fechasQueCaenEnDia($r['fecha_iniciop'], $r['fecha_finp'], $r['dia'])[0];
-    $fdata =explode('-', $resultado);
-    $anio=$fdata[0];
-    $fecha = new DateTime($resultado); // por ejemplo, 9 de mayo de 2025
-$fecha->modify('-1 month');
- $mes = $fdata[1]; // Imprime: 2025-04-09
-    $dia = $fdata[2];
-    $hora_parts = explode(':', $r['horario_hora_inicio']);
-    $hora =   $hora_parts[0];
-$minutos = $hora_parts[1] ;
-    $startDt = new DateTime("{$resultado} {$r['horario_hora_inicio']}");
-    $endDt   = new DateTime("{$resultado} {$r['horario_hora_fin']}");
-    // Detectar evento all-day (00:00 a 23:59)
-    $allDay = $startDt->format('H:i') === '00:00' && $endDt->format('H:i') === '23:59';
-    if ($allDay) {
-        // Para que el plugin pinte todo el día, movemos el fin al día siguiente 00:00
-        $endDt = clone $startDt;
-        $endDt->modify('+1 day');
-    }
-    
-    // Formato ISO‑8601 garantizado
-    $startIso = $startDt->format('c'); 
-    $endIso   = $endDt->format('c');
-    $datainicio="$anio,$mes, $dia, $hora, $minutos";
-    $datafin="$anio,$mes, $dia, $hora, $minutos";
-
-$messages = [
-    [
-        "role" => "system",
-        "content" => "You are a assistant."
-    ],
-    [
-        "role" => "user",
-        "content" => "Dime el tema resumen unicamente en una palabra en español nunca en inglés y devuelve unicamente esa palabra de esta clase :".$r['objetivo']
-    ]
-];
-require_once '../ia/index.php';
-if(isset($_get['ia'])){
-$response = call_lm_studio_api($messages);
-}else{
-$response = $r['objetivo'];
-}
-
-#echo $response;
-
-    $eventos[] = [
-        'title'  => $r['nombre_materia'],
-        'grado'  =>  $r['grado'] ,
-        'id_plan'  =>  $r['id_plan'] ,
-        'start'  =>  $startIso ,
-        'end'    => $endIso,
-        'allDay' => 'false',
-        'text'   => $response,
-        'className' => 'materia-'.$r['nombre_materia'],
-
-    ];
-    
-    $conta=$conta+1;
-  
-}
-?>
-<script>
-var rawData = <?php
-echo json_encode($eventos);
-  ?>;
-console.log(rawData);
-  <?php $contador=0; ?>
-  var data = rawData.map(function(e, index) {
-    console.log(`Procesando evento ${index + 1}/${rawData.length}`);
-switch (e.title) {
-  case "Educación Física":
-miclase='Educacion_Fisica'; 
-    break;
-  case "matematicas":
-miclase='matematicas'; 
-
-    break;
-  case "Ciencias Sociales":
-miclase='Sociales'; 
-    break;
-  case "Emprendimiento":
-miclase='Emprendimiento'; 
-
-    break;
-  case "Tecnología e informática":
-miclase='tecnologia'; 
-    break;
-    case "Urbanidad":
-miclase='urbanidad'; 
-    break;
-  default:
-    miclase='matematicas';
-   // console.log("Lo lamentamos, por el momento no disponemos de " + miclase + ".");
-}
-
-
-//////
-
-
-
-
-    return {
-        title: e.title,
-        id_plan: e.id_plan,
-        start: new Date(e.start),
-        grado: e.grado,
-        end: new Date(e.end),
-        allDay: e.allDay,
-        text: e.text,
-      className: 'materia-'+miclase,
-
-    };
-});
-  console.log('Parsed:', data);
-
-  // 5) Ordenar cronológicamente (opcional)
-  data.sort(function(a,b){ return a.start - b.start; });
-
-  // 6) Inicializar el calendario cuando jQuery y el plugin estén listos
-  $(function(){
-    $('#holder').calendar({ data: data });
-  });
 </script>
 
+</body>
+</html>
 <?php
-#$contenido = ob_get_contents();
-#ob_clean();
-#include ("../comun/plantilla.php");
+// $contenido = ob_get_clean();
+// require("../comun/plantilla.php");
 ?>
+

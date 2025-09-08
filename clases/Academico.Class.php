@@ -17,9 +17,16 @@ public function __construct($identificacion=""){
 
 
 public function periodo_academico(){
-  $sql='SELECT *
-FROM periodo
-WHERE CURDATE() BETWEEN fecha_inicio AND fecha_fin;';
+  $sql="SELECT *
+            FROM periodo
+            WHERE fecha_inicio IS NOT NULL AND fecha_inicio != '0000-00-00'
+            ORDER BY
+                CASE
+                    WHEN CURDATE() BETWEEN fecha_inicio AND fecha_fin THEN 1
+                    ELSE 2
+                END ASC,
+                fecha_fin DESC
+            LIMIT 1";
   return $datos = json_decode($this->consultar_datos($sql,true),true);
 }
 
