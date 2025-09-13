@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
                 ':start_date' => $start_date,
                 ':end_date' => $end_date
             ];
-            
+            #echo $sql;
             $stmt = $pdo->prepare($sql);
             $stmt->execute($params);
             $report_data = $stmt->fetchAll(PDO::FETCH_ASSOC);

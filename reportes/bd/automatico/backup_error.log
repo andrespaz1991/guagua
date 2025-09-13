@@ -827,3 +827,4 @@
 2025-09-02 18:15:08 - Error en backup para 'guagua': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
 2025-09-02 21:30:10 - Error en backup para 'guagua': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
 2025-09-07 07:09:10 - Error en backup para 'guagua': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect
+2025-09-09 07:00:11 - Error en backup para 'guagua': Error en mysqldump (Código 2). Mensaje: mysqldump.exe: Got error: 2002: "Can't connect to MySQL server on 'localhost' (10061)" when trying to connect

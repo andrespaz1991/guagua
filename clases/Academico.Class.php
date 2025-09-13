@@ -639,9 +639,30 @@ return $datos = json_decode($this->consultar_datos($sql,true),true);
 }
 
 public function listar_estudiantes_asignacion($asignacion){
-  $sql=' SELECT * FROM inscripcion
+/*
+$sql=' SELECT * FROM inscripcion
   inner join usuario on inscripcion.id_estudiante= usuario.id_usuario
    where inscripcion.id_asignacion="'.$asignacion.'"  and (inscripcion.estado_inscripcion="Aprobado" or inscripcion.estado_inscripcion= "En curso" ) GROUP by inscripcion.id_estudiante order by usuario.nombre asc';
+   */
+
+   $sql='SELECT *
+FROM inscripcion
+INNER JOIN usuario ON inscripcion.id_estudiante = usuario.id_usuario
+WHERE
+   inscripcion.id_asignacion IN (
+        SELECT a.id_asignacion
+        FROM asignacion a
+        JOIN materia m ON a.id_asignatura = m.id_materia
+        JOIN categoria_curso cc ON a.id_categoria_curso = cc.id_categoria_curso
+        WHERE a.id_asignacion = "'.$asignacion.'"
+    )
+    -- Se mantienen tus filtros originales para el estado de la inscripción.
+    AND (inscripcion.estado_inscripcion = "Aprobado" OR inscripcion.estado_inscripcion = "En curso")
+GROUP BY
+    inscripcion.id_estudiante
+ORDER BY
+    usuario.nombre ASC;';
+
   #echo $sql;
 return $datos = json_decode($this->consultar_datos($sql,true),true);
 
