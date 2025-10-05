@@ -1,17 +1,12 @@
 <?php
 /**
- * mis_cursos_corregido.php
+ * mis_cursos_actualizado.php
  *
- * Versión final con funcionalidad de menú contextual y toggle restaurada.
+ * Versión con AJAX corregido para enviar datos como JSON.
  *
- * Mejoras Clave Aplicadas:
- * 1.  Seguridad (Prevención de Inyección SQL): Se utilizan sentencias preparadas.
- * 2.  Seguridad (Prevención de XSS): Todos los datos se sanitizan.
- * 3.  Rendimiento (Solución N+1): Se obtiene el conteo de categorías en una sola consulta.
- * 4.  Lógica Corregida: Docentes y administradores ven TODOS sus cursos asignados.
- * 5.  Filtro de Materias Oficiales: La consulta ahora solo muestra cursos de `materia_oficial`.
- * 6.  FUNCIONALIDAD RESTAURADA: El menú contextual (clic derecho) y el toggle de secciones vuelven a funcionar.
- * 7.  Estructura de Código Limpia: Lógica PHP separada de la presentación HTML y JavaScript centralizado.
+ * Mejoras Clave:
+ * 1.  ENVÍO JSON: Se utiliza JSON.stringify() para asegurar que los datos se envíen en un formato robusto.
+ * 2.  CONTENTTYPE EXPLÍCITO: Se define el 'Content-Type' para que el servidor sepa cómo interpretar la petición.
  */
 
 // --- INICIO: CONFIGURACIÓN Y LÓGICA DE PHP ---
@@ -68,7 +63,6 @@ function buscar_mis_cursos_html($mysqli_conn, $parametro_buqueda = "", $campo = 
         $num_cat_ano = $conteos_por_ano[$id_ano_lectivo] ?? 0;
 
         $output .= "<div id='estilo_ano'></div>";
-        // ATRIBUTO ONCLICK RESTAURADO PARA EL TOGGLE
         $output .= "<p id='pid_{$id_ano_lectivo}' onclick=\"mitoogle('#id_{$id_ano_lectivo}')\" style='cursor:pointer;'>";
         $output .= "{$nombre_ano_lectivo}";
         $output .= "<span id='estilo_categoria_curso'>Categorías en uso: {$num_cat_ano}</span></p>";
@@ -117,8 +111,12 @@ function buscar_mis_cursos_html($mysqli_conn, $parametro_buqueda = "", $campo = 
                     array_push($params, $id_hijo);
                 }
             }
-
-            if (!empty($parametro_buqueda)) {
+            
+            if (empty($parametro_buqueda)) {
+                if ($rol == 'estudiante' || $rol == 'acudiente') {
+                    $sql_conditions .= " AND a.visible = 'si'";
+                }
+            } else {
                 $campo_busqueda = 'LOWER(mo.nombre_materia)';
                 $sql_conditions .= " AND {$campo_busqueda} LIKE ?";
                 $types .= "s";
@@ -139,7 +137,6 @@ function buscar_mis_cursos_html($mysqli_conn, $parametro_buqueda = "", $campo = 
                     $id_cat_div = 'cat_' . $id_ano_lectivo . $id_cat;
                     $output .= '<div class="row"><div class="col-sm-11 col-sm-offset-1">';
                     $output .= '<div id="separador_cursos"></div>';
-                    // ATRIBUTO ONMOUSEUP RESTAURADO PARA EL TOGGLE DE CATEGORÍA
                     $output .= '<p onmouseup="ocultar_ano_cat(\'' . $id_cat_div . '\');" title="Total de Cursos: ' . $result_cursos->num_rows . '" style="cursor:pointer;" class="Abckids">' . htmlspecialchars($nombre_cat, ENT_QUOTES, 'UTF-8') . '<span id="separador_cursos_encontrados"> Cursos Encontrados: ' . $result_cursos->num_rows . '</span></p>';
                     $output .= '</div></div><div class="cats" id="' . $id_cat_div . '"><div class="row">';
 
@@ -149,22 +146,34 @@ function buscar_mis_cursos_html($mysqli_conn, $parametro_buqueda = "", $campo = 
                         $nombre_docente = htmlspecialchars($rowa['nombre_docente'] . ' ' . $rowa['apellido_docente'], ENT_QUOTES, 'UTF-8');
                         $descripcion = htmlspecialchars($rowa['descripcion'] ?? '', ENT_QUOTES, 'UTF-8');
                         $icono_url = htmlspecialchars(consultar_link_icono($rowa['icono_asignacion']), ENT_QUOTES, 'UTF-8');
-                        $visible_style = ($rowa['visible'] == "NO") ? 'style="-webkit-filter: grayscale(1); filter: gray;"' : '';
-                        $visible_class = ($rowa['visible'] == "NO") ? 'grises' : '';
+                        
+                        $es_visible = (strtolower(trim($rowa['visible'] ?? 'si')) !== "no");
+                        $visible_class = $es_visible ? '' : 'oculto';
                         $link_modificar = "modificar_curso.php?asignacion={$id_asignacion}";
                         
-                        // ATRIBUTOS RESTAURADOS: contextmenu y la clase dinámica para el selector JS
-                        $output .= "<div contextmenu='menu_curso{$id_asignacion}' style='text-align:center;margin: 2% 5%; border:2px solid #ccc;border-radius:15px;' class='col-sm-2 menu_curso{$id_asignacion} droppable'>";
+                        $output .= "<div id='curso-{$id_asignacion}' contextmenu='menu_curso{$id_asignacion}' class='col-sm-2 menu_curso{$id_asignacion} droppable curso-card {$visible_class}'>";
+                        
                         $output .= "<h4 class='Abckids'><strong><span title='{$nombre_materia}'>" . mb_strtoupper(puntos_suspensivos($nombre_materia, 20), 'UTF-8') . "</span></strong></h4>";
                         $output .= "<h5 class='Abckids'>Docente: {$nombre_docente}</h5>";
                         $output .= "<a href='" . SGA_CURSOS_URL . "/curso.php?asignacion={$id_asignacion}'>";
-                        $output .= "<img id='iconomateria_{$id_asignacion}' width='70%' height='70%' src='{$icono_url}' title='Descripción: {$descripcion}' class='img-responsive {$visible_class}' {$visible_style} style='margin-left:30px!important' alt='Imagen del curso'>";
+                        $output .= "<img id='iconomateria_{$id_asignacion}' width='70%' height='70%' src='{$icono_url}' title='Descripción: {$descripcion}' class='img-responsive' style='margin-left:30px!important' alt='Imagen del curso'>";
                         $output .= "</a>";
                         
                         if ($rol == "admin" || $rol == "docente") {
-                            // LLAMADA RESTAURADA: Se vuelve a generar el HTML del menú
                             $output .= $academico->componente_context_menu($rowa['id_asignacion'], $rowa['nombre_materia']);
-                            $output .= " <a href='{$link_modificar}'>Modificar</a>";
+
+                            $output .= "<div class='curso-acciones'>";
+                            $output .= "<a href='{$link_modificar}' class='btn btn-default btn-xs'>Modificar</a>";
+                            
+                            $texto_boton = $es_visible ? 'Ocultar' : 'Mostrar';
+                            $output .= "<button 
+                                            class='btn btn-default btn-xs control-visibilidad-btn' 
+                                            data-id='{$id_asignacion}' 
+                                            data-visible='" . ($es_visible ? 'si' : 'no') . "'>
+                                            {$texto_boton}
+                                        </button>";
+
+                            $output .= "</div>";
                         }
                         
                         $output .= "</div>";
@@ -183,8 +192,6 @@ function buscar_mis_cursos_html($mysqli_conn, $parametro_buqueda = "", $campo = 
     return $output;
 }
 
-
-// --- Controlador AJAX ---
 if (isset($_GET['buscar_mis_cursos'])) {
     $datos = $_POST['datos'] ?? "";
     $campo = $_POST['campo'] ?? "nombre_materia";
@@ -194,12 +201,35 @@ if (isset($_GET['buscar_mis_cursos'])) {
 }
 
 $anos_inactivos_json = json_encode($academico->consultar_anios());
+
+ob_start();
 ?>
-
-<!-- ================================================================= -->
-<!-- INICIO DE LA VISTA (HTML)                                         -->
-<!-- ================================================================= -->
-
+<style>
+    .curso-card {
+        position: relative;
+        text-align: center;
+        margin: 2% 5%;
+        border: 2px solid #ccc;
+        border-radius: 15px;
+        transition: all 0.3s ease-in-out;
+        padding: 15px 15px 10px 15px;
+    }
+    .curso-card.oculto {
+        opacity: 0.6;
+        filter: grayscale(80%);
+        border: 2px dashed #e74c3c;
+        background-color: #fdf5f5;
+    }
+    .curso-acciones {
+        margin-top: 10px;
+    }
+    .curso-acciones .btn {
+        margin: 0 3px;
+    }
+</style>
+<?php
+$estilos_y_scripts = ob_get_clean();
+?>
 <script>
     $(document).ready(function() {
         if (typeof ocultar_anios_no_vigentes === "function") {
@@ -230,7 +260,6 @@ $anos_inactivos_json = json_encode($academico->consultar_anios());
     </div>
 </div>
 
-<!-- Contenedor principal donde se renderizará la lista de cursos -->
 <span id="span_buscar_mis_cursos">
     <?php 
         echo buscar_mis_cursos_html($mysqli); 
@@ -241,21 +270,69 @@ $anos_inactivos_json = json_encode($academico->consultar_anios());
 <?php 
 $contenido = ob_get_contents();
 ob_end_clean();
+$contenido = $estilos_y_scripts . $contenido;
 include("../comun/plantilla.php");
 ?>
 
-<!-- ================================================================= -->
-<!-- SCRIPT PARA FUNCIONALIDAD DINÁMICA                              -->
-<!-- ================================================================= -->
 <script>
-    // Esta función inicializa los menús contextuales para los elementos que estén visibles.
+    function inicializarControlVisibilidad() {
+        var container = $('#span_buscar_mis_cursos');
+        
+        container.off('click', '.control-visibilidad-btn');
+        
+        container.on('click', '.control-visibilidad-btn', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            var button = $(this);
+            var asignacionId = button.data('id');
+            var currentState = button.data('visible');
+            var newState = (currentState === 'si') ? 'no' : 'si';
+
+            // --- INICIO DE LA CORRECCIÓN AJAX ---
+            $.ajax({
+                url: 'actualizar_visibilidad.php',
+                type: 'POST',
+                // 1. Convertimos el objeto de datos a un string JSON.
+                data: JSON.stringify({
+                    id_asignacion: asignacionId,
+                    visible: newState
+                }),
+                // 2. Le decimos al servidor que estamos enviando JSON.
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        var cursoCard = $('#curso-' + asignacionId);
+                        if (newState === 'no') {
+                            cursoCard.addClass('oculto');
+                            button.text('Mostrar');
+                            button.data('visible', 'no');
+                        } else {
+                            cursoCard.removeClass('oculto');
+                            button.text('Ocultar');
+                            button.data('visible', 'si');
+                        }
+                    } else {
+                        // Mostramos el error del servidor en la consola para un mejor diagnóstico.
+                        console.error('Error del servidor: ' + response.message);
+                        alert('Hubo un error al actualizar el curso. Revise la consola para más detalles.');
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error de AJAX: ' + textStatus, errorThrown);
+                    alert('Hubo un error de comunicación con el servidor.');
+                }
+            });
+            // --- FIN DE LA CORRECCIÓN AJAX ---
+        });
+    }
+
     function inicializarMenusContextuales() {
-        // Itera sobre cada curso que tiene un menú contextual definido.
         $('[contextmenu]').each(function() {
             var menuId = $(this).attr('contextmenu');
             var selector = '.' + menuId;
             
-            // Asegurarse de que no se inicialice múltiples veces
             if (!$(this).data('contextMenu')) {
                 $.contextMenu({
                     selector: selector,
@@ -266,11 +343,9 @@ include("../comun/plantilla.php");
     }
 
     $(document).ready(function() {
-        // Inicializa los menús cuando la página carga por primera vez.
         inicializarMenusContextuales();
-
-        // Escucha cambios en el contenedor de cursos.
-        // Si AJAX actualiza el contenido, se re-inicializan los menús.
+        inicializarControlVisibilidad();
+        
         var observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.addedNodes.length) {
@@ -281,7 +356,7 @@ include("../comun/plantilla.php");
 
         var container = document.getElementById('span_buscar_mis_cursos');
         if(container) {
-            observer.observe(container, { childList: true });
+            observer.observe(container, { childList: true, subtree: true });
         }
     });
 </script>

@@ -39,3 +39,12 @@
 [12/09/2025 16:18:10] No se pudo crear la base de datos 'moodle'.
 [12/09/2025 16:18:12] No se pudo crear la base de datos 'prompt'.
 [12/09/2025 16:18:40] ERROR: No se pudo crear la base de datos 'guagua'.
+[13/09/2025 16:48:12] No se pudo crear la base de datos 'cronos'.
+[14/09/2025 06:46:47] ERROR: No se pudo crear la base de datos 'guagua'.
+[14/09/2025 06:47:02] No se pudo crear la base de datos 'moodle'.
+[14/09/2025 06:47:05] No se pudo crear la base de datos 'prompt'.
+[21/09/2025 13:09:10] ERROR: No se pudo crear la base de datos 'guagua'.
+[28/09/2025 09:46:32] ERROR: No se pudo crear la base de datos 'guagua'.
+[29/09/2025 09:57:09] ERROR: No se pudo crear la base de datos 'guagua'.
+[29/09/2025 09:57:37] No se pudo crear la base de datos 'prompt'.
+[29/09/2025 10:00:40] Falló la importación del archivo 'cronos.sql' en la base de datos 'cronos'.

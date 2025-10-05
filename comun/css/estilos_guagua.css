@@ -33,6 +33,14 @@ font-size: 20px !important;
 .foro .panel-heading{
     border:0px solid transparent;
 }
+    .curso-home-card.oculto {
+        opacity: 0.6;
+        filter: grayscale(80%);
+        border: 2px dashed #e74c3c;
+        background-color: #fdf5f5;
+        border-radius: 5px;
+        padding: 5px;
+    }
     .foro .cabecera_entrada{
         text-align:left;
         position:relative;

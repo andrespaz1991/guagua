@@ -1,22 +1,17 @@
 <?php
 /**
  * =================================================================
- * MÓDULO DE CALENDARIO DE PLANEACIÓN - VERSIÓN OPTIMIZADA
+ * MÓDULO DE CALENDARIO DE PLANEACIÓN - VERSIÓN CON PAGINACIÓN NUMÉRICA
  * =================================================================
  *
- * Mejoras realizadas:
- * 1.  Código PHP Optimizado:
- * -   Se ha reestructurado toda la lógica para que sea más clara y eficiente.
- * -   Se utiliza una única consulta SQL para obtener todos los eventos.
- * -   Se generan dos arrays: uno para los eventos del calendario y otro para los planes únicos para la búsqueda.
+ * Mejoras realizadas (v3):
+ * 1.  Paginación Numérica Asíncrona:
+ * -   Se reemplaza el botón "Cargar más" por un control de paginación numérico (Ej: < 1 2 3 >).
+ * -   El backend ahora calcula y devuelve el número total de registros que coinciden con los filtros.
+ * -   El frontend renderiza dinámicamente los controles de paginación basados en el total de resultados.
  *
- * 2.  Diseño de Interfaz (UI/UX) Renovado:
- * -   Se ha reorganizado el encabezado para una mejor distribución visual.
- * -   Se ha añadido un panel de búsqueda asíncrona debajo del calendario.
- * -   Los resultados de la búsqueda se muestran instantáneamente y enlazan a los planes.
- *
- * 3.  JavaScript Moderno y Eficiente:
- * -   El código gestiona tanto el renderizado del calendario como la lógica de filtrado en tiempo real.
+ * 2.  Optimización de Consultas:
+ * -   El endpoint AJAX ahora realiza dos consultas: una para contar el total de registros y otra para obtener la página actual, asegurando que la paginación sea precisa.
  */
 
 // 1. GESTIÓN DE SESIÓN Y CONFIGURACIÓN INICIAL
@@ -32,13 +27,95 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/../comun/conexion.php';
 require_once __DIR__ . '/../comun/funciones.php';
 
-// 2. LÓGICA DE OBTENCIÓN DE EVENTOS Y PLANES
+// =================================================================
+// 2. ENDPOINT AJAX PARA BÚSQUEDA Y PAGINACIÓN
+// =================================================================
+if (isset($_GET['action']) && $_GET['action'] == 'buscar_planeaciones') {
+    header('Content-Type: application/json');
+
+    $recordsPerPage = 10;
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $offset = ($page - 1) * $recordsPerPage;
+
+    // Construcción de la consulta con filtros
+    $baseSql = "FROM planeador_vallesol p
+                JOIN asignacion a ON a.id_asignacion = p.materia
+                JOIN materia_oficial m ON m.id_materia = a.id_asignatura";
+    
+    $whereConditions = [];
+    $params = [];
+    $types = '';
+
+    if (!empty($_GET['materia'])) {
+        $whereConditions[] = "m.nombre_materia = ?";
+        $params[] = $_GET['materia'];
+        $types .= 's';
+    }
+    if (!empty($_GET['grado'])) {
+        $whereConditions[] = "p.grado = ?";
+        $params[] = $_GET['grado'];
+        $types .= 's';
+    }
+    if (!empty($_GET['startDate'])) {
+        $whereConditions[] = "p.fecha_fin >= ?";
+        $params[] = $_GET['startDate'];
+        $types .= 's';
+    }
+    if (!empty($_GET['endDate'])) {
+        $whereConditions[] = "p.fecha_inicio <= ?";
+        $params[] = $_GET['endDate'];
+        $types .= 's';
+    }
+
+    $whereClause = "";
+    if (!empty($whereConditions)) {
+        $whereClause = " WHERE " . implode(" AND ", $whereConditions);
+    }
+    
+    // Consulta para contar el total de registros
+    $totalSql = "SELECT COUNT(DISTINCT p.id_plan) as total " . $baseSql . $whereClause;
+    $stmtTotal = $mysqli->prepare($totalSql);
+    if ($stmtTotal) {
+        if (!empty($params)) {
+            $stmtTotal->bind_param($types, ...$params);
+        }
+        $stmtTotal->execute();
+        $totalResult = $stmtTotal->get_result()->fetch_assoc();
+        $totalRecords = $totalResult['total'];
+    } else {
+        $totalRecords = 0;
+    }
+
+    // Consulta para obtener los datos de la página actual
+    $dataSql = "SELECT DISTINCT p.id_plan, m.nombre_materia AS title, p.grado, p.fecha_inicio AS start, p.fecha_fin AS end " . $baseSql . $whereClause . " ORDER BY p.fecha_inicio DESC LIMIT ? OFFSET ?";
+    
+    $dataParams = $params;
+    $dataParams[] = $recordsPerPage;
+    $dataParams[] = $offset;
+    $dataTypes = $types . 'ii';
+    
+    $stmtData = $mysqli->prepare($dataSql);
+    if ($stmtData) {
+        $stmtData->bind_param($dataTypes, ...$dataParams);
+        $stmtData->execute();
+        $resultado = $stmtData->get_result();
+        $planes = $resultado->fetch_all(MYSQLI_ASSOC);
+        echo json_encode(['data' => $planes, 'total' => $totalRecords]);
+    } else {
+        echo json_encode(['error' => 'Error en la consulta: ' . $mysqli->error, 'data' => [], 'total' => 0]);
+    }
+    exit;
+}
+
+
+// =================================================================
+// 3. LÓGICA PARA LA CARGA INICIAL DE LA PÁGINA
+// =================================================================
 $eventos_calendario = [];
-$planes_unicos = [];
 $materias_unicas = [];
 $grados_unicos = [];
 
-$sql = "SELECT
+$sql_inicial = "SELECT
             p.id_plan,
             p.grado,
             m.nombre_materia,
@@ -54,34 +131,18 @@ $sql = "SELECT
         JOIN horario AS h ON h.id_asignacion = a.id_asignacion
         ORDER BY p.fecha_inicio DESC, m.nombre_materia";
 
-$resultado = $mysqli->query($sql);
+$resultado = $mysqli->query($sql_inicial);
 
 if ($resultado) {
     $diasSemana = [
         'lunes' => 1, 'martes' => 2, 'miercoles' => 3, 'jueves' => 4,
         'viernes' => 5, 'sabado' => 6, 'domingo' => 0
     ];
-
+    
     while ($fila = $resultado->fetch_assoc()) {
-        // --- Poblar array de planes únicos para la búsqueda ---
-        if (!isset($planes_unicos[$fila['id_plan']])) {
-            $planes_unicos[$fila['id_plan']] = [
-                'id_plan' => $fila['id_plan'],
-                'title' => $fila['nombre_materia'],
-                'grado' => $fila['grado'],
-                'start' => $fila['fecha_iniciop'],
-                'end' => $fila['fecha_finp']
-            ];
-            // Poblar filtros de grado y materia
-            if (!in_array($fila['grado'], $grados_unicos)) {
-                $grados_unicos[] = $fila['grado'];
-            }
-            if (!in_array($fila['nombre_materia'], $materias_unicas)) {
-                $materias_unicas[] = $fila['nombre_materia'];
-            }
-        }
-
-        // --- Generar eventos para el calendario ---
+        if (!in_array($fila['grado'], $grados_unicos)) $grados_unicos[] = $fila['grado'];
+        if (!in_array($fila['nombre_materia'], $materias_unicas)) $materias_unicas[] = $fila['nombre_materia'];
+        
         try {
             $fecha_inicio = new DateTime($fila['fecha_iniciop']);
             $fecha_fin = new DateTime($fila['fecha_finp']);
@@ -116,7 +177,7 @@ if ($resultado) {
     error_log("Error en la consulta del calendario: " . $mysqli->error);
 }
 
-// 3. VISTA DEL CALENDARIO (HTML, CSS, JS)
+// 4. VISTA DEL CALENDARIO (HTML, CSS, JS)
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -345,7 +406,7 @@ if ($resultado) {
             border-radius: 8px;
             background-color: #fdfdfd;
         }
-        #search-results { list-style: none; padding: 0; }
+        #search-results { list-style: none; padding: 0; min-height: 100px; }
         .result-item {
             display: block;
             padding: 15px;
@@ -371,12 +432,56 @@ if ($resultado) {
             color: #718096;
         }
 
+        /* --- NUEVO --- Estilos de paginación numérica */
+        #pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        .page-link {
+            padding: 8px 14px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            background-color: #fff;
+            color: var(--primary-color);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .page-link:hover {
+            background-color: #edf2f7;
+            border-color: #cbd5e0;
+        }
+        .page-link.active {
+            background-color: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+            cursor: default;
+        }
+        .page-link.disabled {
+            color: #a0aec0;
+            cursor: not-allowed;
+            background-color: #f7fafc;
+        }
+        .page-link.disabled:hover {
+            border-color: var(--light-gray);
+            background-color: #f7fafc;
+        }
+        .page-info {
+            padding: 8px 12px;
+            font-size: 0.9em;
+            color: #718096;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="calendar-container">
+        <!-- ... (código del calendario sin cambios) ... -->
         <div class="calendar-header">
             <div class="calendar-nav">
                 <button id="prev-month-btn">&lt; Anterior</button>
@@ -422,7 +527,11 @@ if ($resultado) {
             </div>
         </div>
         <ul id="search-results"></ul>
+        <div id="loading-spinner" style="display: none; text-align: center; padding: 20px;">Cargando...</div>
         <p id="no-results-message" style="display: none;">No se encontraron planeaciones con los filtros seleccionados.</p>
+        
+        <!-- --- MODIFICADO --- Contenedor para los controles de paginación -->
+        <div id="pagination-controls"></div>
     </div>
 </div>
 
@@ -454,23 +563,28 @@ if ($resultado) {
         const modalLink = document.getElementById('modal-link');
         const modalCloseBtn = modal.querySelector('.modal-close-btn');
 
-        // --- SEARCH VARIABLES ---
+        // --- SEARCH & PAGINATION VARIABLES ---
         const materiaFilter = document.getElementById('materia-filter');
         const gradoFilter = document.getElementById('grado-filter');
         const startDateFilter = document.getElementById('start-date-filter');
         const endDateFilter = document.getElementById('end-date-filter');
         const searchResults = document.getElementById('search-results');
         const noResultsMessage = document.getElementById('no-results-message');
+        const paginationControls = document.getElementById('pagination-controls');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        
+        const recordsPerPage = 10;
+        let isLoading = false;
 
         // --- DATA FROM PHP ---
         const eventos_calendario = <?php echo json_encode($eventos_calendario); ?>;
-        const planes_unicos = Object.values(<?php echo json_encode($planes_unicos); ?>);
         const materias_filtro = <?php echo json_encode($materias_unicas); ?>;
         const grados_filtro = <?php echo json_encode($grados_unicos); ?>;
 
         let currentDate = new Date();
         
         function renderCalendar() {
+            // ... (código de renderCalendar sin cambios) ...
             calendarBody.innerHTML = '';
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
@@ -525,7 +639,8 @@ if ($resultado) {
         }
 
         function renderLegend() {
-            const materiasEnUso = {};
+            // ... (código de renderLegend sin cambios) ...
+             const materiasEnUso = {};
             eventos_calendario.forEach(e => {
                 if (!materiasEnUso[e.className]) {
                     materiasEnUso[e.className] = e.title;
@@ -552,43 +667,75 @@ if ($resultado) {
             });
         }
 
-        function filterAndDisplayResults() {
-            const materia = materiaFilter.value;
-            const grado = gradoFilter.value;
-            const startDate = startDateFilter.value;
-            const endDate = endDateFilter.value;
+        // --- FUNCIÓN MODIFICADA --- Para obtener resultados del servidor por página
+        async function fetchResults(page = 1) {
+            if (isLoading) return;
+            isLoading = true;
+            
+            searchResults.innerHTML = '';
+            loadingSpinner.style.display = 'block';
+            noResultsMessage.style.display = 'none';
+            paginationControls.innerHTML = '';
 
-            const filteredPlanes = planes_unicos.filter(plan => {
-                const planStartDate = new Date(plan.start);
-                const planEndDate = new Date(plan.end);
-
-                const materiaMatch = !materia || plan.title === materia;
-                const gradoMatch = !grado || plan.grado == grado;
-                const startDateMatch = !startDate || planEndDate >= new Date(startDate);
-                const endDateMatch = !endDate || planStartDate <= new Date(endDate);
-                
-                return materiaMatch && gradoMatch && startDateMatch && endDateMatch;
+            const params = new URLSearchParams({
+                action: 'buscar_planeaciones',
+                page: page,
+                materia: materiaFilter.value,
+                grado: gradoFilter.value,
+                startDate: startDateFilter.value,
+                endDate: endDateFilter.value
             });
 
-            // Ordenar los resultados por fecha de inicio (más reciente primero)
-            filteredPlanes.sort((a, b) => new Date(b.start) - new Date(a.start));
+            try {
+                const response = await fetch(`?${params.toString()}`);
+                const { data: planes, total } = await response.json();
 
-            searchResults.innerHTML = '';
-            if (filteredPlanes.length > 0) {
-                noResultsMessage.style.display = 'none';
-                filteredPlanes.forEach(plan => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <a href="planeador.php?pdf=1&idplan=${plan.id_plan}" target="_blank" class="result-item">
-                            <strong>${plan.title}</strong> (Grado: ${plan.grado})
-                            <br>
-                            <span>${plan.start} al ${plan.end}</span>
-                        </a>`;
-                    searchResults.appendChild(li);
-                });
-            } else {
+                if (planes.length > 0) {
+                    planes.forEach(plan => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <a href="planeador.php?pdf=1&idplan=${plan.id_plan}" target="_blank" class="result-item">
+                                <strong>${plan.title}</strong> (Grado: ${plan.grado})
+                                <br>
+                                <span>${plan.start} al ${plan.end}</span>
+                            </a>`;
+                        searchResults.appendChild(li);
+                    });
+                    renderPaginationControls(total, page);
+                } else {
+                    noResultsMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error al buscar planeaciones:', error);
+                noResultsMessage.textContent = 'Ocurrió un error al cargar los resultados.';
                 noResultsMessage.style.display = 'block';
+            } finally {
+                isLoading = false;
+                loadingSpinner.style.display = 'none';
             }
+        }
+
+        // --- NUEVA FUNCIÓN --- Para renderizar los controles de paginación
+        function renderPaginationControls(total, currentPage) {
+            paginationControls.innerHTML = '';
+            const totalPages = Math.ceil(total / recordsPerPage);
+
+            if (totalPages <= 1) return;
+
+            let html = '';
+
+            // Botón "Anterior"
+            html += `<a href="#" class="page-link ${currentPage === 1 ? 'disabled' : ''}" data-page="${currentPage - 1}">&laquo;</a>`;
+
+            // Lógica para mostrar números de página
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<a href="#" class="page-link ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</a>`;
+            }
+
+            // Botón "Siguiente"
+            html += `<a href="#" class="page-link ${currentPage === totalPages ? 'disabled' : ''}" data-page="${currentPage + 1}">&raquo;</a>`;
+            
+            paginationControls.innerHTML = html;
         }
 
         function showModal(evento) {
@@ -606,27 +753,28 @@ if ($resultado) {
         renderCalendar();
         renderLegend();
         populateFilters();
-        filterAndDisplayResults(); // Initial display
+        fetchResults(1); // Carga inicial de la página 1
 
         // --- EVENT LISTENERS ---
-        prevMonthBtn.addEventListener('click', () => {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            renderCalendar();
-        });
-        nextMonthBtn.addEventListener('click', () => {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            renderCalendar();
-        });
-        todayBtn.addEventListener('click', () => {
-            currentDate = new Date();
-            renderCalendar();
-        });
+        prevMonthBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); });
+        nextMonthBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
+        todayBtn.addEventListener('click', () => { currentDate = new Date(); renderCalendar(); });
         modalCloseBtn.addEventListener('click', hideModal);
         modal.addEventListener('click', e => (e.target === modal) && hideModal());
         document.addEventListener('keydown', e => (e.key === 'Escape') && hideModal());
         
         [materiaFilter, gradoFilter, startDateFilter, endDateFilter].forEach(el => {
-            el.addEventListener('change', filterAndDisplayResults);
+            el.addEventListener('change', () => fetchResults(1));
+        });
+
+        // --- NUEVO --- Listener para los controles de paginación (delegación de eventos)
+        paginationControls.addEventListener('click', e => {
+            e.preventDefault();
+            const target = e.target.closest('.page-link');
+            if (target && !target.classList.contains('disabled') && !target.classList.contains('active')) {
+                const page = parseInt(target.dataset.page, 10);
+                fetchResults(page);
+            }
         });
     });
 </script>

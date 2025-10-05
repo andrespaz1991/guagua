@@ -148,7 +148,9 @@ if (isset($_SESSION['barra_busqueda']) and $_SESSION['barra_busqueda'] == "curso
              $('#icon-miperfil').tooltip(); 
         </script>
 <ul class="dropdown-menu">
-  <?php if($_SESSION['rol']=="docente"){ ?>
+  <?php if($_SESSION['rol']=="docente"){ 
+    /*
+    ?>
   <li><a href="<?php echo SGA_PLANEADOR_URL ?>/institucion_educativa.php">Ajustes de la Institución</a></li>
    <li><a href="<?php echo SGA_PLANEADOR_URL ?>/materia.php">Materias</a></li>
       <li><a href="<?php echo SGA_PLANEADOR_URL ?>/actividad.php">Actividades de planeación</a></li>
@@ -170,9 +172,9 @@ if (isset($_SESSION['barra_busqueda']) and $_SESSION['barra_busqueda'] == "curso
   <li id="menu_estudiante" ><a href="<?php echo SGA_URL; ?>/usuario/usuario.php?u=estudiante">Estudiantes</a></li>
   <li id="menu_acudiente" ><a href="<?php echo SGA_URL; ?>/usuario/usuario.php?u=acudiente">Acudientes</a></li>
   <li id="menu_acudiente" ><a href="<?php echo SGA_EVAL_URL; ?>/php/matricula.php">Inscripciones</a></li>
-  <?php } ?>
+  <?php */ } ?>
 <?php if($_SESSION['rol']=="docente"){ ?>
-<li><a href="<?php echo SGA_URL ?>/asistencia/reporte_asistencia_docente.php">Reporte de horas</a></li>
+<li><a href="<?php echo SGA_URL ?>/Planeador/menu_items2.php">Menu</a></li>
 <?php } ?>
   <li><a href="<?php echo SGA_USUARIO_URL ?>/login.php?logout">Salir</a></li>
 </ul>

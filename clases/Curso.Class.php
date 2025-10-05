@@ -200,30 +200,55 @@ $sql="SELECT imagen_icono FROM `iconos` WHERE id_iconos=$icono";
     }
 
 }
-public function listar_cursos_home(){
-  $datos_curso =$this->mis_cursos_otros();
-  foreach ($datos_curso as $key => $datos_materia) { 
-    #$academico=new academico();
-    $this->componente_context_menu($datos_materia['id_asignacion'],$datos_materia['nombre_materia']);
-    ?>
-    <script type="text/javascript">
-      $(function(){
-        contexmenu('<?php echo $datos_materia['id_asignacion'] ?>');
-    });
-    </script>
-    <div style="margin-top:5%" class="menu_contextual<?php echo $datos_materia['id_asignacion'] ?>">
-        <a class="enlace_sin_estilo" title="<?php echo $datos_materia['descripcion']; ?>" href="<?php echo SGA_CURSOS_URL.'/curso.php?asignacion='.$datos_materia['id_asignacion']; ?>" > <?php echo puntos_suspensivos($datos_materia['nombre_materia'],20).'('.$datos_materia['mid_categoria_curso'].') <br/>'?></a>
-    <?php 
-    #require_once("clases/Curso.Class.php");
-    $curso=new Curso();
-    $estado_temporal= $curso->deadeline_curso($datos_materia['id_asignacion']);
-    ?>
-        <?php echo '<img title="progreso temporal del '.$estado_temporal.' %" class="imagen_tarjeta" src="'.consultar_link_icono($datos_materia['icono_asignacion']).'"></div>'; 
-    #}
-    }               
 
+public function listar_cursos_home() {
+    // IMPORTANTE: Asegúrate de que tu método mis_cursos_otros() devuelva el campo 'visible' de cada curso.
+    $datos_curso = $this->mis_cursos_otros();
 
+    foreach ($datos_curso as $key => $datos_materia) {
+        $this->componente_context_menu($datos_materia['id_asignacion'], $datos_materia['nombre_materia']);
+        
+        // Determina si el curso está visible. Por defecto, se asume 'si' si no existe el dato.
+        $es_visible = (strtolower(trim($datos_materia['visible'] ?? 'si')) !== "no");
+        $visible_class = $es_visible ? '' : 'oculto';
+
+        ?>
+        <div id="curso-home-<?php echo $datos_materia['id_asignacion']; ?>" class="menu_contextual<?php echo $datos_materia['id_asignacion'] ?> curso-home-card <?php echo $visible_class; ?>" style="margin-top:5%">
+            <a class="enlace_sin_estilo" title="<?php echo htmlspecialchars($datos_materia['descripcion'], ENT_QUOTES, 'UTF-8'); ?>" href="<?php echo SGA_CURSOS_URL . '/curso.php?asignacion=' . $datos_materia['id_asignacion']; ?>">
+                <?php echo puntos_suspensivos($datos_materia['nombre_materia'], 20) . '(' . $datos_materia['mid_categoria_curso'] . ') <br/>' ?>
+            </a>
+            
+            <img title="Imagen del curso" class="imagen_tarjeta" src="<?php echo consultar_link_icono($datos_materia['icono_asignacion']); ?>">
+            
+            <?php
+            // Solo muestra el botón si el rol es admin o docente
+            $rol = $_SESSION['rol'] ?? 'invitado';
+            if ($rol === 'admin' || $rol === 'docente') {
+                $texto_boton = $es_visible ? 'Ocultar' : 'Mostrar';
+                ?>
+                <div class="curso-home-acciones" style="margin-top:-17%;margin-left:60%">
+                    <button 
+                        class="btn btn-default btn-xs control-visibilidad-btn" 
+                        data-id="<?php echo $datos_materia['id_asignacion']; ?>"
+                        data-visible="<?php echo $es_visible ? 'si' : 'no'; ?>">
+                        <?php echo $texto_boton; ?>
+                    </button>
+                </div>
+                <?php
+            }
+            ?>
+        </div>
+        <script type="text/javascript">
+            $(function() {
+                contexmenu('<?php echo $datos_materia['id_asignacion'] ?>');
+            });
+        </script>
+        <?php
+    }
 }
+
+
+
 
 
 }

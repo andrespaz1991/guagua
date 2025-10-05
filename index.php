@@ -8,6 +8,47 @@ ob_start();
 window.onload = function() {
     document.getElementById('nombrees').focus();
 };
+
+
+$(document).ready(function() {
+    // Se usa delegación de eventos para que funcione con contenido cargado dinámicamente.
+    $(document.body).on('click', '.control-visibilidad-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var button = $(this);
+        var asignacionId = button.data('id');
+        var currentState = button.data('visible');
+        var newState = (currentState === 'si') ? 'no' : 'si';
+
+        $.ajax({
+            url: 'cursos/actualizar_visibilidad.php', // Asegúrate que esta ruta sea correcta
+            type: 'POST',
+            data: JSON.stringify({
+                id_asignacion: asignacionId,
+                visible: newState
+            }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Al tener éxito, se recarga la página.
+                    // Esto asegura que la lista de cursos se sincronice perfectamente
+                    // con el estado actualizado en la base de datos.
+                    location.reload();
+                } else {
+                    console.error('Error del servidor: ' + response.message);
+                    alert('Hubo un error al actualizar el curso.');
+                }
+            },
+            error: function() {
+                console.error('Error de comunicación AJAX.');
+                alert('Hubo un error de comunicación con el servidor.');
+            }
+        });
+    });
+});
+
   </script>
   
 <?php
@@ -27,9 +68,13 @@ $red=new Red();
 $fecha=new Fecha();
 $persona=new Persona();             
 ####### Notificar Sobre Eventos
+
 $eventos->notificador_eventos(date('Y-m-d'));
+$academico->verificarAsistenciaYRedirigir();
+#exit();
 ####### Notificar Sobre Eventos
 $academico->ano_lectivo =ano_lectivo();
+
 if(isset($_SESSION['id_institucion'])){
   $datos_curso =$academico ->mis_cursos_otros(); 
 }

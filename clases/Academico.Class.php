@@ -711,6 +711,69 @@ public function seguimiento_actividades($actividad,$inscripcion){
   return $datos = json_decode($this->consultar_datos($sql,true),true);
 }
 
+
+public function verificarAsistenciaYRedirigir() {
+    
+    // Instanciar la clase Academico para usar sus métodos de consulta
+    $academico = new Academico();
+
+    // 2. Obtener la fecha y hora actuales
+    $fecha_actual_db = date('Y-m-d');
+    $hora_actual = date('H:i:s');
+    $dia_actual = strtolower(date('l')); // 'l' devuelve el día de la semana en inglés, por ejemplo, 'monday'
+
+    // Mapear días de la semana de inglés a español para la tabla `horario`
+    $dias_semana = [
+        'monday' => 'lunes',
+        'tuesday' => 'martes',
+        'wednesday' => 'miercoles',
+        'thursday' => 'jueves',
+        'friday' => 'viernes',
+        'saturday' => 'sabado',
+        'sunday' => 'domingo'
+    ];
+    $dia_db = $dias_semana[$dia_actual];
+
+    // 3. Consultar la asignatura programada usando la función `consultar_datos`
+    $sql_horario = "SELECT id_asignacion FROM horario 
+                    WHERE dia = '{$dia_db}' 
+                    AND hora_inicio <= '{$hora_actual}' 
+                    AND hora_fin >= '{$hora_actual}' 
+                    AND '{$fecha_actual_db}' BETWEEN fecha_inicio AND fecha_fin 
+                    LIMIT 1";
+    $result_horario_json = $academico->consultar_datos($sql_horario, true);
+    $asignacion_actual = json_decode($result_horario_json, true);
+
+    if (empty($asignacion_actual)) {
+        return "No hay asignaturas programadas para este momento.";
+    }
+
+    $id_asignacion = $asignacion_actual[0]['id_asignacion'];
+    
+    // Obtener el nombre de la materia para la tabla `asistencias`
+    $info_asignatura_temp = $academico->consultar_materia($id_asignacion);
+    $nombre_materia = !empty($info_asignatura_temp) ? $info_asignatura_temp[0]->nombre_materia : 'Materia Desconocida';
+    $fecha_asistencia_formato = date('d/m/Y', strtotime($fecha_actual_db));
+
+    // 4. Verificar si la asistencia ya está registrada usando la función `consultar_datos`
+    $sql_asistencia = "SELECT id FROM asistencias 
+                       WHERE materia = '{$nombre_materia}' 
+                       AND fechas_clase = '{$fecha_asistencia_formato}' 
+                       LIMIT 1";
+    
+    $result_asistencia_json = $academico->consultar_datos($sql_asistencia, true);
+    $registro_existente = json_decode($result_asistencia_json, true);
+
+    // 5. Devolver mensaje o redirigir
+    if (!empty($registro_existente)) {
+        return "La asistencia para la asignatura '{$nombre_materia}' de hoy ya ha sido registrada.";
+    } else {
+        header("Location: index.php?asignacion={$id_asignacion}");
+        exit;
+    }
+}
+
+
 public function mis_cursos_otros() {
         // Obtener datos del usuario desde la sesión.
         $rol = $_SESSION['rol'] ?? 'invitado';
@@ -738,11 +801,13 @@ public function mis_cursos_otros() {
                 ano_lectivo al ON a.ano_lectivo = al.id_ano_lectivo
             LEFT JOIN
                 categoria_curso cg ON a.id_categoria_curso = cg.id_categoria_curso
+           
+               
         ";
-
         // Se mantiene la lógica PHP para añadir condiciones dinámicas.
         // 1. Condición CRÍTICA para filtrar solo por el año lectivo activo.
-        $sql_conditions = " WHERE al.estado = 'Activo' ";
+        $sql_conditions = " WHERE al.estado = 'Activo' 
+        ";
 
         // 2. Se construye el resto de condiciones según el ROL.
         // ADVERTENCIA: Se recomienda usar sentencias preparadas para evitar inyección SQL.
@@ -761,10 +826,9 @@ public function mis_cursos_otros() {
                 return []; // Rol no reconocido para esta consulta.
             }
         }
-        
+        $sql_conditions.="  and       a.visible ='Si' ";
         // 3. Se une toda la consulta, se agrupa y se limita a 5 para la vista "home".
         $sql = $sql_base . $sql_conditions . " GROUP BY a.id_asignacion ORDER BY a.id_asignacion DESC LIMIT 100";
-
         // 4. Se llama al método para ejecutar la consulta.
         $resultado_json = $this->consultar_datos($sql, true);
         

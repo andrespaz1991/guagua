@@ -1,304 +1,389 @@
-<?php 
+<?php
+// Iniciar el buffer de salida para capturar todo el HTML y pasarlo a la plantilla.
 ob_start();
-echo '<center>';
-require("conexion.php");
- /*require("funciones.php");*/ 
-function buscar_inscripcion($datos="",$reporte=""){
-if ($reporte=="xls"){
-header("Content-type: application/vnd.ms-excel");
-header("Content-Disposition: attachment; Filename=inscripcion.xls");
-}
-require("conexion.php");
-require_once ("../../comun/lib/Zebra_Pagination/Zebra_Pagination.php");
-$resultados = (isset($_COOKIE['numeroresultados_inscripcion']) ? $_COOKIE['numeroresultados_inscripcion'] : 10);
-$paginacion = new Zebra_Pagination();
-$paginacion->records_per_page($resultados);
-$paginacion->records_per_page($resultados);
 
-$cookiepage="page_usuario";
-$funcionjs="buscar();";$paginacion->fn_js_page("$funcionjs");
-$paginacion->cookie_page($cookiepage);
-$paginacion->padding(false);
+// Incluir la conexión a la base de datos una sola vez.
+require_once("conexion.php");
+// La librería de paginación también se requiere una sola vez si se va a usar.
+require_once("../../comun/lib/Zebra_Pagination/Zebra_Pagination.php");
 
-if (isset($_COOKIE["$cookiepage"])) $_GET['page'] = $_COOKIE["$cookiepage"];
-
-$sql = "SELECT `inscripcion`.`id_inscripcion`, `inscripcion`.`id_estudiante`, `usuario`.`nombre` as estudiantenombre, `inscripcion`.`id_asignacion`, `asignacion`.`id_asignacion` as asignacionid_asignacion, `inscripcion`.`fecha_inscripcion` FROM `inscripcion`  inner join `usuario` on `inscripcion`.`id_estudiante` = `usuario`.`id_usuario` inner join `asignacion` on `inscripcion`.`id_asignacion` = `asignacion`.`id_asignacion`  ";
-$datosrecibidos = $datos;
-$datos = explode(" ",$datosrecibidos);
-$datos[]="";
-$cont =  0;
-$sql .= ' WHERE ';
-foreach ($datos as $id => $dato){
-$sql .= ' concat(LOWER(`inscripcion`.`id_inscripcion`)," ", LOWER(`usuario`.`nombre`)," ", LOWER(`asignacion`.`id_asignacion`)," ", LOWER(`inscripcion`.`fecha_inscripcion`)," ", LOWER(`inscripcion`.`fecha_inscripcion`)," ") LIKE "%'.mb_strtolower($dato, 'UTF-8').'%"';
-$consulta=$mysqli->query($sql);
-echo $paginacion->records($consulta->num_rows);
-$cont ++;
-if (count($datos)>1 and count($datos)<>$cont){
-    $sql .= "";
+/**
+ * Muestra la lista de inscripciones con búsqueda y paginación.
+ *
+ * @param mysqli $mysqli Objeto de conexión a la base de datos.
+ * @param string $busqueda Término de búsqueda opcional.
+ * @param bool $exportar_xls Si es true, genera un archivo XLS.
+ */
+function mostrar_lista_inscripciones($mysqli, $busqueda = "", $exportar_xls = false)
+{
+    if ($exportar_xls) {
+        header("Content-type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; Filename=inscripciones.xls");
     }
-if (count($datos)>1 and count($datos)<>$cont){
-$sql .= " and ";
-}
-}
-$sql .=  " ORDER BY `inscripcion`.`id_inscripcion` desc LIMIT ";
-$sql .=  "  " . (($paginacion->get_page() - 1) * $resultados) . ", " . $resultados;
-/*echo $sql;*/ 
 
-$consulta = $mysqli->query($sql);
-$numero_usuario = $consulta->num_rows;
-$minimo_usuario = (($paginacion->get_page() - 1) * $resultados)+1;
-$maximo_usuario = (($paginacion->get_page() - 1) * $resultados) + $resultados;
-if ($maximo_usuario>$numero_usuario) $maximo_usuario=$numero_usuario;
-$maximo_usuario += $minimo_usuario-1;
-echo "<p>Resultados de $minimo_usuario a $maximo_usuario del total de ".$numero_usuario." en página ".$paginacion->get_page()."</p>";
+    // --- Configuración de Paginación ---
+    $resultados_por_pagina = isset($_COOKIE['numeroresultados_inscripcion']) ? (int)$_COOKIE['numeroresultados_inscripcion'] : 10;
+    $paginacion = new Zebra_Pagination();
+    $paginacion->records_per_page($resultados_por_pagina);
+    $paginacion->fn_js_page('buscar();');
+    $paginacion->cookie_page('page_inscripcion');
 
- ?>
-<div align="center">
-<table border="1" id="tbinscripcion" align="center">
-<thead>
-<tr>
-<th>Id inscripcion</th>
-<th>Id Estudiante</th>
-<th>Id Asignacion</th>
-<th>Fecha inscripcion</th>
-<?php if ($reporte==""){ ?>
-<th><form id="formNuevo" name="formNuevo" method="post" action="inscripcion.php">
-<input name="cod" type="hidden" id="cod" value="0">
-<input type="submit" name="submit" id="submit" value="Nuevo">
-</form>
-</th>
-<th><form id="formNuevo" name="formNuevo" method="post" action="inscripcion.php?xls">
-<input name="cod" type="hidden" id="cod" value="0">
-<input type="submit" name="submit" id="submit" value="XLS">
-</form>
-</th>
-<?php } ?>
-</tr>
-</thead><tbody>
-<?php 
-while($row=$consulta->fetch_assoc()){
- ?>
-<tr>
-<td><?php echo $row['id_inscripcion']?></td>
-<td><?php echo $row['estudiantenombre']?></td>
-<td><?php echo $row['asignacionid_asignacion']?></td>
-<?php $meses = array ('','\\E\\n\\e\\r\\o','\\F\\e\\b\\r\\e\\r\\o','\\M\\a\\r\\z\\o','\\A\\b\\r\\i\\l','\\M\\a\\y\\o','\\J\\u\\n\\i\\o','\\J\\u\\l\\i\\o','\\A\\g\\o\\s\\t\\o','\\S\\e\\p\\t\\i\\e\\m\\b\\r\\e','\\O\\c\\t\\u\\b\\r\\e','\\N\\o\\v\\i\\e\\m\\b\\r\\e','\\D\\i\\c\\i\\e\\m\\b\\r\\e'); ?>
+    // --- Construcción de la Consulta SQL Segura ---
+    $sql_base = "
+        SELECT 
+            i.id_inscripcion, 
+            u.nombre AS estudiantenombre, 
+            a.id_asignacion AS asignacionid_asignacion, 
+            i.fecha_inscripcion 
+        FROM `inscripcion` i
+        INNER JOIN `usuario` u ON i.id_estudiante = u.id_usuario 
+        INNER JOIN `asignacion` a ON i.id_asignacion = a.id_asignacion
+    ";
+    $sql_where = "";
+    $params = [];
+    $types = "";
 
-<td><?php echo  date("d \\d\\e ".$meses[date("n",strtotime($row['fecha_inscripcion']))]."  \\d\\e\\l \\a\\ñ\\o Y ",strtotime($row['fecha_inscripcion'])); ?></td>
-<?php if ($reporte==""){ ?>
-<td>
-<form id="formModificar" name="formModificar" method="post" action="inscripcion.php">
-<input name="cod" type="hidden" id="cod" value="<?php echo $row['id_inscripcion']?>">
-<input type="submit" name="submit" id="submit" value="Modificar">
-</form>
-</td>
-<td>
-<input type="image" src="../../comun/img/eliminar.png" onClick="confirmeliminar('inscripcion.php',{'del':'<?php echo $row['id_inscripcion'];?>'},'<?php echo $row['id_inscripcion'];?>');" value="Eliminar">
-</td>
-<?php } ?>
-</tr>
-<?php 
-}/*fin while*/
- ?>
-</tbody>
-</table>
-<div class="text-center">
-    <?php    $paginacion->render2();    ?>
+    if (!empty($busqueda)) {
+        $terminos = explode(' ', $busqueda);
+        $sql_where = " WHERE";
+        foreach ($terminos as $index => $termino) {
+            if ($index > 0) $sql_where .= " AND";
+            $sql_where .= ' CONCAT(LOWER(i.id_inscripcion), " ", LOWER(u.nombre), " ", LOWER(a.id_asignacion), " ", LOWER(i.fecha_inscripcion)) LIKE ?';
+            $params[] = '%' . mb_strtolower($termino, 'UTF-8') . '%';
+            $types .= 's';
+        }
+    }
+
+    // Contar total de registros para la paginación
+    $sql_count = "SELECT COUNT(i.id_inscripcion) FROM `inscripcion` i INNER JOIN `usuario` u ON i.id_estudiante = u.id_usuario INNER JOIN `asignacion` a ON i.id_asignacion = a.id_asignacion" . $sql_where;
+    $stmt_count = $mysqli->prepare($sql_count);
+    if (!empty($busqueda)) {
+        $stmt_count->bind_param($types, ...$params);
+    }
+    $stmt_count->execute();
+    $total_records = 0;
+    $stmt_count->bind_result($total_records);
+    $stmt_count->fetch();
+    $stmt_count->close();
+    $paginacion->records($total_records);
+
+    // Consulta para obtener los registros de la página actual
+    $sql_limit = " ORDER BY i.id_inscripcion DESC LIMIT ?, ?";
+    $offset = ($paginacion->get_page() - 1) * $resultados_por_pagina;
+    $params[] = $offset;
+    $params[] = $resultados_por_pagina;
+    $types .= 'ii';
+
+    $stmt = $mysqli->prepare($sql_base . $sql_where . $sql_limit);
+    if (!empty($busqueda)) {
+        // Para la consulta principal, los parámetros son los de búsqueda + offset + limit
+        $main_params = array_slice($params, 0, -2);
+        $main_params[] = $offset;
+        $main_params[] = $resultados_por_pagina;
+        $stmt->bind_param($types, ...$main_params);
+    } else {
+        $stmt->bind_param('ii', $offset, $resultados_por_pagina);
+    }
+
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+
+    // --- Presentación de la Tabla ---
+    ?>
+    <div align="center">
+        <table border="1" id="tbinscripcion" align="center">
+            <thead>
+                <tr>
+                    <th>ID Inscripción</th>
+                    <th>Estudiante</th>
+                    <th>Asignación</th>
+                    <th>Fecha Inscripción</th>
+                    <?php if (!$exportar_xls): ?>
+                        <th colspan="2">
+                            <form method="POST" action="matricula.php">
+                                <button type="submit" name="accion" value="nuevo">Nueva Inscripción</button>
+                            </form>
+                        </th>
+                         <th>
+                            <form method="GET" action="matricula.php">
+                                <input type="hidden" name="exportar" value="xls">
+                                <button type="submit">Exportar a XLS</button>
+                            </form>
+                        </th>
+                    <?php endif; ?>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($fila = $resultado->fetch_assoc()): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($fila['id_inscripcion']) ?></td>
+                        <td><?= htmlspecialchars($fila['estudiantenombre']) ?></td>
+                        <td><?= htmlspecialchars($fila['asignacionid_asignacion']) ?></td>
+                        <td>
+                            <?php 
+                                $fecha = new DateTime($fila['fecha_inscripcion']);
+                                // Formato de fecha más sencillo y localizado
+                                setlocale(LC_TIME, 'es_ES.UTF-8', 'Spanish');
+                                echo strftime("%d de %B de %Y", $fecha->getTimestamp());
+                            ?>
+                        </td>
+                        <?php if (!$exportar_xls): ?>
+                            <td>
+                                <form method="POST" action="matricula.php">
+                                    <input type="hidden" name="cod" value="<?= htmlspecialchars($fila['id_inscripcion']) ?>">
+                                    <button type="submit" name="accion" value="modificar">Modificar</button>
+                                </form>
+                            </td>
+                            <td>
+                                <input type="image" src="../../comun/img/eliminar.png" 
+                                       onclick="confirmeliminar('matricula.php', {'del': '<?= htmlspecialchars($fila['id_inscripcion']) ?>'}, '<?= htmlspecialchars($fila['id_inscripcion']) ?>');"
+                                       value="Eliminar">
+                            </td>
+                        <?php endif; ?>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+        <div class="text-center">
+            <?php $paginacion->render2(); ?>
+        </div>
     </div>
-</div>
-<?php 
-}/*fin function buscar*/
-if (isset($_GET['buscar'])){
-buscar_inscripcion($_POST['datos']);
-exit();
+    <?php
+    $stmt->close();
 }
-if (isset($_GET['xls'])){
-buscar_inscripcion('','xls');
-exit();
-}
-if (isset($_POST['del'])){
- /*Instrucción SQL que permite eliminar en la BD*/ 
-$sql = 'DELETE FROM inscripcion WHERE id_inscripcion="'.$_POST['del'].'"';
- /*Se conecta a la BD y luego ejecuta la instrucción SQL*/
-if ($eliminar = $mysqli->query($sql)){
- /*Validamos si el registro fue eliminado con éxito*/ 
-echo '
-Registro eliminado
-<meta http-equiv="refresh" content="1; url=inscripcion.php" />
-'; 
-}else{
-?>
-Eliminación fallida, por favor compruebe que la usuario no esté en uso
-<meta http-equiv="refresh" content="2; url=inscripcion.php" />
-<?php 
-}
-}
- ?>
-<center>
-<h1>inscripcion</h1>
-</center><?php 
-if (isset($_POST['submit'])){
-if ($_POST['submit']=="Registrar"){
- /*recibo los campos del formulario proveniente con el método POST*/ 
-$sql = "INSERT INTO inscripcion (`id_inscripcion`, `id_estudiante`, `id_asignacion`, `fecha_inscripcion`, `obserbaciones_inscripcion`) VALUES ('".$_POST['id_inscripcion']."', '".$_POST['id_estudiante']."', '".$_POST['id_asignacion']."', '".$_POST['fecha_inscripcion']."', '".$_POST['obserbaciones_inscripcion']."')";
- /*echo $sql;*/
-if ($insertar = $mysqli->query($sql)) {
- /*Validamos si el registro fue ingresado con éxito*/ 
-echo 'Registro exitoso';
-echo '<meta http-equiv="refresh" content="1; url=inscripcion.php" />';
- }else{ 
-echo 'Registro fallido';
-echo '<meta http-equiv="refresh" content="1; url=inscripcion.php" />';
-}
-} /*fin Registrar*/ 
-if ($_POST['submit']=="Nuevo"){
 
-$textoh1 ="Registrar";
-$textobtn ="Registrar";
+/**
+ * Muestra el formulario para crear o editar una inscripción.
+ *
+ * @param mysqli $mysqli Objeto de conexión a la base de datos.
+ * @param int|null $id El ID de la inscripción a editar, o null para una nueva.
+ */
+function mostrar_formulario($mysqli, $id = null)
+{
+    $datos = [
+        'id_inscripcion' => '',
+        'id_estudiante' => '',
+        'id_asignacion' => '',
+        'fecha_inscripcion' => date('Y-m-d'), // Fecha actual por defecto
+        'obserbaciones_inscripcion' => ''
+    ];
+    $titulo = "Registrar Inscripción";
+    $boton_texto = "Registrar";
+    $accion = "guardar_nuevo";
 
-echo '<form id="form1" name="form1" method="post" action="inscripcion.php">
-<h1>'.$textoh1.'</h1>';
-?>
+    if ($id !== null) {
+        $stmt = $mysqli->prepare("SELECT * FROM inscripcion WHERE id_inscripcion = ?");
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+        if ($resultado->num_rows > 0) {
+            $datos = $resultado->fetch_assoc();
+        }
+        $stmt->close();
+        $titulo = "Modificar Inscripción";
+        $boton_texto = "Actualizar";
+        $accion = "guardar_modificacion";
+    }
+    ?>
+    <form name="form1" method="post" action="matricula.php">
+        <h1><?= $titulo ?></h1>
+        <input type="hidden" name="cod" value="<?= htmlspecialchars($datos['id_inscripcion']) ?>">
 
-<p><input name="cod" type="hidden" id="cod" value="<?php if (isset($row['id_inscripcion']))  echo $row['id_inscripcion'] ?>" size="120" required></p>
-<?php 
-echo '<p><input class=""name="id_inscripcion"type="hidden" id="id_inscripcion" value="';if (isset($row['id_inscripcion'])) echo $row['id_inscripcion'];echo '"';echo '></p>';
-echo '<p><label for="id_estudiante">Id Estudiante:</label>';
-$sql2= "SELECT identificacion,nombre FROM estudiante;";
-echo '<input type="text" autocomplete="off" list="list_id_estudiante" class="" name="id_estudiante" id="id_estudiante" required><datalist id="list_id_estudiante">';
-$consulta2 = $mysqli->query($sql2);
-while($row2=$consulta2->fetch_assoc()){
-echo '<option data-value="'.$row2['identificacion'].'"';echo '>'.$row2['nombre'].'</option>';
-if ($row2["identificacion"]==$row["id_estudiante"]){
-echo '<script>var varid_estudiante = document.getElementById("id_estudiante");varid_estudiante.value="'.$row2["id_estudiante"].'"; </script>';
-}
-}
-echo '</datalist><input required type="hidden" name="id_estudiante" id="id_estudiante-hidden" value="';
-if (isset($row['id_estudiante'])) echo $row['id_estudiante'];
-echo '"></p>';
-echo '<p><label for="id_asignacion">Id Asignacion:</label>';
-$sql3= "SELECT id_asignacion,id_asignacion FROM asignacion;";
-echo '<input type="text" autocomplete="off" list="list_id_asignacion" class="" name="id_asignacion" id="id_asignacion" required><datalist id="list_id_asignacion">';
-$consulta3 = $mysqli->query($sql3);
-while($row3=$consulta3->fetch_assoc()){
-echo '<option data-value="'.$row3['id_asignacion'].'"';echo '>'.$row3['id_asignacion'].'</option>';
-if ($row3["id_asignacion"]==$row["id_asignacion"]){
-echo '<script>var varid_asignacion = document.getElementById("id_asignacion");varid_asignacion.value="'.$row2["id_asignacion"].'"; </script>';
-}
-}
-echo '</datalist><input required type="hidden" name="id_asignacion" id="id_asignacion-hidden" value="';
-if (isset($row['id_asignacion'])) echo $row['id_asignacion'];
-echo '"></p>';
-echo '<p><label for="fecha_inscripcion">Fecha inscripcion:</label><input class=""name="fecha_inscripcion"type="date" id="fecha_inscripcion" value="';if (isset($row['fecha_inscripcion'])) echo $row['fecha_inscripcion'];echo '"';echo '></p>';
-echo '<p><label for="obserbaciones_inscripcion">Obserbaciones inscripcion:</label></p><p><textarea class="" name="obserbaciones_inscripcion" cols="60" rows="10"id="obserbaciones_inscripcion" >';if (isset($row['obserbaciones_inscripcion'])) echo $row['obserbaciones_inscripcion'];echo '</textarea></p>';
+        <p>
+            <label for="id_estudiante_display">Estudiante:</label>
+            <input type="text" autocomplete="off" list="list_id_estudiante" id="id_estudiante_display" required>
+            <datalist id="list_id_estudiante">
+                <?php
+                $consulta_estudiantes = $mysqli->query("SELECT id_usuario, nombre FROM usuario WHERE rol = 'estudiante'"); // Asumiendo un rol
+                while ($est = $consulta_estudiantes->fetch_assoc()) {
+                    echo '<option data-value="' . htmlspecialchars($est['id_usuario']) . '">' . htmlspecialchars($est['nombre']) . '</option>';
+                }
+                ?>
+            </datalist>
+            <input type="hidden" name="id_estudiante" id="id_estudiante-hidden" value="<?= htmlspecialchars($datos['id_estudiante']) ?>" required>
+        </p>
+        
+        <p>
+            <label for="id_asignacion_display">Asignación:</label>
+             <input type="text" autocomplete="off" list="list_id_asignacion" id="id_asignacion_display" required>
+            <datalist id="list_id_asignacion">
+                <?php
+                $consulta_asignaciones = $mysqli->query("SELECT id_asignacion FROM asignacion"); 
+                while ($asig = $consulta_asignaciones->fetch_assoc()) {
+                    echo '<option data-value="' . htmlspecialchars($asig['id_asignacion']) . '">' . htmlspecialchars($asig['id_asignacion']) . '</option>';
+                }
+                ?>
+            </datalist>
+            <input type="hidden" name="id_asignacion" id="id_asignacion-hidden" value="<?= htmlspecialchars($datos['id_asignacion']) ?>" required>
+        </p>
 
-echo '<p><input type="submit" name="submit" id="submit" value="'.$textobtn.'"></p>
-</form>';
-} /*fin nuevo*/ 
-if ($_POST['submit']=="Modificar"){
+        <p>
+            <label for="fecha_inscripcion">Fecha de Inscripción:</label>
+            <input type="date" name="fecha_inscripcion" id="fecha_inscripcion" value="<?= htmlspecialchars($datos['fecha_inscripcion']) ?>" required>
+        </p>
 
-$sql = "SELECT `id_inscripcion`, `id_estudiante`, `id_asignacion`, `fecha_inscripcion` FROM `inscripcion` WHERE id_inscripcion ='".$_POST['cod']."' Limit 1"; 
-$consulta = $mysqli->query($sql);
- /*echo $sql;*/ 
-$row=$consulta->fetch_assoc();
+        <p>
+            <label for="obserbaciones_inscripcion">Observaciones:</label><br>
+            <textarea name="obserbaciones_inscripcion" cols="60" rows="10" id="obserbaciones_inscripcion"><?= htmlspecialchars($datos['obserbaciones_inscripcion']) ?></textarea>
+        </p>
 
-$textoh1 ="Modificar";
-$textobtn ="Actualizar";
-echo '<form id="form1" name="form1" method="post" action="inscripcion.php">
-<h1>'.$textoh1.'</h1>';
-?>
+        <p>
+            <button type="submit" name="accion" value="<?= $accion ?>"><?= $boton_texto ?></button>
+            <a href="matricula.php">Cancelar</a>
+        </p>
+    </form>
+    <?php
+}
 
-<p><input name="cod" type="hidden" id="cod" value="<?php if (isset($row['id_inscripcion']))  echo $row['id_inscripcion'] ?>" size="120" required></p>
-<?php 
-echo '<p><input class=""name="id_inscripcion"type="hidden" id="id_inscripcion" value="';if (isset($row['id_inscripcion'])) echo $row['id_inscripcion'];echo '"';echo '></p>';
-echo '<p><label for="id_estudiante">Id Estudiante:</label>';
-$sql2= "SELECT identificacion,nombre FROM estudiante;";
-echo '<input type="text" autocomplete="off" list="list_id_estudiante" class="" name="id_estudiante" id="id_estudiante" required><datalist id="list_id_estudiante">';
-$consulta2 = $mysqli->query($sql2);
-while($row2=$consulta2->fetch_assoc()){
-echo '<option data-value="'.$row2['identificacion'].'"';echo '>'.$row2['nombre'].'</option>';
-if ($row2["identificacion"]==$row["id_estudiante"]){
-echo '<script>var varid_estudiante = document.getElementById("id_estudiante");varid_estudiante.value="'.$row2["id_estudiante"].'"; </script>';
-}
-}
-echo '</datalist><input required type="hidden" name="id_estudiante" id="id_estudiante-hidden" value="';
-if (isset($row['id_estudiante'])) echo $row['id_estudiante'];
-echo '"></p>';
-echo '<p><label for="id_asignacion">Id Asignacion:</label>';
-$sql3= "SELECT id_asignacion,id_asignacion FROM asignacion;";
-echo '<input type="text" autocomplete="off" list="list_id_asignacion" class="" name="id_asignacion" id="id_asignacion" required><datalist id="list_id_asignacion">';
-$consulta3 = $mysqli->query($sql3);
-while($row3=$consulta3->fetch_assoc()){
-echo '<option data-value="'.$row3['id_asignacion'].'"';echo '>'.$row3['id_asignacion'].'</option>';
-if ($row3["id_asignacion"]==$row["id_asignacion"]){
-echo '<script>var varid_asignacion = document.getElementById("id_asignacion");varid_asignacion.value="'.$row2["id_asignacion"].'"; </script>';
-}
-}
-echo '</datalist><input required type="hidden" name="id_asignacion" id="id_asignacion-hidden" value="';
-if (isset($row['id_asignacion'])) echo $row['id_asignacion'];
-echo '"></p>';
-echo '<p><label for="fecha_inscripcion">Fecha inscripcion:</label><input class=""name="fecha_inscripcion"type="date" id="fecha_inscripcion" value="';if (isset($row['fecha_inscripcion'])) echo $row['fecha_inscripcion'];echo '"';echo '></p>';
-echo '<p><label for="obserbaciones_inscripcion">Obserbaciones inscripcion:</label></p><p><textarea class="" name="obserbaciones_inscripcion" cols="60" rows="10"id="obserbaciones_inscripcion" >';if (isset($row['obserbaciones_inscripcion'])) echo $row['obserbaciones_inscripcion'];echo '</textarea></p>';
+/**
+ * Guarda una inscripción (nueva o actualizada).
+ *
+ * @param mysqli $mysqli Objeto de conexión a la base de datos.
+ * @param array $datos Los datos del formulario POST.
+ * @param bool $es_nuevo True si es un registro nuevo, false si es una actualización.
+ */
+function guardar_inscripcion($mysqli, $datos, $es_nuevo = true)
+{
+    if ($es_nuevo) {
+        $sql = "INSERT INTO inscripcion (id_estudiante, id_asignacion, fecha_inscripcion, obserbaciones_inscripcion) VALUES (?, ?, ?, ?)";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param('iiss', 
+            $datos['id_estudiante'], 
+            $datos['id_asignacion'], 
+            $datos['fecha_inscripcion'], 
+            $datos['obserbaciones_inscripcion']
+        );
+    } else {
+        $sql = "UPDATE inscripcion SET id_estudiante = ?, id_asignacion = ?, fecha_inscripcion = ?, obserbaciones_inscripcion = ? WHERE id_inscripcion = ?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param('iissi', 
+            $datos['id_estudiante'], 
+            $datos['id_asignacion'], 
+            $datos['fecha_inscripcion'], 
+            $datos['obserbaciones_inscripcion'],
+            $datos['cod']
+        );
+    }
 
-echo '<p><input type="submit" name="submit" id="submit" value="'.$textobtn.'"></p>
-</form>';
-} /*fin modificar*/ 
-if ($_POST['submit']=="Actualizar"){
- /*recibo los campos del formulario proveniente con el método POST*/ 
-$cod = $_POST['cod'];
- /*Instrucción SQL que permite insertar en la BD */ 
-$sql = "UPDATE inscripcion SET id_inscripcion='".$_POST['id_inscripcion']."', id_estudiante='".$_POST['id_estudiante']."', id_asignacion='".$_POST['id_asignacion']."', fecha_inscripcion='".$_POST['fecha_inscripcion']."', obserbaciones_inscripcion='".$_POST['obserbaciones_inscripcion']."'WHERE  id_inscripcion = '".$cod."';";
-/* echo $sql;*/ 
- /*Se conecta a la BD y luego ejecuta la instrucción SQL*/ 
-if ($actualizar = $mysqli->query($sql)) {
- /*Validamos si el registro fue ingresado con éxito*/
-echo 'Modificación exitosa';
-echo '<meta http-equiv="refresh" content="1; url=inscripcion.php" />';
- }else{ 
-echo 'Modificacion fallida';
+    if ($stmt->execute()) {
+        echo $es_nuevo ? 'Registro exitoso' : 'Modificación exitosa';
+    } else {
+        echo 'Operación fallida: ' . $stmt->error;
+    }
+    $stmt->close();
+    echo '<meta http-equiv="refresh" content="2; url=matricula.php" />';
 }
-echo '<meta http-equiv="refresh" content="2; url=inscripcion.php" />';
-} /*fin Actualizar*/ 
- }else{ 
- ?>
-<center>
-<b><label>Buscar: </label></b><input type="search" id="buscar" onkeyup ="buscar(this.value);" onchange="buscar(this.value);"  style="margin: 15px;">
-<b><label>N° de Resultados:</label></b>
-<input type="number" min="0" id="numeroresultados_inscripcion" placeholder="Cantidad de resultados" title="Cantidad de resultados" value="10" onkeyup="grabarcookie('numeroresultados_inscripcion',this.value) ;buscar(document.getElementById('buscar').value);" mousewheel="grabarcookie('numeroresultados_inscripcion',this.value);buscar(document.getElementById('buscar').value);" onchange="grabarcookie('numeroresultados_inscripcion',this.value);buscar(document.getElementById('buscar').value);" size="4" style="width: 40px;">
-</center>
-<span id="txtsugerencias">
-<?php 
-buscar_inscripcion();
- ?>
-</span>
-<?php 
-}/*fin else if isset cod*/
+
+/**
+ * Elimina una inscripción.
+ *
+ * @param mysqli $mysqli Objeto de conexión a la base de datos.
+ * @param int $id El ID de la inscripción a eliminar.
+ */
+function eliminar_inscripcion($mysqli, $id)
+{
+    $sql = "DELETE FROM inscripcion WHERE id_inscripcion = ?";
+    $stmt = $mysqli->prepare($sql);
+    $stmt->bind_param('i', $id);
+    
+    if ($stmt->execute()) {
+        echo 'Registro eliminado con éxito.';
+    } else {
+        echo 'Error al eliminar. Verifique que la inscripción no esté en uso.';
+    }
+    $stmt->close();
+    echo '<meta http-equiv="refresh" content="2; url=matricula.php" />';
+}
+
+// --- Controlador Principal ---
+$accion = $_POST['accion'] ?? $_GET['accion'] ?? 'listar';
+$cod = $_POST['cod'] ?? $_GET['cod'] ?? null;
+$del = $_POST['del'] ?? $_GET['del'] ?? null;
+$busqueda = $_POST['datos'] ?? $_GET['datos'] ?? '';
+
+echo '<center>';
+echo '<h1>Gestión de Inscripciones</h1>';
+
+
+if (isset($_GET['exportar']) && $_GET['exportar'] == 'xls') {
+    mostrar_lista_inscripciones($mysqli, $busqueda, true);
+    exit();
+}
+
+if ($del) {
+    eliminar_inscripcion($mysqli, $del);
+} elseif (isset($_GET['buscar'])) {
+    mostrar_lista_inscripciones($mysqli, $busqueda);
+    exit(); // AJAX call, no necesita la plantilla completa.
+} else {
+    switch ($accion) {
+        case 'nuevo':
+            mostrar_formulario($mysqli);
+            break;
+        case 'modificar':
+            mostrar_formulario($mysqli, $cod);
+            break;
+        case 'guardar_nuevo':
+            guardar_inscripcion($mysqli, $_POST, true);
+            break;
+        case 'guardar_modificacion':
+            guardar_inscripcion($mysqli, $_POST, false);
+            break;
+        case 'listar':
+        default:
+            ?>
+            <center>
+                <b><label>Buscar: </label></b>
+                <input type="search" id="buscar" onkeyup="buscar(this.value);" onchange="buscar(this.value);" style="margin: 15px;">
+                <b><label>N° de Resultados:</label></b>
+                <input type="number" min="1" id="numeroresultados_inscripcion" value="10" 
+                       onkeyup="grabarcookie('numeroresultados_inscripcion', this.value); buscar(document.getElementById('buscar').value);" 
+                       onchange="grabarcookie('numeroresultados_inscripcion', this.value); buscar(document.getElementById('buscar').value);" 
+                       size="4" style="width: 50px;">
+            </center>
+            <span id="txtsugerencias">
+                <?php mostrar_lista_inscripciones($mysqli); ?>
+            </span>
+            <?php
+            break;
+    }
+}
 echo '</center>';
- ?>
+
+?>
+<!-- Este script es necesario para que los datalist funcionen correctamente -->
 <script>
-var inputlists = document.querySelectorAll('input[list]');
-for(var j = 0; j< inputlists.length; j++) {
-inputlists[j].addEventListener('input', function(e) {
-var input = e.target,
-list = input.getAttribute('list'),
-options = document.querySelectorAll('#' + list + ' option'),
-hiddenInput = document.getElementById(input.id + '-hidden'),
-inputValue = input.value;
-hiddenInput.value = inputValue;
-for(var i = 0; i < options.length; i++) {
-var option = options[i];
-if(option.innerText === inputValue) {
- hiddenInput.value = option.getAttribute('data-value');
-break;
-}
-}
+document.addEventListener('DOMContentLoaded', function() {
+    var inputlists = document.querySelectorAll('input[list]');
+    for (var j = 0; j < inputlists.length; j++) {
+        inputlists[j].addEventListener('input', function(e) {
+            var input = e.target,
+                list = input.getAttribute('list'),
+                options = document.querySelectorAll('#' + list + ' option'),
+                hiddenInput = document.getElementById(input.id.replace('_display', '') + '-hidden'),
+                inputValue = input.value;
+
+            hiddenInput.value = ''; // Limpiar por si no hay coincidencia
+            for (var i = 0; i < options.length; i++) {
+                var option = options[i];
+                if (option.innerText === inputValue) {
+                    hiddenInput.value = option.getAttribute('data-value');
+                    break;
+                }
+            }
+        });
+    }
 });
-}
+
+// Activar el menú (si es necesario)
+document.getElementById('menu_inscripcion').className += ' active';
 </script>
-<script>
-document.getElementById('menu_inscripcion').className ='active '+document.getElementById('menu_inscripcion').className;
-</script>
-<?php $contenido = ob_get_contents();
-ob_clean();
-include ("../../comun/plantilla.php");
- ?>
+
+<?php
+// --- Final de la Página ---
+// Captura el contenido del buffer y lo pasa a la variable $contenido para la plantilla.
+$contenido = ob_get_contents();
+ob_end_clean();
+// Incluir la plantilla principal que mostrará el contenido.
+include("../../comun/plantilla.php");
+?>

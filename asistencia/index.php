@@ -6,6 +6,18 @@ require_once('../clases/Persona.Class.php');
 date_default_timezone_set('America/Bogota');
 require_once "../comun/config.php";
 
+/*
+    NOTAS PARA EL DESARROLLADOR:
+    Para que las nuevas funcionalidades funcionen, es necesario
+    modificar la tabla 'asistencias' en tu base de datos.
+    
+    1. Para el control de uniforme (si no lo has hecho):
+    ALTER TABLE asistencias ADD COLUMN uniforme TINYINT(1) NOT NULL DEFAULT 1;
+
+    2. Para guardar las justificaciones:
+    ALTER TABLE asistencias ADD COLUMN justificacion TEXT;
+*/
+
 // --- DETALLES DE CONEXIÓN A LA BASE DE DATOS ---
 
 $db_host = SERVIDORBD;
@@ -47,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
                 ':start_date' => $start_date,
                 ':end_date' => $end_date
             ];
-            #echo $sql;
+            
             $stmt = $pdo->prepare($sql);
             $stmt->execute($params);
             $report_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -181,10 +193,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
         $fecha_db_formato = date('d/m/Y', strtotime($fecha));
         
         if ($nombre_materia) {
-            $sql = "SELECT documento, asistencias FROM asistencias WHERE materia = :materia AND fechas_clase = :fechas_clase";
+            $sql = "SELECT documento, asistencias, uniforme, justificacion FROM asistencias WHERE materia = :materia AND fechas_clase = :fechas_clase";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':materia' => $nombre_materia, ':fechas_clase' => $fecha_db_formato]);
-            $asistencias_existentes = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+            
+            $asistencias_raw = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $asistencias_existentes = [];
+            foreach($asistencias_raw as $row) {
+                $asistencias_existentes[$row['documento']] = [
+                    'asistencia'    => $row['asistencias'],
+                    'uniforme'      => $row['uniforme'] ?? '1',
+                    'justificacion' => $row['justificacion'] ?? ''
+                ];
+            }
             $response_data = $asistencias_existentes;
         }
 
@@ -228,6 +249,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SERVER['HTTP_X_REQUESTED_W
                 case 'Permiso': $estado_db = 'P'; break;
                 case 'Retardo': $estado_db = 'R'; break;
             }
+
+            $uniforme_db = isset($asistencia['uniforme']) && $asistencia['uniforme'] ? 1 : 0;
+            $justificacion_db = $asistencia['justificacion'] ?? '';
             
             $check_sql = "SELECT id FROM asistencias WHERE documento = :documento AND materia = :materia AND fechas_clase = :fechas_clase";
             $check_stmt = $pdo->prepare($check_sql);
@@ -239,22 +263,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SERVER['HTTP_X_REQUESTED_W
             $existing_record = $check_stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($existing_record) {
-                $update_sql = "UPDATE asistencias SET asistencias = :asistencias, estudiante = :estudiante WHERE id = :id";
+                $update_sql = "UPDATE asistencias SET asistencias = :asistencias, estudiante = :estudiante, uniforme = :uniforme, justificacion = :justificacion WHERE id = :id";
                 $update_stmt = $pdo->prepare($update_sql);
                 $update_stmt->execute([
                     ':asistencias' => $estado_db,
                     ':estudiante' => $asistencia['nombre_estudiante_completo'],
+                    ':uniforme' => $uniforme_db,
+                    ':justificacion' => $justificacion_db,
                     ':id' => $existing_record['id']
                 ]);
             } else {
-                $insert_sql = "INSERT INTO asistencias (documento, estudiante, materia, fechas_clase, asistencias) VALUES (:documento, :estudiante, :materia, :fechas_clase, :asistencias)";
+                $insert_sql = "INSERT INTO asistencias (documento, estudiante, materia, fechas_clase, asistencias, uniforme, justificacion) VALUES (:documento, :estudiante, :materia, :fechas_clase, :asistencias, :uniforme, :justificacion)";
                 $insert_stmt = $pdo->prepare($insert_sql);
                 $insert_stmt->execute([
                     ':documento' => $asistencia['id_estudiante'],
                     ':estudiante' => $asistencia['nombre_estudiante_completo'],
                     ':materia' => $nombre_materia,
                     ':fechas_clase' => $fecha_db_formato,
-                    ':asistencias' => $estado_db
+                    ':asistencias' => $estado_db,
+                    ':uniforme' => $uniforme_db,
+                    ':justificacion' => $justificacion_db
                 ]);
             }
         }
@@ -270,14 +298,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SERVER['HTTP_X_REQUESTED_W
  */
 $academico = new Academico();
 $asignacion = isset($_GET['asignacion']) ? (int)$_GET['asignacion'] : 0;
-$listado_estudiantes = [];
 $nombre_asignatura = "Curso No Encontrado";
+$listado_estudiantes_ordenado = []; 
 
 if ($asignacion) {
-    $listado_estudiantes = $academico->listar_estudiantes_asignacion($asignacion);
     $info_asignatura = $academico->consultar_materia($asignacion);
     if (!empty($info_asignatura)) {
         $nombre_asignatura = $info_asignatura[0]->nombre_materia;
+    }
+
+    // MODIFICADO: Se ajusta la consulta para obtener el grado desde 'observaciones'
+    try {
+        $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // Se obtiene la lista de estudiantes con su grado (desde observaciones) y se ordena.
+        $sql_students = "SELECT u.id_usuario, u.observaciones as grado
+                         FROM usuario u
+                         JOIN inscripcion i ON u.id_usuario = i.id_estudiante
+                         WHERE i.id_asignacion = :id_asignacion and u.estado='activo'
+                         ORDER BY CAST(u.observaciones AS UNSIGNED) ASC, u.apellido ASC";
+
+        $stmt_students = $pdo->prepare($sql_students);
+        $stmt_students->execute([':id_asignacion' => $asignacion]);
+        $students_data = $stmt_students->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!empty($students_data)) {
+            foreach ($students_data as $student) {
+                $persona = new Persona($student['id_usuario']);
+                // Se añade dinámicamente la propiedad 'grado' al objeto Persona
+                $persona->grado = $student['grado'];
+                $listado_estudiantes_ordenado[] = $persona;
+            }
+        }
+    } catch (PDOException $e) {
+        // Manejo de error opcional, por ahora la lista se mantendrá vacía.
+        // error_log("Error de BD al cargar estudiantes: " . $e->getMessage());
     }
 }
 ?>
@@ -346,7 +402,7 @@ if ($asignacion) {
 
             <div class="border-t border-gray-200"></div>
 
-            <?php if (!empty($listado_estudiantes)): ?>
+            <?php if (!empty($listado_estudiantes_ordenado)): ?>
             <div class="p-3 bg-gray-100 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-2">
                  <h3 class="text-sm font-semibold text-gray-600">Marcar a Todos:</h3>
                  <div class="flex flex-wrap gap-2">
@@ -356,34 +412,48 @@ if ($asignacion) {
                     <button class="mark-all-btn px-3 py-1 text-xs rounded-md font-medium bg-blue-200 text-blue-800 hover:bg-blue-300" data-value="Retardo">Retardo</button>
                  </div>
             </div>
-            <?php endif; ?>
 
-            <div id="listaEstudiantes" class="space-y-4">
-                <?php if (empty($listado_estudiantes)): ?>
+            <div class="hidden md:flex p-3 bg-gray-100 rounded-t-lg text-xs font-semibold text-gray-600 uppercase border-b">
+                <div class="w-16 text-center">Uniforme</div>
+                <div class="w-16 text-center">#</div>
+                <div class="flex-1">Estudiante</div>
+                <div class="w-96 text-center">Estado</div>
+            </div>
+
+            <div id="listaEstudiantes" class="space-y-1 md:space-y-0">
+                <?php if (empty($listado_estudiantes_ordenado)): ?>
                     <p class="text-center text-gray-500 py-8">No hay estudiantes matriculados en este curso.</p>
                 <?php else: ?>
                     <?php 
                     $contador = 1;
-                    foreach ($listado_estudiantes as $info_estudiante):
-                        $persona = new Persona($info_estudiante['id_estudiante']);
+                    foreach ($listado_estudiantes_ordenado as $persona):
                         $foto = ($persona->genero == "F") ? "user-iconf.png" : "user-icon.png";
                         $ruta_foto = (defined('SGA_COMUN_SOLOSGA_DATA') ? SGA_COMUN_SOLOSGA_DATA : '../comun/sga-data') . '/' . $persona->foto;
                     ?>
-                    <div class="student-row flex flex-col md:flex-row items-start md:items-center p-4 border border-gray-200 rounded-lg transition-all duration-300 hover:shadow-md" 
+                    <div class="student-row flex flex-col md:flex-row md:items-center p-3 md:p-2 border rounded-lg md:rounded-none md:border-x md:border-b" 
                          data-id-estudiante="<?php echo htmlspecialchars($persona->id_usuario, ENT_QUOTES, 'UTF-8'); ?>" 
-                         data-nombre-completo="<?php echo htmlspecialchars($persona->nombre . ' ' . $persona->apellido, ENT_QUOTES, 'UTF-8'); ?>"
-                         data-estado="Presente">
-                        <div class="flex items-center w-full md:w-1/3 mb-4 md:mb-0">
+                         data-nombre-completo="<?php echo htmlspecialchars($persona->nombre . ' ' . $persona->apellido, ENT_QUOTES, 'UTF-8'); ?>">
+                        
+                        <div class="w-full md:w-16 flex md:justify-center items-center mb-3 md:mb-0">
+                            <label class="md:hidden text-sm font-medium text-gray-700 mr-3">Uniforme:</label>
+                            <input id="uniforme-<?php echo htmlspecialchars($persona->id_usuario, ENT_QUOTES, 'UTF-8'); ?>" type="checkbox" class="uniforme-check h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer">
+                        </div>
+
+                        <div class="flex items-center flex-1 w-full md:w-auto mb-4 md:mb-0">
                             <span class="text-lg font-medium text-gray-500 mr-4 w-8 text-center"><?php echo $contador++; ?>.</span>
                             <img class="h-12 w-12 rounded-full object-cover mr-4" src="<?php echo htmlspecialchars($ruta_foto, ENT_QUOTES, 'UTF-8'); ?>" alt="Foto de estudiante" onerror="this.onerror=null;this.src='https://placehold.co/48x48/E2E8F0/A0AEC0?text=Foto';">
                             <div>
                                 <p class="student-name font-semibold text-gray-800">
-                                    <a href="#" class="student-name-link"><?php echo htmlspecialchars($persona->nombre . ' ' . $persona->apellido, ENT_QUOTES, 'UTF-8'); ?></a>
+                                    <a href="#" class="student-name-link"><?php echo htmlspecialchars($persona->apellido . ' ' . $persona->nombre, ENT_QUOTES, 'UTF-8'); ?></a>
                                 </p>
-                                <p class="text-sm text-gray-500">ID: <?php echo htmlspecialchars($persona->id_usuario, ENT_QUOTES, 'UTF-8'); ?></p>
+                                <!-- MODIFICADO: Se muestra el grado del estudiante desde la propiedad 'grado' -->
+                                <p class="text-sm text-gray-500">
+                                    Grado: <?php echo htmlspecialchars($persona->grado ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?> - ID: <?php echo htmlspecialchars($persona->id_usuario, ENT_QUOTES, 'UTF-8'); ?>
+                                </p>
                             </div>
                         </div>
-                        <div class="flex-grow w-full space-y-3">
+                        
+                        <div class="w-full md:w-96">
                             <div class="flex flex-wrap gap-2 justify-start md:justify-end">
                                 <button class="asistencia-btn px-4 py-2 text-sm rounded-md font-medium" data-value="Presente">Presente</button>
                                 <button class="asistencia-btn px-4 py-2 text-sm rounded-md font-medium" data-value="Ausente">Ausente</button>
@@ -396,6 +466,7 @@ if ($asignacion) {
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
+            <?php endif; ?>
         </div>
     </div>
     
@@ -494,7 +565,14 @@ if ($asignacion) {
         
         const statusMap = { 'SI': 'Presente', 'NO': 'Ausente', 'P': 'Permiso', 'R': 'Retardo' };
         
-        // --- Lógica del Panel de Estadísticas ---
+        studentRows.forEach(row => {
+            setStudentStatus(row, 'Presente');
+            const uniformeCheck = row.querySelector('.uniforme-check');
+            if (uniformeCheck) {
+                uniformeCheck.checked = true;
+            }
+        });
+
         function updateStats() {
             const stats = { 'Presente': 0, 'Ausente': 0, 'Permiso': 0, 'Retardo': 0, 'Total': 0 };
             studentRows.forEach(row => {
@@ -522,16 +600,32 @@ if ($asignacion) {
                 const result = await response.json();
 
                 if (result.success) {
-                    if (Object.keys(result.data).length === 0) {
+                    const hasData = Object.keys(result.data).length > 0;
+                    if (!hasData) {
                         statusIconContainer.innerHTML = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800" title="No hay registros para esta fecha."><svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>Disponible</span>`;
-                        studentRows.forEach(row => setStudentStatus(row, 'Presente'));
+                        studentRows.forEach(row => {
+                            setStudentStatus(row, 'Presente');
+                            row.querySelector('.uniforme-check').checked = true;
+                            row.querySelector('.justificacion-area').value = '';
+                        });
+
                     } else {
                          statusIconContainer.innerHTML = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800" title="Asistencia registrada para esta fecha."><svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Registrada</span>`;
                         studentRows.forEach(row => {
                             const studentId = row.dataset.idEstudiante;
-                            const dbStatus = result.data[studentId];
-                            const uiStatus = statusMap[dbStatus] || 'Presente';
-                            setStudentStatus(row, uiStatus);
+                            const asistenciaInfo = result.data[studentId];
+                            
+                            if (asistenciaInfo) {
+                                const dbStatus = asistenciaInfo.asistencia;
+                                const uiStatus = statusMap[dbStatus] || 'Presente';
+                                setStudentStatus(row, uiStatus);
+                                row.querySelector('.uniforme-check').checked = asistenciaInfo.uniforme == '1';
+                                row.querySelector('.justificacion-area').value = asistenciaInfo.justificacion || '';
+                            } else {
+                                setStudentStatus(row, 'Presente');
+                                row.querySelector('.uniforme-check').checked = true;
+                                row.querySelector('.justificacion-area').value = '';
+                            }
                         });
                     }
                     updateStats();
@@ -543,7 +637,6 @@ if ($asignacion) {
             }
         }
         
-        // --- Lógica de Búsqueda de Estudiantes ---
         searchInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
             studentRows.forEach(row => {
@@ -553,7 +646,6 @@ if ($asignacion) {
             updateStats();
         });
 
-        // --- Lógica de "Marcar a Todos" ---
         markAllBtns.forEach(button => {
             button.addEventListener('click', () => {
                 const status = button.dataset.value;
@@ -565,7 +657,6 @@ if ($asignacion) {
             });
         });
 
-        // --- Lógica de UI Refactorizada ---
         function updateButtonStyles(row, newState) {
             const buttons = row.querySelectorAll('.asistencia-btn');
             const justificacionArea = row.querySelector('.justificacion-area');
@@ -588,6 +679,7 @@ if ($asignacion) {
         }
 
         function setStudentStatus(row, status) {
+            if (!row) return;
             row.dataset.estado = status;
             updateButtonStyles(row, status);
             updateStats();
@@ -611,7 +703,9 @@ if ($asignacion) {
             const asistenciaData = Array.from(studentRows).map(row => ({
                 id_estudiante: row.dataset.idEstudiante,
                 nombre_estudiante_completo: row.dataset.nombreCompleto,
-                estado: row.dataset.estado
+                estado: row.dataset.estado,
+                uniforme: row.querySelector('.uniforme-check').checked,
+                justificacion: row.querySelector('.justificacion-area').value
             }));
             
             try {
@@ -629,13 +723,11 @@ if ($asignacion) {
                 showToast('Error de conexión con el servidor.', 'error');
             } finally {
                 this.disabled = false;
-                loader.classList.remove('hidden');
+                loader.classList.add('hidden');
                 guardarBtn.querySelector('span').textContent = 'Guardar';
             }
         });
 
-        // --- Lógica de Exportación e Importación ---
-        
         exportarBtn.addEventListener('click', function(e) {
             e.preventDefault();
             const asistenciaData = Array.from(studentRows).map(row => ({
@@ -664,7 +756,6 @@ if ($asignacion) {
             document.body.removeChild(form);
         });
         
-        // Modal de Importación...
         abrirModalBtn.addEventListener('click', (e) => { e.preventDefault(); importarModal.classList.remove('hidden'); });
         function closeModal() {
             importarModal.classList.add('hidden');
@@ -708,7 +799,6 @@ if ($asignacion) {
             }
         });
 
-        // --- Lógica del Modal de Reporte ---
         function openReporteModal(row) {
             currentStudentIdForReport = row.dataset.idEstudiante;
             const studentName = row.dataset.nombreCompleto;
@@ -789,9 +879,6 @@ if ($asignacion) {
                 reporteResultados.innerHTML = `<p class="text-red-500">Error de conexión al generar el reporte.</p>`;
             }
         });
-
-
-        // --- Carga inicial y otros listeners ---
         
         function showToast(message, type) {
             const toast = document.getElementById('toast');
@@ -803,6 +890,7 @@ if ($asignacion) {
         }
 
         fechaInput.addEventListener('change', () => cargarAsistencia(fechaInput.value));
+        
         cargarAsistencia(fechaInput.value);
     });
     </script>

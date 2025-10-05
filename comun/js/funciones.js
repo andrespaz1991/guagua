@@ -6,6 +6,7 @@ function puntosuspensivos(cadena){
 
 
 
+
 function capitalizarPalabras(texto) {
   if (!texto) {
     return "";
