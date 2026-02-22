@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of PHPWord - A pure PHP library for reading and writing
  * word processing documents.
@@ -10,43 +11,49 @@
  * file that was distributed with this source code. For the full list of
  * contributors, visit https://github.com/PHPOffice/PHPWord/contributors.
  *
- * @link        https://github.com/PHPOffice/PHPWord
- * @copyright   2010-2014 PHPWord contributors
+ * @see         https://github.com/PHPOffice/PHPWord
+ *
  * @license     http://www.gnu.org/licenses/lgpl.txt LGPL version 3
  */
 
 namespace PhpOffice\PhpWord\Shared;
 
-use PhpOffice\PhpWord\Exception\Exception;
+use DOMDocument;
+use DOMElement;
+use DOMNodeList;
+use DOMXpath;
+use Exception;
+use InvalidArgumentException;
+use ZipArchive;
 
 /**
- * XML Reader wrapper
+ * XML Reader wrapper.
  *
- * @since   0.10.0
+ * @since   0.2.1
  */
 class XMLReader
 {
     /**
-     * DOMDocument object
+     * DOMDocument object.
      *
-     * @var \DOMDocument
+     * @var DOMDocument
      */
-    private $dom = null;
+    private $dom;
 
     /**
-     * DOMXpath object
+     * DOMXpath object.
      *
-     * @var \DOMXpath
+     * @var DOMXpath
      */
-    private $xpath = null;
+    private $xpath;
 
     /**
-     * Get DOMDocument from ZipArchive
+     * Get DOMDocument from ZipArchive.
      *
      * @param string $zipFile
      * @param string $xmlFile
-     * @return \DOMDocument|false
-     * @throws \PhpOffice\PhpWord\Exception\Exception
+     *
+     * @return DOMDocument|false
      */
     public function getDomFromZip($zipFile, $xmlFile)
     {
@@ -55,86 +62,119 @@ class XMLReader
         }
 
         $zip = new ZipArchive();
-        $zip->open($zipFile);
-        $content = $zip->getFromName($xmlFile);
+        $openStatus = $zip->open($zipFile);
+        if ($openStatus !== true) {
+            /**
+             * Throw an exception since making further calls on the ZipArchive would cause a fatal error.
+             * This prevents fatal errors on corrupt archives and attempts to open old "doc" files.
+             */
+            throw new Exception("The archive failed to load with the following error code: $openStatus");
+        }
+
+        $content = $zip->getFromName(ltrim($xmlFile, '/'));
         $zip->close();
 
         if ($content === false) {
             return false;
-        } else {
-            return $this->getDomFromString($content);
         }
+
+        return $this->getDomFromString($content);
     }
 
     /**
-     * Get DOMDocument from content string
+     * Get DOMDocument from content string.
      *
      * @param string $content
-     * @return \DOMDocument
+     *
+     * @return DOMDocument
      */
     public function getDomFromString($content)
     {
-        $this->dom = new \DOMDocument();
+        if (\PHP_VERSION_ID < 80000) {
+            $originalLibXMLEntityValue = libxml_disable_entity_loader(true);
+        }
+        $this->dom = new DOMDocument();
         $this->dom->loadXML($content);
+        if (\PHP_VERSION_ID < 80000) {
+            libxml_disable_entity_loader($originalLibXMLEntityValue);
+        }
 
         return $this->dom;
     }
 
     /**
-     * Get elements
+     * Get elements.
      *
      * @param string $path
-     * @param \DOMElement $contextNode
-     * @return \DOMNodeList
+     *
+     * @return DOMNodeList<DOMElement>
      */
-    public function getElements($path, \DOMElement $contextNode = null)
+    public function getElements($path, ?DOMElement $contextNode = null)
     {
         if ($this->dom === null) {
-            return array();
+            return new DOMNodeList(); // @phpstan-ignore-line
         }
         if ($this->xpath === null) {
-            $this->xpath = new \DOMXpath($this->dom);
+            $this->xpath = new DOMXpath($this->dom);
         }
 
-        if (is_null($contextNode)) {
-            return $this->xpath->query($path);
-        } else {
-            return $this->xpath->query($path, $contextNode);
-        }
+        $result = @$this->xpath->query($path, $contextNode);
+
+        return empty($result) ? new DOMNodeList() : $result; // @phpstan-ignore-line
     }
 
     /**
-     * Get element
+     * Registers the namespace with the DOMXPath object.
+     *
+     * @param string $prefix The prefix
+     * @param string $namespaceURI The URI of the namespace
+     *
+     * @return bool true on success or false on failure
+     */
+    public function registerNamespace($prefix, $namespaceURI)
+    {
+        if ($this->dom === null) {
+            throw new InvalidArgumentException('Dom needs to be loaded before registering a namespace');
+        }
+        if ($this->xpath === null) {
+            $this->xpath = new DOMXpath($this->dom);
+        }
+
+        return $this->xpath->registerNamespace($prefix, $namespaceURI);
+    }
+
+    /**
+     * Get element.
      *
      * @param string $path
-     * @param \DOMElement $contextNode
-     * @return \DOMElement|null
+     *
+     * @return null|DOMElement
      */
-    public function getElement($path, \DOMElement $contextNode = null)
+    public function getElement($path, ?DOMElement $contextNode = null)
     {
         $elements = $this->getElements($path, $contextNode);
         if ($elements->length > 0) {
             return $elements->item(0);
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
-     * Get element attribute
+     * Get element attribute.
      *
      * @param string $attribute
-     * @param \DOMElement $contextNode
      * @param string $path
-     * @return string|null
+     *
+     * @return null|string
      */
-    public function getAttribute($attribute, \DOMElement $contextNode = null, $path = null)
+    public function getAttribute($attribute, ?DOMElement $contextNode = null, $path = null)
     {
         $return = null;
         if ($path !== null) {
             $elements = $this->getElements($path, $contextNode);
             if ($elements->length > 0) {
-                /** @var \DOMElement $node Type hint */
+                /** @var DOMElement $node Type hint */
                 $node = $elements->item(0);
                 $return = $node->getAttribute($attribute);
             }
@@ -148,30 +188,30 @@ class XMLReader
     }
 
     /**
-     * Get element value
+     * Get element value.
      *
      * @param string $path
-     * @param \DOMElement $contextNode
-     * @return string|null
+     *
+     * @return null|string
      */
-    public function getValue($path, \DOMElement $contextNode = null)
+    public function getValue($path, ?DOMElement $contextNode = null)
     {
         $elements = $this->getElements($path, $contextNode);
         if ($elements->length > 0) {
             return $elements->item(0)->nodeValue;
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
-     * Count elements
+     * Count elements.
      *
      * @param string $path
-     * @param \DOMElement $contextNode
-     * @return integer
+     *
+     * @return int
      */
-    public function countElements($path, \DOMElement $contextNode = null)
+    public function countElements($path, ?DOMElement $contextNode = null)
     {
         $elements = $this->getElements($path, $contextNode);
 
@@ -179,13 +219,13 @@ class XMLReader
     }
 
     /**
-     * Element exists
+     * Element exists.
      *
      * @param string $path
-     * @param \DOMElement $contextNode
-     * @return boolean
+     *
+     * @return bool
      */
-    public function elementExists($path, \DOMElement $contextNode = null)
+    public function elementExists($path, ?DOMElement $contextNode = null)
     {
         return $this->getElements($path, $contextNode)->length > 0;
     }

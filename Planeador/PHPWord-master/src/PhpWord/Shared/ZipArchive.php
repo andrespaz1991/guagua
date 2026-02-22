@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of PHPWord - A pure PHP library for reading and writing
  * word processing documents.
@@ -10,18 +11,20 @@
  * file that was distributed with this source code. For the full list of
  * contributors, visit https://github.com/PHPOffice/PHPWord/contributors.
  *
- * @link        https://github.com/PHPOffice/PHPWord
- * @copyright   2010-2014 PHPWord contributors
+ * @see         https://github.com/PHPOffice/PHPWord
+ *
  * @license     http://www.gnu.org/licenses/lgpl.txt LGPL version 3
  */
 
 namespace PhpOffice\PhpWord\Shared;
 
+use PclZip;
 use PhpOffice\PhpWord\Exception\Exception;
 use PhpOffice\PhpWord\Settings;
+use Throwable;
 
 /**
- * ZipArchive wrapper
+ * ZipArchive wrapper.
  *
  * Wraps zip archive functionality of PHP ZipArchive and PCLZip. PHP ZipArchive
  * properties and methods are bypassed and used as the model for the PCLZip
@@ -29,54 +32,54 @@ use PhpOffice\PhpWord\Settings;
  *
  * @method  bool addFile(string $filename, string $localname = null)
  * @method  bool addFromString(string $localname, string $contents)
- * @method  string getNameIndex(int $index)
- * @method  int locateName(string $name)
+ * @method  false|string getNameIndex(int $index)
+ * @method  false|int locateName(string $name)
  *
  * @since   0.10.0
  */
 class ZipArchive
 {
     /** @const int Flags for open method */
-    const CREATE    = 1; // Emulate \ZipArchive::CREATE
+    const CREATE = 1; // Emulate \ZipArchive::CREATE
     const OVERWRITE = 8; // Emulate \ZipArchive::OVERWRITE
 
     /**
-     * Number of files (emulate ZipArchive::$numFiles)
+     * Number of files (emulate ZipArchive::$numFiles).
      *
      * @var int
      */
     public $numFiles = 0;
 
     /**
-     * Archive filename (emulate ZipArchive::$filename)
+     * Archive filename (emulate ZipArchive::$filename).
      *
      * @var string
      */
     public $filename;
 
     /**
-     * Temporary storage directory
+     * Temporary storage directory.
      *
      * @var string
      */
     private $tempDir;
 
     /**
-     * Internal zip archive object
+     * Internal zip archive object.
      *
-     * @var \ZipArchive|\PclZip
+     * @var PclZip|\ZipArchive
      */
     private $zip;
 
     /**
-     * Use PCLZip (default behaviour)
+     * Use PCLZip (default behaviour).
      *
      * @var bool
      */
     private $usePclzip = true;
 
     /**
-     * Create new instance
+     * Create new instance.
      */
     public function __construct()
     {
@@ -90,12 +93,13 @@ class ZipArchive
     }
 
     /**
-     * Catch function calls: pass to ZipArchive or PCLZip
+     * Catch function calls: pass to ZipArchive or PCLZip.
      *
      * `call_user_func_array` can only used for public function, hence the `public` in all `pcl...` methods
      *
      * @param mixed $function
      * @param mixed $args
+     *
      * @return mixed
      */
     public function __call($function, $args)
@@ -112,35 +116,44 @@ class ZipArchive
         // Run function
         $result = false;
         if (method_exists($zipObject, $zipFunction)) {
-            $result = @call_user_func_array(array($zipObject, $zipFunction), $args);
+            $result = @call_user_func_array([$zipObject, $zipFunction], $args);
         }
 
         return $result;
     }
 
     /**
-     * Open a new zip archive
+     * Open a new zip archive.
      *
      * @param string $filename The file name of the ZIP archive to open
      * @param int $flags The mode to use to open the archive
+     *
      * @return bool
      */
     public function open($filename, $flags = null)
     {
         $result = true;
         $this->filename = $filename;
+        $this->tempDir = Settings::getTempDir();
 
         if (!$this->usePclzip) {
             $zip = new \ZipArchive();
+
+            // PHP 8.1 compat - passing null as second arg to \ZipArchive::open() is deprecated
+            // passing 0 achieves the same behaviour
+            if ($flags === null) {
+                $flags = 0;
+            }
+
             $result = $zip->open($this->filename, $flags);
 
             // Scrutizer will report the property numFiles does not exist
             // See https://github.com/scrutinizer-ci/php-analyzer/issues/190
             $this->numFiles = $zip->numFiles;
         } else {
-            $zip = new \PclZip($this->filename);
-            $this->tempDir = Settings::getTempDir();
-            $this->numFiles = count($zip->listContent());
+            $zip = new PclZip($this->filename);
+            $zipContent = $zip->listContent();
+            $this->numFiles = is_array($zipContent) ? count($zipContent) : 0;
         }
         $this->zip = $zip;
 
@@ -148,17 +161,20 @@ class ZipArchive
     }
 
     /**
-     * Close the active archive
+     * Close the active archive.
      *
      * @return bool
-     * @throws \PhpOffice\PhpWord\Exception\Exception
-     * @codeCoverageIgnore Can't find any test case. Uncomment when found.
      */
     public function close()
     {
         if (!$this->usePclzip) {
-            if ($this->zip->close() === false) {
-                throw new Exception("Could not close zip file {$this->filename}.");
+            try {
+                $result = @$this->zip->close();
+            } catch (Throwable $e) {
+                $result = false;
+            }
+            if ($result === false) {
+                throw new Exception("Could not close zip file {$this->filename}: ");
             }
         }
 
@@ -166,11 +182,13 @@ class ZipArchive
     }
 
     /**
-     * Extract the archive contents (emulate \ZipArchive)
+     * Extract the archive contents (emulate \ZipArchive).
      *
      * @param string $destination
-     * @param string|array $entries
+     * @param array|string $entries
+     *
      * @return bool
+     *
      * @since 0.10.0
      */
     public function extractTo($destination, $entries = null)
@@ -181,16 +199,17 @@ class ZipArchive
 
         if (!$this->usePclzip) {
             return $this->zip->extractTo($destination, $entries);
-        } else {
-            return $this->pclzipExtractTo($destination, $entries);
         }
+
+        return $this->pclzipExtractTo($destination, $entries);
     }
 
     /**
-     * Extract file from archive by given file name (emulate \ZipArchive)
+     * Extract file from archive by given file name (emulate \ZipArchive).
      *
      * @param  string $filename Filename for the file in zip archive
-     * @return string $contents File string contents
+     *
+     * @return bool|string $contents File string contents
      */
     public function getFromName($filename)
     {
@@ -208,15 +227,16 @@ class ZipArchive
     }
 
     /**
-     * Add a new file to the zip archive (emulate \ZipArchive)
+     * Add a new file to the zip archive (emulate \ZipArchive).
      *
      * @param string $filename Directory/Name of the file to add to the zip archive
      * @param string $localname Directory/Name of the file added to the zip
+     *
      * @return bool
      */
     public function pclzipAddFile($filename, $localname = null)
     {
-        /** @var \PclZip $zip Type hint */
+        /** @var PclZip $zip Type hint */
         $zip = $this->zip;
 
         // Bugfix GH-261 https://github.com/PHPOffice/PHPWord/pull/261
@@ -225,86 +245,101 @@ class ZipArchive
             $filename = $realpathFilename;
         }
 
-        $filenameParts = pathinfo($filename);
-        $localnameParts = pathinfo($localname);
+        $filenamePartsBaseName = pathinfo($filename, PATHINFO_BASENAME);
+        $filenamePartsDirName = pathinfo($filename, PATHINFO_DIRNAME);
+        $localnamePartsBaseName = pathinfo($localname, PATHINFO_BASENAME);
+        $localnamePartsDirName = pathinfo($localname, PATHINFO_DIRNAME);
 
         // To Rename the file while adding it to the zip we
         //   need to create a temp file with the correct name
         $tempFile = false;
-        if ($filenameParts['basename'] != $localnameParts['basename']) {
+        if ($filenamePartsBaseName != $localnamePartsBaseName) {
             $tempFile = true; // temp file created
-            $temppath = $this->tempDir . DIRECTORY_SEPARATOR . $localnameParts['basename'];
+            $temppath = $this->tempDir . DIRECTORY_SEPARATOR . $localnamePartsBaseName;
             copy($filename, $temppath);
             $filename = $temppath;
-            $filenameParts = pathinfo($temppath);
+            $filenamePartsDirName = pathinfo($temppath, PATHINFO_DIRNAME);
         }
 
-        $pathRemoved = $filenameParts['dirname'];
-        $pathAdded = $localnameParts['dirname'];
+        $pathRemoved = $filenamePartsDirName;
+        $pathAdded = $localnamePartsDirName;
 
-        $res = $zip->add($filename, PCLZIP_OPT_REMOVE_PATH, $pathRemoved, PCLZIP_OPT_ADD_PATH, $pathAdded);
+        if (!$this->usePclzip) {
+            $pathAdded = $pathAdded . '/' . ltrim(str_replace('\\', '/', substr($filename, strlen($pathRemoved))), '/');
+            //$res = $zip->addFile($filename, $pathAdded);
+            $res = $zip->addFromString($pathAdded, file_get_contents($filename));       // addFile can't use subfolders in some cases
+        } else {
+            $res = $zip->add($filename, PCLZIP_OPT_REMOVE_PATH, $pathRemoved, PCLZIP_OPT_ADD_PATH, $pathAdded);
+        }
 
         if ($tempFile) {
             // Remove temp file, if created
-            unlink($this->tempDir . DIRECTORY_SEPARATOR . $localnameParts['basename']);
+            unlink($this->tempDir . DIRECTORY_SEPARATOR . $localnamePartsBaseName);
         }
 
-        return ($res == 0) ? false : true;
+        return $res != 0;
     }
 
     /**
-     * Add a new file to the zip archive from a string of raw data (emulate \ZipArchive)
+     * Add a new file to the zip archive from a string of raw data (emulate \ZipArchive).
      *
      * @param string $localname Directory/Name of the file to add to the zip archive
      * @param string $contents String of data to add to the zip archive
+     *
      * @return bool
      */
     public function pclzipAddFromString($localname, $contents)
     {
-        /** @var \PclZip $zip Type hint */
+        /** @var PclZip $zip Type hint */
         $zip = $this->zip;
-        $filenameParts = pathinfo($localname);
+        $filenamePartsBaseName = pathinfo($localname, PATHINFO_BASENAME);
+        $filenamePartsDirName = pathinfo($localname, PATHINFO_DIRNAME);
 
         // Write $contents to a temp file
-        $handle = fopen($this->tempDir . DIRECTORY_SEPARATOR . $filenameParts['basename'], 'wb');
-        fwrite($handle, $contents);
-        fclose($handle);
+        $handle = fopen($this->tempDir . DIRECTORY_SEPARATOR . $filenamePartsBaseName, 'wb');
+        if ($handle) {
+            fwrite($handle, $contents);
+            fclose($handle);
+        }
 
         // Add temp file to zip
-        $filename = $this->tempDir . DIRECTORY_SEPARATOR . $filenameParts['basename'];
+        $filename = $this->tempDir . DIRECTORY_SEPARATOR . $filenamePartsBaseName;
         $pathRemoved = $this->tempDir;
-        $pathAdded = $filenameParts['dirname'];
+        $pathAdded = $filenamePartsDirName;
 
         $res = $zip->add($filename, PCLZIP_OPT_REMOVE_PATH, $pathRemoved, PCLZIP_OPT_ADD_PATH, $pathAdded);
 
         // Remove temp file
-        @unlink($this->tempDir . DIRECTORY_SEPARATOR . $filenameParts['basename']);
+        @unlink($this->tempDir . DIRECTORY_SEPARATOR . $filenamePartsBaseName);
 
-        return ($res == 0) ? false : true;
+        return $res != 0;
     }
 
     /**
-     * Extract the archive contents (emulate \ZipArchive)
+     * Extract the archive contents (emulate \ZipArchive).
      *
      * @param string $destination
-     * @param string|array $entries
+     * @param array|string $entries
+     *
      * @return bool
+     *
      * @since 0.10.0
      */
     public function pclzipExtractTo($destination, $entries = null)
     {
-        /** @var \PclZip $zip Type hint */
+        /** @var PclZip $zip Type hint */
         $zip = $this->zip;
 
         // Extract all files
-        if (is_null($entries)) {
+        if (null === $entries) {
             $result = $zip->extract(PCLZIP_OPT_PATH, $destination);
-            return ($result > 0) ? true : false;
+
+            return $result > 0;
         }
 
         // Extract by entries
         if (!is_array($entries)) {
-            $entries = array($entries);
+            $entries = [$entries];
         }
         foreach ($entries as $entry) {
             $entryIndex = $this->locateName($entry);
@@ -318,14 +353,15 @@ class ZipArchive
     }
 
     /**
-     * Extract file from archive by given file name (emulate \ZipArchive)
+     * Extract file from archive by given file name (emulate \ZipArchive).
      *
      * @param  string $filename Filename for the file in zip archive
+     *
      * @return string $contents File string contents
      */
     public function pclzipGetFromName($filename)
     {
-        /** @var \PclZip $zip Type hint */
+        /** @var PclZip $zip Type hint */
         $zip = $this->zip;
         $listIndex = $this->pclzipLocateName($filename);
         $contents = false;
@@ -337,7 +373,7 @@ class ZipArchive
             $listIndex = $this->pclzipLocateName($filename);
             $extracted = $zip->extractByIndex($listIndex, PCLZIP_OPT_EXTRACT_AS_STRING);
         }
-        if ((is_array($extracted)) && ($extracted != 0)) {
+        if (is_array($extracted) && count($extracted) != 0) {
             $contents = $extracted[0]['content'];
         }
 
@@ -345,33 +381,36 @@ class ZipArchive
     }
 
     /**
-     * Returns the name of an entry using its index (emulate \ZipArchive)
+     * Returns the name of an entry using its index (emulate \ZipArchive).
      *
      * @param int $index
-     * @return string
+     *
+     * @return bool|string
+     *
      * @since 0.10.0
      */
     public function pclzipGetNameIndex($index)
     {
-        /** @var \PclZip $zip Type hint */
+        /** @var PclZip $zip Type hint */
         $zip = $this->zip;
         $list = $zip->listContent();
         if (isset($list[$index])) {
             return $list[$index]['filename'];
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
-     * Returns the index of the entry in the archive (emulate \ZipArchive)
+     * Returns the index of the entry in the archive (emulate \ZipArchive).
      *
      * @param string $filename Filename for the file in zip archive
-     * @return int
+     *
+     * @return false|int
      */
     public function pclzipLocateName($filename)
     {
-        /** @var \PclZip $zip Type hint */
+        /** @var PclZip $zip Type hint */
         $zip = $this->zip;
         $list = $zip->listContent();
         $listCount = count($list);
@@ -380,10 +419,22 @@ class ZipArchive
             if (strtolower($list[$i]['filename']) == strtolower($filename) ||
                 strtolower($list[$i]['stored_filename']) == strtolower($filename)) {
                 $listIndex = $i;
+
                 break;
             }
         }
 
         return ($listIndex > -1) ? $listIndex : false;
+    }
+
+    /**
+     * Add an empty directory to the zip archive (emulate \ZipArchive).
+     *
+     * @param string $dirname Directory name to add to the zip archive
+     */
+    public function addEmptyDir(string $dirname): bool
+    {
+        // Create a directory entry by adding an empty file with trailing slash
+        return $this->addFromString(rtrim($dirname, '/') . '/', '');
     }
 }

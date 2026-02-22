@@ -1,11 +1,91 @@
 <?php
 ob_start();
+
+// ==================================================================
+// == BLOQUE PARA MANEJAR PETICIONES ASÍNCRONAS (PAGINACIÓN JSON)  ==
+// ==================================================================
+if (isset($_GET['accion']) && $_GET['accion'] === 'obtener_planes') {
+    
+    // --- INCLUDES Y CONFIGURACIÓN ---
+    require_once($_SERVER['DOCUMENT_ROOT'] . '/guagua' . '/' . "/comun/autoload.php");
+    require(SGA_COMUN_SERVER . '/conexion.php');
+
+    header('Content-Type: application/json');
+
+    // --- VALIDACIÓN DE PARÁMETROS ---
+    $id_asignacion = isset($_GET['asignacion']) ? (int)$_GET['asignacion'] : 0;
+    $grado = isset($_GET['grado']) ? urldecode($_GET['grado']) : '';
+    $pagina_actual = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+
+    if ($id_asignacion <= 0 || empty($grado)) {
+        http_response_code(400); // Bad Request
+        echo json_encode(['error' => 'Parámetros inválidos o faltantes.']);
+        exit();
+    }
+
+    // --- CONFIGURACIÓN DE PAGINACIÓN ---
+    $registros_por_pagina = 5; 
+
+    // --- CÁLCULO TOTAL DE REGISTROS ---
+    $sql_total = "SELECT COUNT(id_plan) as total FROM planeador_vallesol WHERE materia = ? AND grado = ?";
+    $stmt_total = $mysqli->prepare($sql_total);
+    $stmt_total->bind_param("is", $id_asignacion, $grado);
+    $stmt_total->execute();
+    $resultado_total = $stmt_total->get_result();
+    $total_registros = (int)$resultado_total->fetch_assoc()['total'];
+    $stmt_total->close();
+
+    $total_paginas = ceil($total_registros / $registros_por_pagina);
+    $offset = ($pagina_actual - 1) * $registros_por_pagina;
+
+    // --- CONSULTA DE REGISTROS PARA LA PÁGINA ACTUAL ---
+    $sql_planes = "SELECT id_plan, fecha_inicio, fecha_fin, objetivo, eje_tematico, estrategias, periodo 
+                   FROM planeador_vallesol 
+                   WHERE materia = ? AND grado = ? 
+                   ORDER BY fecha_inicio DESC
+                   LIMIT ? OFFSET ?";
+                   
+    $stmt_planes = $mysqli->prepare($sql_planes);
+    $stmt_planes->bind_param("isii", $id_asignacion, $grado, $registros_por_pagina, $offset);
+    $stmt_planes->execute();
+    $result_planes = $stmt_planes->get_result();
+
+    $registros = [];
+    if (!class_exists('Fecha')) { class Fecha { public static function formato_fecha($date) { if(empty($date) || $date == '0000-00-00') return 'N/A'; return date('d/m/Y', strtotime($date)); } } }
+    if (!class_exists('Comun')) { class Comun { public static function puntos_suspensivos($str, $len){ return strlen($str) > $len ? substr(strip_tags($str), 0, $len-3) . '...' : strip_tags($str); } } }
+
+    while($row = $result_planes->fetch_assoc()) {
+        $row['fecha_inicio_f'] = Fecha::formato_fecha($row['fecha_inicio']);
+        $row['fecha_fin_f'] = Fecha::formato_fecha($row['fecha_fin']);
+        $row['objetivo_corto'] = htmlspecialchars(Comun::puntos_suspensivos($row['objetivo'], 100));
+        $row['estrategias_cortas'] = htmlspecialchars(Comun::puntos_suspensivos($row['estrategias'], 100));
+        $row['eje_tematico'] = htmlspecialchars($row['eje_tematico']);
+        $registros[] = $row;
+    }
+    $stmt_planes->close();
+    $mysqli->close();
+
+    // --- RESPUESTA JSON ---
+    echo json_encode([
+        'registros' => $registros,
+        'total_paginas' => $total_paginas,
+        'pagina_actual' => (int)$pagina_actual
+    ]);
+    
+    // Detenemos la ejecución para no renderizar el HTML
+    exit();
+}
+
+
+// ==============================================
+// == BLOQUE PARA LA CARGA NORMAL DE LA PÁGINA ==
+// ==============================================
+
 // --- INCLUDES Y CONFIGURACIÓN INICIAL ---
 require_once($_SERVER['DOCUMENT_ROOT'] . '/guagua' . '/' . "/comun/autoload.php");
 require(SGA_COMUN_SERVER . '/conexion.php');
 
 // --- DECLARACIÓN DE CLASES Y FUNCIONES ---
-// (En un proyecto más grande, estas clases estarían en sus propios archivos)
 if (!class_exists('Curso')) { class Curso { public function deadeline_curso($id) { /* Lógica simulada */ return 75; } } }
 if (!class_exists('Academico')) { class Academico { public function consultar_horario_simple($id) { return ['fecha_inicio' => '2025-01-01', 'fecha_fin' => '2025-11-30']; } public function misestudiantes(){} public function home_recursos(){} public function notasdeclase($id){ return []; }} }
 if (!class_exists('Planeacion')) { class Planeacion { public $id_plan, $orden, $contenido_plan, $objetivos_plan, $estrategias, $recursoa, $tiempo_plan; public function mostrar_todas_planeaciones($asig, $grado){ return []; } public function intensidad_horaria($id){ return 0; } } }
@@ -26,8 +106,7 @@ $estadisticas = [
     'promedio_general' => 0
 ];
 $horario = ['fecha_inicio' => null, 'fecha_fin' => null];
-$planes_clase = [];
-
+// La variable $planes_clase ya no se llena aquí
 
 if ($id_asignacion > 0) {
     // 1. Obtener información principal del curso (Refactorizado a una sola consulta)
@@ -50,8 +129,9 @@ if ($id_asignacion > 0) {
     }
     $stmt_curso->close();
 
-    // 2. Obtener Estadísticas y Planes si el curso existe
+    // 2. Obtener Estadísticas si el curso existe
     if ($curso_info) {
+        // ... (resto de la lógica para obtener estadísticas se mantiene igual) ...
         // Total estudiantes
         $stmt_total = $mysqli->prepare("SELECT COUNT(DISTINCT id_estudiante) as total FROM inscripcion WHERE id_asignacion = ?");
         $stmt_total->bind_param("i", $id_asignacion);
@@ -83,10 +163,10 @@ if ($id_asignacion > 0) {
         $estadisticas['total_notas'] = $stmt_notas->get_result()->fetch_assoc()['total'] ?? 0;
         $stmt_notas->close();
         
-        // Total Planes de Clase
+        // Total Planes de Clase (solo el conteo)
         $stmt_planes_count = $mysqli->prepare("SELECT COUNT(id_plan) as total FROM planeador_vallesol WHERE materia = ? AND grado = ?");
         if ($stmt_planes_count) {
-            $stmt_planes_count->bind_param("is", $curso_info['id_materia'], $curso_info['grado']);
+            $stmt_planes_count->bind_param("is", $_GET['asignacion'], $curso_info['grado']);
             $stmt_planes_count->execute();
             $estadisticas['total_planes'] = $stmt_planes_count->get_result()->fetch_assoc()['total'] ?? 0;
             $stmt_planes_count->close();
@@ -136,21 +216,7 @@ if ($id_asignacion > 0) {
             $stmt_promedio->close();
         }
         
-        // Obtener Planes de Clase
-        $sql_planes = "SELECT id_plan, fecha_inicio, fecha_fin, objetivo, eje_tematico, estrategias, periodo, grado 
-                       FROM planeador_vallesol 
-                       WHERE materia = ? AND grado = ? 
-                       ORDER BY fecha_inicio DESC";
-        $stmt_planes = $mysqli->prepare($sql_planes);
-        if ($stmt_planes) {
-            $stmt_planes->bind_param("is", $curso_info['id_materia'], $curso_info['grado']);
-            $stmt_planes->execute();
-            $result_planes = $stmt_planes->get_result();
-            while($row = $result_planes->fetch_assoc()) {
-                $planes_clase[] = $row;
-            }
-            $stmt_planes->close();
-        }
+        // YA NO SE OBTIENEN LOS PLANES DE CLASE AQUÍ
     }
 }
 ?>
@@ -165,6 +231,7 @@ if ($id_asignacion > 0) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* ... (tus estilos CSS se mantienen igual) ... */
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f0f2f5;
@@ -185,7 +252,7 @@ if ($id_asignacion > 0) {
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgb(45 119 41 / 50%);
             border-radius: 0.5rem;
         }
         .jumbotron-content {
@@ -238,6 +305,7 @@ if ($id_asignacion > 0) {
 
 <div class="container mt-4">
     <?php if ($curso_info): ?>
+        <!-- ... (todo el HTML del encabezado y dashboard se mantiene igual) ... -->
         <!-- ENCABEZADO DEL CURSO -->
         <div class="jumbotron jumbotron-curso" style="background-image: url('<?php echo SGA_CURSOS_URL . '/' . htmlspecialchars($curso_info['portada_asignacion'] ?? ''); ?>');">
             <div class="header-actions">
@@ -345,53 +413,42 @@ if ($id_asignacion > 0) {
                         Planes de Clase (<?php echo $estadisticas['total_planes']; ?>)
                     </button>
                 </h2>
+                <!-- ***** INICIO DE LA SECCIÓN MODIFICADA ***** -->
                 <div id="collapsePlanes" class="accordion-collapse collapse" data-bs-parent="#accordionCurso">
                     <div class="accordion-body">
-                         <?php if (!empty($planes_clase)): ?>
+                        <div id="planes-loader" class="text-center" style="display: none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                        <div id="planes-contenido" style="display: none;">
                             <div class="table-responsive">
                                 <table class="table table-hover table-striped align-middle">
                                     <thead class="table-light">
                                         <tr>
                                             <th scope="col">Periodo</th>
-
-                                        <th scope="col">Semana</th>
+                                            <th scope="col">Semana</th>
                                             <th scope="col">Objetivo de Aprendizaje</th>
                                             <th scope="col">Eje Temático</th>
                                             <th scope="col">Estrategia</th>
                                             <th scope="col">Acciones</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <?php foreach ($planes_clase as $plan): ?>
-
-                                            <tr>
-                                                <td class="text-nowrap">
-<?php echo ($plan['periodo']); ?>
-                                                   </td>
-                                            <td class="text-nowrap">
-                                                    <i class="bi bi-calendar-week me-2"></i>
-                                                    <?php echo Fecha::formato_fecha($plan['fecha_inicio']); ?><br>
-                                                    <small class="text-muted">a <?php echo Fecha::formato_fecha($plan['fecha_fin']); ?></small>
-                                                </td>
-                                                <td><?php echo htmlspecialchars(Comun::puntos_suspensivos($plan['objetivo']),100); ?></td>
-                                                <td><span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill"><?php echo htmlspecialchars($plan['eje_tematico']); ?></span></td>
-                                                <td><?php echo htmlspecialchars(Comun::puntos_suspensivos(strip_tags($plan['estrategias']), 100)); ?></td>
-                                                <td>
-                                                    <a target='_blank'  href='../Planeador/planeador.php?pdf=1&idplan=<?php echo $plan['id_plan']?>'  class="btn btn-sm btn-outline-primary" title="Ver Detalles"><i class="bi bi-eye-fill"></i></a>
-                                                    <button class="btn btn-sm btn-outline-secondary" title="Editar"><i class="bi bi-pencil-fill"></i></button>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
+                                    <tbody id="planes-tbody">
+                                        <!-- Las filas se insertarán aquí dinámicamente -->
                                     </tbody>
                                 </table>
                             </div>
-                        <?php else: ?>
-                            <div class="alert alert-light text-center" role="alert">
-                                <i class="bi bi-info-circle me-2"></i> No se han encontrado planes de clase registrados para este curso.
-                            </div>
-                        <?php endif; ?>
+                            <nav id="planes-paginacion" aria-label="Paginación de planes de clase" class="d-flex justify-content-center mt-3">
+                                <!-- Los controles de paginación se insertarán aquí -->
+                            </nav>
+                        </div>
+                         <div id="planes-sin-resultados" class="alert alert-light text-center" role="alert" style="display: none;">
+                            <i class="bi bi-info-circle me-2"></i> No se han encontrado planes de clase registrados para este curso.
+                        </div>
                     </div>
                 </div>
+                <!-- ***** FIN DE LA SECCIÓN MODIFICADA ***** -->
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header">
@@ -415,41 +472,132 @@ if ($id_asignacion > 0) {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Script para el gráfico de estadísticas
-    const ctx = document.getElementById('estadosChart');
-    const estadosData = <?php echo json_encode($estadisticas['estudiantes_por_estado']); ?>;
-
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(estadosData),
-            datasets: [{
-                label: 'N° de Estudiantes',
-                data: Object.values(estadosData),
-                backgroundColor: [
-                    'rgba(75, 192, 192, 0.7)',
-                    'rgba(54, 162, 235, 0.7)',
-                    'rgba(255, 206, 86, 0.7)',
-                    'rgba(255, 99, 132, 0.7)',
-                    'rgba(153, 102, 255, 0.7)'
-                ],
-                borderColor: '#fff',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'right',
+document.addEventListener('DOMContentLoaded', () => {
+    // Script existente para el gráfico de estadísticas
+    const chartElement = document.getElementById('estadosChart');
+    if (chartElement) {
+        const ctx = chartElement.getContext('2d');
+        const estadosData = <?php echo json_encode($estadisticas['estudiantes_por_estado'] ?? []); ?>;
+        if (Object.keys(estadosData).length > 0) {
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(estadosData),
+                    datasets: [{
+                        label: 'N° de Estudiantes',
+                        data: Object.values(estadosData),
+                        backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)', 'rgba(255, 99, 132, 0.7)', 'rgba(153, 102, 255, 0.7)'],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
                 },
-                title: {
-                    display: false,
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+            });
+        }
+    }
+    
+    // ***** INICIO NUEVO SCRIPT PARA PAGINACIÓN DE PLANES *****
+    const collapsePlanes = document.getElementById('collapsePlanes');
+    const loader = document.getElementById('planes-loader');
+    const contenido = document.getElementById('planes-contenido');
+    const tbody = document.getElementById('planes-tbody');
+    const paginacionContainer = document.getElementById('planes-paginacion');
+    const sinResultados = document.getElementById('planes-sin-resultados');
+    
+    let planesCargados = false;
+    const idAsignacion = <?php echo json_encode($id_asignacion); ?>;
+    const grado = '<?php echo urlencode($curso_info['grado'] ?? ''); ?>';
+
+    async function cargarPlanes(page = 1) {
+        if (!idAsignacion || !grado) return;
+
+        loader.style.display = 'block';
+        contenido.style.display = 'none';
+        sinResultados.style.display = 'none';
+        tbody.innerHTML = '';
+        paginacionContainer.innerHTML = '';
+
+        try {
+            // ***** CAMBIO IMPORTANTE: La URL ahora apunta a este mismo archivo con un parámetro 'accion' *****
+            const response = await fetch(`curso.php?accion=obtener_planes&asignacion=${idAsignacion}&grado=${grado}&page=${page}`);
+            if (!response.ok) throw new Error('La respuesta del servidor no fue válida.');
+            
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+
+            if (data.registros && data.registros.length > 0) {
+                data.registros.forEach(plan => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="text-nowrap">${plan.periodo || ''}</td>
+                        <td class="text-nowrap">
+                            <i class="bi bi-calendar-week me-2"></i>
+                            ${plan.fecha_inicio_f}<br>
+                            <small class="text-muted">a ${plan.fecha_fin_f}</small>
+                        </td>
+                        <td>${plan.objetivo_corto}</td>
+                        <td><span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill">${plan.eje_tematico}</span></td>
+                        <td>${plan.estrategias_cortas}</td>
+                        <td>
+                            <a target="_blank" href="../Planeador/planeador.php?pdf=1&idplan=${plan.id_plan}" class="btn btn-sm btn-outline-primary" title="Ver Detalles"><i class="bi bi-eye-fill"></i></a>
+                            <button class="btn btn-sm btn-outline-secondary" title="Editar"><i class="bi bi-pencil-fill"></i></button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                actualizarPaginacion(data.total_paginas, data.pagina_actual);
+                contenido.style.display = 'block';
+            } else {
+                sinResultados.style.display = 'block';
             }
+        } catch (error) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error al cargar los planes: ${error.message}</td></tr>`;
+             contenido.style.display = 'block';
+        } finally {
+            loader.style.display = 'none';
+        }
+    }
+
+    function actualizarPaginacion(totalPages, currentPage) {
+        paginacionContainer.innerHTML = '';
+        if (totalPages <= 1) return;
+
+        const ul = document.createElement('ul');
+        ul.className = 'pagination pagination-sm';
+        
+        currentPage = parseInt(currentPage); // Asegurarse que es un número
+        totalPages = parseInt(totalPages);
+
+        let liPrev = `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${currentPage - 1}">&laquo;</a></li>`;
+        let liNext = `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${currentPage + 1}">&raquo;</a></li>`;
+        
+        let pageLinks = '';
+        for (let i = 1; i <= totalPages; i++) {
+            pageLinks += `<li class="page-item ${i === currentPage ? 'active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+        }
+        
+        ul.innerHTML = liPrev + pageLinks + liNext;
+        paginacionContainer.appendChild(ul);
+    }
+    
+    paginacionContainer.addEventListener('click', (e) => {
+        e.preventDefault();
+        const link = e.target.closest('a.page-link');
+        if (link && !link.parentElement.classList.contains('disabled')) {
+            const page = link.dataset.page;
+            if(page) cargarPlanes(parseInt(page));
         }
     });
+
+    if(collapsePlanes){
+      collapsePlanes.addEventListener('shown.bs.collapse', () => {
+          if (!planesCargados) {
+              cargarPlanes(1);
+              planesCargados = true;
+          }
+      });
+    }
+});
 </script>
 
 </body>

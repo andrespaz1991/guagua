@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of PHPWord - A pure PHP library for reading and writing
  * word processing documents.
@@ -10,19 +11,17 @@
  * file that was distributed with this source code. For the full list of
  * contributors, visit https://github.com/PHPOffice/PHPWord/contributors.
  *
- * @link        https://github.com/PHPOffice/PHPWord
- * @copyright   2010-2014 PHPWord contributors
+ * @see         https://github.com/PHPOffice/PHPWord
+ *
  * @license     http://www.gnu.org/licenses/lgpl.txt LGPL version 3
  */
 
 namespace PhpOffice\PhpWord\Element;
 
-use PhpOffice\PhpWord\Exception\Exception;
+use Exception;
+use PhpOffice\PhpWord\ComplexType\FootnoteProperties;
 use PhpOffice\PhpWord\Style\Section as SectionStyle;
 
-/**
- * Section
- */
 class Section extends AbstractContainer
 {
     /**
@@ -31,57 +30,63 @@ class Section extends AbstractContainer
     protected $container = 'Section';
 
     /**
-     * Section style
+     * Section style.
      *
-     * @var \PhpOffice\PhpWord\Style\Section
+     * @var ?SectionStyle
      */
     private $style;
 
     /**
-     * Section headers, indexed from 1, not zero
+     * Section headers, indexed from 1, not zero.
      *
      * @var Header[]
      */
-    private $headers = array();
+    private $headers = [];
 
     /**
-     * Section footers, indexed from 1, not zero
+     * Section footers, indexed from 1, not zero.
      *
      * @var Footer[]
      */
-    private $footers = array();
+    private $footers = [];
 
     /**
-     * Create new instance
+     * The properties for the footnote of this section.
+     *
+     * @var FootnoteProperties
+     */
+    private $footnoteProperties;
+
+    /**
+     * Create new instance.
      *
      * @param int $sectionCount
-     * @param array $style
+     * @param null|array|\PhpOffice\PhpWord\Style|string $style
      */
     public function __construct($sectionCount, $style = null)
     {
         $this->sectionId = $sectionCount;
         $this->setDocPart($this->container, $this->sectionId);
-        $this->style = new SectionStyle();
-        $this->setStyle($style);
+        if (null === $style) {
+            $style = new SectionStyle();
+        }
+        $this->style = $this->setNewStyle(new SectionStyle(), $style);
     }
 
     /**
      * Set section style.
-     *
-     * @param array $style
-     * @return void
      */
-    public function setStyle($style = null)
+    public function setStyle(?array $style = null): void
     {
-        if (!is_null($style) && is_array($style)) {
+        if (null !== $style) {
             $this->style->setStyleByArray($style);
         }
     }
 
     /**
-     * Get section style
+     * Get section style.
      *
-     * @return \PhpOffice\PhpWord\Style\Section
+     * @return ?SectionStyle
      */
     public function getStyle()
     {
@@ -89,11 +94,13 @@ class Section extends AbstractContainer
     }
 
     /**
-     * Add header
+     * Add header.
+     *
+     * @since 0.10.0
      *
      * @param string $type
+     *
      * @return Header
-     * @since 0.10.0
      */
     public function addHeader($type = Header::AUTO)
     {
@@ -101,11 +108,13 @@ class Section extends AbstractContainer
     }
 
     /**
-     * Add footer
+     * Add footer.
+     *
+     * @since 0.10.0
      *
      * @param string $type
+     *
      * @return Footer
-     * @since 0.10.0
      */
     public function addFooter($type = Header::AUTO)
     {
@@ -113,7 +122,7 @@ class Section extends AbstractContainer
     }
 
     /**
-     * Get header elements
+     * Get header elements.
      *
      * @return Header[]
      */
@@ -123,7 +132,7 @@ class Section extends AbstractContainer
     }
 
     /**
-     * Get footer elements
+     * Get footer elements.
      *
      * @return Footer[]
      */
@@ -133,12 +142,30 @@ class Section extends AbstractContainer
     }
 
     /**
+     * Get the footnote properties.
+     *
+     * @return FootnoteProperties
+     */
+    public function getFootnoteProperties()
+    {
+        return $this->footnoteProperties;
+    }
+
+    /**
+     * Set the footnote properties.
+     */
+    public function setFootnoteProperties(?FootnoteProperties $footnoteProperties = null): void
+    {
+        $this->footnoteProperties = $footnoteProperties;
+    }
+
+    /**
      * Is there a header for this section that is for the first page only?
      *
      * If any of the Header instances have a type of Header::FIRST then this method returns true.
      * False otherwise.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasDifferentFirstPage()
     {
@@ -147,100 +174,43 @@ class Section extends AbstractContainer
                 return true;
             }
         }
+        foreach ($this->footers as $footer) {
+            if ($footer->getType() == Header::FIRST) {
+                return true;
+            }
+        }
+
         return false;
     }
 
     /**
-     * Add header/footer
+     * Add header/footer.
+     *
+     * @since 0.10.0
      *
      * @param string $type
-     * @param boolean $header
-     * @return Header|Footer
-     * @throws \PhpOffice\PhpWord\Exception\Exception
-     * @since 0.10.0
+     * @param bool $header
+     *
+     * @return Footer|Header
      */
     private function addHeaderFooter($type = Header::AUTO, $header = true)
     {
-        $containerClass = substr(get_class($this), 0, strrpos(get_class($this), '\\')) . '\\' .
+        $containerClass = substr(static::class, 0, strrpos(static::class, '\\') ?: 0) . '\\' .
             ($header ? 'Header' : 'Footer');
         $collectionArray = $header ? 'headers' : 'footers';
         $collection = &$this->$collectionArray;
 
-        if (in_array($type, array(Header::AUTO, Header::FIRST, Header::EVEN))) {
+        if (in_array($type, [Header::AUTO, Header::FIRST, Header::EVEN])) {
             $index = count($collection);
-            /** @var \PhpOffice\PhpWord\Element\AbstractContainer $container Type hint */
+            /** @var AbstractContainer $container Type hint */
             $container = new $containerClass($this->sectionId, ++$index, $type);
             $container->setPhpWord($this->phpWord);
 
             $collection[$index] = $container;
+
             return $container;
-        } else {
-            throw new Exception('Invalid header/footer type.');
         }
 
-    }
-
-    /**
-     * Set section style
-     *
-     * @param array $settings
-     * @deprecated 0.12.0
-     * @codeCoverageIgnore
-     */
-    public function setSettings($settings = null)
-    {
-        $this->setStyle($settings);
-    }
-
-    /**
-     * Get section style
-     *
-     * @return \PhpOffice\PhpWord\Style\Section
-     * @deprecated 0.12.0
-     * @codeCoverageIgnore
-     */
-    public function getSettings()
-    {
-        return $this->getStyle();
-    }
-
-    /**
-     * Create header
-     *
-     * @return Header
-     * @deprecated 0.10.0
-     * @codeCoverageIgnore
-     */
-    public function createHeader()
-    {
-        return $this->addHeader();
-    }
-
-    /**
-     * Create footer
-     *
-     * @return Footer
-     * @deprecated 0.10.0
-     * @codeCoverageIgnore
-     */
-    public function createFooter()
-    {
-        return $this->addFooter();
-    }
-
-    /**
-     * Get footer
-     *
-     * @return Footer
-     * @deprecated 0.10.0
-     * @codeCoverageIgnore
-     */
-    public function getFooter()
-    {
-        if (empty($this->footers)) {
-            return null;
-        } else {
-            return $this->footers[1];
-        }
+        throw new Exception('Invalid header/footer type.');
     }
 }

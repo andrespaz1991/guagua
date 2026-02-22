@@ -1,415 +1,482 @@
-<?php 
-ob_start();
-@session_start();
-require ("../comun/conexion.php");
-require_once ("../comun/config.php");
-require_once ("../comun/funciones.php");
-?>
-<center>
-<?php 
-function buscar_usuario($datos="",$reporte=""){
-require ("../comun/conexion.php");
-require_once ("../comun/lib/Zebra_Pagination/Zebra_Pagination.php");
-if ($reporte=="xls"){
-header("Content-type: application/vnd.ms-excel");
-header("Content-Disposition: attachment; Filename=usuario.xls");
-}
-if (isset($_GET['u'])){
-$_SESSION['u']=mysqli_real_escape_string($mysqli,$_GET['u']);
-}
-if (isset($_POST['u'])){
-$_SESSION['u']=mysqli_real_escape_string($mysqli,$_POST['u']);
-}
-$resultados = (isset($_COOKIE['numeroresultados_usuario']) ? $_COOKIE['numeroresultados_usuario'] : 4);
-$paginacion = new Zebra_Pagination();
-$paginacion->records_per_page($resultados);
-$paginacion->records_per_page($resultados);
-
-$cookiepage="page_usuario";
-$funcionjs="buscar();";$paginacion->fn_js_page("$funcionjs");
-$paginacion->cookie_page($cookiepage);
-$paginacion->padding(false);
-@mkdir(READFILE_SERVER."/foto");
-
-if (isset($_COOKIE["$cookiepage"])) $_GET['page'] = $_COOKIE["$cookiepage"];
-$sql = "SELECT `usuario`.`tipo_sangre`,`usuario`.`id_usuario`, `usuario`.`usuario`, `usuario`.`clave`, `usuario`.`nombre`, `usuario`.`apellido`, `usuario`.`rol`, `usuario`.`foto`, `usuario`.`direccion`, `usuario`.`telefono`, `usuario`.`correo`, `usuario`.`ultima_sesion`, `usuario`.`num_visitas`, `usuario`.`puntos`, `usuario`.`estado` FROM `usuario`   ";
-$datosrecibidos = $datos;
-$datos = explode(" ",$datosrecibidos);
-$datos[]="";
-$cont =  0;
-$sql .= ' WHERE ';
-foreach ($datos as $id => $dato){
-$sql .= ' concat(LOWER(`usuario`.`tipo_sangre`),LOWER(`usuario`.`usuario`)," ",LOWER(`usuario`.`clave`)," ",LOWER(`usuario`.`nombre`)," ",LOWER(`usuario`.`apellido`)," ",LOWER(`usuario`.`rol`)," ",LOWER(`usuario`.`foto`)," ",LOWER(`usuario`.`direccion`)," ",LOWER(`usuario`.`telefono`)," ",LOWER(`usuario`.`correo`)," ",LOWER(`usuario`.`ultima_sesion`)," ",LOWER(`usuario`.`num_visitas`)," ",LOWER(`usuario`.`puntos`)," ",LOWER(`usuario`.`estado`)," "   ) LIKE "%'.mb_strtolower($dato, 'UTF-8').'%"';
-$cont ++;
-if (count($datos)>1 and count($datos)<>$cont){
-$sql .= " and ";
-}
-}
-if (isset($_SESSION['u'])){
-$sql .= " and `usuario`.`rol` LIKE '%".$_SESSION['u']."%'";
-}
-$sql .=  " ORDER BY ";
-if (isset($_COOKIE['orderbyusuario']) and $_COOKIE['orderbyusuario']!=""){ $sql .= "`usuario`.`".$_COOKIE['orderbyusuario']."`";
-}else{ $sql .= "`usuario`.`id_usuario`";}
-if (isset($_COOKIE['orderad_usuario'])){
-$orderadusuario = $_COOKIE['orderad_usuario'];
-$sql .=  " $orderadusuario ";
-}else{
-$sql .=  " desc ";
-}
-
-$consulta_total_usuario = $mysqli->query($sql);
-$total_usuario = $consulta_total_usuario->num_rows;
-$paginacion->records($total_usuario);
-$sql .=  " LIMIT " . (($paginacion->get_page() - 1) * $resultados) . ", " . $resultados;
-#echo $sql;
-
-$consulta = $mysqli->query($sql);
-$numero_usuario = $consulta->num_rows;
-$minimo_usuario = (($paginacion->get_page() - 1) * $resultados)+1;
-$maximo_usuario = (($paginacion->get_page() - 1) * $resultados) + $resultados;
-if ($maximo_usuario>$numero_usuario) $maximo_usuario=$numero_usuario;
-$maximo_usuario += $minimo_usuario-1;
-echo "<p>Resultados de $minimo_usuario a $maximo_usuario del total de ".$total_usuario." en página ".$paginacion->get_page()."</p>";
- ?>
-<div align="center">
-<table border="1" id="tbusuario">
-<thead>
-<tr>
-<th <?php  if(isset($_COOKIE['orderbyusuario']) and $_COOKIE['orderbyusuario']== "usuario"){ echo " style='text-decoration:underline' ";} ?>  onclick="grabarcookie('orderbyusuario','usuario');buscar();" >usuario</th>
-<th <?php  if(isset($_COOKIE['orderbyusuario']) and $_COOKIE['orderbyusuario']== "foto"){ echo " style='text-decoration:underline' ";} ?>  onclick="grabarcookie('orderbyusuario','foto');buscar();" >Persona</th>
-<th <?php  if(isset($_COOKIE['orderbyusuario']) and $_COOKIE['orderbyusuario']== "direccion"){ echo " style='text-decoration:underline' ";} ?>  onclick="grabarcookie('orderbyusuario','direccion');buscar();" >Dirección</th>
-<th <?php  if(isset($_COOKIE['orderbyusuario']) and $_COOKIE['orderbyusuario']== "telefono"){ echo " style='text-decoration:underline' ";} ?>  onclick="grabarcookie('orderbyusuario','telefono');buscar();" >Teléfono</th>
-<th <?php  if(isset($_COOKIE['orderbytipo_sangre']) and $_COOKIE['orderbytipo_sangre']== "tipo_sangre"){ echo " style='text-decoration:underline' ";} ?>  onclick="grabarcookie('orderbytipo_sangre','id_tipo_sangre');buscar();" >Sangre</th>
-<th <?php  if(isset($_COOKIE['orderbyusuario']) and $_COOKIE['orderbyusuario']== "correo"){ echo " style='text-decoration:underline' ";} ?>  onclick="grabarcookie('orderbyusuario','correo');buscar();" >Correo</th>
-
-
-<?php if(isset($_SESSION['u']) and $_SESSION['u']=="estudiante"){
-?>
-<th <?php  if(isset($_COOKIE['orderbyusuario']) and $_COOKIE['orderbyusuario']== "num_visitas"){ echo " style='text-decoration:underline' ";} ?>  onclick="grabarcookie('orderbyusuario','num_visitas');buscar();" >Acudiente</th>
-<?php } ?>
-
-<th <?php  if(isset($_COOKIE['orderbyusuario']) and $_COOKIE['orderbyusuario']== "num_visitas"){ echo " style='text-decoration:underline' ";} ?>  onclick="grabarcookie('orderbyusuario','num_visitas');buscar();" >Visitas</th>
-<th <?php  if(isset($_COOKIE['orderbyusuario']) and $_COOKIE['orderbyusuario']== "puntos"){ echo " style='text-decoration:underline' ";} ?>  onclick="grabarcookie('orderbyusuario','puntos');buscar();" >Puntos</th>
-<th <?php  if(isset($_COOKIE['orderbyusuario']) and $_COOKIE['orderbyusuario']== "estado"){ echo " style='text-decoration:underline' ";} ?>  onclick="grabarcookie('orderbyusuario','estado');buscar();" >Estado</th>
-<th>
-<?php if ($reporte==""){ ?>
-<form  id="formNuevo" name="formNuevo" method="post" action="usuario.php" ENCTYPE="multipart/form-data">
-<input name="u" type="hidden" id="u" value="<?php echo $_SESSION['u']; ?>">
-<input name="cod" type="hidden" id="cod" value="0">
-<input type="hidden" name="submit" id="submit" value="Nuevo"><button type="submit" class="btn btn-primary">Nuevo</button>
-</form>
-</th>
-<?php } ?>
-<th>
-<form id="formNuevo" name="formNuevo" method="post" action="usuario.php?xls">
-<input class="btn btn-primary" name="cod" type="hidden" id="cod" value="0">
-<input type="submit" name="submit" id="submit" value="XLS">
-</form></th>
-</tr>
-</thead><tbody>
-<?php 
-while($row=$consulta->fetch_assoc()){
- ?>
-<tr>
-<td data-label='usuario'><?php echo $row['usuario']?></td>
-<?php $datosrol = array("admin" => "administrador", "estudiante" => "estudiante", "acudiente" => "acudiente"); ?>
-<td data-label='Foto'>
-
-
- <?php echo $row['nombre'].' '.$row['apellido']?>
- <?php if($row['foto']!=""){ ?>
-	<img height="120" src="<?php echo READFILE_URL ?>foto/<?php echo $row['foto']?>">
-	<?php } ?>
-	<?php echo $row['id_usuario']?>
-	</td>
-<td data-label='Direccion'><?php 
-if(!empty($row['direccion']) and $row['direccion']<>"null") echo $row['direccion']?></td>
-<td data-label='Telefono'><?php
-if($_SESSION['u']=="estudiante"){
-  require ("../comun/conexion.php");
- $sql_padre ='select * from acudiente_estudiante,usuario where 
- acudiente_estudiante.id_acudiente = usuario.id_usuario  and acudiente_estudiante.id_estudiante = "'.$row['id_usuario'].'" ';
- $consulta_padre = $mysqli -> query($sql_padre);
-while($rowpadre=$consulta_padre->fetch_assoc()){
- '<br>';
-} 
-}
-if(!empty($row['telefono']) and $row['telefono']<>"null") echo $row['telefono']?></td>
-<td data-label='Tipo de Sangre'><?php echo $row['tipo_sangre']?></td>
-<td data-label='Correo'><?php 
-if(!empty($row['correo']) and $row['correo']<>"null")
-echo $row['correo']?></td>
-<?php if(isset($_SESSION['u']) and $_SESSION['u']=="estudiante"){
-?><td data-label='acudiente'><?php 
- require ("../comun/conexion.php");
- $sql_padre ='select * from acudiente_estudiante,usuario where 
- acudiente_estudiante.id_acudiente = usuario.id_usuario  and acudiente_estudiante.id_estudiante = "'.$row['id_usuario'].'" ';
- $consulta_padre = $mysqli -> query($sql_padre);
-while($rowpadre=$consulta_padre->fetch_assoc()){
- echo '<a title="Ver Perfil" href="'.SGA_USUARIO_URL.'/perfil.php?u='.$row['id_usuario'].'">('.$rowpadre['nombre'].' '.$rowpadre['apellido'].')</a><br/>';
-} 
-
-?></td>
-<?php } ?>
-<td data-label='Num Visitas'><?php echo $row['num_visitas']?></td>
-<td data-label='Puntos'><?php echo $row['puntos']?></td>
-<?php $datosestado = array("activo" => "Activo", "inactivo" => "inactivo"); ?>
-<td data-label='Estado'><?php echo $datosestado[$row['estado']] ?></td>
-<?php if ($reporte==""){ ?>
-<td data-label="Modificar">
-<form  id="formModificar" name="formModificar" method="post" action="usuario.php" ENCTYPE="multipart/form-data">
-<input name="cod" type="hidden" id="cod" value="<?php echo $row['id_usuario']?>">
-<input name="u" type="hidden" id="u" value="<?php echo $_SESSION['u']?>">
-<input type="hidden" name="submit" id="submit" value="Modificar"><button type="submit" class="btn btn-success">Modificar</button>
-</form>
-</td>
-<td data-label="Eliminar">
-<input title="Eliminar" type="image" src="../comun/img/eliminar.png" onClick="confirmeliminar2('usuario.php',{'del':'<?php echo $row['id_usuario'];?>'},'<?php echo $row['id_usuario'];?>');" value="Eliminar">
-</td>
-<?php } ?>
-</tr>
-<?php 
-}/*fin while*/
- ?>
-</tbody>
-</table>
-<?php $paginacion->render();?>
-</div>
-<?php 
-}/*fin function buscar*/
-if (isset($_GET['buscar'])){
-buscar_usuario($_POST['datos']);
-exit();
-}
-if (isset($_GET['xls'])){
-ob_start();
-buscar_usuario('','xls');
-$excel = ob_get_clean();
-echo utf8_decode($excel);
-exit();
-exit();
-}
-if (isset($_POST['del'])){
- require ("../comun/conexion.php");
- require_once ("../comun/config.php");
- $sqldel='select * from usuario where id_usuario = "'.$_POST['del'].'"';
-$consultadel = $mysqli->query($sqldel);
-while($rowdel = $consultadel ->fetch_assoc()){
- $_POST['rol'] =$rowdel['rol'] ;
-}
-/*Instrucción SQL que permite eliminar en la BD*/ 
- switch ($_POST['rol']) {
-  case 'estudiante':
- $sql_usu ='DELETE FROM `estudiante` where `id_estudiante`="'.$_POST['del'].'"';
-   break;
-   case 'admin':
- $sql_usu = 'DELETE FROM `docente` WHERE `id_docente` = "'.$_POST['del'].'")' ;
-   break;
-   
-    case 'acudiente':
- $sql_usu = 'DELETE FROM `docente` WHERE `id_docente` = "'.$_POST['del'].'")' ;
-   break;
- }
- 
- $consultadel = $mysqli->query($sql_usu);
-
- $sql = 'DELETE FROM usuario WHERE id_usuario="'.$_POST['del'].'"';
-$sqls = 'SELECT * FROM usuario WHERE id_usuario="'.$_POST['del'].'"';
-$consultas = $mysqli->query($sqls);
-$eliminar_img = "";
-if ($row = $consultas->fetch_assoc()){
- $rol = $row['rol'];
-$eliminar_img = READFILE_SERVER."foto/".$row['foto'];
-if(file_exists($eliminar_img)) unlink ($eliminar_img);
-}
- /*Se conecta a la BD y luego ejecuta la instrucción SQL*/
-if ($eliminar = $mysqli->query($sql)){
- /*Validamos si el registro fue eliminado con éxito*/ 
- ?>
-<script type="text/javascript" >alert2('Registro eliminado')</script>
-<?php 
-echo '<meta http-equiv="refresh" content="3; url=usuario.php?u='.$_SESSION['u'].'" />';
-}else{
-?>
-<script type="text/javascript" >alert2('Eliminación fallida, por favor compruebe que la usuario no esté en uso')</script>
-
-
-<?php 
-echo '<meta http-equiv="refresh" content="3; url=usuario.php?u='.$_SESSION['u'].'" />';
-}
-}
- ?>
-<center>
- <div  class="jumbotron">
-  <?php if(isset($_GET['u'])){ ?>
-  <div style="margin-left:-3%;margin-top:-2%;position:absolute;">
-  <form  action ="../seguimiento/importar.php" ENCTYPE="multipart/form-data" method="POST">
-    <a href="../seguimiento/plantillas/estudiantes.csv">Plantilla</a>
- <input   type="file" name="datos">
- <input class="btn btn-primary" type="submit" value="importar">
-</form>
-</div>
-<?php } ?>
-  <div class="container text-center">
-    <h1 class="fip"> <?php       
-    if(isset($_GET['u'])){
-     $parametro =$_GET['u']; echo strtoupper($array_roles[$_GET['u']]);
-    }  else { 
-    $parametro = $_SESSION['u']; 
-    echo strtoupper($array_roles[$_SESSION['u']]
-    );
-    } ?> </h1>      
-  </div>
-</div>
-
-</center><?php 
-if (isset($_POST['submit'])){
-if ($_POST['submit']=="Registrar"){
-require ("../comun/conexion.php");
-require_once ("../comun/funciones.php");
-//print_r($_POST);
-$array_usuario['tipo_sangre'] = $mysqli->real_escape_string($_POST['tipo_sangre']);
-$array_usuario['id_usuario'] = $mysqli->real_escape_string($_POST['id_usuario']);
-$array_usuario['usuario'] = $mysqli->real_escape_string($_POST['usuario']);
-$array_usuario['clave'] = $mysqli->real_escape_string($_POST['clave']);
-$array_usuario['nombre'] = $mysqli->real_escape_string($_POST['nombre']);
-$array_usuario['apellido'] = $mysqli->real_escape_string($_POST['apellido']);
-$array_usuario['mascota'] = $mysqli->real_escape_string($_POST['mascota']);
-
-foreach($_POST['rol'] as $id => $valor)
-$_POST['rol'][$id] = $mysqli->real_escape_string($valor);
-$roles = implode(",",$_POST['rol']);
-$array_usuario['rol'] = $roles;
-
-//foto
-if(isset($_POST['inputcamara']) and $_POST['inputcamara']<>""){
-$array_usuario['foto']=$_POST['inputcamara'];
-}
-elseif(isset($_POST['usuariodefault']) and $_POST['usuariodefault']<>""){
-$array_usuario['foto']=$_POST['inputcamara'];
-}
-if ($_FILES['foto']['error']!=4){
-$partes_nombre = explode (".",$_FILES['foto']['name']);
-$ext = obtener_extension_archivo($_FILES['foto']['name']);
-$array_usuario['foto'] = $mysqli->real_escape_string($_POST['id_usuario']).'.'.$ext;//nombrefoto
-}
-
-
-
-$array_usuario['direccion'] = $mysqli->real_escape_string($_POST['direccion']);
-$array_usuario['telefono'] = $mysqli->real_escape_string($_POST['telefono']);
-$array_usuario['correo'] = $mysqli->real_escape_string($_POST['correo']);
-$array_usuario['estado'] = $mysqli->real_escape_string($_POST['estado']);
-//print_r($array_usuario);
-$sql = insertar($array_usuario,'usuario');
-#$extension =obtener_extension_archivo($_FILES['foto']['tmp_name']) ;
-$info = new SplFileInfo($_FILES['foto']['tmp_name']);
-$extension=$info->getExtension();
-
-if(isset($_FILES)){
-
-move_uploaded_file($_FILES['foto']['tmp_name'],'../sga-data/foto/'.$_FILES['foto']['name']); 
-}
-
-if ($insertar = $mysqli->query($sql)) { ?>
- <script type="text/javascript" >alert2('Registro exitoso');</script>
-<?php 
-if($_POST['id_categoria_curso']){
- $ano_lectivo=consultar_id_ano_lectivo();
-inscribir_estudiante_ano_lectivo($_POST['id_usuario'],$_POST['id_categoria_curso'],$ano_lectivo);
-}
-echo '<meta http-equiv="refresh" content="3; url=usuario.php?u='.$_SESSION['u'].'" />';
- }else{ 
- ?>
- <script type="text/javascript" >alert2('Registro fallido');</script>
-
-
-<?php 
-echo '<meta http-equiv="refresh" content="3; url=usuario.php?u='.$_SESSION['u'].'" />';
-  
- }
-} /*fin Registrar*/ 
-formulario_usuario($_POST);
-
-if ($_POST['submit']=="Actualizar"){
-$cod = $_POST['cod'];
-require ("../comun/conexion.php");
-if(isset($_POST['foto'])){ $dato = ',foto='.$_POST['foto'].',' ; } else {  $dato = ''; }
- /*Instrucción SQL que permite insertar en la BD */ 
-$sql = "UPDATE usuario SET ";
-$sql.="genero='".$_POST['genero']."',";
-if($_FILES['foto']['size']>0){
-$total = count($_FILES['foto']['name']);// Contamos la cantidad de 
-$total = count($_FILES['foto']['name']);// Contamos la cantidad de   move_uploaded_file($_FILES['foto']['tmp_name'],'../datos/foto/'.$_POST['id_usuario'].".".obtener_extension_archivo($_FILES['foto']['name']));
-}
-
-$actualizar_clave = "";
-if (isset($_POST['mascota']) and $_POST['mascota']=="SI"){
- $sql.= "mascota='SI'," ;
-} else{
-  $sql.= "mascota='NO'," ;
-}
-
-
-if ($_POST['cambiar_clave']=="SI")
-$actualizar_clave = ", clave='".encriptar($_POST['clave'])."'";
-if($_FILES['foto']['tmp_name']<>''){
-$sql.= "foto='".$_POST['id_usuario'].".".obtener_extension_archivo($_FILES['foto']['name'])."'," ;
-}
-$sql.= " tipo_sangre='".$_POST['tipo_sangre']."', id_usuario='".$_POST['id_usuario']."', usuario='".$_POST['usuario']."' ".$actualizar_clave.", nombre='".$_POST['nombre']."', apellido='".$_POST['apellido']."', rol='". implode(",",$_POST['rol'])."',  direccion='".$_POST['direccion']."', telefono='".$_POST['telefono']."', correo='".$_POST['correo']."', estado='".$_POST['estado']."' WHERE  id_usuario = '".$cod."';";
-
-if ($actualizar = $mysqli->query($sql)) {
-  require ("../comun/conexion.php");
-$sql_id = "SELECT * FROM usuario WHERE id_usuario='".$cod."';";
-$user_id = $mysqli->query($sql_id);
-if($row_id=$user_id->fetch_assoc());
-if($row_id['foto']=="user-icon.png" and $row_id['genero']=="f"){
- $sql="UPDATE `usuario` SET `foto`='user-iconf.png' WHERE `id_usuario`='".$cod."' ";
-$mysqli->query($sql);
-}
-if($row_id['foto']=="user-iconf.png" and $row_id['genero']=="m"){
- $sql="UPDATE `usuario` SET `foto`='user-icon.png' WHERE `id_usuario`='".$cod."' ";
-echo $sql;
-exit();
- $mysqli->query($sql);
-}
-@session_start();
-?>
-<script>alert2('Modificación exitosa');</script>
-<meta http-equiv="refresh" content="3; url=usuario.php?u=<?php echo $_POST['u']; ?>" />
 <?php
-}else{ 
-#echo $sql;
-?><script>alert2('Modificacion fallida','error');</script>
-<meta http-equiv="refresh" content="2; url=usuario.php?u=<?php echo $_POST['u']; ?>" />
-<?php
+/**
+ * =================================================================
+ * MÓDULO CRUD - GESTIÓN DE USUARIOS (Sede Vallesol)
+ * =================================================================
+ * Arquitectura:
+ * - Búsqueda Asíncrona (Fetch API + Debounce) Case-Insensitive.
+ * - Paginación dinámica (Backend + Frontend).
+ * - Persistencia: $mysqli->query() con validación real_escape_string.
+ * - UX/UI: Layout Stacked (Formulario Superior / Tabla Inferior).
+ */
+
+ob_start();
+session_start();
+
+// Inclusión de dependencias
+require_once("../comun/conexion.php");
+
+// =================================================================
+// 1. ENDPOINT PARA BÚSQUEDA ASÍNCRONA Y PAGINACIÓN (AJAX)
+// =================================================================
+if (isset($_GET['ajax_search'])) {
+    $busqueda = trim($_GET['ajax_search']);
+    $pagina = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    renderizar_tabla_usuarios($busqueda, $pagina, $mysqli);
+    exit;
 }
-} /*fin Actualizar*/ 
-}else{ 
-?>
-<center>
-<b><label>Buscar: </label></b><input type="search" id="buscar" onkeyup ="buscar(this.value);" onchange="buscar(this.value);"  style="margin: 15px;">
-<b><label>N° de Resultados:</label></b>
-<input type="number" min="0" id="numeroresultados_usuario" placeholder="Cantidad de resultados" title="Cantidad de resultados" value="4" onkeyup="grabarcookie('numeroresultados_usuario',this.value) ;buscar(document.getElementById('buscar').value);" mousewheel="grabarcookie('numeroresultados_usuario',this.value);buscar(document.getElementById('buscar').value);" onchange="grabarcookie('numeroresultados_usuario',this.value);buscar(document.getElementById('buscar').value);" size="4" style="width: 40px;">
-<button title="Orden Ascendente" onclick="grabarcookie('orderad_usuario','ASC');buscar(document.getElementById('buscar').value);"><span class="  glyphicon glyphicon-arrow-up"></span></button><button title="Orden Descendente" onclick="grabarcookie('orderad_usuario','DESC');buscar(document.getElementById('buscar').value);"><span class="  glyphicon glyphicon-arrow-down"></span></button>
-</center>
-<span id="txtsugerencias">
-<?php buscar_usuario(); ?>
-</span>
-<?php 
-}/*fin else if isset cod*/
-?>
-</center>
-<script>
-required_en_formulario('form_usuario',"red","*");
-password_en_formulario('form_usuario');
-var vmenu_usuario = document.getElementById('menu_usuario')
-if (vmenu_usuario){
-vmenu_usuario.className ='active '+vmenu_usuario.className;
+
+// =================================================================
+// 2. FUNCIÓN DE RENDERIZADO DE TABLA Y PAGINACIÓN
+// =================================================================
+function renderizar_tabla_usuarios($busqueda, $pagina, $mysqli) {
+    $limite = 10; // Cantidad de registros por página
+    if ($pagina < 1) $pagina = 1;
+    $offset = ($pagina - 1) * $limite;
+    
+    // Sanitización exhaustiva
+    $busqueda_segura = $mysqli->real_escape_string($busqueda);
+    $termino = "%" . $busqueda_segura . "%";
+    
+    // Consulta para contar el total de registros (para la paginación)
+    $sql_count = "SELECT COUNT(*) as total 
+                  FROM usuario 
+                  WHERE LOWER(nombre) LIKE LOWER('$termino') 
+                     OR LOWER(apellido) LIKE LOWER('$termino') 
+                     OR LOWER(id_usuario) LIKE LOWER('$termino')";
+    
+    $res_count = $mysqli->query($sql_count);
+    $total_registros = $res_count->fetch_assoc()['total'];
+    $total_paginas = ceil($total_registros / $limite);
+
+    // Consulta principal con LIMIT y OFFSET
+    $sql = "SELECT id_usuario, usuario, nombre, apellido, rol, estado 
+            FROM usuario 
+            WHERE LOWER(nombre) LIKE LOWER('$termino') 
+               OR LOWER(apellido) LIKE LOWER('$termino') 
+               OR LOWER(id_usuario) LIKE LOWER('$termino') 
+            ORDER BY apellido ASC 
+            LIMIT $limite OFFSET $offset";
+            
+    $resultado = $mysqli->query($sql);
+
+    if ($resultado && $resultado->num_rows > 0) {
+        echo '<div class="overflow-x-auto w-full min-h-[400px] flex flex-col justify-between">';
+        echo '<table class="w-full text-sm text-left text-gray-600 relative">';
+        echo '<thead class="text-xs text-slate-700 uppercase bg-slate-100 shadow-sm z-10">';
+        echo '<tr>
+                <th class="px-6 py-4">Documento</th>
+                <th class="px-6 py-4">Nombre Completo</th>
+                <th class="px-6 py-4">Usuario</th>
+                <th class="px-6 py-4">Rol</th>
+                <th class="px-6 py-4">Estado</th>
+                <th class="px-6 py-4 text-right">Acciones</th>
+              </tr>';
+        echo '</thead><tbody class="divide-y divide-gray-200">';
+        
+        while ($fila = $resultado->fetch_assoc()) {
+            $badgeColor = ($fila['estado'] === 'activo') ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200';
+            $nombre_completo = trim($fila['nombre'] . ' ' . $fila['apellido']);
+            
+            echo '<tr class="bg-white hover:bg-blue-50 transition-colors duration-200 group">';
+            echo '<td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">' . htmlspecialchars($fila['id_usuario']) . '</td>';
+            echo '<td class="px-6 py-4 font-semibold text-slate-800">' . htmlspecialchars($nombre_completo) . '</td>';
+            echo '<td class="px-6 py-4 text-slate-500">' . htmlspecialchars($fila['usuario']) . '</td>';
+            echo '<td class="px-6 py-4 uppercase text-[10px] tracking-wider font-bold text-slate-500">' . htmlspecialchars($fila['rol']) . '</td>';
+            echo '<td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-semibold border ' . $badgeColor . '">' . htmlspecialchars($fila['estado']) . '</span></td>';
+            echo '<td class="px-6 py-4 text-right flex justify-end gap-4 opacity-0 group-hover:opacity-100 transition-opacity">';
+            echo '<a href="?Actualizar=' . urlencode($fila['id_usuario']) . '" class="text-blue-600 hover:text-blue-800 flex items-center gap-1" title="Editar"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></a>';
+            echo '<button onclick="confirmarEliminacion(\'' . htmlspecialchars($fila['id_usuario']) . '\')" class="text-red-500 hover:text-red-700 flex items-center gap-1" title="Eliminar"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>';
+            echo '</td></tr>';
+        }
+        echo '</tbody></table>';
+
+        // Renderizado de Controles de Paginación
+        if ($total_paginas > 1) {
+            echo '<div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">';
+            echo '<div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">';
+            echo '<div><p class="text-sm text-gray-700">Mostrando página <span class="font-medium">'.$pagina.'</span> de <span class="font-medium">'.$total_paginas.'</span> (<span class="font-medium">'.$total_registros.'</span> registros)</p></div>';
+            echo '<div><nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">';
+            
+            // Botón Anterior
+            if ($pagina > 1) {
+                echo '<button data-page="'.($pagina - 1).'" class="page-link relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"><span class="sr-only">Anterior</span><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg></button>';
+            }
+
+            // Números de Página (Lógica de ventana simple)
+            $inicio = max(1, $pagina - 2);
+            $fin = min($total_paginas, $pagina + 2);
+            for ($i = $inicio; $i <= $fin; $i++) {
+                if ($i == $pagina) {
+                    echo '<button aria-current="page" class="relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">'.$i.'</button>';
+                } else {
+                    echo '<button data-page="'.$i.'" class="page-link relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">'.$i.'</button>';
+                }
+            }
+
+            // Botón Siguiente
+            if ($pagina < $total_paginas) {
+                echo '<button data-page="'.($pagina + 1).'" class="page-link relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"><span class="sr-only">Siguiente</span><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg></button>';
+            }
+
+            echo '</nav></div></div></div>';
+        }
+        echo '</div>';
+    } else {
+        echo '<div class="flex flex-col items-center justify-center p-12 text-center bg-slate-50 rounded-lg border border-dashed border-slate-300">';
+        echo '<svg class="w-12 h-12 text-slate-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+        echo '<h3 class="text-lg font-medium text-slate-900">No se encontraron resultados</h3>';
+        echo '<p class="text-sm text-slate-500 mt-1">Intenta con otro término de búsqueda o verifica el documento.</p>';
+        echo '</div>';
+    }
 }
-</script>
-<?php $contenido = ob_get_contents();
-ob_clean();
-include ("../comun/plantilla.php");
- ?>
+
+// =================================================================
+// 3. LÓGICA DE TRANSACCIONES CRUD (Con $mysqli->query)
+// =================================================================
+$alerta_js = '';
+
+// A. CREAR
+if (isset($_POST['Ingresar']) && !empty($_POST['id_usuario'])) {
+    $id_usuario = $mysqli->real_escape_string(trim($_POST['id_usuario']));
+    $usuario    = $mysqli->real_escape_string(trim($_POST['usuario']));
+    $nombre     = $mysqli->real_escape_string(trim($_POST['nombre']));
+    $apellido   = $mysqli->real_escape_string(trim($_POST['apellido']));
+    $rol        = $mysqli->real_escape_string(trim($_POST['rol']));
+    $sexo       = $mysqli->real_escape_string(trim($_POST['sexo']));
+    $estado     = $mysqli->real_escape_string(trim($_POST['estado']));
+    $correo     = $mysqli->real_escape_string(trim($_POST['correo'] ?? ''));
+    $clave      = sha1($id_usuario); 
+
+    $sql = "INSERT INTO usuario (id_usuario, usuario, clave, nombre, apellido, rol, sexo, estado, correo, fecha_registro) 
+            VALUES ('$id_usuario', '$usuario', '$clave', '$nombre', '$apellido', '$rol', '$sexo', '$estado', '$correo', NOW())";
+            
+    if ($mysqli->query($sql)) {
+        $alerta_js = "Swal.fire('¡Registrado!', 'El usuario ha sido creado con éxito.', 'success');";
+    } else {
+        if ($mysqli->errno == 1062) {
+            $alerta_js = "Swal.fire('¡Error!', 'El documento de identidad ya está registrado.', 'error');";
+        } else {
+            $alerta_js = "Swal.fire('¡Error!', 'Ocurrió un error al procesar la solicitud: ".$mysqli->error."', 'error');";
+        }
+    }
+}
+
+// B. ACTUALIZAR
+if (isset($_POST['Actualizar']) && !empty($_POST['id_usuario_original'])) {
+    $id_original = $mysqli->real_escape_string(trim($_POST['id_usuario_original']));
+    $id_usuario  = $mysqli->real_escape_string(trim($_POST['id_usuario']));
+    $usuario     = $mysqli->real_escape_string(trim($_POST['usuario']));
+    $nombre      = $mysqli->real_escape_string(trim($_POST['nombre']));
+    $apellido    = $mysqli->real_escape_string(trim($_POST['apellido']));
+    $rol         = $mysqli->real_escape_string(trim($_POST['rol']));
+    $sexo        = $mysqli->real_escape_string(trim($_POST['sexo']));
+    $estado      = $mysqli->real_escape_string(trim($_POST['estado']));
+    $correo      = $mysqli->real_escape_string(trim($_POST['correo'] ?? ''));
+    
+    $sql = "UPDATE usuario 
+            SET id_usuario='$id_usuario', 
+                usuario='$usuario', 
+                nombre='$nombre', 
+                apellido='$apellido', 
+                rol='$rol', 
+ genero='$sexo', 
+                estado='$estado', 
+                correo='$correo' 
+            WHERE id_usuario='$id_original'";
+            #echo $sql;
+    if ($mysqli->query($sql)) {
+        $alerta_js = "Swal.fire('¡Actualizado!', 'Los datos se modificaron correctamente.', 'success');";
+    } else {
+        $alerta_js = "Swal.fire('¡Error!', 'No se pudo actualizar la información.', 'error');";
+    }
+}
+
+// C. ELIMINAR
+if (isset($_GET['action']) && $_GET['action'] == 'delete' && !empty($_GET['id'])) {
+    $id = $mysqli->real_escape_string($_GET['id']);
+    $sql = "DELETE FROM usuario WHERE id_usuario = '$id'";
+    
+    if ($mysqli->query($sql)) {
+        $alerta_js = "Swal.fire('¡Eliminado!', 'El usuario ha sido retirado del sistema.', 'success');";
+    }
+}
+
+// =================================================================
+// 4. RECUPERAR DATOS PARA EDICIÓN
+// =================================================================
+$modo_edicion = false;
+$datos_editar = [
+    'id_usuario' => '', 'usuario' => '', 'nombre' => '', 'apellido' => '', 
+    'rol' => 'estudiante', 'sexo' => 'm', 'estado' => 'activo', 'correo' => ''
+];
+
+if (isset($_GET['Actualizar']) && !empty($_GET['Actualizar'])) {
+    $modo_edicion = true;
+    $id_editar = $mysqli->real_escape_string($_GET['Actualizar']);
+    
+    $sql_edit = "SELECT * FROM usuario WHERE id_usuario = '$id_editar'";
+    $res_edit = $mysqli->query($sql_edit);
+    
+    if ($res_edit && $res_edit->num_rows > 0) {
+        $datos_editar = $res_edit->fetch_assoc();
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios - Vallesol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .loader-line {
+            height: 3px;
+            width: 100%;
+            background-color: #e2e8f0;
+            overflow: hidden;
+            position: relative;
+        }
+        .loader-line::before {
+            content: '';
+            position: absolute;
+            left: -50%;
+            height: 3px;
+            width: 40%;
+            background-color: #3b82f6;
+            animation: lineAnim 1s linear infinite;
+        }
+        @keyframes lineAnim {
+            0% { left: -40%; }
+            100% { left: 100%; }
+        }
+    </style>
+</head>
+<body class="antialiased text-slate-800">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Gestión de Usuarios</h1>
+            <p class="text-slate-500 text-sm mt-2">Administre los perfiles de estudiantes, docentes y administrativos de Vallesol de forma ágil.</p>
+        </div>
+
+        <div class="flex flex-col gap-8">
+            
+            <!-- BLOQUE SUPERIOR: Formulario -->
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 w-full transition-all duration-300">
+                <div class="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+                    <div class="p-2 <?php echo $modo_edicion ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600'; ?> rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<?php echo $modo_edicion ? 'M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z' : 'M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z'; ?>"></path></svg>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-800">
+                        <?php echo $modo_edicion ? 'Editar Perfil de Usuario' : 'Nuevo Registro de Usuario'; ?>
+                    </h2>
+                </div>
+                
+                <form method="POST" action="usuario.php" class="space-y-6">
+                    <?php if($modo_edicion): ?>
+                        <input type="hidden" name="id_usuario_original" value="<?php echo htmlspecialchars($datos_editar['id_usuario']); ?>">
+                    <?php endif; ?>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Fila 1 -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Documento de Identidad <span class="text-red-500">*</span></label>
+                            <input type="text" name="id_usuario" required 
+                                   value="<?php echo htmlspecialchars($datos_editar['id_usuario']); ?>"
+                                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nombre de Usuario <span class="text-red-500">*</span></label>
+                            <input type="text" name="usuario"  
+                                   value="<?php echo htmlspecialchars($datos_editar['usuario']); ?>"
+                                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nombres <span class="text-red-500">*</span></label>
+                            <input type="text" name="nombre" required 
+                                   value="<?php echo htmlspecialchars($datos_editar['nombre']); ?>"
+                                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Apellidos <span class="text-red-500">*</span></label>
+                            <input type="text" name="apellido"  
+                                   value="<?php echo htmlspecialchars($datos_editar['apellido']); ?>"
+                                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                        </div>
+
+                        <!-- Fila 2 -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Rol</label>
+                            <select name="rol" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer">
+                                <option value="estudiante" <?php echo ($datos_editar['rol'] == 'estudiante') ? 'selected' : ''; ?>>Estudiante</option>
+                                <option value="docente" <?php echo ($datos_editar['rol'] == 'docente') ? 'selected' : ''; ?>>Docente</option>
+                                <option value="admin" <?php echo ($datos_editar['rol'] == 'admin') ? 'selected' : ''; ?>>Administrador</option>
+                                <option value="acudiente" <?php echo ($datos_editar['rol'] == 'acudiente') ? 'selected' : ''; ?>>Acudiente</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Género</label>
+                            <select name="sexo" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer">
+                                <option value="m" <?php echo ($datos_editar['sexo'] == 'm') ? 'selected' : ''; ?>>Masculino</option>
+                                <option value="f" <?php echo ($datos_editar['sexo'] == 'f') ? 'selected' : ''; ?>>Femenino</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Estado</label>
+                            <select name="estado" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer">
+                                <option value="activo" <?php echo ($datos_editar['estado'] == 'activo') ? 'selected' : ''; ?>>Activo</option>
+                                <option value="inactivo" <?php echo ($datos_editar['estado'] == 'inactivo') ? 'selected' : ''; ?>>Inactivo</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Correo Electrónico</label>
+                            <input type="email" name="correo" 
+                                   value="<?php echo htmlspecialchars($datos_editar['correo']); ?>"
+                                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-6 border-t border-slate-100">
+                        <?php if($modo_edicion): ?>
+                            <a href="usuario.php" class="text-slate-700 bg-slate-100 hover:bg-slate-200 font-semibold rounded-xl text-sm px-6 py-3 transition-all">Cancelar</a>
+                            <button type="submit" name="Actualizar" class="text-white bg-blue-600 hover:bg-blue-700 font-semibold rounded-xl text-sm px-8 py-3 shadow-sm hover:shadow transition-all">Guardar Cambios</button>
+                        <?php else: ?>
+                            <button type="submit" name="Ingresar" class="text-white bg-slate-900 hover:bg-slate-800 font-semibold rounded-xl text-sm px-8 py-3 shadow-sm hover:shadow transition-all">Crear Perfil</button>
+                        <?php endif; ?>
+                    </div>
+                </form>
+            </div>
+
+            <!-- BLOQUE INFERIOR: Listado y Búsqueda -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col w-full">
+                
+                <!-- Header Buscador -->
+                <div class="p-6 border-b border-slate-100 bg-white z-20">
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            Directorio Activo
+                            <span class="bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">En tiempo real</span>
+                        </h2>
+                        
+                        <div class="relative w-full sm:w-96">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            </div>
+                            <input type="text" id="searchInput" placeholder="Buscar por nombre, apellido o documento..." 
+                                   class="block w-full py-2.5 pl-10 pr-10 text-sm text-slate-900 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:bg-white focus:border-blue-500 outline-none transition-all shadow-inner">
+                            <!-- Spinner interno del buscador -->
+                            <div id="searchSpinner" class="absolute inset-y-0 right-0 flex items-center pr-3 hidden">
+                                <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Linea de carga decorativa -->
+                <div id="loaderLine" class="loader-line hidden"></div>
+
+                <!-- Contenedor dinámico de la tabla y paginación -->
+                <div id="tableContainer" class="flex-1 bg-slate-50/50 p-6">
+                    <?php renderizar_tabla_usuarios('', 1, $mysqli); ?>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // 1. Ejecución de Alertas SweetAlert2 (desde PHP)
+        <?php echo $alerta_js; ?>
+
+        // 2. Función de Confirmación para Eliminar (SweetAlert2)
+        function confirmarEliminacion(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción no se puede deshacer y el usuario perderá el acceso.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `usuario.php?action=delete&id=${encodeURIComponent(id)}`;
+                }
+            })
+        }
+
+        // 3. Lógica de Búsqueda Asíncrona y Paginación
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const tableContainer = document.getElementById('tableContainer');
+            const searchSpinner = document.getElementById('searchSpinner');
+            const loaderLine = document.getElementById('loaderLine');
+            let debounceTimer;
+            let currentPage = 1;
+
+            // Función principal para obtener los datos
+            const fetchData = async (query, page) => {
+                // Mostrar UI de carga
+                searchSpinner.classList.remove('hidden');
+                loaderLine.classList.remove('hidden');
+                tableContainer.style.opacity = '0.6'; 
+
+                try {
+                    const response = await fetch(`usuario.php?ajax_search=${encodeURIComponent(query)}&page=${page}`);
+                    if (!response.ok) throw new Error('Error en la red');
+                    
+                    const htmlString = await response.text();
+                    tableContainer.innerHTML = htmlString;
+                } catch (error) {
+                    console.error('Error durante la solicitud:', error);
+                    Swal.fire({
+                        toast: true, position: 'top-end', showConfirmButton: false, 
+                        timer: 3000, icon: 'error', title: 'Error de conexión'
+                    });
+                } finally {
+                    // Restaurar UI
+                    searchSpinner.classList.add('hidden');
+                    loaderLine.classList.add('hidden');
+                    tableContainer.style.opacity = '1';
+                }
+            };
+
+            // Evento de escritura en el input (Debounce)
+            searchInput.addEventListener('input', function() {
+                const query = this.value.trim();
+                currentPage = 1; // Reiniciar a la página 1 al buscar
+                
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    fetchData(query, currentPage);
+                }, 400); 
+            });
+
+            // Delegación de eventos para la paginación (ya que los botones se re-renderizan)
+            tableContainer.addEventListener('click', function(e) {
+                const btn = e.target.closest('.page-link');
+                if (btn) {
+                    e.preventDefault();
+                    const targetPage = btn.getAttribute('data-page');
+                    if (targetPage) {
+                        currentPage = targetPage;
+                        fetchData(searchInput.value.trim(), currentPage);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

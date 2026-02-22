@@ -10,10 +10,14 @@ require("conexion.php");
   <script>tinymce.init({ selector:'textarea' });</script>
 
 
+
+  
+ <div class="col-md-12" style="margin-top:14%;margin-bottom:1%">
+    <?php require_once 'template/menu.php'; ?>
+</div>
 <?php
 /*require("funciones.php");*/ 
 function buscar_recursos($datos="",$reporte=""){
-
 require("conexion.php");
 require_once ("../comun/lib/Zebra_Pagination/Zebra_Pagination.php");
 $resultados = (isset($_COOKIE['numeroresultados_recursos']) ? $_COOKIE['numeroresultados_recursos'] : 10);
@@ -25,10 +29,7 @@ $cookiepage="page_usuario";
 $funcionjs="buscar();";$paginacion->fn_js_page("$funcionjs");
 $paginacion->cookie_page($cookiepage);
 $paginacion->padding(false);
-
 if (isset($_COOKIE["$cookiepage"])) $_GET['page'] = $_COOKIE["$cookiepage"];
-
-
 $sql = "SELECT `recursos`.`nombre_recurso`, `recursos`.`descripcion_recurso` FROM `recursos`   ";
 $datosrecibidos = $datos;
 $datos = explode(" ",$datosrecibidos);
@@ -52,7 +53,6 @@ $sql .= " and ";
 $sql .=  " ORDER BY `recursos`.`nombre_recurso` desc LIMIT ";
 $sql .=  "  " . (($paginacion->get_page() - 1) * $resultados) . ", " . $resultados;
 /*echo $sql;*/ 
-require_once 'template/menu.php';
 $consulta = $mysqli->query($sql);
 $numero_usuario = $consulta->num_rows;
 $minimo_usuario = (($paginacion->get_page() - 1) * $resultados)+1;
@@ -63,6 +63,7 @@ echo "<p>Resultados de $minimo_usuario a $maximo_usuario del total de ".$numero_
 
 
  ?>
+
 <div align="center">
 <table border="1" id="tbrecursos">
 <thead>

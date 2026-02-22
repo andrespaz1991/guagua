@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of PHPWord - A pure PHP library for reading and writing
  * word processing documents.
@@ -10,22 +11,24 @@
  * file that was distributed with this source code. For the full list of
  * contributors, visit https://github.com/PHPOffice/PHPWord/contributors.
  *
- * @link        https://github.com/PHPOffice/PHPWord
- * @copyright   2010-2014 PHPWord contributors
+ * @see         https://github.com/PHPOffice/PHPWord
+ *
  * @license     http://www.gnu.org/licenses/lgpl.txt LGPL version 3
  */
 
 namespace PhpOffice\PhpWord\Writer\HTML\Element;
 
+use PhpOffice\PhpWord\Writer\HTML;
+
 /**
- * ListItem element HTML writer
+ * ListItem element HTML writer.
  *
  * @since 0.10.0
  */
 class ListItem extends AbstractElement
 {
     /**
-     * Write list item
+     * Write list item.
      *
      * @return string
      */
@@ -35,8 +38,7 @@ class ListItem extends AbstractElement
             return '';
         }
 
-        $text = $this->element->getTextObject()->getText();
-        $content = '<p>' . $text . '</p>' . PHP_EOL;
+        $content = '<p>' . $this->parentWriter->escapeHTML($this->element->getTextObject()->getText()) . '</p>' . PHP_EOL;
 
         return $content;
     }

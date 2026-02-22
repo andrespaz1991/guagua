@@ -84,6 +84,8 @@ if(isset($_GET['pdf']) && isset($_GET['idplan'])){
 }
 
 $sql_vallesol .= ' ORDER BY materia_oficial.id_materia ASC, ' . $campo_orden . ' ' . $orden;
+#cho $sql_vallesol;
+#exit();
 
 $consulta_vallesol = $mysqli->query($sql_vallesol);
 

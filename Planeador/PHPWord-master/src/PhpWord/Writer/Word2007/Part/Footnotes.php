@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of PHPWord - A pure PHP library for reading and writing
  * word processing documents.
@@ -10,8 +11,8 @@
  * file that was distributed with this source code. For the full list of
  * contributors, visit https://github.com/PHPOffice/PHPWord/contributors.
  *
- * @link        https://github.com/PHPOffice/PHPWord
- * @copyright   2010-2014 PHPWord contributors
+ * @see         https://github.com/PHPOffice/PHPWord
+ *
  * @license     http://www.gnu.org/licenses/lgpl.txt LGPL version 3
  */
 
@@ -23,47 +24,47 @@ use PhpOffice\PhpWord\Writer\Word2007\Element\Container;
 use PhpOffice\PhpWord\Writer\Word2007\Style\Paragraph as ParagraphStyleWriter;
 
 /**
- * Word2007 footnotes part writer: word/(footnotes|endnotes).xml
+ * Word2007 footnotes part writer: word/(footnotes|endnotes).xml.
  */
 class Footnotes extends AbstractPart
 {
     /**
-     * Name of XML root element
+     * Name of XML root element.
      *
      * @var string
      */
     protected $rootNode = 'w:footnotes';
 
     /**
-     * Name of XML node element
+     * Name of XML node element.
      *
      * @var string
      */
     protected $elementNode = 'w:footnote';
 
     /**
-     * Name of XML reference element
+     * Name of XML reference element.
      *
      * @var string
      */
     protected $refNode = 'w:footnoteRef';
 
     /**
-     * Reference style name
+     * Reference style name.
      *
      * @var string
      */
     protected $refStyle = 'FootnoteReference';
 
     /**
-     * Footnotes/endnotes collection to be written
+     * Footnotes/endnotes collection to be written.
      *
-     * @var \PhpOffice\PhpWord\Collection\Footnotes|\PhpOffice\PhpWord\Collection\Endnotes
+     * @var \PhpOffice\PhpWord\Collection\Endnotes|\PhpOffice\PhpWord\Collection\Footnotes
      */
     protected $elements;
 
     /**
-     * Write part
+     * Write part.
      *
      * @return string
      */
@@ -120,9 +121,10 @@ class Footnotes extends AbstractPart
     }
 
     /**
-     * Set element
+     * Set element.
      *
-     * @param \PhpOffice\PhpWord\Collection\Footnotes|\PhpOffice\PhpWord\Collection\Endnotes $elements
+     * @param \PhpOffice\PhpWord\Collection\Endnotes|\PhpOffice\PhpWord\Collection\Footnotes $elements
+     *
      * @return self
      */
     public function setElements($elements)
@@ -135,14 +137,12 @@ class Footnotes extends AbstractPart
     /**
      * Write note item.
      *
-     * @param \PhpOffice\PhpWord\Shared\XMLWriter $xmlWriter
-     * @param \PhpOffice\PhpWord\Element\Footnote|\PhpOffice\PhpWord\Element\Endnote $element
-     * @return void
+     * @param Footnote|\PhpOffice\PhpWord\Element\Endnote $element
      */
-    protected function writeNote(XMLWriter $xmlWriter, $element)
+    protected function writeNote(XMLWriter $xmlWriter, $element): void
     {
         $xmlWriter->startElement($this->elementNode);
-        $xmlWriter->writeAttribute('w:id', $element->getRelationId());
+        $xmlWriter->writeAttribute('w:id', $element->getRelationId() + 1);
         $xmlWriter->startElement('w:p');
 
         // Paragraph style
@@ -164,7 +164,7 @@ class Footnotes extends AbstractPart
         $xmlWriter->startElement('w:r');
         $xmlWriter->startElement('w:t');
         $xmlWriter->writeAttribute('xml:space', 'preserve');
-        $xmlWriter->writeRaw(' ');
+        $xmlWriter->text(' ');
         $xmlWriter->endElement(); // w:t
         $xmlWriter->endElement(); // w:r
 

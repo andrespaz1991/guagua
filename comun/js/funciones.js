@@ -21,7 +21,7 @@ function capitalizarPalabras(texto) {
 function listarEstudiantes(){   
     //  alert('Hola Mundo');
     document.getElementById("contenedor").innerHTML="";
-    var nombre = document.getElementById("nombrees").value;
+    var nombre = document.getElementById("filtro_grados").value;
    var asignacion = document.getElementById("asignaciones").value;
 //var asignacion=''
    // alert(asignacion);
@@ -29,15 +29,16 @@ function listarEstudiantes(){
     //Función para crear el objeto XMLHpptRequest.
                   // var formData = $("#ano_lectivo").val();
      ajax =new XMLHttpRequest(); //instanciamos el objeto
-    console.log("estudianteshome.php?nombre="+nombre);
+    console.log("estudianteshome.php?nid="+asignacion+"&nombre="+nombre);
      //  ajax.open("GET","estudianteshome.php?nid="+asignacion+"&nombre="+nombre,true); //preparamos envio
-     ajax.open("GET","estudianteshome.php?nombre="+nombre,true); //preparamos envio
+     ajax.open("GET","estudianteshome.php?nid="+asignacion+"&nombre="+nombre,true); //preparamos envi
 
 //    ajax.open("GET","estudianteshome.php?nombre="+nombre,true); //preparamos envio
     //devolver texto al cargarse el archivo
       
       ajax.onreadystatechange=function() {  
          if (ajax.readyState==4 && ajax.status==200) {
+            console.log(ajax.responseText);
             texto=ajax.responseText;
            // console.log(texto);  
             var resp_json = JSON.parse(texto);

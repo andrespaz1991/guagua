@@ -61,7 +61,8 @@ require_once (dirname(__FILE__)."/../funciones.php");
 <?php if (!isset($_GET['embebido'])) echo '<br><br>'; ?>
     <div class="container">
          <div class="page-header">
-            <?php if (!isset($_GET['embebido'])) require(SGA_COMUN_SERVER."/menu.php"); ?>
+            <?php if (!isset($_GET['embebido'])) 
+                require(SGA_COMUN_SERVER."/menu.php"); ?>
            	<main style="padding-top: 30px;">
            	    <section>
                 <?php if (isset($contenido)) echo $contenido; ?>

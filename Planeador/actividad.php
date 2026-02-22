@@ -3,6 +3,13 @@ ob_start();
 echo '<center>';
 require("conexion.php");
  /*require("funciones.php");*/ 
+
+ ?>
+
+ <div class="col-md-12" style="margin-top:14%;margin-bottom:1%">
+    <?php require_once 'template/menu.php'; ?>
+</div>
+ <?php
 function buscar_actividad($datos="",$reporte=""){
 require("conexion.php");
 require_once ("../comun/lib/Zebra_Pagination/Zebra_Pagination.php");

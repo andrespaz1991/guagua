@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador SISGA V8 - Multi-Archivo</title>
+    <script src="xlsx.full.min.js"></script>
+    <script src="tailwindcss.css"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
+        .drag-area { border: 2px dashed #3b82f6; transition: all 0.3s ease; }
+        .drag-area.active { border-color: #1d4ed8; background-color: #eff6ff; }
+        
+        /* Animación para las tarjetas */
+        .script-card { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="p-8">
+
+    <div class="max-w-5xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Generador SISGA V8 - Multi-Archivo</h1>
+            <p class="text-gray-600 mb-6">Arrastra <strong>todos tus archivos</strong> de una vez. Se generará un script independiente para cada uno.</p>
+
+            <!-- Zona de Carga -->
+            <div id="drop-zone" class="drag-area w-full h-40 rounded-lg flex flex-col items-center justify-center cursor-pointer mb-6 bg-gray-50 hover:bg-blue-50">
+                <svg class="w-12 h-12 text-blue-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span class="text-gray-700 font-medium text-lg">Arrastra tus archivos Excel aquí</span>
+                <span class="text-gray-400 text-sm mt-1">Soporta carga múltiple (.xlsx)</span>
+                <!-- Input acepta múltiples archivos -->
+                <input type="file" id="file-input" class="hidden" accept=".xlsx, .xls" multiple>
+            </div>
+
+            <!-- Opciones de Columnas (Informativo) -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+                <div class="bg-gray-100 p-2 rounded border border-gray-200"><span class="block text-xs font-bold text-gray-600">Actitudinal</span>Col E</div>
+                <div class="bg-gray-100 p-2 rounded border border-gray-200"><span class="block text-xs font-bold text-gray-600">Cognitivo</span>Col F</div>
+                <div class="bg-gray-100 p-2 rounded border border-gray-200"><span class="block text-xs font-bold text-gray-600">Comportamental</span>Col G</div>
+                <div class="bg-gray-100 p-2 rounded border border-gray-200"><span class="block text-xs font-bold text-gray-600">Auto</span>Col H</div>
+                <div class="bg-gray-100 p-2 rounded border border-gray-200"><span class="block text-xs font-bold text-gray-600">Co</span>Col I</div>
+            </div>
+        </div>
+
+        <!-- Contenedor de Resultados (Aquí se inyectarán las tarjetas) -->
+        <div id="results-container" class="space-y-6"></div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const resultsContainer = document.getElementById('results-container');
+
+        // --- Event Listeners ---
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        dropZone.addEventListener('dragover', (e) => { 
+            e.preventDefault(); 
+            dropZone.classList.add('active'); 
+        });
+        
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('active');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) manejarArchivos(files);
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) manejarArchivos(e.target.files);
+        });
+
+        // --- Manejo de Archivos ---
+        function manejarArchivos(fileList) {
+            // Limpiamos resultados anteriores solo si se desea (opcional, aquí acumulamos o limpiamos)
+            resultsContainer.innerHTML = ""; 
+            
+            Array.from(fileList).forEach(file => {
+                procesarUnArchivo(file);
+            });
+        }
+
+        function procesarUnArchivo(file) {
+            // Validación básica
+            if (file.name.toLowerCase().endsWith('.lnk')) {
+                crearTarjetaError(file.name, "Es un acceso directo, sube el original.");
+                return;
+            }
+
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+
+                    // Lógica de búsqueda de hoja
+                    const normalizedSheets = workbook.SheetNames.map(name => ({
+                        original: name,
+                        clean: name.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    }));
+
+                    let targetSheetObj = normalizedSheets.find(s => s.clean === "sisga") || 
+                                         normalizedSheets.find(s => s.clean.includes("sisga"));
+
+                    let sheetName;
+                    if (targetSheetObj) {
+                        sheetName = targetSheetObj.original;
+                    } else {
+                        // Si no encuentra, usa la primera por defecto (en carga masiva no podemos preguntar por cada uno)
+                        sheetName = workbook.SheetNames[0];
+                    }
+
+                    const worksheet = workbook.Sheets[sheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
+                    
+                    const DATOS_ESTUDIANTES = [];
+                    // Empezamos en fila 1 (la 2 en Excel)
+                    for (let i = 1; i < jsonData.length; i++) {
+                        const row = jsonData[i];
+                        if (!row[1] || typeof row[1] !== 'string') continue;
+
+                        const notas = {
+                            "actitudinal": row[4],
+                            "cognitivo": row[5],
+                            "comportamental": row[6],
+                            "auto": row[7],
+                            "co": row[8]
+                        };
+                        DATOS_ESTUDIANTES.push({ nombre: row[1].trim(), notas });
+                    }
+
+                    if (DATOS_ESTUDIANTES.length === 0) {
+                        crearTarjetaError(file.name, `No se encontraron estudiantes en la hoja "${sheetName}".`);
+                    } else {
+                        const codigoGenerado = generarTemplateV7(DATOS_ESTUDIANTES, file.name);
+                        crearTarjetaExito(file.name, sheetName, DATOS_ESTUDIANTES.length, codigoGenerado);
+                    }
+
+                } catch (error) {
+                    crearTarjetaError(file.name, "Error leyendo el archivo: " + error.message);
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        // --- Generación de UI (Tarjetas) ---
+
+        function crearTarjetaExito(fileName, sheetName, count, code) {
+            const cardId = 'card-' + Math.random().toString(36).substr(2, 9);
+            
+            const html = `
+                <div class="bg-white rounded-lg shadow-md border-l-4 border-green-500 overflow-hidden script-card">
+                    <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-lg flex items-center gap-2">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                ${fileName}
+                            </h3>
+                            <p class="text-sm text-gray-500">Hoja: <strong>${sheetName}</strong> | Estudiantes: <strong>${count}</strong></p>
+                        </div>
+                        <button onclick="copiarCodigo('${cardId}')" id="btn-${cardId}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow transition flex items-center gap-2 text-sm font-medium">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                            Copiar Script
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <textarea id="${cardId}" class="w-full h-40 p-4 bg-gray-900 text-green-400 font-mono text-xs focus:outline-none resize-y" readonly>${code}</textarea>
+                    </div>
+                </div>
+            `;
+            
+            // Insertar al principio para ver los nuevos arriba (o al final append)
+            resultsContainer.insertAdjacentHTML('beforeend', html);
+        }
+
+        function crearTarjetaError(fileName, msg) {
+            const html = `
+                <div class="bg-white rounded-lg shadow-md border-l-4 border-red-500 p-4 script-card">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-6 h-6 text-red-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div>
+                            <h3 class="font-bold text-gray-800">${fileName}</h3>
+                            <p class="text-red-600 text-sm">${msg}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            resultsContainer.insertAdjacentHTML('beforeend', html);
+        }
+
+        // --- Utilidades Globales ---
+        window.copiarCodigo = function(elementId) {
+            const textarea = document.getElementById(elementId);
+            textarea.select();
+            document.execCommand('copy');
+            
+            const btn = document.getElementById('btn-' + elementId);
+            const originalText = btn.innerHTML;
+            
+            btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            btn.classList.add('bg-green-600', 'hover:bg-green-700');
+            btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> ¡Copiado!`;
+            
+            setTimeout(() => {
+                btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                btn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                btn.innerHTML = originalText;
+            }, 2000);
+        };
+
+        // --- Generador de Código (Lógica V7) ---
+        function generarTemplateV7(datos, nombreArchivo) {
+            const jsonStr = JSON.stringify(datos, null, 4);
+            
+            return `
+// =============================================================================
+// SCRIPT SISGA V7 (Multi) - ${nombreArchivo}
+// Generado el: ${new Date().toLocaleString()}
+// =============================================================================
+const DATOS_ESTUDIANTES = ${jsonStr};
+
+(function(dataset) {
+    console.clear();
+    console.log("%c ▶️ Ejecutando script para: ${nombreArchivo}", "color: #fff; background: #007bff; font-weight: bold; padding: 2px 5px; border-radius: 3px;");
+
+    const normalizar = (txt) => {
+        if (!txt) return "";
+        return txt.toString().toLowerCase()
+            .normalize("NFD").replace(/[\\u0300-\\u036f]/g, "") 
+            .replace(/ñ/g, "n") 
+            .replace(/\\s+/g, " ").trim();
+    };
+    
+    const formatearNota = (val) => val.toString().replace(',', '.');
+    
+    const despertarInputsVisual = (el) => {
+        ['input', 'change'].forEach(evt => el.dispatchEvent(new Event(evt, { bubbles: true })));
+    };
+
+    const nombresCoinciden = (nombreExcel, nombreWeb) => {
+        const n1 = normalizar(nombreExcel);
+        const n2 = normalizar(nombreWeb);
+        if (n1.includes(n2) || n2.includes(n1)) return true;
+        
+        const palabrasExcel = n1.split(" ").filter(p => p.length > 2); 
+        const palabrasWeb = n2.split(" ");
+        let coincidencias = 0;
+        palabrasExcel.forEach(p => {
+            if (palabrasWeb.some(w => w.includes(p))) coincidencias++;
+        });
+        return (palabrasExcel.length > 0 && coincidencias >= (palabrasExcel.length * 0.75));
+    };
+
+    const mapearColumnas = () => {
+        const mapa = {};
+        const headers = document.querySelectorAll('#tbl_estudiantes thead tr:first-child th');
+        let indiceReal = 0; 
+        headers.forEach((th) => {
+            const textoHeader = normalizar(th.textContent);
+            const colspan = parseInt(th.getAttribute('colspan')) || 1;
+            if (textoHeader.includes("actitudinal")) mapa["actitudinal"] = indiceReal;
+            else if (textoHeader.includes("cognitivo")) mapa["cognitivo"] = indiceReal;
+            else if (textoHeader.includes("comportamental")) mapa["comportamental"] = indiceReal;
+            else if (textoHeader.includes("autoevaluacion")) mapa["auto"] = indiceReal;
+            else if (textoHeader.includes("coevaluacion")) mapa["co"] = indiceReal;
+            indiceReal += colspan;
+        });
+        return mapa;
+    };
+
+    const mapaColumnas = mapearColumnas();
+    if (Object.keys(mapaColumnas).length === 0) {
+        console.error("⛔ Error mapeando columnas. Verifique estar en la página de ingreso de notas.");
+        alert("Error: No se detectaron las columnas de notas.");
+        return;
+    }
+
+    const filas = document.querySelectorAll('#tbl_estudiantes tbody tr');
+    let exito = 0, fallos = 0;
+    const colaDeGuardado = [];
+
+    dataset.forEach(alumno => {
+        let encontrado = false;
+        let ultimoInputDelAlumno = null;
+        
+        for (let fila of filas) {
+            const celdaNombre = fila.querySelectorAll('td')[3]; 
+            if (!celdaNombre) continue;
+            const nombreWeb = celdaNombre.textContent; 
+
+            if (nombresCoinciden(alumno.nombre, nombreWeb)) {
+                encontrado = true;
+                exito++;
+                console.groupCollapsed(\`✅ \${alumno.nombre}\`);
+
+                for (const [criterio, nota] of Object.entries(alumno.notas)) {
+                    if(nota === null || nota === undefined) continue;
+
+                    const indiceColumna = mapaColumnas[criterio];
+                    if (indiceColumna !== undefined) {
+                        const celdaObjetivo = fila.cells[indiceColumna];
+                        if (celdaObjetivo) {
+                            const input = celdaObjetivo.querySelector('input.numeric');
+                            if (input && input.type !== 'hidden') {
+                                const valorFinal = formatearNota(nota);
+                                if (input.value !== valorFinal) {
+                                    input.value = valorFinal;
+                                    input.style.backgroundColor = "#d1e7dd";
+                                    input.style.border = "2px solid #198754";
+                                    despertarInputsVisual(input);
+                                    
+                                    ultimoInputDelAlumno = input; 
+                                    console.log(\`   Set '\${criterio}': \${valorFinal}\`);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                if (ultimoInputDelAlumno) {
+                    colaDeGuardado.push({
+                        nombre: alumno.nombre,
+                        element: ultimoInputDelAlumno
+                    });
+                }
+                console.groupEnd();
+                break;
+            }
+        }
+        if (!encontrado) fallos++;
+    });
+
+    if (colaDeGuardado.length > 0) {
+        // Mensaje personalizado con nombre de archivo
+        alert(\`ARCHIVO: ${nombreArchivo}\\n\\nEstudiantes modificados: \${colaDeGuardado.length}\\n\\n⚠️ CLIC EN ACEPTAR PARA GUARDAR.\`);
+
+        console.log("%c 💾 GUARDANDO ${nombreArchivo}...", "background: orange; color: black; font-size: 14px;");
+        
+        const procesarGuardado = (index) => {
+            if (index >= colaDeGuardado.length) {
+                if (colaDeGuardado.length > 0) {
+                    try {
+                        colaDeGuardado[0].element.focus();
+                    } catch(e) {}
+                }
+                console.log("%c 🎉 FIN ${nombreArchivo} 🎉", "background: green; color: white; font-size: 16px;");
+                alert("✅ PROCESO COMPLETADO para: ${nombreArchivo}");
+                return;
+            }
+
+            const item = colaDeGuardado[index];
+            try {
+                item.element.scrollIntoView({behavior: "smooth", block: "center"});
+                item.element.focus();
+                
+                setTimeout(() => {
+                    item.element.blur();
+                    console.log(\`[\${index+1}/\${colaDeGuardado.length}] Guardado: \${item.nombre}\`);
+                    setTimeout(() => procesarGuardado(index + 1), 300);
+                }, 100); 
+                
+            } catch (e) {
+                console.error("Error guardando a " + item.nombre, e);
+                procesarGuardado(index + 1);
+            }
+        };
+        procesarGuardado(0);
+    } else {
+        alert("ARCHIVO: ${nombreArchivo}\\nNo hubo cambios nuevos para guardar.");
+    }
+})(DATOS_ESTUDIANTES);
+            `;
+        }
+    </script>
+</body>
+</html>

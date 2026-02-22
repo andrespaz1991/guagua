@@ -33,31 +33,37 @@ public function periodo_academico(){
 public function home_recursos(){
 return '';
 }
-public function misestudiantes() {
-  $datos_curso = $this->mis_cursos_otros(); 
-  $asignacion_hoy = $this->consultar_horario(1);
+  public function misestudiantes() {
+        $datos_curso = $this->mis_cursos_otros(); 
+        $asignacion_hoy = $this->consultar_horario(1);
 
-  if (!empty($datos_curso)) {
-      echo "<select onchange='listarEstudiantes();' class='form-control' name='asignaciones' id='asignaciones'>";
-     echo '<option  value=""> Todos </option>';
-      foreach ($datos_curso as $clave => $valor) {
-          echo '<option value="'.$valor['id_asignacion'].'" style="width: 150px; white-space: pre-wrap; word-wrap: break-word;"';
-          if (!empty($asignacion_hoy[0]['id_asignacion']) && $asignacion_hoy[0]['id_asignacion'] == $valor['id_asignacion']) {
-              echo ' selected';
-          }
-          echo '>'.$valor['nombre_materia'].' ('.$valor['nombre_categoria_curso'].')</option>';
-      }
+        if (!empty($datos_curso)) {
+            echo "<select onchange='listarEstudiantes();' class='form-control mb-2' name='asignaciones' id='asignaciones'>";
+            echo '<option value=""> Todos los cursos </option>';
+            foreach ($datos_curso as $clave => $valor) {
+                echo '<option value="'.$valor['id_asignacion'].'" style="width: 150px; white-space: pre-wrap; word-wrap: break-word;"';
+                if (!empty($asignacion_hoy[0]['id_asignacion']) && $asignacion_hoy[0]['id_asignacion'] == $valor['id_asignacion']) {
+                    echo ' selected';
+                }
+                echo '>'.$valor['nombre_materia'].' ('.$valor['mid_categoria_curso'].')</option>';
+            }
+            echo '</select>';
+        } else {
+            echo "<p>No hay cursos disponibles.</p>";
+        }
 
-      echo '</select>';
-  } else {
-      echo "<p>No hay cursos disponibles.</p>";
-  }
+        // Nuevo bloque añadido: Selector de rango de grados
+        echo '<select onchange="listarEstudiantes();" class="form-control mb-2" name="filtro_grados" id="filtro_grados">';
+        echo '<option value="">Todos los grados</option>';
+        echo '<option value="6-8">Grados 6 a 8</option>';
+        echo '<option value="9-11">Grados 9 a 11</option>';
+        echo '</select>';
 
-  echo '
-  <input autofocus  onfocus="listarEstudiantes();" onkeyup="listarEstudiantes();" type="text" class="form-control" placeholder="Buscar" id="nombrees" value="">
-  <br>
-  <div style="height:250px;" id="contenedor"></div>';
-}
+        echo '
+        <input autofocus onfocus="listarEstudiantes();" onkeyup="listarEstudiantes();" type="text" class="form-control mb-2" placeholder="Buscar" id="nombrees" value="">
+        <br>
+        <div style="height:250px;" id="contenedor"></div>';
+    }
 
 public function inscripcion($asignacion){
   $sql='select  * from inscripcion where id_inscripcion="'.$asignacion.'"';
@@ -514,6 +520,42 @@ return    $sqlp;
 
 
 public function estudiantes_de_una_asignacion($nombre = "",$id_asignacion='') {
+ 
+$parametro_grado = $nombre ; 
+$ano_lectivo=17;
+$sql_curso = "
+SELECT DISTINCT id_usuario, u.* FROM usuario u where u.estado='activo' ";
+#$sql_curso .= " and i.id_asignacion=".$id_asignacion." ";
+
+// Evaluación del parámetro que viene del frontend
+if ($parametro_grado === '6-8') {
+    $sql_curso .= " AND  u.observaciones in (6,7,8)";
+    
+} 
+if ($parametro_grado === '9-11') {
+    $sql_curso .= "AND  u.observaciones in (9,10,11)";
+} 
+#echo "<pre>";
+#print_r($sql_curso);
+#echo "</pre>";
+
+  $datos = json_decode($this->consultar_datos($sql_curso, true), true);
+
+  return(($datos));
+
+  #elseif ($id_asignacion > 0) {
+    // Comportamiento original si se selecciona un curso específico en lugar de un rango
+    #$sql_curso .= " AND a.id_asignacion = " . (int)$id_asignacion;
+#}
+#echo $sql_curso;
+// echo $sql; // Descomenta esta línea para hacer debug en caso de fallos.
+// Imprimir para depurar (opcional, bórralo en producción)
+// echo $sql;
+// Imprimir para depurar (opcional, bórralo en producción)
+// echo $sql;
+  // Ejecutar consulta
+
+   /*
   $sql = "SELECT DISTINCT 
               usuario.id_usuario, 
               usuario.nombre, 
@@ -545,10 +587,12 @@ public function estudiantes_de_una_asignacion($nombre = "",$id_asignacion='') {
   $sql .= " ORDER BY usuario.apellido ASC";
 
   // Depuración: Ver la consulta generada (puedes comentarla después de probar)
- 
-  // Ejecutar consulta
-  $datos = json_decode($this->consultar_datos($sql, true), true);
-  return $datos;
+ */
+// Iniciamos la consulta base
+// Iniciamos la consulta base
+
+// Recepción de parámetros enviados por la función listarEstudiantes()
+
 }
 
 

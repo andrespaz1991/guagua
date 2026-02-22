@@ -27,7 +27,6 @@ function horas($asignacion, $fecha_inicio = "2010-11-01", $fecha_fin = "2025-12-
 {
     require("../comun/conexion.php");
     $sql = " SELECT id_asignacion, SUM(horas) AS horas_semanales FROM ( SELECT id_asignacion, TIMESTAMPDIFF(HOUR, hora_inicio, hora_fin) AS horas FROM horario WHERE id_asignacion = '" . $asignacion . "' AND fecha_inicio >= '" . $fecha_inicio . "'  AND fecha_fin <= '" . $fecha_fin . "' ) AS subquery GROUP BY id_asignacion";
-
     $consulta = $mysqli->query($sql);
     while ($row = $consulta->fetch_assoc()) {
         if (!empty($row['horas_semanales'])) {
@@ -59,7 +58,7 @@ if (!empty($_GET['idplan'])) {
     // --- MODO INGRESAR ---
     $materia = $academico->consultar_materia($_GET['asignacion']);
     $miplaneacion->materia2 = $materia[0]->id_asignatura;
-    $periodo = "3";
+    $periodo = "1";
     $grado = $materia[0]->nombre_categoria_curso;
     $nombre = strtolower(Comun::eliminar_sobrante($materia[0]->nombre_materia));
 
@@ -147,10 +146,10 @@ $nombre_materia_actual = $datos_materia_actual[0]->nombre_materia;
 
 <!-- BOTONES Y SECCIÓN DE IA -->
 <p>
-    <a style="margin-left:20%;margin-top:10%" class="btn btn-success copy-button" data-toggle="collapse" data-clipboard-target=".copy-container pre" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-        Planeador con IA
-    </a>
-    <a style="margin-left:2%;margin-top:2%;margin-top:10%" class="btn btn-success" onclick="copiarPrompt()" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+    <!--a style="margin-left:20%;margin-top:10%" class="btn btn-success copy-button" data-toggle="collapse" data-clipboard-target=".copy-container pre" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+        Prompt
+    </a-->
+    <a style="margin-left:20%;margin-top:2%;margin-top:10%" class="btn btn-success" onclick="copiarPrompt()" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
         Prompt
     </a>
 <a style="margin-left:2%;margin-top:2%;margin-top:10%" class="btn btn-primary copy-button" onclick="completarPlanClase()">
@@ -215,32 +214,35 @@ INFORMACIÓN DEL PLAN DE CLASE:
 
 */
 ?>
-       Actúa como: Un Asistente Pedagógico experto en diseño curricular dialógico y constructivista, con profundo conocimiento del sistema educativo colombiano (Ley General de Educación, Lineamientos Curriculares, Estándares Básicos de Competencias y Derechos Básicos de Aprendizaje - DBA). Tu tono es profesional, práctico y orientador. No usas lenguaje genérico, disculpas ni frases introductorias innecesarias. Vas directo al punto.
-Tu Misión: Ser un asistente de alto nivel para docentes colombianos, ayudándoles a estructurar y formalizar planes de clase. Tu función es transformar sus ideas iniciales en componentes pedagógicos robustos, coherentes y listos para ser implementados, siempre centrados en el estudiante y en el diálogo como herramienta de aprendizaje.
-Modo de Operación:
-A continuación se te proporcionará la información base de un plan de clase.
-Responde únicamente con el contenido, sin saludos, explicaciones adicionales o texto introductorio.
+Actúa como: Consultor Pedagógico Senior experto en Diseño Curricular para el sistema educativo colombiano (Ley 115, Estándares Básicos, DBA, y Guía 34). Especialista en Constructivismo, Aprendizaje Dialógico y Modelos Flexibles (Postprimaria y Media Rural). Tu enfoque integra la metodología TPACK para la inserción efectiva de TIC en contextos de baja o alta conectividad.
 
+Tu Tono: Ejecutivo, técnico-pedagógico, preciso y propositivo. Evitas muletillas, disculpas o introducciones. Vas directo al grano.
 
-INSTRUCCIONES:
+Tu Misión: Transformar ideas docentes en planes de aula robustos que cumplan con la normatividad del MEN, centrados en el desarrollo de competencias y la equidad (DUA).
 
-Cuando solicite un componente específico del plan de clase, proporciona ÚNICAMENTE el contenido solicitado sin texto introductorio ni explicativo adicional. Los componentes posibles son:
+MODO DE OPERACIÓN E INSTRUCCIONES
 
+Responderás según el componente solicitado, utilizando la información base (Tema, Grado, Contexto) proporcionada por el usuario.
 
+"objetivo": Redacta un Objetivo de Aprendizaje (u Objetivo Holístico) que sea observable y alcanzable. Debe incluir: Verbo de desempeño + Contenido + Finalidad/Contexto. Alinéalo explícitamente con un DBA vigente.
 
-1. "objetivo": Genera un objetivo de aprendizaje claro, medible y alineado con el DBA y el eje temático.
+"estrategia": Propone una estrategia de Aprendizaje Dialógico (ej. Grupos Interactivos, Tertulias Dialógicas, ABP) adaptada al entorno rural. Describe la mecánica en 2 líneas enfatizando la interacción entre pares.
 
-2. "estrategia": Proporciona el nombre de una estrategia pedagógica dialógica adecuada y una breve descripción de cómo implementarla (máximo 2 líneas).
+"momentos": Estructura la clase en:
 
-3. "momentos": Estructura detallada de la clase en tres fases: Inicio, Desarrollo y Cierre. Incluye actividades específicas que promuevan el diálogo , la participación y la reflexión crítica en caso de ser necesario. No debe exceder 2000 caracteres y no especifiques el tiempo por cada momento.
+Exploración (Saberes previos/Motivación): Actividad detonante dialógica.
 
-4. "recursos": Lista concisa de materiales físicos y digitales necesarios para implementar efectivamente las actividades propuestas.
+Estructuración y Práctica: Construcción del concepto y aplicación guiada.
 
-5. "reflexion": Breve reflexión pedagógica (máximo 3 líneas) sobre el valor formativo de la clase propuesta y su alineación con principios dialógicos.
+Transferencia y Valoración: Aplicación en contexto real y evaluación formativa.
 
-6. "completo": Genera el plan completo incluyendo todos los componentes anteriores en formato estructurado.
+Restricción: Máximo 2000 caracteres. No incluyas tiempos.
 
-INFORMACIÓN DEL PLAN DE CLASE:
+"recursos": Lista de materiales físicos (contexto rural) y herramientas digitales (considerando opciones offline/online como herramientas de autor o software libre).
+
+"reflexion": Análisis de 3 líneas sobre cómo la sesión promueve la movilización de pensamiento crítico y la inclusión social en el aula rural.
+
+"completo": Genera todos los puntos anteriores en una tabla o estructura organizada, incluyendo además una sección de "Evidencia de Aprendizaje" (qué producto o acción demostrará el logro).
 <?php
 $texto_prompt = "  
 1) Grado: " . ($data['grado'] ?? '') . "
@@ -251,8 +253,7 @@ $texto_prompt = "
 6) Eje tematico: " . ($data['nombre_eje_tematico'] ?? '') . " ";
 echo $texto_prompt;
 ?>
-propuesta del docente:
-yo propongo un plan de clase en el que 
+propuesta del docente: yo propongo un plan de clase en el que ..
         </textarea>
     </div>
     <div class="card card-body">
@@ -317,21 +318,8 @@ echo $texto;
             <div class="col-md-3">
                 <?php $grados = $miplaneacion->consultar_grado(); ?>
                 <label>Grado</label>
-                <?php #print_r($data['grado']); ?>
-                <select id="grado" class="form-control" name="grado">
-                    <?php foreach ($grados as $key => $value) { ?>
-                        <option <?php
-                                if (isset($_GET['grado']) && $_GET['grado'] == $value[1]) {
-                                    echo "selected";
-                                }
-                                if (isset($data['grado']) && $data['grado'] == $value[1]) {
-                                    echo "selected";
-                                } elseif (isset($planeacion->grado) && $planeacion->grado == $value[1]) {
-                                    echo "selected";
-                                }
-                                ?> value="<?php echo $value[1]; ?>"><?php echo $value[1]; ?></option>
-                    <?php } ?>
-                </select>
+        
+                <input type="text" name='grado' value=' <?php echo $data['grado']; ?> ' class="form-control" id="grado">
             </div>
 
             <div class="col-md-3">
@@ -383,15 +371,15 @@ echo $texto;
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <!--div class="col-md-6">
                 <label>Evidencias de aprendizaje </label>
-                <input id='evidencias' title="<?php echo $data['descripcion_evidencia'] ?? ''; ?>" value="<?php echo trim($data['descripcion_evidencia'] ?? ''); ?>" name='evidencias' placeholder='Produce pequeñas composiciones...' class='form-control' list='evidencias_list'>
+                <input id='evidencias' title="<?php #echo $data['descripcion_evidencia'] ?? ''; ?>" value="<?php #echo trim($data['descripcion_evidencia'] ?? ''); ?>" name='evidencias' placeholder='Produce pequeñas composiciones...' class='form-control' list='evidencias_list'>
                 <datalist id='evidencias_list'>
-                    <option value="<?php echo trim($data['descripcion_evidencia'] ?? ''); ?>">
+                    <option value="<?php #echo trim($data['descripcion_evidencia'] ?? ''); ?>">
                 </datalist>
-            </div>
+            </div-->
 
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <label>Ejes tematicos </label>
                 <input id='eje_tematico' title="<?php echo $data['nombre_eje_tematico'] ?? ''; ?>" value="<?php echo trim($data['nombre_eje_tematico'] ?? ''); ?>" name='eje_tematico' placeholder='robotica, ofimatica' class='form-control'>
             </div>
@@ -415,7 +403,7 @@ echo $texto;
             </div>
             <div class="col-md-6" style="display: inline;">
                 <label>Objetivo de clase</label>
-                <input id='objetivo' name="objetivo" placeholder="OBJETIVO: Exploración y experimentación..." class='form-control' type="text" value="<?php echo $data['objetivo'] ?? ''; ?>" />
+                <input id='objetivo' name="objetivo" placeholder="OBJETIVO: Exploración y experimentación..." class='form-control' type="text" value="<?php echo $data['descripcion_dba'] ?? ''; ?>" />
             </div>
             <hr>
 
@@ -428,15 +416,19 @@ echo $texto;
                     <p></p>
                 </div>
             </div>
+             <div class="col-md-12">
+                <label>Evaluación</label>
+                <input  style="height: 100px;" id='recursos' name="recursos" placeholder="Evaluación" class="form-control" type="text" value="<?php echo $data['recursos'] ?? ''; ?>">
+            </div>
             
             <!-- RECURSOS Y REFLEXIÓN -->
-            <div class="col-md-6">
+            <!--div class="col-md-6">
                 <label>Recursos</label>
-                <input id='recursos' name="recursos" placeholder="Computador,Tijeras" class="form-control" type="text" value="<?php echo $data['recursos'] ?? ''; ?>">
-            </div>
-            <div class="col-md-6">
+                <input id='recursos' name="recursos" placeholder="Computador,Tijeras" class="form-control" type="text" value="<?php #echo $data['recursos'] ?? ''; ?>">
+            </div-->
+            <div class="col-md-12">
                 <label>Reflexión pedagogica</label>
-                <input id='reflexion' name="reflexion" placeholder="La música es una forma de expresión..." class="form-control" type="text" value="<?php echo $data['reflexion'] ?? ''; ?>">
+                <input style="height: 100px;" id='reflexion' name="reflexion" placeholder="La música es una forma de expresión..." class="form-control" type="text" value="<?php echo $data['reflexion'] ?? ''; ?>">
             </div>
 
             <!-- SECCIÓN 'mired' -->
@@ -457,6 +449,13 @@ echo $texto;
             // require (SGA_COMUN_SERVER.'/conexion.php');
             // mired($id_de_la_materia, ...); // Llamada a la función si es necesario
             ?>
+
+            <div class="col-md-12">
+                <label>Guardar
+                    <input type="checkbox" name="Guardar" required checked="true" />
+                </label>
+            </div>
+
 
             <!-- BOTÓN DE GUARDAR -->
             <div class="col-md-12">
@@ -654,7 +653,7 @@ if (!empty($_POST['seguro'])) {
     $patronComillas = '"';
     $_POST['dba'] = str_replace($patronComillas, '', $_POST['dba']);
     $_POST['estrategia'] = str_replace($patronComillas, '', $_POST['browser']);
-    $_POST['evidencias'] = str_replace($patronComillas, '', $_POST['evidencias']);
+    $_POST['evidencias'] = '';
     $_POST['observaciones'] = str_replace($patronComillas, '', $_POST['contenido']);
     $_POST['recursos'] = str_replace($patronComillas, '', $_POST['recursos']);
     $_POST['reflexion'] = str_replace($patronComillas, '', $_POST['reflexion']);
@@ -669,8 +668,10 @@ if (!empty($_POST['seguro'])) {
                 VALUES ('" . $_POST['fecha_inicio'] . "', '" . $_POST['fecha_fin'] . "', '" . $_POST['grado'] . "', '" . $_POST['asignacion'] . "', '" . $_POST['periodo'] . "', '" . $_POST['tiempo_plan'] . "', '" . trim($_POST['dba']) . "', '" . trim($_POST['browser']) . "', '" . trim($_POST['evidencias']) . "', '" . trim($_POST['contenido']) . "', '" . $_POST['recursos'] . "', '" . trim($_POST['reflexion']) . "', '" . trim($_POST['eje_tematico']) . "', '" . $_POST['objetivo'] . "')";
 
         if ($mysqli->query($sql)) {
+            $id_nuevo_planeador = $mysqli->insert_id;
             echo '<div class="alert alert-success" role="alert"><p class="mb-0">Registro exitoso.</p></div>';
-            echo '<meta http-equiv="refresh" content="2; url=index.php?asignacion=' . $_GET['asignacion'] . '" />';
+        echo '<meta http-equiv="refresh" content="2; url=phpword/ejemplo.php?id='.$id_nuevo_planeador . '" />';
+          #  echo '<meta http-equiv="refresh" content="2; url=index.php?asignacion=' . $_GET['asignacion'] . '" />';
         } else {
             echo '<script>Swal.fire({ title: "Registro Incorrecto!", text: "Hubo un error al guardar.", icon: "warning"});</script>';
             echo '<meta http-equiv="refresh" content="3; url=index.php?asignacion=' . $_GET['asignacion'] . '" />';
@@ -687,7 +688,7 @@ if (!empty($_POST['seguro'])) {
                 `tiempo_plan` = '" . $_POST['tiempo_plan'] . "',
                 `dba` = '" . trim($_POST['dba']) . "',
                 `estrategias` = '" . trim($_POST['estrategia']) . "',
-                `evidencias` = '" . trim($_POST['evidencias']) . "',
+                `evidencias` = '',
                 `observaciones` = '" . trim($_POST['contenido']) . "',
                 `recursos` = '" . $_POST['recursos'] . "',
                 `reflexion` = '" . trim($_POST['reflexion']) . "',
@@ -696,8 +697,10 @@ if (!empty($_POST['seguro'])) {
                 WHERE `id_plan` = " . $_POST['id_plantilla'];
 
         if ($mysqli->query($sql)) {
+            $id_nuevo_planeador = $mysqli->insert_id;
             echo '<div class="alert alert-success" role="alert"><p class="mb-0">Actualización completada con éxito.</p></div>';
-            echo '<meta http-equiv="refresh" content="2; url=index.php?asignacion=' . $_GET['asignacion'] . '" />';
+            echo '<meta http-equiv="refresh" content="2; url=phpword/ejemplo.php?asignacion='.$_POST['asignacion'].'&id='.$id_nuevo_planeador . '" />';
+#            echo '<meta http-equiv="refresh" content="2; url=index.php?asignacion=' . $_GET['asignacion'] . '" />';
         } else {
             echo '<div class="alert alert-danger" role="alert"><p class="mb-0">Actualización fallida.</p></div>';
             echo '<meta http-equiv="refresh" content="2; url=index.php?asignacion=' . $_GET['asignacion'] . '" />';

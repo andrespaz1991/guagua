@@ -5,6 +5,13 @@ require_once("../comun/config.php");
 require_once("../comun/autoload.php");
 
 echo '<center>';
+
+ ?>
+
+ <div class="col-md-12" style="margin-top:14%;margin-bottom:1%">
+    <?php require_once 'template/menu.php'; ?>
+</div>
+ <?php
  /*require("funciones.php");*/ 
 function buscar_estrategias($datos="",$reporte=""){ 
 require("conexion.php");

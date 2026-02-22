@@ -29,7 +29,7 @@ require($_SERVER['DOCUMENT_ROOT']."/comun/autoload.php");
             <?php
             
              #require(dirname(__FILE__)."/header.php"); ?>
-            <?php require(SGA_COMUN_SERVER."/menu.php"); ?>
+            <?php #require(SGA_COMUN_SERVER."/menu.php"); ?>
            	<main>
            	    <section>
                 <?php if (isset($contenido)) echo $contenido; ?>

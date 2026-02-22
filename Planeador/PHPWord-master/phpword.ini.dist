@@ -3,13 +3,19 @@
 
 [General]
 
-compatibility   = true
-zipClass        = ZipArchive
-pdfRendererName = DomPDF
-pdfRendererPath =
-; tempDir         = "C:\PhpWordTemp"
+compatibility         = true
+zipClass              = ZipArchive
+pdfRendererName       = DomPDF
+pdfRendererPath       =
+; tempDir               = "C:\PhpWordTemp"
+outputEscapingEnabled = false
 
 [Font]
 
 defaultFontName = Arial
 defaultFontSize = 10
+defaultFontColor = 000000
+
+[Paper]
+
+defaultPaper = "A4"

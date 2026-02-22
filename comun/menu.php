@@ -57,20 +57,22 @@ $array_roles = array("admin"=>"Administrador","docente"=>"Docente","estudiante"=
 <li><a title="Recursos Educativos Digitales" href="<?php echo SGA_URL ?>/red"><span data-text="RED" class="icon-sga-app"></span></a></li>
 <?php } ?>
 <?php if ($_SESSION['rol']=="admin" or $_SESSION['rol']=="docente"){ ?>
-<li><a href="<?php echo SGA_URL ?>/Planeador/eduplaneador.php"><span data-text="PLAN" class="icon-sga-archive-1"></span></a></li>
+<li><a href="<?php echo SGA_URL ?>/Planeador/eduplaneador.php"><span data-text="APPS" class="icon-sga-smartphone-7"></span></a></li>
 <?php } ?>
 <li><a href="<?php echo SGA_REPORTES_URL ?>/informe_docente.php"><span data-text="Datos" class="icon-sga-time"></span></a></li>
-<li><a href="<?php echo SGA_APPS_URL ?>/"><span data-text="APPS" class="icon-sga-smartphone-7"></span></a></li>
+<!--li><a href="<?php# echo SGA_APPS_URL ?>/"><span data-text="APPS" class="icon-sga-smartphone-7"></span></a></li-->
 <?php
 #print_r($institucion);
 } ?>
-<li><a title="Copia" href="<?php echo SGA_URL ?>/reportes/copia.php?web=1"><span data-text="Copia" class="icon-sga-database-2"></span></a></li>
+<li><a title="Diario" target="_blank" href="<?php echo SGA_URL ?>/seguimiento/citas.php"><span data-text="Diario" class="icon-sga-notepad-2"></span></a></li>
 
 <li><a title="Copia" target="_blank" href="<?php echo SGA_URL ?>/ia/reporte.php"><span data-text="Alerta" class="icon-sga-statistics"></span></a></li>
 
-<li><a title="Diario" target="_blank" href="<?php echo SGA_URL ?>/seguimiento/citas.php"><span data-text="Diario" class="icon-sga-notepad-2"></span></a></li>
+<li><a title="Sisga" target="_blank" href="<?php echo SGA_URL ?>/sisga/index.html"><span data-text="Sisga" class="icon-sga-smartphone-1"></span></a></li>
+<li><a title="Copia" href="<?php echo SGA_URL ?>/reportes/copia.php?web=1"><span data-text="Copia" class="icon-sga-database-2"></span></a></li>
 
-<li><a title="Seguimiento" target="_blank" href="<?php echo SGA_URL ?>/seguimiento/citas.php"><span data-text="Seguimiento" class="icon-sga-list-15"></span></a></li>
+
+<!--li><a title="Seguimiento" target="_blank" href="<?php echo SGA_URL ?>/seguimiento/citas.php"><span data-text="Seguimiento" class="icon-sga-list-15"></span></a></li-->
 
 
 <?php

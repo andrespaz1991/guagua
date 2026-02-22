@@ -36,7 +36,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'search_students') {
         // Contar total de resultados
         $count_sql_base = "SELECT COUNT(u.id_usuario) FROM usuario u JOIN inscripcion i ON u.id_usuario = i.id_estudiante WHERE i.id_asignacion = ? AND u.rol = 'estudiante'";
         $search_like = '%' . $search_term . '%';
-
         if (!empty($search_term)) {
             $stmt_count = $conn->prepare($count_sql_base . " AND (u.nombre LIKE ? OR u.apellido LIKE ?)");
             if ($stmt_count === false) { $response['error'] = "Error al preparar conteo: " . $conn->error; } 

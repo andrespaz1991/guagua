@@ -48,3 +48,20 @@
 [29/09/2025 09:57:09] ERROR: No se pudo crear la base de datos 'guagua'.
 [29/09/2025 09:57:37] No se pudo crear la base de datos 'prompt'.
 [29/09/2025 10:00:40] Fall√≥ la importaci√≥n del archivo 'cronos.sql' en la base de datos 'cronos'.
+[07/10/2025 19:14:17] ERROR: No se pudo crear la base de datos 'guagua'.
+[04/11/2025 17:00:15] ERROR: No se pudo crear la base de datos 'guagua'.
+[12/11/2025 20:15:18] ERROR: No se pudo crear la base de datos 'guagua'.
+[12/11/2025 20:15:38] No se pudo crear la base de datos 'cronos'.
+[12/11/2025 20:15:40] No se pudo crear la base de datos 'guagua'.
+[12/11/2025 20:15:42] No se pudo crear la base de datos 'moodle'.
+[12/11/2025 20:15:44] No se pudo crear la base de datos 'prompt'.
+[12/11/2025 20:15:57] ERROR: No se pudo crear la base de datos 'guagua'.
+[12/11/2025 20:16:05] ERROR: No se pudo renombrar la carpeta 'D:\xampp\mysql\data'. Error: El proceso no puede obtener acceso al archivo porque est· siendo utilizado en otro proceso.
+[20/11/2025 18:38:32] ERROR: No se pudo crear la base de datos 'guagua'.
+[12/02/2026 19:24:34] ERROR: No se pudo crear la base de datos 'guagua'.
+[12/02/2026 19:26:52] ERROR: No se pudo renombrar la carpeta 'D:\xampp\mysql\data'. Error: El proceso no puede obtener acceso al archivo porque est· siendo utilizado en otro proceso.
+[13/02/2026 17:14:00] ERROR: No se pudo crear la base de datos 'guagua'.
+[13/02/2026 17:14:09] No se pudo crear la base de datos 'cronos'.
+[13/02/2026 17:14:11] No se pudo crear la base de datos 'guagua'.
+[13/02/2026 17:14:13] No se pudo crear la base de datos 'moodle'.
+[13/02/2026 17:14:15] No se pudo crear la base de datos 'prompt'.

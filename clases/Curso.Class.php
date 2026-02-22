@@ -214,7 +214,7 @@ public function listar_cursos_home() {
 
         ?>
         <div id="curso-home-<?php echo $datos_materia['id_asignacion']; ?>" class="menu_contextual<?php echo $datos_materia['id_asignacion'] ?> curso-home-card <?php echo $visible_class; ?>" style="margin-top:5%">
-            <a class="enlace_sin_estilo" title="<?php echo htmlspecialchars($datos_materia['descripcion'], ENT_QUOTES, 'UTF-8'); ?>" href="<?php echo SGA_CURSOS_URL . '/curso.php?asignacion=' . $datos_materia['id_asignacion']; ?>">
+            <a target='_blank' class="enlace_sin_estilo" title="<?php echo htmlspecialchars($datos_materia['descripcion'], ENT_QUOTES, 'UTF-8'); ?>" href="<?php echo SGA_CURSOS_URL . '/curso.php?asignacion=' . $datos_materia['id_asignacion']; ?>">
                 <?php echo puntos_suspensivos($datos_materia['nombre_materia'], 20) . '(' . $datos_materia['mid_categoria_curso'] . ') <br/>' ?>
             </a>
             

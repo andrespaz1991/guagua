@@ -1,4 +1,10 @@
 <?php
+    ini_set('display_startup_errors', 1);
+    ini_set('display_errors', 1);
+    error_reporting(-1);
+?>
+<?php
+
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -23,8 +29,8 @@ $config = [
             "nombre" => "Grupo 1 (6° a 8°)",
             "min_grado" => 6,
             "max_grado" => 8,
-            "ruta_excel" => 'C:\Users\Andres\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\SEDUCA\La Josefina\Vallesol\2025\Valoraciones\resumen_6-8.xlsx',
-            "ultimafila" => 16,
+            "ruta_excel" => 'C:\Users\Andres\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\SEDUCA\La Josefina\Vallesol\2026\Valoraciones\resumen_6-8.xlsx',
+            "ultimafila" => 17,
             "materias" => [
                 "Geometría" => "D", "Ciencias Sociales" => "E", "Educación Física" => "F",
                 "Emprendimiento" => "G", "Matemáticas" => "H", "Tecnología" => "I", "Urbanidad" => "J"
@@ -34,11 +40,11 @@ $config = [
             "nombre" => "Grupo 2 (9° a 11°)",
             "min_grado" => 9,
             "max_grado" => 11,
-            "ruta_excel" => 'C:\Users\Andres\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\Escritorio\Valoraciones\resumen_9-11.xlsx',
+            "ruta_excel" => 'C:\Users\Andres\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\SEDUCA\La Josefina\Vallesol\2026\Valoraciones\resumen_9-11.xlsx',
             "ultimafila" => 19,
             "materias" => [
                 "Geometría" => "D", "Ciencias Sociales/Economia" => "E", "Educación Física" => "F",
-                "Emprendimiento" => "G", "Matemáticas" => "H", "Tecnología" => "I", "Urbanidad" => "J"
+                "Emprendimiento" => "G", "Matemáticas" => "H", "Tecnología" => "I", "Urbanidad" => "J","Fisica" => "K"
             ]
         ]
     ]
@@ -59,6 +65,7 @@ function mostrarFormularioSeleccion($grupos)
                 <h5 class="card-title">Seleccionar Grupo</h5>
                 <form action="" method="get" class="form-inline">
                     <div class="form-group mr-3">';
+
     foreach ($grupos as $id => $grupo) {
         $checked = (isset($_GET['grupo']) && $_GET['grupo'] == $id) || (!isset($_GET['grupo']) && $id == 2) ? 'checked' : '';
         echo "<div class='form-check form-check-inline'>
@@ -90,6 +97,7 @@ function cargarNotasDesdeExcel($ruta, $ultimaFila, $materias)
     $notasPorEstudiante = [];
     for ($row = 2; $row <= $ultimaFila; $row++) {
         $documento = trim($worksheet->getCell('B' . $row)->getValue());
+       
         if (empty($documento)) continue;
         $notas = [];
         foreach ($materias as $columna) {
