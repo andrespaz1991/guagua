@@ -47,7 +47,7 @@ $datosrecibidos = $datos;
 $datos = explode(" ",$datosrecibidos);
 $datos[]="";
 $cont =  0;
-$sql .= ' WHERE `eventos`.`institucion` = "'.$_SESSION['institucion'].'" and ';
+$sql .= ' WHERE `eventos`.`institucion` = "'.$_SESSION['id_institucion'].'" and ';
 if (isset($_COOKIE['buscar_evento_fecha1'],$_COOKIE['buscar_evento_fecha2'])){
 if ($_COOKIE['buscar_evento_fecha1']!="" and $_COOKIE['buscar_evento_fecha2']!=""){
 $buscar_evento_fecha1 = $_COOKIE['buscar_evento_fecha1'];

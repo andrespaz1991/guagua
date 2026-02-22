@@ -510,9 +510,11 @@ return $datos = json_decode($this->consultar_datos($sql_estudiante,true),true);
 
 function ano_estudiante(){
  $sqlp= "SELECT * FROM `ano_lectivo`";
-     if ($_SESSION['rol']=="acudiente" or $_SESSION['rol']=="estudiante"){ 
-        $sqlp.= ' where nombre_ano_lectivo like "'.date('Y').'" '  ; }
-        $sqlp.=" order by id_ano_lectivo desc";        
+  #   if ($_SESSION['rol']=="acudiente" or $_SESSION['rol']=="estudiante"){ 
+        $sqlp.= ' where
+         estado="Activo"  '  ; #}
+        $sqlp.=" order by id_ano_lectivo desc";     
+       # echo $sqlp;   
 return    $sqlp;
 }
 
@@ -844,14 +846,13 @@ public function mis_cursos_otros() {
             INNER JOIN
                 ano_lectivo al ON a.ano_lectivo = al.id_ano_lectivo
             LEFT JOIN
-                categoria_curso cg ON a.id_categoria_curso = cg.id_categoria_curso
-           
-               
+                categoria_curso cg ON a.id_categoria_curso = cg.id_categoria_curso               
         ";
         // Se mantiene la lógica PHP para añadir condiciones dinámicas.
         // 1. Condición CRÍTICA para filtrar solo por el año lectivo activo.
-        $sql_conditions = " WHERE al.estado = 'Activo' 
-        ";
+     $sql_conditions = " WHERE al.estado = 'Activo' ";
+     $sql_conditions = " and a.institucion_educativa = '".$_SESSION['id_institucion']."' ";
+
 
         // 2. Se construye el resto de condiciones según el ROL.
         // ADVERTENCIA: Se recomienda usar sentencias preparadas para evitar inyección SQL.

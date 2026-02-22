@@ -98,7 +98,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'get_dashboard_data') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor de menú</title>
+    <title><a href='gestor_menu.php'>Gestor de menú</a></title>
     <style>
         :root {
             /* Paleta de Colores */
@@ -336,6 +336,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'get_dashboard_data') {
     <!-- Header -->
     <header class="dashboard-header">
         <h1>Gestor de menú</h1>
+        <a href='gestor_menu.php'>Administrar menú</a>
         <div class="search-container">
             <span class="search-icon">🔍</span>
             <input type="text" id="searchInput" class="search-input" placeholder="Buscar..." autocomplete="off">

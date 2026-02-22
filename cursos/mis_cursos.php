@@ -37,9 +37,11 @@ $_SESSION['barra_busqueda'] = "cursos";
 function buscar_mis_cursos_html($mysqli_conn, $parametro_buqueda = "", $campo = "nombre_materia") {
     $academico = new Academico();
     $output = '';
-
+@session_start();
     $conteos_por_ano = [];
-    $sql_conteos = "SELECT ano_lectivo, COUNT(*) as num_cat_ano FROM `seguimiento_categoria_ano` GROUP BY ano_lectivo";
+    $sql_conteos = "SELECT ano_lectivo, COUNT(*) as num_cat_ano FROM `ano_lectivo`
+    WHERE ano_lectivo ='".$_SESSION['id_institucion']."'
+     GROUP BY ano_lectivo";
     if ($result_conteos = $mysqli_conn->query($sql_conteos)) {
         while ($row = $result_conteos->fetch_assoc()) {
             $conteos_por_ano[$row['ano_lectivo']] = $row['num_cat_ano'];

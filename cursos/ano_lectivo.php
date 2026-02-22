@@ -29,7 +29,7 @@ $funcionjs="buscar();";$paginacion->fn_js_page("$funcionjs");
 $paginacion->cookie_page($cookiepage);
 $paginacion->padding(false);
 if (isset($_COOKIE["$cookiepage"])) $_GET['page'] = $_COOKIE["$cookiepage"];
-$sql = "SELECT `ano_lectivo`.`id_ano_lectivo`, `ano_lectivo`.`nombre_ano_lectivo` FROM `ano_lectivo`   ";
+$sql = "SELECT * FROM `ano_lectivo`   ";
 $datosrecibidos = $datos;
 $datos = explode(" ",$datosrecibidos);
 $datos[]="";
@@ -70,6 +70,8 @@ echo "<p>Resultados de $minimo_ano_lectivo a $maximo_ano_lectivo del total de ".
 <thead>
 <tr>
 <th <?php  if(isset($_COOKIE['orderbyano_lectivo']) and $_COOKIE['orderbyano_lectivo']== "nombre_ano_lectivo"){ echo " style='text-decoration:underline' ";} ?>  onclick="grabarcookie('orderbyano_lectivo','nombre_ano_lectivo');buscar();" >Nombre Ano Lectivo</th>
+<th >Estado</th>
+
 <?php if ($reporte==""){ ?>
 <th data-label="Nuevo"><form id="formNuevo" name="formNuevo" method="post" action="ano_lectivo.php">
 <input name="cod" type="hidden" id="cod" value="0">
@@ -89,6 +91,8 @@ while($row=$consulta->fetch_assoc()){
  ?>
 <tr>
 <td data-label='Nombre Ano Lectivo'><?php echo $row['nombre_ano_lectivo']?></td>
+<td data-label='estado Ano Lectivo'><?php echo $row['estado']?></td>
+
 <?php if ($reporte==""){ ?>
 <td data-label="Modificar">
 <form id="formModificar" name="formModificar" method="post" action="ano_lectivo.php">
@@ -198,7 +202,7 @@ echo '<p><input type="hidden" name="submit" id="submit" value="'.$textobtn.'"><b
 } /*fin nuevo*/ 
 if ($_POST['submit']=="Modificar"){
 
-$sql = "SELECT `id_ano_lectivo`, `nombre_ano_lectivo` FROM `ano_lectivo` WHERE id_ano_lectivo ='".$_POST['cod']."' Limit 1"; 
+$sql = "SELECT * FROM `ano_lectivo` WHERE id_ano_lectivo ='".$_POST['cod']."' Limit 1"; 
 $consulta = $mysqli->query($sql);
  /*echo $sql;*/ 
 $row=$consulta->fetch_assoc();
