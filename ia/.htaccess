@@ -1,3 +1,7 @@
-<FilesMatch "\.(php4|php5|php3|php2|php|phtml)$">
-SetHandler application/x-lsphp83
-</FilesMatch>
+# Hostinger ejecuta PHP mediante LiteSpeed. XAMPP/Apache no reconoce ese
+# manejador y, sin esta condición, entrega los archivos PHP como texto plano.
+<IfModule LiteSpeed>
+    <FilesMatch "\.(php4|php5|php3|php2|php|phtml)$">
+        SetHandler application/x-lsphp83
+    </FilesMatch>
+</IfModule>
