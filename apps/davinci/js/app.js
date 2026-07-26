@@ -24,6 +24,8 @@ let cloudSavePending = false;
 let cloudSaveTimer;
 let cloudPollingTimer;
 let cloudPolling = false;
+let cloudRestoring = false;
+let cloudReconnectTimer;
 let lastCloudVersion = null;
 let hasLocalChanges = false;
 let canvasZoom = 1;
@@ -64,7 +66,7 @@ function normalizeState() {
         if (!/^#[0-9a-f]{6}$/i.test(book.color || '')) book.color = DEFAULT_BOOK_COLOR;
         if (!Array.isArray(book.pages) || !book.pages.length) book.pages = [createPage('Página 1', 'blank')];
         book.pages.forEach(page => {
-            page.template = page.template === 'grid' ? 'grid' : 'blank';
+            page.template = ['grid', 'lined', 'dotted'].includes(page.template) ? page.template : 'blank';
             page.orientation = page.orientation === 'landscape' ? 'landscape' : 'portrait';
             page.drawing = page.drawing || '';
         });
@@ -101,10 +103,12 @@ function serializedState() {
 
 function persist({ sync = true } = {}) {
     try {
-        if (sync) state.updatedAt = Date.now();
+        if (sync) {
+            state.updatedAt = Date.now();
+            hasLocalChanges = true;
+        }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(serializedState()));
         if (sync && cloudReady) {
-            hasLocalChanges = true;
             cloudSavePending = true;
             updateSaveStatus('Sincronizando…', 'sync');
             scheduleCloudSave();
@@ -144,6 +148,11 @@ async function syncToCloud() {
     } catch (error) {
         console.warn('No fue posible sincronizar DaVinci', error);
         updateSaveStatus('Sin conexión · guardado local', 'warning');
+        if (hasLocalChanges) {
+            cloudSavePending = true;
+            clearTimeout(cloudSaveTimer);
+            cloudSaveTimer = setTimeout(syncToCloud, 5000);
+        }
     } finally {
         cloudSaving = false;
         if (cloudSavePending) scheduleCloudSave();
@@ -152,11 +161,14 @@ async function syncToCloud() {
 
 function saveNow() {
     persist();
-    scheduleCloudSave(true);
+    if (cloudReady) scheduleCloudSave(true);
+    else restoreCloudState();
     showToast(cloudReady ? 'Guardando y sincronizando tus cambios…' : 'Guardado localmente. Se sincronizará cuando haya conexión.');
 }
 
 async function restoreCloudState() {
+    if (cloudRestoring) return;
+    cloudRestoring = true;
     const localUpdatedAt = Number(state.updatedAt || 0);
     updateSaveStatus('Recuperando tus cuadernos…', 'sync');
     try {
@@ -186,6 +198,10 @@ async function restoreCloudState() {
     } catch (error) {
         console.warn('No fue posible recuperar DaVinci desde el servidor', error);
         updateSaveStatus('Sin conexión · guardado local', 'warning');
+        clearTimeout(cloudReconnectTimer);
+        cloudReconnectTimer = setTimeout(restoreCloudState, 5000);
+    } finally {
+        cloudRestoring = false;
     }
 }
 
@@ -286,6 +302,28 @@ function drawPaper(context, template, width, height) {
         for (let x = 0; x <= width; x += size) { context.moveTo(x, 0); context.lineTo(x, height); }
         for (let y = 0; y <= height; y += size) { context.moveTo(0, y); context.lineTo(width, y); }
         context.stroke();
+    } else if (template === 'lined') {
+        const size = 52;
+        context.strokeStyle = '#d9e2f1';
+        context.lineWidth = 2;
+        context.beginPath();
+        for (let y = size; y <= height; y += size) { context.moveTo(0, y); context.lineTo(width, y); }
+        context.stroke();
+        context.strokeStyle = '#efb3b3';
+        context.beginPath();
+        context.moveTo(Math.min(110, width * .12), 0);
+        context.lineTo(Math.min(110, width * .12), height);
+        context.stroke();
+    } else if (template === 'dotted') {
+        const size = 36;
+        context.fillStyle = '#d5ddec';
+        for (let x = size; x < width; x += size) {
+            for (let y = size; y < height; y += size) {
+                context.beginPath();
+                context.arc(x, y, 2, 0, Math.PI * 2);
+                context.fill();
+            }
+        }
     }
     context.restore();
 }
@@ -378,10 +416,14 @@ function renderBooks() {
 
 function thumbnailBackground(page) {
     const drawing = page.drawing ? `url("${page.drawing}")` : '';
-    const grid = page.template === 'grid'
+    const guide = page.template === 'grid'
         ? 'linear-gradient(#d5daf0 1px, transparent 1px), linear-gradient(90deg, #d5daf0 1px, transparent 1px)'
-        : '';
-    return [drawing, grid].filter(Boolean).join(', ');
+        : page.template === 'lined'
+            ? 'linear-gradient(transparent 84%, #d5daf0 85%, transparent 87%)'
+            : page.template === 'dotted'
+                ? 'radial-gradient(#d5daf0 1px, transparent 1.4px)'
+                : '';
+    return [drawing, guide].filter(Boolean).join(', ');
 }
 
 function renderPages() {
@@ -393,12 +435,14 @@ function renderPages() {
         const item = document.createElement('button');
         item.type = 'button';
         item.className = `page-item ${page.id === state.activePageId ? 'is-active' : ''}`;
-        const templateName = page.template === 'grid' ? 'Cuadriculada' : 'Blanca';
+        const templateName = page.template === 'grid' ? 'Cuadriculada' : page.template === 'lined' ? 'Rayada' : page.template === 'dotted' ? 'Punteada' : 'Blanca';
         const orientationName = page.orientation === 'landscape' ? 'Horizontal' : 'Vertical';
         item.innerHTML = `<span class="page-thumbnail ${page.template === 'grid' ? 'grid' : ''} ${page.orientation === 'landscape' ? 'landscape' : ''}"></span><span><strong>${escapeHtml(page.title || `Página ${index + 1}`)}</strong><small>${templateName} · ${orientationName}</small></span>`;
         const thumbnail = item.querySelector('.page-thumbnail');
         thumbnail.style.backgroundImage = thumbnailBackground(page);
-        thumbnail.style.backgroundSize = page.drawing ? (page.template === 'grid' ? 'cover, 7px 7px' : 'cover') : '';
+        thumbnail.style.backgroundSize = page.drawing
+            ? (page.template === 'grid' ? 'cover, 7px 7px' : page.template === 'dotted' ? 'cover, 7px 7px' : page.template === 'lined' ? 'cover, 100% 9px' : 'cover')
+            : '';
         item.addEventListener('click', () => activatePage(page.id));
         list.appendChild(item);
     });
@@ -506,6 +550,15 @@ function setColor(color) {
 function updateSizeControls() {
     document.getElementById('pencilSizeControl').hidden = tool !== 'pencil';
     document.getElementById('eraserSizeControl').hidden = tool !== 'eraser';
+    updateEraserPreview();
+}
+
+function updateEraserPreview() {
+    const preview = document.getElementById('eraserPreview');
+    if (!preview) return;
+    const size = Math.max(10, Math.min(28, eraserSize / 2));
+    preview.style.width = `${size}px`;
+    preview.style.height = `${size}px`;
 }
 
 function updateOrientationControls() {
@@ -612,6 +665,75 @@ function setRulerSize(size) {
 function rotateRuler(degrees = 15) {
     rulerAngle = (rulerAngle + degrees) % 360;
     renderRuler();
+}
+
+async function setCurrentPageTemplate(template) {
+    const page = getActivePage();
+    if (!page || !['blank', 'grid', 'lined', 'dotted'].includes(template) || page.template === template) return;
+    page.template = template;
+    persist();
+    await renderApp();
+    showToast('Tipo de papel actualizado. Tu dibujo se conservó.');
+}
+
+function openPaperModal() {
+    const page = getActivePage();
+    if (!page) return;
+    const input = document.querySelector(`input[name="currentPageTemplate"][value="${page.template}"]`);
+    if (input) input.checked = true;
+    updatePaperTemplateSelection();
+    openModal('paperModal');
+}
+
+function insertImage(file) {
+    if (!file || !file.type.startsWith('image/')) {
+        showToast('Selecciona una imagen válida.');
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+        const image = new Image();
+        image.onload = () => {
+            const maxWidth = drawingCanvas.width * .72;
+            const maxHeight = drawingCanvas.height * .72;
+            const scale = Math.min(maxWidth / image.width, maxHeight / image.height, 1);
+            const width = image.width * scale;
+            const height = image.height * scale;
+            drawingContext.save();
+            drawingContext.globalCompositeOperation = 'source-over';
+            drawingContext.drawImage(image, (drawingCanvas.width - width) / 2, (drawingCanvas.height - height) / 2, width, height);
+            drawingContext.restore();
+            snapshotPage();
+            showToast('Imagen añadida al lienzo y sincronizada.');
+        };
+        image.onerror = () => showToast('No fue posible abrir la imagen seleccionada.');
+        image.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function toggleLibraryPanel() {
+    const shell = document.querySelector('.app-shell');
+    const panel = document.querySelector('.library-panel');
+    const compactLayout = window.matchMedia('(max-width: 1100px)').matches;
+    if (compactLayout) panel.classList.toggle('is-open');
+    else shell.classList.toggle('is-library-collapsed');
+    const isCollapsed = compactLayout ? !panel.classList.contains('is-open') : shell.classList.contains('is-library-collapsed');
+    const button = document.getElementById('libraryPanelButton');
+    button.setAttribute('aria-pressed', String(!isCollapsed));
+    button.setAttribute('aria-label', isCollapsed ? 'Mostrar cuadernos' : 'Ocultar cuadernos');
+    button.title = isCollapsed ? 'Mostrar cuadernos' : 'Ocultar cuadernos';
+}
+
+function togglePagesPanel() {
+    const layout = document.querySelector('.studio-layout');
+    layout.classList.toggle('is-pages-collapsed');
+    const isCollapsed = layout.classList.contains('is-pages-collapsed');
+    const button = document.getElementById('pagesPanelButton');
+    button.setAttribute('aria-pressed', String(!isCollapsed));
+    button.setAttribute('aria-label', isCollapsed ? 'Mostrar páginas' : 'Ocultar páginas');
+    button.title = isCollapsed ? 'Mostrar páginas' : 'Ocultar páginas';
+    requestAnimationFrame(applyZoom);
 }
 
 function moveRuler(event) {
@@ -735,7 +857,9 @@ function bindEvents() {
     document.querySelectorAll('.color-swatch').forEach(swatch => swatch.addEventListener('click', () => setColor(swatch.dataset.color)));
     document.getElementById('colorPicker').addEventListener('input', event => setColor(event.target.value));
     document.getElementById('brushSize').addEventListener('input', event => { pencilSize = Number(event.target.value); document.getElementById('brushSizeValue').textContent = `${pencilSize} px`; });
-    document.getElementById('eraserSize').addEventListener('input', event => { eraserSize = Number(event.target.value); document.getElementById('eraserSizeValue').textContent = `${eraserSize} px`; });
+    document.getElementById('eraserSize').addEventListener('input', event => { eraserSize = Number(event.target.value); document.getElementById('eraserSizeValue').textContent = `${eraserSize} px`; updateEraserPreview(); });
+    document.getElementById('libraryPanelButton').addEventListener('click', toggleLibraryPanel);
+    document.getElementById('pagesPanelButton').addEventListener('click', togglePagesPanel);
     document.getElementById('portraitOrientationButton').addEventListener('click', () => setPageOrientation('portrait'));
     document.getElementById('landscapeOrientationButton').addEventListener('click', () => setPageOrientation('landscape'));
     document.getElementById('fullscreenCanvasButton').addEventListener('click', toggleCanvasFullscreen);
@@ -747,6 +871,12 @@ function bindEvents() {
     document.getElementById('rulerToggleButton').addEventListener('click', () => { rulerVisible = !rulerVisible; updateRuler(); });
     document.getElementById('rulerSize').addEventListener('input', event => setRulerSize(event.target.value));
     document.getElementById('rulerRotateButton').addEventListener('click', () => rotateRuler());
+    document.getElementById('paperTypeButton').addEventListener('click', openPaperModal);
+    document.getElementById('imageAddButton').addEventListener('click', () => document.getElementById('imageInput').click());
+    document.getElementById('imageInput').addEventListener('change', event => {
+        insertImage(event.target.files?.[0]);
+        event.target.value = '';
+    });
     const ruler = document.getElementById('ruler');
     ruler.addEventListener('pointerdown', event => {
         rulerDragPointerId = event.pointerId;
@@ -839,6 +969,13 @@ function bindEvents() {
     });
     document.querySelectorAll('input[name="pageTemplate"]').forEach(input => input.addEventListener('change', updateTemplateSelection));
     document.querySelectorAll('input[name="pageOrientation"]').forEach(input => input.addEventListener('change', updatePageOrientationSelection));
+    document.querySelectorAll('input[name="currentPageTemplate"]').forEach(input => input.addEventListener('change', updatePaperTemplateSelection));
+    document.getElementById('paperForm').addEventListener('submit', async event => {
+        event.preventDefault();
+        const template = document.querySelector('input[name="currentPageTemplate"]:checked')?.value;
+        await setCurrentPageTemplate(template);
+        closeModal('paperModal');
+    });
 
     document.querySelectorAll('[data-close-modal]').forEach(button => button.addEventListener('click', () => closeModal(button.dataset.closeModal)));
     document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.addEventListener('click', event => { if (event.target === backdrop) backdrop.hidden = true; }));
@@ -866,7 +1003,7 @@ function bindEvents() {
     });
     document.addEventListener('click', event => { if (!event.target.closest('.export-menu-wrap')) { exportMenu.hidden = true; exportButton.setAttribute('aria-expanded', 'false'); } });
 
-    document.getElementById('mobileLibraryButton').addEventListener('click', () => document.querySelector('.library-panel').classList.toggle('is-open'));
+    document.getElementById('mobileLibraryButton').addEventListener('click', toggleLibraryPanel);
 }
 
 function updateTemplateSelection() {
@@ -875,6 +1012,10 @@ function updateTemplateSelection() {
 
 function updatePageOrientationSelection() {
     document.querySelectorAll('.orientation-option').forEach(option => option.classList.toggle('is-selected', option.querySelector('input').checked));
+}
+
+function updatePaperTemplateSelection() {
+    document.querySelectorAll('#paperModal .template-option').forEach(option => option.classList.toggle('is-selected', option.querySelector('input').checked));
 }
 
 window.addEventListener('beforeunload', () => {
@@ -895,6 +1036,17 @@ document.addEventListener('visibilitychange', () => {
         if (cloudReady) syncToCloud();
     } else {
         checkRemoteChanges();
+    }
+});
+
+window.addEventListener('online', () => {
+    if (cloudReady) {
+        if (hasLocalChanges) {
+            cloudSavePending = true;
+            scheduleCloudSave(true);
+        }
+    } else {
+        restoreCloudState();
     }
 });
 

@@ -46,6 +46,8 @@ if (!isset($_SESSION['id_usuario'])) {
                     <small id="saveStatus" class="save-status"><i class="fa-solid fa-check" aria-hidden="true"></i> Guardado localmente</small>
                 </div>
                 <div class="header-actions">
+                    <button id="libraryPanelButton" class="icon-button panel-toggle-button" type="button" aria-pressed="false" aria-label="Ocultar cuadernos" title="Ocultar cuadernos"><i class="fa-solid fa-book" aria-hidden="true"></i></button>
+                    <button id="pagesPanelButton" class="icon-button panel-toggle-button" type="button" aria-pressed="false" aria-label="Ocultar páginas" title="Ocultar páginas"><i class="fa-solid fa-table-columns" aria-hidden="true"></i></button>
                     <button id="saveNowButton" class="btn btn-primary save-now-button" type="button"><i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i><span>Guardar</span></button>
                     <button id="renameBookButton" class="text-button" type="button"><i class="fa-solid fa-pen" aria-hidden="true"></i> Renombrar</button>
                     <div class="export-menu-wrap">
@@ -83,6 +85,7 @@ if (!isset($_SESSION['id_usuario'])) {
                 <div id="eraserSizeControl" class="size-control" hidden>
                     <i class="fa-solid fa-eraser dot-small" aria-hidden="true"></i>
                     <input id="eraserSize" type="range" min="6" max="80" value="22" aria-label="Tamaño del borrador">
+                    <span id="eraserPreview" class="eraser-preview" aria-hidden="true"></span>
                     <i class="fa-solid fa-eraser dot-large" aria-hidden="true"></i>
                     <output id="eraserSizeValue" for="eraserSize">22 px</output>
                 </div>
@@ -106,12 +109,15 @@ if (!isset($_SESSION['id_usuario'])) {
                     <button id="rulerRotateButton" class="icon-button" type="button" aria-label="Girar regla 15 grados" title="Girar regla"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i></button>
                     <output id="rulerAngleValue">0°</output>
                 </div>
+                <button id="paperTypeButton" class="tool-button" type="button"><i class="fa-regular fa-file-lines" aria-hidden="true"></i><span>Papel</span></button>
+                <button id="imageAddButton" class="tool-button" type="button"><i class="fa-regular fa-image" aria-hidden="true"></i><span>Imagen</span></button>
+                <input id="imageInput" type="file" accept="image/*" hidden>
                 <div class="toolbar-spacer"></div>
                 <div class="tool-group">
                     <button id="fullscreenCanvasButton" class="icon-button" type="button" aria-pressed="false" aria-label="Pantalla completa del lienzo" title="Pantalla completa"><i class="fa-solid fa-expand" aria-hidden="true"></i></button>
                     <button id="undoButton" class="icon-button" type="button" disabled aria-label="Deshacer"><i class="fa-solid fa-arrow-rotate-left"></i></button>
                     <button id="redoButton" class="icon-button" type="button" disabled aria-label="Rehacer"><i class="fa-solid fa-arrow-rotate-right"></i></button>
-                    <button id="clearButton" class="icon-button danger" type="button" aria-label="Limpiar página"><i class="fa-regular fa-trash-can"></i></button>
+                    <button id="clearButton" class="tool-button danger clear-all-button" type="button" aria-label="Borrar todo el lienzo" title="Borrar todo el lienzo"><i class="fa-regular fa-trash-can" aria-hidden="true"></i><span>Borrar todo</span></button>
                 </div>
             </section>
 
@@ -166,6 +172,8 @@ if (!isset($_SESSION['id_usuario'])) {
                 <div class="template-options">
                     <label class="template-option is-selected"><input type="radio" name="pageTemplate" value="blank" checked><span class="template-preview blank-preview"></span><strong>Blanca</strong><small>Sin guías</small></label>
                     <label class="template-option"><input type="radio" name="pageTemplate" value="grid"><span class="template-preview grid-preview"></span><strong>Cuadriculada</strong><small>Cuadros sutiles</small></label>
+                    <label class="template-option"><input type="radio" name="pageTemplate" value="lined"><span class="template-preview lined-preview"></span><strong>Rayada</strong><small>Líneas suaves</small></label>
+                    <label class="template-option"><input type="radio" name="pageTemplate" value="dotted"><span class="template-preview dotted-preview"></span><strong>Punteada</strong><small>Puntos guía</small></label>
                 </div>
                 <span class="field-label">Orientación</span>
                 <div class="orientation-options">
@@ -177,12 +185,30 @@ if (!isset($_SESSION['id_usuario'])) {
         </section>
     </div>
 
+    <div id="paperModal" class="modal-backdrop" hidden>
+        <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="paperModalTitle">
+            <button class="modal-close" type="button" data-close-modal="paperModal" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+            <span class="modal-icon"><i class="fa-regular fa-file-lines" aria-hidden="true"></i></span>
+            <h2 id="paperModalTitle">Tipo de papel</h2>
+            <p>El dibujo se conserva al cambiar el fondo de esta página.</p>
+            <form id="paperForm">
+                <div class="template-options paper-options">
+                    <label class="template-option"><input type="radio" name="currentPageTemplate" value="blank"><span class="template-preview blank-preview"></span><strong>Blanca</strong><small>Sin guías</small></label>
+                    <label class="template-option"><input type="radio" name="currentPageTemplate" value="grid"><span class="template-preview grid-preview"></span><strong>Cuadriculada</strong><small>Cuadros sutiles</small></label>
+                    <label class="template-option"><input type="radio" name="currentPageTemplate" value="lined"><span class="template-preview lined-preview"></span><strong>Rayada</strong><small>Líneas suaves</small></label>
+                    <label class="template-option"><input type="radio" name="currentPageTemplate" value="dotted"><span class="template-preview dotted-preview"></span><strong>Punteada</strong><small>Puntos guía</small></label>
+                </div>
+                <button class="btn btn-primary btn-block" type="submit">Aplicar tipo de papel</button>
+            </form>
+        </section>
+    </div>
+
     <div id="confirmModal" class="modal-backdrop" hidden>
         <section class="modal-card confirm-card" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
             <span class="modal-icon warning"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i></span>
-            <h2 id="confirmModalTitle">¿Limpiar esta página?</h2>
+            <h2 id="confirmModalTitle">¿Borrar todo el lienzo?</h2>
             <p>Se borrarán todos los trazos de la página actual.</p>
-            <div class="modal-actions"><button id="cancelClearButton" class="btn btn-light" type="button">Cancelar</button><button id="confirmClearButton" class="btn btn-danger" type="button">Sí, limpiar</button></div>
+            <div class="modal-actions"><button id="cancelClearButton" class="btn btn-light" type="button">Cancelar</button><button id="confirmClearButton" class="btn btn-danger" type="button">Sí, borrar todo</button></div>
         </section>
     </div>
 

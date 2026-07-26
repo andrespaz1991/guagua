@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . "/../comun/autoload.php";
-
 @session_start();
 
 $error_login = "";
@@ -111,10 +110,14 @@ function login_crear_sesion($mysqli, $row, $rol_solicitado, $institucion)
 
     $roles = array_filter(array_map('trim', explode(',', $row['rol'] ?? '')));
     if (empty($roles)) {
-        $roles = ['invitado'];
+        $roles = ['docente'];
     }
 
-    $rol_activo = in_array($rol_solicitado, $roles, true) ? $rol_solicitado : $roles[0];
+    if (empty($rol_solicitado)) {
+        $rol_solicitado = 'docente';
+    }
+
+    $rol_activo = in_array($rol_solicitado, $roles, true) ? $rol_solicitado : (in_array('docente', $roles, true) ? 'docente' : $roles[0]);
     $hoy = date("Y-m-d H:i:s");
 
     $stmt_update = $mysqli->prepare("UPDATE usuario SET num_visitas = num_visitas + 1, puntos = puntos + 1, ultima_sesion = ? WHERE id_usuario = ?");
@@ -129,7 +132,6 @@ function login_crear_sesion($mysqli, $row, $rol_solicitado, $institucion)
         $inst_id = 1;
     }
 
-    // Seteo completo de variables de sesión requeridas por Guagua y apps/davinci
     $_SESSION['id_usuario'] = (string) $row['id_usuario'];
     $_SESSION['usuario'] = $row['usuario'];
     $_SESSION['nombre_usu'] = trim(($row['nombre'] ?? '') . " " . ($row['apellido'] ?? ''));
@@ -158,9 +160,9 @@ if (isset($_GET['login_datos_usuario'])) {
 
     $roles = [];
     $nombres_roles = [
+        "docente" => "Docente",
         "admin" => "Administrador",
         "directivo" => "Directivo",
-        "docente" => "Docente",
         "estudiante" => "Estudiante",
         "acudiente" => "Acudiente",
         "invitado" => "Invitado",
@@ -211,7 +213,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usuario = login_limpio($_POST['usuario'] ?? '');
     $clave = (string) ($_POST['clave'] ?? '');
     $mascota = login_limpio($_POST['mascota'] ?? '');
-    $rol_solicitado = login_limpio($_POST['rol'] ?? '');
+    $rol_solicitado = login_limpio($_POST['rol'] ?? 'docente');
+    if ($rol_solicitado === '') {
+        $rol_solicitado = 'docente';
+    }
     $institucion = (int) ($_POST['institucion'] ?? 1);
 
     if ($usuario === '') {
@@ -258,363 +263,374 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $institucion = new Institucion();
 $instutuciones = $institucion->datos_institucion(true);
-
-ob_start();
 ?>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<style>
-    :root {
-        --login-primary: #4f46e5;
-        --login-primary-hover: #4338ca;
-        --login-primary-light: #eef2ff;
-        --login-dark: #0f172a;
-        --login-text: #1e293b;
-        --login-muted: #64748b;
-        --login-border: #e2e8f0;
-        --login-bg-card: rgba(255, 255, 255, 0.96);
-        --login-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.14), 0 0 2px rgba(15, 23, 42, 0.06);
-    }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión · Plataforma Educativa Guagua</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
 
-    .login-wrapper {
-        min-height: 80vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 30px 16px;
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    }
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0b0f19;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.18) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.12) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(79, 70, 229, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+            padding: 24px 16px;
+            color: #f8fafc;
+        }
 
-    .login-card {
-        width: min(460px, 100%);
-        background: var(--login-bg-card);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.8);
-        border-radius: 24px;
-        box-shadow: var(--login-shadow);
-        padding: 36px 32px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-    }
+        .login-container {
+            width: 100%;
+            max-width: 440px;
+            margin: auto;
+        }
 
-    .login-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 5px;
-        background: linear-gradient(90deg, #4f46e5, #3b82f6, #06b6d4);
-    }
+        .login-card {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
+            padding: 40px 36px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
 
-    .login-header {
-        text-align: center;
-        margin-bottom: 28px;
-    }
-    
-    .login-brand-icon {
-        width: 56px;
-        height: 56px;
-        background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-        color: var(--login-primary);
-        border-radius: 18px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        margin-bottom: 14px;
-        box-shadow: 0 8px 16px -4px rgba(79, 70, 229, 0.2);
-    }
+        .brand-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
 
-    .login-title {
-        font-size: 26px;
-        font-weight: 800;
-        color: var(--login-dark);
-        margin: 0 0 6px 0;
-        letter-spacing: -0.02em;
-    }
+        .brand-logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #ffffff;
+            margin-bottom: 16px;
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5);
+        }
 
-    .login-subtitle {
-        font-size: 14px;
-        color: var(--login-muted);
-        margin: 0;
-        font-weight: 500;
-    }
+        .brand-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.025em;
+            margin-bottom: 6px;
+        }
 
-    .login-form-group {
-        margin-bottom: 20px;
-    }
+        .brand-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
 
-    .login-label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 13.5px;
-        font-weight: 600;
-        color: var(--login-text);
-        margin-bottom: 8px;
-    }
+        .form-group {
+            margin-bottom: 22px;
+        }
 
-    .login-label i {
-        color: var(--login-primary);
-        font-size: 14px;
-    }
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+        }
 
-    .input-icon-wrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
+        .form-label i {
+            color: #818cf8;
+            font-size: 14px;
+        }
 
-    .input-icon-wrapper .input-icon {
-        position: absolute;
-        left: 14px;
-        color: #94a3b8;
-        font-size: 15px;
-        transition: color 0.2s ease;
-        pointer-events: none;
-    }
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
 
-    .login-input,
-    .login-select {
-        width: 100%;
-        height: 48px;
-        padding: 10px 14px 10px 42px;
-        font-size: 14.5px;
-        color: var(--login-dark);
-        background-color: #f8fafc;
-        border: 1.5px solid var(--login-border);
-        border-radius: 12px;
-        outline: none;
-        transition: all 0.2s ease-in-out;
-        box-sizing: border-box;
-    }
+        .input-wrapper .input-icon {
+            position: absolute;
+            left: 16px;
+            color: #64748b;
+            font-size: 15px;
+            transition: color 0.2s ease;
+            pointer-events: none;
+        }
 
-    .login-select {
-        padding-left: 42px;
-        cursor: pointer;
-        appearance: none;
-        -webkit-appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%252364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 14px center;
-        background-size: 16px;
-    }
+        .form-control {
+            width: 100%;
+            height: 50px;
+            padding: 12px 16px 12px 46px;
+            font-size: 14.5px;
+            color: #f8fafc;
+            background-color: rgba(15, 23, 42, 0.6);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            outline: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-    .login-input:focus,
-    .login-select:focus {
-        background-color: #ffffff;
-        border-color: var(--login-primary);
-        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
-    }
+        .form-control::placeholder {
+            color: #64748b;
+        }
 
-    .login-input:focus + .input-icon,
-    .input-icon-wrapper:focus-within .input-icon {
-        color: var(--login-primary);
-    }
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%252394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 16px;
+            padding-right: 44px;
+        }
 
-    .toggle-password-btn {
-        position: absolute;
-        right: 12px;
-        background: transparent;
-        border: none;
-        color: #94a3b8;
-        cursor: pointer;
-        padding: 6px;
-        font-size: 15px;
-        border-radius: 6px;
-        transition: color 0.2s ease;
-    }
+        select.form-control option {
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 10px;
+        }
 
-    .toggle-password-btn:hover {
-        color: var(--login-primary);
-    }
+        .form-control:focus {
+            background-color: rgba(15, 23, 42, 0.85);
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
 
-    .login-user-preview {
-        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-        border: 1px solid #cbd5e1;
-        border-radius: 16px;
-        padding: 16px;
-        text-align: center;
-        margin-bottom: 22px;
-        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
+        .input-wrapper:focus-within .input-icon {
+            color: #818cf8;
+        }
 
-    @keyframes popIn {
-        from { transform: scale(0.92); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-    }
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 6px;
+            font-size: 15px;
+            border-radius: 6px;
+            transition: color 0.2s ease;
+        }
 
-    .login-user-preview img {
-        width: 76px;
-        height: 76px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid #ffffff;
-        box-shadow: 0 6px 16px rgba(79, 70, 229, 0.2);
-        margin-bottom: 8px;
-    }
+        .password-toggle:hover {
+            color: #818cf8;
+        }
 
-    .login-user-preview h2 {
-        font-size: 17px;
-        font-weight: 700;
-        color: var(--login-dark);
-        margin: 0;
-    }
+        /* Previsualización del usuario */
+        .user-preview-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 24px;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
 
-    .login-flex-actions {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-top: 4px;
-        margin-bottom: 22px;
-        font-size: 13.5px;
-    }
+        @keyframes popIn {
+            from { transform: scale(0.92); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
 
-    .remember-me {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        color: var(--login-muted);
-        font-weight: 500;
-        user-select: none;
-    }
+        .user-preview-card img {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #6366f1;
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+            margin-bottom: 8px;
+        }
 
-    .remember-me input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-        accent-color: var(--login-primary);
-        cursor: pointer;
-        border-radius: 4px;
-    }
+        .user-preview-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #f8fafc;
+            margin: 0;
+        }
 
-    .forgot-link {
-        color: var(--login-primary);
-        font-weight: 600;
-        text-decoration: none;
-        transition: color 0.2s ease;
-    }
+        .form-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 6px;
+            margin-bottom: 24px;
+            font-size: 13.5px;
+        }
 
-    .forgot-link:hover {
-        color: var(--login-primary-hover);
-        text-decoration: underline;
-    }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 500;
+        }
 
-    .btn-login-submit {
-        width: 100%;
-        height: 48px;
-        background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
-        color: #ffffff;
-        border: none;
-        border-radius: 12px;
-        font-size: 15px;
-        font-weight: 700;
-        letter-spacing: 0.01em;
-        cursor: pointer;
-        box-shadow: 0 6px 20px -4px rgba(79, 70, 229, 0.4);
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
+        .checkbox-label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #6366f1;
+            cursor: pointer;
+            border-radius: 4px;
+        }
 
-    .btn-login-submit:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 8px 24px -4px rgba(79, 70, 229, 0.5);
-    }
+        .forgot-link {
+            color: #818cf8;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
 
-    .btn-login-submit:active {
-        transform: translateY(0);
-    }
+        .forgot-link:hover {
+            color: #a5b4fc;
+            text-decoration: underline;
+        }
 
-    .login-error-alert {
-        background-color: #fef2f2;
-        border: 1.5px solid #feccae;
-        color: #991b1b;
-        padding: 12px 16px;
-        border-radius: 12px;
-        font-size: 13.5px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
+        .btn-submit {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 14px;
+            font-size: 15.5px;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            cursor: pointer;
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
 
-    .mascota-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 14px;
-        margin: 18px 0;
-    }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px -5px rgba(99, 102, 241, 0.55);
+        }
 
-    .mascota-btn {
-        border: 2px solid #e2e8f0;
-        background: #ffffff;
-        border-radius: 16px;
-        padding: 14px 10px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
-    }
+        .btn-submit:active {
+            transform: translateY(0);
+        }
 
-    .mascota-btn:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 10px 18px rgba(79, 70, 229, 0.15);
-        border-color: #a5b4fc;
-    }
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 14px 16px;
+            border-radius: 14px;
+            font-size: 13.5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
 
-    .mascota-btn img {
-        width: 72px;
-        height: 72px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-bottom: 6px;
-        border: 2px solid #f1f5f9;
-    }
+        /* Mascotas Infantil */
+        .mascota-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin: 18px 0;
+        }
 
-    .mascota-btn span {
-        font-size: 13.5px;
-        font-weight: 700;
-        color: var(--login-dark);
-        text-transform: capitalize;
-    }
+        .mascota-btn {
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 18px;
+            padding: 14px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        20%, 60% { transform: translateX(-6px); }
-        40%, 80% { transform: translateX(6px); }
-    }
-    .shake {
-        animation: shake 0.5s ease-in-out;
-    }
-</style>
+        .mascota-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            border-color: #818cf8;
+            background: rgba(30, 41, 59, 0.8);
+        }
 
-<div class="login-wrapper">
+        .mascota-btn img {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mascota-btn span {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #f8fafc;
+            text-transform: capitalize;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
     <form id="form_login" class="login-card" action="" method="POST" autocomplete="on">
-        <div class="login-header">
-            <div class="login-brand-icon">
+        <div class="brand-header">
+            <div class="brand-logo">
                 <i class="fa-solid fa-graduation-cap"></i>
             </div>
-            <h1 class="login-title" id="login_panel_title">Iniciar Sesión</h1>
-            <p class="login-subtitle">Ingresa a la plataforma educativa</p>
+            <h1 class="brand-title" id="login_panel_title">Guagua Educativa</h1>
+            <p class="brand-subtitle">Inicia sesión en tu cuenta</p>
         </div>
 
         <?php if ($error_login !== "") { ?>
-            <div class="login-error-alert" role="alert">
+            <div class="alert-danger" role="alert">
                 <i class="fa-solid fa-circle-exclamation"></i>
                 <span><?php echo login_e($error_login); ?></span>
             </div>
         <?php } ?>
 
-        <div id="kid_error_banner" class="login-error-alert" style="display:none;">
+        <div id="kid_error_banner" class="alert-danger" style="display:none;">
             <i class="fa-solid fa-face-sad-tear"></i>
             <span id="kid_error_text"></span>
         </div>
@@ -622,73 +638,79 @@ ob_start();
         <input type="hidden" name="csrf_login" value="<?php echo login_e($_SESSION['csrf_login']); ?>">
         <input type="hidden" name="mascota" id="mascota" value="">
 
-        <!-- Previsualización del usuario -->
-        <div id="usuario_preview" class="login-user-preview" style="display:none;">
+        <!-- Previsualización de Perfil -->
+        <div id="usuario_preview" class="user-preview-card" style="display:none;">
             <img id="foto_" src="<?php echo login_e(SGA_MEDIA_FOTO); ?>/user-icon.png" alt="Usuario">
-            <h2 id="nombre_usuario">Usuario</h2>
+            <h3 id="nombre_usuario">Usuario</h3>
         </div>
 
-        <div id="bloque_institucion" class="login-form-group">
-            <label class="login-label" for="institucion">
+        <div id="bloque_institucion" class="form-group">
+            <label class="form-label" for="institucion">
                 <i class="fa-solid fa-building-columns"></i> Institución Educativa
             </label>
-            <div class="input-icon-wrapper">
+            <div class="input-wrapper">
                 <i class="fa-solid fa-school input-icon"></i>
-                <select id="institucion" name="institucion" class="login-select" required>
+                <select id="institucion" name="institucion" class="form-control" required>
                     <?php foreach ($instutuciones as $value) { ?>
                         <option value="<?php echo login_e($value['id_institucion_educativa']); ?>">
-                            <?php echo login_e(COMUN::puntos_suspensivos($value['nombre_institucion'], 35)); ?>
+                            <?php echo login_e(COMUN::puntos_suspensivos($value['nombre_institucion'], 38)); ?>
                         </option>
                     <?php } ?>
                 </select>
             </div>
         </div>
 
-        <div id="bloque_usuario" class="login-form-group">
-            <label class="login-label" for="usuario">
+        <div id="bloque_usuario" class="form-group">
+            <label class="form-label" for="usuario">
                 <i class="fa-solid fa-user"></i> Usuario o Documento
             </label>
-            <div class="input-icon-wrapper">
+            <div class="input-wrapper">
                 <i class="fa-solid fa-id-card input-icon"></i>
                 <input
                     autofocus
                     required
                     autocomplete="username"
                     oninput="loginConsultarUsuario(this.value);"
-                    placeholder="Ej: admin o número de documento"
+                    placeholder="Ej: docente o número de documento"
                     type="text"
                     name="usuario"
                     id="usuario"
-                    class="login-input"
+                    class="form-control"
                     value="<?php echo login_e($_POST['usuario'] ?? ''); ?>"
                 >
             </div>
         </div>
 
-        <div id="bloque_rol" class="login-form-group" style="display:none;">
-            <label class="login-label" for="rol">
-                <i class="fa-solid fa-user-shield"></i> Perfil o Rol
+        <div id="bloque_rol" class="form-group">
+            <label class="form-label" for="rol">
+                <i class="fa-solid fa-user-gear"></i> Perfil o Rol
             </label>
-            <div class="input-icon-wrapper">
-                <i class="fa-solid fa-user-gear input-icon"></i>
-                <select id="rol" name="rol" class="login-select"></select>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-user-shield input-icon"></i>
+                <select id="rol" name="rol" class="form-control">
+                    <option value="docente" selected>Docente</option>
+                    <option value="admin">Administrador</option>
+                    <option value="directivo">Directivo</option>
+                    <option value="estudiante">Estudiante</option>
+                    <option value="acudiente">Acudiente</option>
+                </select>
             </div>
         </div>
 
         <!-- MODO INFANTIL: SELECCIÓN DE ANIMALES -->
         <div id="bloque_mascotas" style="display:none;">
-            <p style="font-weight:700; color:var(--login-primary); text-align:center; margin-bottom:12px;">
+            <p style="font-weight:700; color:#818cf8; text-align:center; margin-bottom:12px;">
                 <i class="fa-solid fa-paw"></i> Toca tu animalito secreto para entrar:
             </p>
             <div id="mascotas" class="mascota-grid"></div>
         </div>
 
         <!-- MODO TRADICIONAL: CLAVE -->
-        <div id="bloque_clave" class="login-form-group">
-            <label class="login-label" for="clave">
+        <div id="bloque_clave" class="form-group">
+            <label class="form-label" for="clave">
                 <i class="fa-solid fa-key"></i> Contraseña
             </label>
-            <div class="input-icon-wrapper">
+            <div class="input-wrapper">
                 <i class="fa-solid fa-lock input-icon"></i>
                 <input
                     required
@@ -697,23 +719,22 @@ ob_start();
                     type="password"
                     name="clave"
                     id="clave"
-                    class="login-input"
+                    class="form-control"
                 >
-                <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility();" title="Mostrar/ocultar contraseña">
+                <button type="button" class="password-toggle" onclick="togglePasswordVisibility();" title="Mostrar/ocultar contraseña">
                     <i id="togglePassIcon" class="fa-solid fa-eye"></i>
                 </button>
             </div>
         </div>
 
-        <!-- Acciones auxiliares -->
-        <div id="bloque_acciones" class="login-flex-actions">
-            <label class="remember-me">
+        <div id="bloque_acciones" class="form-actions">
+            <label class="checkbox-label">
                 <input type="checkbox" value="SI" name="recordarme"> Recordarme
             </label>
             <a href="recuperar/recuperar_cuenta.php" class="forgot-link">¿Olvidaste tu clave?</a>
         </div>
 
-        <button id="ingresar" type="submit" class="btn-login-submit">
+        <button id="ingresar" type="submit" class="btn-submit">
             <span>Ingresar</span> <i class="fa-solid fa-arrow-right-to-bracket"></i>
         </button>
 
@@ -811,9 +832,12 @@ function loginLimpiarUsuario() {
     document.getElementById('usuario_preview').style.display = 'none';
     document.getElementById('nombre_usuario').textContent = 'Usuario';
     document.getElementById('foto_').src = '<?php echo login_e(SGA_MEDIA_FOTO); ?>/user-icon.png';
-    document.getElementById('bloque_rol').style.display = 'none';
-    document.getElementById('rol').innerHTML = '';
     document.getElementById('mascotas').innerHTML = '';
+    
+    // Reset select de rol manteniendo docente por defecto
+    var select = document.getElementById('rol');
+    select.innerHTML = '<option value="docente" selected>Docente</option><option value="admin">Administrador</option><option value="directivo">Directivo</option><option value="estudiante">Estudiante</option><option value="acudiente">Acudiente</option>';
+    
     loginCorrectHash = "";
     loginSetModoMascota(false);
 }
@@ -847,18 +871,22 @@ function loginConsultarUsuario(valor) {
                 var select = document.getElementById('rol');
                 select.innerHTML = '';
                 var roleKeys = Object.keys(info.roles || {});
-                
+                var tieneDocente = false;
+
                 roleKeys.forEach(function(id) {
                     var option = document.createElement('option');
                     option.value = id;
                     option.textContent = info.roles[id];
+                    if (id === 'docente') {
+                        option.selected = true;
+                        tieneDocente = true;
+                    }
                     select.appendChild(option);
                 });
 
-                if (roleKeys.length > 1) {
-                    document.getElementById('bloque_rol').style.display = '';
-                } else {
-                    document.getElementById('bloque_rol').style.display = 'none';
+                // Si docente está entre sus roles, queda seleccionado por defecto. De lo contrario, se selecciona el primero.
+                if (!tieneDocente && select.options.length > 0) {
+                    select.selectedIndex = 0;
                 }
 
                 var usarMascotas = info.mascota === 'SI' && Array.isArray(info.mascotas) && info.mascotas.length > 0;
@@ -949,8 +977,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-<?php
-$contenido = ob_get_contents();
-ob_clean();
-require_once __DIR__ . "/../comun/plantilla.php";
-?>
+</body>
+</html>
