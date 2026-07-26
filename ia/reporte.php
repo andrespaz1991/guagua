@@ -168,7 +168,6 @@
 
         // Detectar si la ruta es una URL (Google Sheets publicado, etc.)
         if (filter_var($ruta, FILTER_VALIDATE_URL)) {
-            // Descargar el archivo a una ruta temporal en el servidor
             $contenido = @file_get_contents($ruta, false, stream_context_create([
                 'http' => [
                     'timeout'         => 30,
@@ -182,16 +181,14 @@
             ]));
 
             if ($contenido === false || strlen($contenido) < 100) {
-                throw new Exception("No se pudo descargar el archivo desde la URL: {$ruta}. Verifica que la hoja esté publicada correctamente en Google Sheets (Archivo → Compartir → Publicar en la web → .xlsx).");
+                throw new Exception("No se pudo descargar el archivo desde la URL. Verifica que la hoja esté publicada en Google Sheets como .xlsx (Archivo → Compartir → Publicar en la web → xlsx).");
             }
 
-            // Guardar en un archivo temporal con extensión .xlsx
             $archivoTemporal = sys_get_temp_dir() . '/reporte_temp_' . uniqid() . '.xlsx';
             file_put_contents($archivoTemporal, $contenido);
             $rutaLectura = $archivoTemporal;
 
         } else {
-            // Es una ruta de archivo local
             if (!file_exists($ruta)) {
                 throw new Exception("El archivo Excel no se encontró en: {$ruta}");
             }
@@ -199,20 +196,46 @@
         }
 
         try {
+            // Suprimir avisos de "Deprecated: Using ${var}" de PHPSpreadsheet en PHP 8.2+
+            $nivelAnterior = error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
+
             $spreadsheet = IOFactory::load($rutaLectura);
-            $worksheet = $spreadsheet->getActiveSheet();
+            $worksheet   = $spreadsheet->getActiveSheet();
+
+            error_reporting($nivelAnterior); // Restaurar nivel de errores
+
             $notasPorEstudiante = [];
 
             for ($row = 2; $row <= $ultimaFila; $row++) {
                 $documento = trim($worksheet->getCell('B' . $row)->getValue());
-               
+
                 if (empty($documento)) continue;
-                
+
                 $notas = [];
                 foreach ($materias as $nombreMateria => $columna) {
-                    $notas[$nombreMateria] = round($worksheet->getCell($columna . $row)->getCalculatedValue(), 1);
+                    $celda = $worksheet->getCell($columna . $row);
+
+                    // Intentar getCalculatedValue(); si falla o devuelve fórmula (referencia externa),
+                    // usar getValue() directamente como fallback.
+                    try {
+                        $valor = @$celda->getCalculatedValue();
+                    } catch (\Throwable $e) {
+                        $valor = $celda->getValue();
+                    }
+
+                    // Si el valor sigue siendo una fórmula o texto no numérico, intentar getOldCalculatedValue()
+                    if (!is_numeric($valor)) {
+                        $valorOld = $celda->getOldCalculatedValue();
+                        if (is_numeric($valorOld)) {
+                            $valor = $valorOld;
+                        } else {
+                            $valor = 0; // No se pudo resolver la referencia externa → nota 0
+                        }
+                    }
+
+                    $notas[$nombreMateria] = round((float)$valor, 1);
                 }
-                
+
                 $notasPorEstudiante[$documento] = [
                     'nombre' => $worksheet->getCell('A' . $row)->getValue(),
                     'grado'  => $worksheet->getCell('C' . $row)->getValue(),
@@ -220,7 +243,6 @@
                 ];
             }
         } finally {
-            // Limpiar el archivo temporal si se creó
             if ($archivoTemporal && file_exists($archivoTemporal)) {
                 @unlink($archivoTemporal);
             }
@@ -228,6 +250,8 @@
 
         return $notasPorEstudiante;
     }
+
+
 
 
     function obtenerDesempeno($nota)
