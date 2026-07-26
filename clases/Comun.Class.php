@@ -99,24 +99,16 @@ public static function verificar_archivo($ruta,$archivo){
 
 public static function llamar_estudiantes_grado_Vallesol($min=6,$max=8,$estudiante=''){
   require(dirname(__FILE__)."/../comun/conexion.php");
-  
-  #$sql='SELECT  DISTINCT id_usuario,nombre, observaciones FROM `inscripcion` INNER join usuario on inscripcion.id_estudiante= usuario.id_usuario where observaciones>='.$min.' and observaciones<='.$max.' 
+    #$sql='SELECT  DISTINCT id_usuario,nombre, observaciones FROM `inscripcion` INNER join usuario on inscripcion.id_estudiante= usuario.id_usuario where observaciones>='.$min.' and observaciones<='.$max.' 
    # ORDER BY `usuario`.observaciones DESC, usuario.nombre asc;';
- $sql='
- SELECT 
-    usuario.id_usuario, 
-    usuario.* 
-FROM `inscripcion` 
-INNER JOIN asignacion ON inscripcion.id_asignacion = asignacion.id_asignacion 
-INNER JOIN usuario ON usuario.id_usuario = inscripcion.id_estudiante 
-WHERE 
- asignacion.id_categoria_curso >= "'.$min.'"  AND
-asignacion.id_categoria_curso <="'.$max.'"';
+ $sql="
+ select usuario.id_usuario, usuario.* from usuario where observaciones>=".$min." and observaciones<=".$max." and estado='activo'
+";
 if(!empty($estudiante)){
   $sql.='  and id_usuario="'.$estudiante.'" ';
 }
 
-$sql.=' GROUP BY usuario.apellido asc,usuario.nombre asc;';
+$sql.=' GROUP BY usuario.observaciones asc,usuario.apellido asc';
  #echo $sql;
   $consulta=$mysqli->query($sql);
   $estudiantes=array();

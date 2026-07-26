@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDFPro Compress - Vanilla JS</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- PDF-Lib -->
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  
+  <!-- PDF.js para rasterización (Compresión Extrema) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  </script>
+
+  <style>
+    /* Estilos personalizados mínimos para animaciones */
+    .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800 font-sans flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-white shadow-sm border-b border-slate-200 py-4 px-6 flex items-center justify-between">
+    <div class="flex items-center gap-2 text-red-600">
+      <i data-lucide="file-text" class="w-7 h-7"></i>
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900">PDF<span class="text-red-600">Pro</span> Compress</h1>
+    </div>
+    <nav class="text-sm font-medium text-slate-500 hidden sm:block">
+      Herramienta de optimización (Vanilla JS)
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow flex flex-col items-center justify-center p-4 sm:p-8" id="app-main">
+    
+    <!-- STEP 1: Upload -->
+    <div id="step-1" class="w-full max-w-4xl flex flex-col items-center text-center fade-in">
+      <h2 class="text-4xl font-extrabold text-slate-900 mb-4">Comprimir archivo PDF</h2>
+      <p class="text-lg text-slate-600 mb-8 max-w-2xl">
+        Reduce el tamaño de tu archivo PDF optimizando su estructura interna. Procesamiento 100% en tu navegador mediante Vanilla JS.
+      </p>
+
+      <div id="drop-zone" class="w-full max-w-2xl border-4 border-dashed border-red-200 rounded-2xl bg-white hover:bg-red-50 hover:border-red-400 transition-colors duration-300 flex flex-col items-center justify-center py-20 px-4 cursor-pointer">
+        <i data-lucide="upload-cloud" class="text-red-500 mb-4 w-16 h-16"></i>
+        <span class="bg-red-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-red-700 transition-colors mb-4 pointer-events-none">
+          Seleccionar archivo PDF
+        </span>
+        <p class="text-sm text-slate-500 pointer-events-none">o arrastra y suelta el PDF aquí</p>
+        <input type="file" id="file-upload" accept="application/pdf" class="hidden" />
+      </div>
+      
+      <div class="mt-8 flex items-center gap-2 text-sm text-slate-500">
+        <i data-lucide="shield-check" class="text-green-600 w-4 h-4"></i>
+        Privacidad garantizada: El archivo nunca abandona tu dispositivo.
+      </div>
+    </div>
+
+    <!-- STEP 2: Settings -->
+    <div id="step-2" class="w-full max-w-5xl flex-col md:flex-row gap-8 fade-in hidden">
+      
+      <!-- File Preview Panel -->
+      <div class="flex-1 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col items-center justify-center">
+        <div class="relative w-32 h-40 bg-slate-100 border border-slate-300 rounded shadow-inner flex flex-col items-center justify-center mb-6">
+          <i data-lucide="file-text" class="text-red-500 mb-2 w-12 h-12"></i>
+          <span class="text-xs font-bold text-slate-400">PDF</span>
+        </div>
+        <h3 id="preview-filename" class="text-lg font-semibold text-slate-800 text-center break-all mb-2">filename.pdf</h3>
+        <p id="preview-filesize" class="text-slate-500 font-mono bg-slate-100 px-3 py-1 rounded">0 MB</p>
+        
+        <button id="btn-cancel" class="mt-6 flex items-center gap-2 text-sm text-red-600 hover:text-red-800 transition-colors">
+          <i data-lucide="trash-2" class="w-4 h-4"></i> Eliminar y subir otro
+        </button>
+      </div>
+
+      <!-- Compression Settings Panel -->
+      <div class="flex-[1.5] bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col">
+        <div class="flex items-center gap-3 mb-6">
+          <i data-lucide="settings" class="text-slate-700 w-6 h-6"></i>
+          <h3 class="text-2xl font-bold text-slate-900">Nivel de compresión</h3>
+        </div>
+        
+        <div class="flex flex-col gap-4 flex-grow" id="compression-options">
+          <!-- Extrema -->
+          <label class="compression-label relative flex cursor-pointer rounded-xl border p-5 transition-all duration-200 border-slate-200 hover:border-red-300" data-value="extreme">
+            <input type="radio" name="compression" value="extreme" class="sr-only" />
+            <div class="flex w-full items-center justify-between pointer-events-none">
+              <div class="flex items-center gap-4">
+                <div class="radio-dot flex h-6 w-6 items-center justify-center rounded-full border border-slate-300">
+                  <div class="radio-dot-inner h-2 w-2 rounded-full bg-white hidden"></div>
+                </div>
+                <div>
+                  <p class="radio-title font-semibold text-slate-800">Compresión Extrema</p>
+                  <p class="text-sm text-slate-500">Menos calidad, alta compresión (Elimina metadatos exhaustivamente).</p>
+                </div>
+              </div>
+            </div>
+          </label>
+
+          <!-- Recomendada -->
+          <label class="compression-label relative flex cursor-pointer rounded-xl border p-5 transition-all duration-200 border-red-600 bg-red-50/50" data-value="recommended">
+            <input type="radio" name="compression" value="recommended" class="sr-only" checked />
+            <div class="flex w-full items-center justify-between pointer-events-none">
+              <div class="flex items-center gap-4">
+                <div class="radio-dot flex h-6 w-6 items-center justify-center rounded-full border border-red-600 bg-red-600">
+                  <div class="radio-dot-inner h-2 w-2 rounded-full bg-white"></div>
+                </div>
+                <div>
+                  <p class="radio-title font-semibold text-red-900">Compresión Recomendada</p>
+                  <p class="text-sm text-slate-500">Buena calidad, buena compresión (Optimización estándar).</p>
+                </div>
+              </div>
+            </div>
+          </label>
+
+          <!-- Baja -->
+          <label class="compression-label relative flex cursor-pointer rounded-xl border p-5 transition-all duration-200 border-slate-200 hover:border-red-300" data-value="low">
+            <input type="radio" name="compression" value="low" class="sr-only" />
+            <div class="flex w-full items-center justify-between pointer-events-none">
+              <div class="flex items-center gap-4">
+                <div class="radio-dot flex h-6 w-6 items-center justify-center rounded-full border border-slate-300">
+                  <div class="radio-dot-inner h-2 w-2 rounded-full bg-white hidden"></div>
+                </div>
+                <div>
+                  <p class="radio-title font-semibold text-slate-800">Baja Compresión</p>
+                  <p class="text-sm text-slate-500">Alta calidad, menos compresión (Solo reempaquetado).</p>
+                </div>
+              </div>
+            </div>
+          </label>
+        </div>
+
+        <!-- Rasterization Checkbox Override -->
+        <div class="mt-6 border-t border-slate-200 pt-6">
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <div class="relative flex items-center justify-center mt-1">
+              <input type="checkbox" id="rasterize-checkbox" class="peer sr-only" />
+              <div class="w-6 h-6 border-2 border-slate-300 rounded-md peer-checked:bg-red-600 peer-checked:border-red-600 transition-colors"></div>
+              <i data-lucide="check" class="absolute text-white w-4 h-4 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></i>
+            </div>
+            <div>
+              <p class="font-semibold text-slate-900 group-hover:text-red-700 transition-colors">Compresión Masiva (Rasterizado)</p>
+              <p class="text-sm text-slate-500 mt-1">Lograrás compresiones masivas (hasta 80-90%), pero el texto dejará de ser seleccionable, ya que el documento entero se convierte en un álbum de imágenes de baja resolución.</p>
+            </div>
+          </label>
+        </div>
+
+        <div class="mt-8 flex items-center justify-between">
+          <button id="btn-back" class="flex items-center gap-2 text-slate-500 hover:text-slate-800 font-medium transition-colors">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver
+          </button>
+          <button id="btn-compress" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-colors flex items-center gap-2">
+            Comprimir PDF <i data-lucide="arrow-left" class="w-4 h-4 rotate-180"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: Processing or Done -->
+    <div id="step-3" class="w-full max-w-3xl bg-white rounded-2xl shadow-sm border border-slate-200 p-10 flex-col items-center text-center fade-in hidden">
+      
+      <!-- Processing state -->
+      <div id="status-processing" class="flex flex-col items-center py-12">
+        <i data-lucide="loader-2" class="text-red-600 w-16 h-16 animate-spin mb-6"></i>
+        <h3 class="text-2xl font-bold text-slate-900 mb-2">Comprimiendo tu PDF...</h3>
+        <p class="text-slate-500">Aplicando optimizaciones estructurales en el navegador.</p>
+      </div>
+
+      <!-- Done state -->
+      <div id="status-done" class="flex flex-col items-center w-full hidden">
+        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+          <i data-lucide="check-circle" class="text-green-600 w-10 h-10"></i>
+        </div>
+        <h3 class="text-3xl font-bold text-slate-900 mb-4">¡PDF procesado con éxito!</h3>
+        
+        <!-- Warning (If bigger) -->
+        <div id="warning-box" class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 w-full mb-8 hidden">
+          <p class="text-yellow-800 mb-1 font-semibold flex items-center justify-center gap-2">
+            <i data-lucide="alert-circle" class="w-4 h-4"></i> Nota Técnica
+          </p>
+          <p class="text-sm text-yellow-700">
+            El archivo original ya estaba altamente optimizado. El reempaquetado del navegador generó un archivo de tamaño similar o superior (<span id="warn-new-size"></span>).
+          </p>
+        </div>
+
+        <!-- Success Stats -->
+        <p id="success-stats" class="text-lg text-slate-600 mb-8">
+          Tu archivo PDF ahora pesa <span id="final-size" class="font-bold text-slate-900">0 MB</span>. 
+          Has ahorrado un <span id="saved-percentage" class="font-bold text-green-600">0%</span> respecto a los <span id="original-size">0 MB</span> originales.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+          <a id="download-link" href="#" download="optimizado.pdf" class="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-10 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-3 text-lg">
+            <i data-lucide="download" class="w-6 h-6"></i> Descargar PDF optimizado
+          </a>
+        </div>
+        
+        <button id="btn-process-another" class="mt-8 text-slate-500 hover:text-slate-800 font-medium underline transition-colors">
+          Procesar otro archivo
+        </button>
+      </div>
+
+      <!-- Error state -->
+      <div id="status-error" class="flex flex-col items-center py-8 hidden">
+        <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
+          <i data-lucide="alert-circle" class="text-red-600 w-10 h-10"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-slate-900 mb-2">Error de procesamiento</h3>
+        <p id="error-message" class="text-slate-600 mb-8 text-center max-w-md">Ocurrió un error desconocido.</p>
+        <button id="btn-retry" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-lg shadow transition-colors">
+          Intentar de nuevo
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 py-6 text-center text-sm">
+    <p>Herramienta diseñada con enfoque objetivo. Procesamiento nativo en Vanilla JS.</p>
+  </footer>
+
+  <script>
+    // Inicializar iconos de Lucide
+    lucide.createIcons();
+
+    // Estado global de la aplicación
+    let currentFile = null;
+    let selectedCompression = 'recommended';
+
+    // Referencias del DOM
+    const step1 = document.getElementById('step-1');
+    const step2 = document.getElementById('step-2');
+    const step3 = document.getElementById('step-3');
+    
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-upload');
+    
+    const previewFilename = document.getElementById('preview-filename');
+    const previewFilesize = document.getElementById('preview-filesize');
+    
+    const btnCancel = document.getElementById('btn-cancel');
+    const btnBack = document.getElementById('btn-back');
+    const btnCompress = document.getElementById('btn-compress');
+    
+    const statusProcessing = document.getElementById('status-processing');
+    const statusDone = document.getElementById('status-done');
+    const statusError = document.getElementById('status-error');
+    
+    // Utilidad de formateo
+    const formatBytes = (bytes, decimals = 2) => {
+      if (!+bytes) return '0 Bytes';
+      const k = 1024;
+      const dm = decimals < 0 ? 0 : decimals;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+    };
+
+    // Navegación de Vistas
+    const showView = (step) => {
+      step1.classList.add('hidden');
+      step1.classList.remove('flex');
+      step2.classList.add('hidden');
+      step2.classList.remove('flex');
+      step3.classList.add('hidden');
+      step3.classList.remove('flex');
+
+      if (step === 1) {
+        step1.classList.remove('hidden');
+        step1.classList.add('flex');
+      } else if (step === 2) {
+        step2.classList.remove('hidden');
+        step2.classList.add('flex');
+      } else if (step === 3) {
+        step3.classList.remove('hidden');
+        step3.classList.add('flex');
+      }
+    };
+
+    const showStatus = (status) => {
+      statusProcessing.classList.add('hidden');
+      statusDone.classList.add('hidden');
+      statusError.classList.add('hidden');
+
+      if (status === 'processing') statusProcessing.classList.remove('hidden');
+      if (status === 'done') statusDone.classList.remove('hidden');
+      if (status === 'error') statusError.classList.remove('hidden');
+    };
+
+    // Lógica de carga de archivos (Step 1)
+    const processSelectedFile = (file) => {
+      if (file.type !== 'application/pdf') {
+        alert('Por favor, selecciona un archivo PDF válido.');
+        return;
+      }
+      currentFile = file;
+      
+      // Actualizar vista previa
+      previewFilename.textContent = file.name;
+      previewFilesize.textContent = formatBytes(file.size);
+      
+      showView(2);
+    };
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.add('bg-red-50', 'border-red-400');
+    });
+
+    dropZone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.remove('bg-red-50', 'border-red-400');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.remove('bg-red-50', 'border-red-400');
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        processSelectedFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        processSelectedFile(e.target.files[0]);
+      }
+    });
+
+    // Lógica de UI para los Radios (Step 2)
+    const compressionLabels = document.querySelectorAll('.compression-label');
+    const radioInputs = document.querySelectorAll('input[name="compression"]');
+
+    radioInputs.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        selectedCompression = e.target.value;
+        
+        // Reset styles for all
+        compressionLabels.forEach(label => {
+          label.classList.remove('border-red-600', 'bg-red-50/50');
+          label.classList.add('border-slate-200');
+          
+          const dot = label.querySelector('.radio-dot');
+          dot.classList.remove('border-red-600', 'bg-red-600');
+          dot.classList.add('border-slate-300');
+          
+          const innerDot = label.querySelector('.radio-dot-inner');
+          innerDot.classList.add('hidden');
+
+          const title = label.querySelector('.radio-title');
+          title.classList.remove('text-red-900');
+          title.classList.add('text-slate-800');
+        });
+
+        // Apply active styles
+        const activeLabel = e.target.closest('.compression-label');
+        activeLabel.classList.add('border-red-600', 'bg-red-50/50');
+        activeLabel.classList.remove('border-slate-200');
+
+        const activeDot = activeLabel.querySelector('.radio-dot');
+        activeDot.classList.add('border-red-600', 'bg-red-600');
+        activeDot.classList.remove('border-slate-300');
+
+        const activeInnerDot = activeLabel.querySelector('.radio-dot-inner');
+        activeInnerDot.classList.remove('hidden');
+
+        const activeTitle = activeLabel.querySelector('.radio-title');
+        activeTitle.classList.add('text-red-900');
+        activeTitle.classList.remove('text-slate-800');
+      });
+    });
+
+    // Lógica de Compresión (Step 3)
+    const compressPDF = async () => {
+      if (!currentFile || !window.PDFLib) {
+        alert("La librería PDF-Lib no se ha cargado correctamente o no hay archivo.");
+        return;
+      }
+
+      showView(3);
+      showStatus('processing');
+
+      try {
+        const arrayBuffer = await currentFile.arrayBuffer();
+        const PDFDocument = window.PDFLib.PDFDocument;
+        const PDFName = window.PDFLib.PDFName;
+        
+        let pdfBytes;
+        const useRasterization = document.getElementById('rasterize-checkbox').checked;
+
+        if (useRasterization) {
+          // ALGORITMO LOSSY (Rasterización pura con PDF.js)
+          const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+          const newPdfDoc = await PDFDocument.create();
+
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            // Escala 1.2 balancea legibilidad y reducción extrema de tamaño
+            const viewport = page.getViewport({ scale: 1.2 }); 
+
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+
+            await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+            // Extraer como JPEG al 50% de calidad
+            const imgDataUrl = canvas.toDataURL('image/jpeg', 0.5); 
+            const jpgImage = await newPdfDoc.embedJpg(imgDataUrl);
+
+            const newPage = newPdfDoc.addPage([viewport.width, viewport.height]);
+            newPage.drawImage(jpgImage, {
+              x: 0,
+              y: 0,
+              width: viewport.width,
+              height: viewport.height,
+            });
+          }
+          pdfBytes = await newPdfDoc.save({ useObjectStreams: true });
+
+        } else {
+          // ALGORITMO LOSSLESS (Limpieza Estructural rápida)
+          const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+
+          if (selectedCompression === 'extreme' || selectedCompression === 'recommended') {
+            pdfDoc.setTitle('');
+            pdfDoc.setAuthor('');
+            pdfDoc.setSubject('');
+            pdfDoc.setKeywords([]);
+            pdfDoc.setProducer('');
+            pdfDoc.setCreator('');
+
+            if (pdfDoc.catalog.get(PDFName.of('Metadata'))) pdfDoc.catalog.delete(PDFName.of('Metadata'));
+            if (pdfDoc.catalog.get(PDFName.of('MarkInfo'))) pdfDoc.catalog.delete(PDFName.of('MarkInfo'));
+            if (pdfDoc.catalog.get(PDFName.of('PieceInfo'))) pdfDoc.catalog.delete(PDFName.of('PieceInfo'));
+            
+            if (selectedCompression === 'extreme') {
+               if (pdfDoc.catalog.get(PDFName.of('StructTreeRoot'))) pdfDoc.catalog.delete(PDFName.of('StructTreeRoot'));
+            }
+            
+            const pages = pdfDoc.getPages();
+            pages.forEach(page => {
+              if (page.node.get(PDFName.of('Thumb'))) page.node.delete(PDFName.of('Thumb'));
+              if (page.node.get(PDFName.of('PieceInfo'))) page.node.delete(PDFName.of('PieceInfo'));
+              if (page.node.get(PDFName.of('Metadata'))) page.node.delete(PDFName.of('Metadata'));
+            });
+          }
+          pdfBytes = await pdfDoc.save({ useObjectStreams: true });
+        }
+        
+        const compressedBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const compressedUrl = URL.createObjectURL(compressedBlob);
+        
+        const originalSize = currentFile.size;
+        const newSize = compressedBlob.size;
+        const savedPercentage = originalSize > 0 ? ((originalSize - newSize) / originalSize) * 100 : 0;
+        const isBigger = newSize >= originalSize;
+
+        // Actualizar UI del resultado
+        const downloadLink = document.getElementById('download-link');
+        downloadLink.href = compressedUrl;
+        downloadLink.download = `optimizado_${currentFile.name}`;
+
+        if (isBigger) {
+          document.getElementById('warning-box').classList.remove('hidden');
+          document.getElementById('success-stats').classList.add('hidden');
+          document.getElementById('warn-new-size').textContent = formatBytes(newSize);
+        } else {
+          document.getElementById('warning-box').classList.add('hidden');
+          document.getElementById('success-stats').classList.remove('hidden');
+          
+          document.getElementById('final-size').textContent = formatBytes(newSize);
+          document.getElementById('original-size').textContent = formatBytes(originalSize);
+          document.getElementById('saved-percentage').textContent = savedPercentage.toFixed(2) + '%';
+        }
+
+        showStatus('done');
+      } catch (error) {
+        console.error(error);
+        document.getElementById('error-message').textContent = 'Ocurrió un error al procesar el documento. Puede estar protegido por contraseña o corrupto.';
+        showStatus('error');
+      }
+    };
+
+    // Botones de acción
+    btnCompress.addEventListener('click', compressPDF);
+    
+    const resetApp = () => {
+      currentFile = null;
+      fileInput.value = '';
+      showView(1);
+    };
+
+    btnCancel.addEventListener('click', resetApp);
+    btnBack.addEventListener('click', resetApp);
+    document.getElementById('btn-process-another').addEventListener('click', resetApp);
+    document.getElementById('btn-retry').addEventListener('click', resetApp);
+
+  </script>
+</body>
+</html>

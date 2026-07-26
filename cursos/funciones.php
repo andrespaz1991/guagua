@@ -1,6 +1,6 @@
 <?php
 function consultar_datos($consulta ){
-require($_SERVER['DOCUMENT_ROOT']."/comun/conexion.php");
+require(dirname(__DIR__) . "/comun/conexion.php");
 $gconsulta_red = $mysqli->prepare($consulta);
 $gconsulta_red->execute();
 $arraydedatos = $gconsulta_red->get_result();
@@ -9,7 +9,7 @@ return $datos;
 }
 //actualizar_inscripcion();
 function actualizar_inscripcion(){
-require($_SERVER['DOCUMENT_ROOT']."/comun/conexion.php");
+require(dirname(__DIR__) . "/comun/conexion.php");
  $sql = 'select * from estudiante' ;
  $consulta = $mysqli -> query ($sql);
 while ($row = $consulta ->fetch_assoc()){

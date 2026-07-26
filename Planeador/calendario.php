@@ -27,27 +27,120 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/../comun/conexion.php';
 require_once __DIR__ . '/../comun/funciones.php';
 
+function calendario_normalizar_texto($valor)
+{
+    $texto = trim((string)$valor);
+    $convertido = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $texto);
+    if ($convertido !== false) {
+        $texto = $convertido;
+    }
+
+    return strtolower((string)preg_replace('/[^a-z0-9]+/i', '', $texto));
+}
+
+function calendario_grado_clave($grado)
+{
+    $grado = calendario_normalizar_texto($grado);
+    $equivalencias = [
+        'preescolar' => '0', 'transicion' => '0', 'primero' => '1', 'segundo' => '2',
+        'tercero' => '3', 'cuarto' => '4', 'quinto' => '5', 'sexto' => '6',
+        'septimo' => '7', 'octavo' => '8', 'noveno' => '9', 'decimo' => '10',
+        'once' => '11', 'undecimo' => '11'
+    ];
+
+    if (isset($equivalencias[$grado])) {
+        return $equivalencias[$grado];
+    }
+    if (preg_match('/\d+/', $grado, $coincidencia)) {
+        return (string)(int)$coincidencia[0];
+    }
+
+    return $grado;
+}
+
+function calendario_buscar_planeacion(array $planeaciones, array $evento)
+{
+    $fecha = $evento['fecha'];
+    $mes = substr($fecha, 0, 7);
+    $gradoEvento = calendario_grado_clave($evento['grado']);
+    $nombreEvento = calendario_normalizar_texto($evento['nombre_materia']);
+    $mejorCoincidencia = null;
+
+    foreach ($planeaciones as $plan) {
+        $gradoPlan = calendario_grado_clave($plan['grado']);
+        $coincideGrado = $gradoEvento === '' || $gradoPlan === '' || $gradoEvento === $gradoPlan;
+
+        $materiaPlan = trim((string)$plan['materia']);
+        $coincideMateria = $materiaPlan !== '' && (
+            $materiaPlan === (string)$evento['id_asignacion'] ||
+            $materiaPlan === (string)$evento['id_asignatura'] ||
+            calendario_normalizar_texto($materiaPlan) === $nombreEvento
+        );
+        if (!$coincideMateria) {
+            continue;
+        }
+
+        $inicio = $plan['fecha_inicio'];
+        $fin = $plan['fecha_fin'];
+        if ($inicio === '0000-00-00' || $fin === '0000-00-00' || $inicio > $fin) {
+            continue;
+        }
+
+        if ($inicio === $fecha) {
+            $prioridad = 1;
+            $tipo = 'fecha exacta';
+        } elseif ($inicio <= $fecha && $fin >= $fecha) {
+            $prioridad = 2;
+            $tipo = 'rango de fechas';
+        } elseif (substr($inicio, 0, 7) <= $mes && substr($fin, 0, 7) >= $mes) {
+            $prioridad = 3;
+            $tipo = 'mismo mes';
+        } else {
+            continue;
+        }
+
+        $prioridadGrado = $coincideGrado ? 0 : 1;
+        if (!$coincideGrado) {
+            $tipo .= ' (misma materia, grado ' . $plan['grado'] . ')';
+        }
+
+        if ($mejorCoincidencia === null ||
+            $prioridadGrado < $mejorCoincidencia['prioridad_grado'] ||
+            ($prioridadGrado === $mejorCoincidencia['prioridad_grado'] && $prioridad < $mejorCoincidencia['prioridad']) ||
+            ($prioridadGrado === $mejorCoincidencia['prioridad_grado'] && $prioridad === $mejorCoincidencia['prioridad'] && $inicio > $mejorCoincidencia['plan']['fecha_inicio'])) {
+            $mejorCoincidencia = [
+                'plan' => $plan,
+                'tipo' => $tipo,
+                'prioridad' => $prioridad,
+                'prioridad_grado' => $prioridadGrado
+            ];
+        }
+    }
+
+    return $mejorCoincidencia;
+}
+
 // =================================================================
 // 2. ENDPOINT AJAX PARA BÚSQUEDA Y PAGINACIÓN
 // =================================================================
 if (isset($_GET['action']) && $_GET['action'] == 'buscar_planeaciones') {
     header('Content-Type: application/json');
 
-    $recordsPerPage = 10;
+    $recordsPerPage = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+    if ($recordsPerPage <= 0 || $recordsPerPage > 100) $recordsPerPage = 10; // Validar rango
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $offset = ($page - 1) * $recordsPerPage;
 
     // Construcción de la consulta con filtros
     $baseSql = "FROM planeador_vallesol p
-                JOIN asignacion a ON a.id_asignacion = p.materia
-                JOIN materia_oficial m ON m.id_materia = a.id_asignatura";
+                LEFT JOIN materia_oficial m ON m.id_materia = CAST(TRIM(p.materia) AS UNSIGNED)";
     
     $whereConditions = [];
     $params = [];
     $types = '';
 
     if (!empty($_GET['materia'])) {
-        $whereConditions[] = "m.nombre_materia = ?";
+        $whereConditions[] = "COALESCE(m.nombre_materia, p.materia) = ?";
         $params[] = $_GET['materia'];
         $types .= 's';
     }
@@ -87,7 +180,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'buscar_planeaciones') {
     }
 
     // Consulta para obtener los datos de la página actual
-    $dataSql = "SELECT DISTINCT p.id_plan, m.nombre_materia AS title, p.grado, p.fecha_inicio AS start, p.fecha_fin AS end " . $baseSql . $whereClause . " ORDER BY p.fecha_inicio DESC LIMIT ? OFFSET ?";
+    $dataSql = "SELECT DISTINCT p.id_plan, COALESCE(m.nombre_materia, p.materia) AS title, p.grado, p.fecha_inicio AS start, p.fecha_fin AS end " . $baseSql . $whereClause . " ORDER BY p.fecha_inicio DESC LIMIT ? OFFSET ?";
     
     $dataParams = $params;
     $dataParams[] = $recordsPerPage;
@@ -115,68 +208,133 @@ $eventos_calendario = [];
 $materias_unicas = [];
 $grados_unicos = [];
 
-$sql_inicial = "SELECT
-            p.id_plan,
-            p.grado,
-            m.nombre_materia,
-            p.fecha_inicio AS fecha_iniciop,
-            p.fecha_fin AS fecha_finp,
-            h.hora_inicio AS horario_hora_inicio,
-            h.hora_fin AS horario_hora_fin,
-            h.dia,
-            p.objetivo AS texto_planeacion
-        FROM planeador_vallesol AS p
-        JOIN asignacion AS a ON a.id_asignacion = p.materia
-        JOIN materia_oficial AS m ON m.id_materia = a.id_asignatura
-        JOIN horario AS h ON h.id_asignacion = a.id_asignacion
-        ORDER BY p.fecha_inicio DESC, m.nombre_materia";
+$diasSemana = [
+    'lunes' => 1, 'martes' => 2, 'miercoles' => 3, 'jueves' => 4,
+    'viernes' => 5, 'sabado' => 6, 'domingo' => 0
+];
 
-$resultado = $mysqli->query($sql_inicial);
-
-if ($resultado) {
-    $diasSemana = [
-        'lunes' => 1, 'martes' => 2, 'miercoles' => 3, 'jueves' => 4,
-        'viernes' => 5, 'sabado' => 6, 'domingo' => 0
-    ];
-    
-    while ($fila = $resultado->fetch_assoc()) {
-        if (!in_array($fila['grado'], $grados_unicos)) $grados_unicos[] = $fila['grado'];
-        if (!in_array($fila['nombre_materia'], $materias_unicas)) $materias_unicas[] = $fila['nombre_materia'];
-        
-        try {
-            $fecha_inicio = new DateTime($fila['fecha_iniciop']);
-            $fecha_fin = new DateTime($fila['fecha_finp']);
-            $dia_semana_str = strtolower(trim($fila['dia']));
-
-            if (isset($diasSemana[$dia_semana_str])) {
-                $numero_dia = $diasSemana[$dia_semana_str];
-                $fecha_actual = clone $fecha_inicio;
-                $nombre_materia_limpio = strtolower(preg_replace('/[^a-z0-9]/i', '', $fila['nombre_materia']));
-
-                while ($fecha_actual <= $fecha_fin) {
-                    if ((int)$fecha_actual->format('w') === $numero_dia) {
-                        $eventos_calendario[] = [
-                            'title' => $fila['nombre_materia'],
-                            'start' => $fecha_actual->format('Y-m-d') . 'T' . $fila['horario_hora_inicio'],
-                            'end' => $fecha_actual->format('Y-m-d') . 'T' . $fila['horario_hora_fin'],
-                            'description' => 'Grado: ' . htmlspecialchars($fila['grado']) . ' - ' . htmlspecialchars($fila['texto_planeacion']),
-                            'id_plan' => $fila['id_plan'],
-                            'className' => 'evento-' . $nombre_materia_limpio
-                        ];
-                    }
-                    $fecha_actual->modify('+1 day');
-                }
-            }
-        } catch (Exception $e) {
-            error_log("Error de fecha para el plan ID " . $fila['id_plan'] . ": " . $e->getMessage());
-        }
-    }
-    sort($materias_unicas);
-    sort($grados_unicos);
-} else {
-    error_log("Error en la consulta del calendario: " . $mysqli->error);
+$anoLectivo = $mysqli->query("SELECT id_ano_lectivo, nombre_ano_lectivo FROM ano_lectivo WHERE estado = 'Activo' LIMIT 1");
+$datosAnoLectivo = $anoLectivo ? $anoLectivo->fetch_assoc() : null;
+$anioCalendario = isset($datosAnoLectivo['nombre_ano_lectivo']) ? (int)$datosAnoLectivo['nombre_ano_lectivo'] : (int)date('Y');
+if ($anioCalendario < 2000) {
+    $anioCalendario = (int)date('Y');
 }
 
+$inicioCalendario = $anioCalendario . '-01-01';
+$finCalendario = $anioCalendario . '-12-31';
+$idAnoLectivo = isset($datosAnoLectivo['id_ano_lectivo']) ? (int)$datosAnoLectivo['id_ano_lectivo'] : 0;
+
+// Las planeaciones se consultan por separado: no pueden impedir que un horario aparezca.
+$planeaciones = [];
+$stmtPlaneaciones = $mysqli->prepare(
+    "SELECT id_plan, materia, grado, fecha_inicio, fecha_fin
+     FROM planeador_vallesol
+     WHERE fecha_inicio <= ? AND fecha_fin >= ?"
+);
+if ($stmtPlaneaciones) {
+    $stmtPlaneaciones->bind_param('ss', $finCalendario, $inicioCalendario);
+    $stmtPlaneaciones->execute();
+    $resultadoPlaneaciones = $stmtPlaneaciones->get_result();
+    while ($plan = $resultadoPlaneaciones->fetch_assoc()) {
+        $planeaciones[] = $plan;
+    }
+    $stmtPlaneaciones->close();
+}
+
+$filtroAnoLectivo = '';
+if ($idAnoLectivo > 0) {
+    $filtroAnoLectivo = ' AND (a.ano_lectivo = ' . $idAnoLectivo . ' OR a.ano_lectivo = ' . $anioCalendario . ')';
+}
+
+$inicioEscapado = $mysqli->real_escape_string($inicioCalendario);
+$finEscapado = $mysqli->real_escape_string($finCalendario);
+$sqlHorario = "SELECT h.id_horario, h.id_asignacion, h.fecha_inicio, h.fecha_fin,
+                       h.hora_inicio, h.hora_fin, h.dia,
+                       a.id_asignatura, a.id_categoria_curso,
+                       COALESCE(cc.nombre_categoria_curso, a.id_categoria_curso) AS grado,
+                       COALESCE(m.nombre_materia, CONCAT('Materia ID ', a.id_asignatura)) AS nombre_materia
+                FROM horario h
+                INNER JOIN asignacion a ON a.id_asignacion = h.id_asignacion
+                LEFT JOIN categoria_curso cc ON cc.id_categoria_curso = a.id_categoria_curso
+                LEFT JOIN materia_oficial m ON m.id_materia = a.id_asignatura
+                WHERE (h.fecha_inicio <= '" . $finEscapado . "' OR h.fecha_inicio = '0000-00-00' OR h.fecha_inicio IS NULL)
+                  AND (h.fecha_fin >= '" . $inicioEscapado . "' OR h.fecha_fin = '0000-00-00' OR h.fecha_fin IS NULL)"
+                . $filtroAnoLectivo .
+                " ORDER BY h.dia, h.hora_inicio, nombre_materia";
+
+$resultadoHorario = $mysqli->query($sqlHorario);
+if (!$resultadoHorario) {
+    error_log('Error al consultar el horario del calendario: ' . $mysqli->error);
+} else {
+    while ($fila = $resultadoHorario->fetch_assoc()) {
+        $nombreMateria = trim((string)$fila['nombre_materia']);
+        $grado = trim((string)$fila['grado']);
+        $dia = calendario_normalizar_texto($fila['dia']);
+        if (!isset($diasSemana[$dia])) {
+            error_log('Día no válido en horario ID ' . $fila['id_horario'] . ': ' . $fila['dia']);
+            continue;
+        }
+
+        $fechaInicio = $fila['fecha_inicio'] && $fila['fecha_inicio'] !== '0000-00-00' ? $fila['fecha_inicio'] : $inicioCalendario;
+        $fechaFin = $fila['fecha_fin'] && $fila['fecha_fin'] !== '0000-00-00' ? $fila['fecha_fin'] : $finCalendario;
+        $fechaInicio = max($fechaInicio, $inicioCalendario);
+        $fechaFin = min($fechaFin, $finCalendario);
+        if ($fechaInicio > $fechaFin) {
+            continue;
+        }
+
+        if (!in_array($nombreMateria, $materias_unicas, true)) {
+            $materias_unicas[] = $nombreMateria;
+        }
+        if (!in_array($grado, $grados_unicos, true)) {
+            $grados_unicos[] = $grado;
+        }
+
+        $fechaActual = new DateTime($fechaInicio);
+        $limite = new DateTime($fechaFin);
+        while ($fechaActual <= $limite) {
+            if ((int)$fechaActual->format('w') === $diasSemana[$dia]) {
+                $fechaEvento = $fechaActual->format('Y-m-d');
+                $coincidencia = calendario_buscar_planeacion($planeaciones, [
+                    'fecha' => $fechaEvento,
+                    'id_asignacion' => $fila['id_asignacion'],
+                    'id_asignatura' => $fila['id_asignatura'],
+                    'nombre_materia' => $nombreMateria,
+                    'grado' => $grado
+                ]);
+                $plan = $coincidencia['plan'] ?? null;
+
+                $eventos_calendario[] = [
+                    'title' => $nombreMateria,
+                    'start' => $fechaEvento . 'T' . $fila['hora_inicio'],
+                    'end' => $fechaEvento . 'T' . $fila['hora_fin'],
+                    'description' => 'Horario programado',
+                    'id_horario' => (int)$fila['id_horario'],
+                    'id_asignacion' => (int)$fila['id_asignacion'],
+                    'id_asignatura' => (int)$fila['id_asignatura'],
+                    'grado' => $grado,
+                    'dia' => ucfirst($dia),
+                    'hora_inicio' => substr($fila['hora_inicio'], 0, 5),
+                    'hora_fin' => substr($fila['hora_fin'], 0, 5),
+                    'fecha_inicio_horario' => $fechaInicio,
+                    'fecha_fin_horario' => $fechaFin,
+                    'id_plan' => $plan ? (int)$plan['id_plan'] : null,
+                    'fecha_inicio_planeacion' => $plan['fecha_inicio'] ?? null,
+                    'fecha_fin_planeacion' => $plan['fecha_fin'] ?? null,
+                    'coincidencia_planeacion' => $coincidencia['tipo'] ?? null,
+                    'className' => 'evento-' . (calendario_normalizar_texto($nombreMateria) ?: 'materia')
+                ];
+            }
+            $fechaActual->modify('+1 day');
+        }
+    }
+}
+
+usort($eventos_calendario, static function ($a, $b) {
+    return strcmp($a['start'], $b['start']);
+});
+sort($materias_unicas, SORT_NATURAL | SORT_FLAG_CASE);
+sort($grados_unicos, SORT_NATURAL | SORT_FLAG_CASE);
 // 4. VISTA DEL CALENDARIO (HTML, CSS, JS)
 ?>
 <!DOCTYPE html>
@@ -322,6 +480,7 @@ if ($resultado) {
             padding: 3px 6px;
             border-radius: 4px;
             margin-bottom: 4px;
+            background-color: #718096;
             color: var(--event-text-color);
             cursor: pointer;
             overflow: hidden;
@@ -339,7 +498,6 @@ if ($resultado) {
         .evento-fisica { background-color: #805ad5; }
         .evento-economiapolitica { background-color: #319795; }
         .evento-geometria { background-color: #d53f8c; }
-        .event:not([class*="evento-"]) { background-color: #a0aec0; }
 
         #calendar-legend {
             margin-top: 25px;
@@ -367,11 +525,12 @@ if ($resultado) {
             font-size: 1.8em; cursor: pointer; color: #a0aec0;
         }
         #modal-title { margin-top: 0; color: var(--primary-color); }
-        #modal-description { font-size: 0.95em; line-height: 1.6; color: #4a5568; }
+        #modal-description { font-size: 0.95em; line-height: 1.6; color: #4a5568; white-space: pre-line; }
         .modal-button {
             display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: var(--accent-color);
             color: white; text-decoration: none; border-radius: 8px;
         }
+        .modal-button.secondary { background-color: var(--primary-color); margin-left: 8px; }
         
         /* Search Section Styles */
         .search-container {
@@ -525,6 +684,15 @@ if ($resultado) {
                 <label for="end-date-filter">Hasta</label>
                 <input type="date" id="end-date-filter">
             </div>
+            <div class="filter-group">
+                <label for="limit-filter">Registros por página</label>
+                <select id="limit-filter">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                </select>
+            </div>
         </div>
         <ul id="search-results"></ul>
         <div id="loading-spinner" style="display: none; text-align: center; padding: 20px;">Cargando...</div>
@@ -541,7 +709,8 @@ if ($resultado) {
         <button class="modal-close-btn">&times;</button>
         <h2 id="modal-title"></h2>
         <p id="modal-description"></p>
-        <a id="modal-link" href="#" target="_blank" class="modal-button">Ver Planeación Completa</a>
+        <a id="modal-link" href="#" target="_blank" class="modal-button" hidden>Ver Planeación Completa</a>
+        <a id="modal-course-link" href="#" target="_blank" class="modal-button secondary" hidden>Ver Curso</a>
     </div>
 </div>
 
@@ -561,6 +730,7 @@ if ($resultado) {
         const modalTitle = document.getElementById('modal-title');
         const modalDescription = document.getElementById('modal-description');
         const modalLink = document.getElementById('modal-link');
+        const modalCourseLink = document.getElementById('modal-course-link');
         const modalCloseBtn = modal.querySelector('.modal-close-btn');
 
         // --- SEARCH & PAGINATION VARIABLES ---
@@ -568,18 +738,18 @@ if ($resultado) {
         const gradoFilter = document.getElementById('grado-filter');
         const startDateFilter = document.getElementById('start-date-filter');
         const endDateFilter = document.getElementById('end-date-filter');
+        const limitFilter = document.getElementById('limit-filter');
         const searchResults = document.getElementById('search-results');
         const noResultsMessage = document.getElementById('no-results-message');
         const paginationControls = document.getElementById('pagination-controls');
         const loadingSpinner = document.getElementById('loading-spinner');
         
-        const recordsPerPage = 10;
         let isLoading = false;
 
         // --- DATA FROM PHP ---
-        const eventos_calendario = <?php echo json_encode($eventos_calendario); ?>;
-        const materias_filtro = <?php echo json_encode($materias_unicas); ?>;
-        const grados_filtro = <?php echo json_encode($grados_unicos); ?>;
+        const eventos_calendario = <?php echo json_encode($eventos_calendario, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
+        const materias_filtro = <?php echo json_encode($materias_unicas, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
+        const grados_filtro = <?php echo json_encode($grados_unicos, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
 
         let currentDate = new Date();
         
@@ -680,6 +850,7 @@ if ($resultado) {
             const params = new URLSearchParams({
                 action: 'buscar_planeaciones',
                 page: page,
+                limit: limitFilter.value,
                 materia: materiaFilter.value,
                 grado: gradoFilter.value,
                 startDate: startDateFilter.value,
@@ -694,7 +865,7 @@ if ($resultado) {
                     planes.forEach(plan => {
                         const li = document.createElement('li');
                         li.innerHTML = `
-                            <a href="planeador.php?pdf=1&idplan=${plan.id_plan}" target="_blank" class="result-item">
+                            <a href="../apps/PlanMind/index.php?id=${plan.id_plan}" target="_blank" class="result-item">
                                 <strong>${plan.title}</strong> (Grado: ${plan.grado})
                                 <br>
                                 <span>${plan.start} al ${plan.end}</span>
@@ -717,8 +888,9 @@ if ($resultado) {
 
         // --- NUEVA FUNCIÓN --- Para renderizar los controles de paginación
         function renderPaginationControls(total, currentPage) {
+            const limit = parseInt(limitFilter.value, 10);
             paginationControls.innerHTML = '';
-            const totalPages = Math.ceil(total / recordsPerPage);
+            const totalPages = Math.ceil(total / limit);
 
             if (totalPages <= 1) return;
 
@@ -740,8 +912,31 @@ if ($resultado) {
 
         function showModal(evento) {
             modalTitle.textContent = evento.title;
-            modalDescription.textContent = evento.description;
-            modalLink.href = `planeador.php?pdf=1&idplan=${evento.id_plan}`;
+            const detalles = [
+                `Asignación: #${evento.id_asignacion}`,
+                `Horario: ${evento.dia}, ${evento.hora_inicio} a ${evento.hora_fin}`,
+                `Grado: ${evento.grado}`,
+                `Vigencia del horario: ${evento.fecha_inicio_horario} al ${evento.fecha_fin_horario}`
+            ];
+
+            if (evento.id_plan) {
+                detalles.push(`Planeación: #${evento.id_plan} (${evento.coincidencia_planeacion})`);
+                detalles.push(`Vigencia de la planeación: ${evento.fecha_inicio_planeacion} al ${evento.fecha_fin_planeacion}`);
+                modalLink.href = `../apps/PlanMind/index.php?id=${encodeURIComponent(evento.id_plan)}`;
+                modalLink.hidden = false;
+            } else {
+                detalles.push('Planeación: no hay una planeación asociada para esta materia, grado y fecha.');
+                modalLink.hidden = true;
+            }
+
+            if (evento.id_asignacion) {
+                modalCourseLink.href = `../cursos/curso.php?asignacion=${encodeURIComponent(evento.id_asignacion)}`;
+                modalCourseLink.hidden = false;
+            } else {
+                modalCourseLink.hidden = true;
+            }
+
+            modalDescription.textContent = detalles.join('\n');
             modal.style.display = 'flex';
         }
 
@@ -763,7 +958,7 @@ if ($resultado) {
         modal.addEventListener('click', e => (e.target === modal) && hideModal());
         document.addEventListener('keydown', e => (e.key === 'Escape') && hideModal());
         
-        [materiaFilter, gradoFilter, startDateFilter, endDateFilter].forEach(el => {
+        [materiaFilter, gradoFilter, startDateFilter, endDateFilter, limitFilter].forEach(el => {
             el.addEventListener('change', () => fetchResults(1));
         });
 

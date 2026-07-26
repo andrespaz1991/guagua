@@ -57,12 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['retirar_materias'])) 
 
 
 // Búsqueda de estudiante y sus materias
-if (isset($_GET['buscar_estudiante'])) {
-    $search_query = trim($_GET['search']);
+if (isset($_GET['buscar_estudiante']) || isset($_GET['ajax'])) {
+    $search_query = isset($_GET['search']) ? trim($_GET['search']) : '';
     if (!empty($search_query)) {
-        $search_term = "%" . $conn->real_escape_string($search_query) . "%";
+        $search_term = "%" . strtolower($conn->real_escape_string($search_query)) . "%";
         
-        $sql_estudiante = "SELECT id_usuario, nombre, apellido FROM usuario WHERE (nombre LIKE ? OR apellido LIKE ? OR id_usuario LIKE ?) AND rol = 'estudiante' LIMIT 1";
+        $sql_estudiante = "SELECT id_usuario, nombre, apellido FROM usuario WHERE (LOWER(nombre) LIKE ? OR LOWER(apellido) LIKE ? OR LOWER(id_usuario) LIKE ?) AND rol = 'estudiante' LIMIT 1";
         $stmt_estudiante = $conn->prepare($sql_estudiante);
         $stmt_estudiante->bind_param("sss", $search_term, $search_term, $search_term);
         $stmt_estudiante->execute();
@@ -93,9 +93,20 @@ if (isset($_GET['buscar_estudiante'])) {
             }
             $stmt_materias->close();
         } else {
-            $mensaje = "<div class='alert alert-warning mt-4'>No se encontró ningún estudiante con el término de búsqueda '{$search_query}'.</div>";
+            $mensaje = "<div class='alert alert-warning mt-4'>No se encontró ningún estudiante con el término de búsqueda '" . htmlspecialchars($search_query) . "'.</div>";
         }
         $stmt_estudiante->close();
+    }
+    
+    // Devolver JSON si es una solicitud AJAX y terminar la ejecución
+    if (isset($_GET['ajax'])) {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'estudiante' => $estudiante_seleccionado,
+            'materias' => $materias_inscritas,
+            'mensaje' => $mensaje
+        ]);
+        exit;
     }
 }
 ?>
@@ -183,135 +194,285 @@ if (isset($_GET['buscar_estudiante'])) {
         <h1 class="header-title">Retirar Materias de Estudiante</h1>
 
         <!-- Formulario de búsqueda -->
-        <form method="GET" action="" class="search-form">
+        <form id="searchForm" method="GET" action="" class="search-form">
             <div class="input-group mb-3">
-                <input type="text" class="form-control" name="search" placeholder="Buscar por nombre, apellido o ID del estudiante" value="<?php echo htmlspecialchars($search_query); ?>" required>
+                <input type="text" id="searchInput" class="form-control" name="search" placeholder="Buscar por nombre, apellido o ID del estudiante" value="<?php echo htmlspecialchars($search_query); ?>" required autocomplete="off">
                 <button class="btn btn-primary" type="submit" name="buscar_estudiante">Buscar</button>
             </div>
         </form>
 
-        <?php echo $mensaje; ?>
-
-        <?php if ($estudiante_seleccionado): ?>
-            <!-- Información del estudiante y lista de materias -->
-            <div class="student-info">
-                <h5>Estudiante: <strong><?php echo htmlspecialchars($estudiante_seleccionado['nombre'] . ' ' . $estudiante_seleccionado['apellido']); ?></strong></h5>
-                <p class="mb-0">ID: <?php echo htmlspecialchars($estudiante_seleccionado['id_usuario']); ?></p>
+        <div id="loader" class="text-center my-4" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
             </div>
-            
-            <form id="retiroForm" method="POST" action="">
-                <input type="hidden" name="id_estudiante" value="<?php echo htmlspecialchars($estudiante_seleccionado['id_usuario']); ?>">
-                <h4 class="mt-4 mb-3">Materias Inscritas (En Curso)</h4>
+        </div>
+
+        <div id="mensajesContenedor">
+            <?php echo $mensaje; ?>
+        </div>
+
+        <div id="resultadosBusqueda">
+            <?php if ($estudiante_seleccionado): ?>
+                <!-- Información del estudiante y lista de materias -->
+                <div class="student-info">
+                    <h5>Estudiante: <strong><?php echo htmlspecialchars($estudiante_seleccionado['nombre'] . ' ' . $estudiante_seleccionado['apellido']); ?></strong></h5>
+                    <p class="mb-0">ID: <?php echo htmlspecialchars($estudiante_seleccionado['id_usuario']); ?></p>
+                </div>
                 
-                <?php if (!empty($materias_inscritas)): ?>
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="selectAllCheckbox">
-                        <label class="form-check-label" for="selectAllCheckbox">
-                            <strong>Seleccionar Todas</strong>
-                        </label>
-                    </div>
+                <form id="retiroForm" method="POST" action="">
+                    <input type="hidden" name="id_estudiante" value="<?php echo htmlspecialchars($estudiante_seleccionado['id_usuario']); ?>">
+                    <h4 class="mt-4 mb-3">Materias Inscritas (En Curso)</h4>
+                    
+                    <?php if (!empty($materias_inscritas)): ?>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="selectAllCheckbox">
+                            <label class="form-check-label" for="selectAllCheckbox">
+                                <strong>Seleccionar Todas</strong>
+                            </label>
+                        </div>
 
-                    <div class="materias-list">
-                        <?php foreach ($materias_inscritas as $materia): ?>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="materias_a_retirar[]" value="<?php echo $materia['id_inscripcion']; ?>" id="materia_<?php echo $materia['id_inscripcion']; ?>">
-                                <label class="form-check-label" for="materia_<?php echo $materia['id_inscripcion']; ?>">
-                                    <span><?php echo htmlspecialchars($materia['nombre_materia']); ?></span>
-                                    <span class="materia-grado">Grado: <?php echo htmlspecialchars($materia['grado']); ?></span>
-                                </label>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <button type="button" class="btn btn-danger mt-4 btn-retirar" data-bs-toggle="modal" data-bs-target="#confirmacionModal">
-                        Retirar Materias Seleccionadas
-                    </button>
-                <?php else: ?>
-                    <div class="alert alert-info">Este estudiante no tiene materias 'En curso' para retirar.</div>
-                <?php endif; ?>
+                        <div class="materias-list">
+                            <?php foreach ($materias_inscritas as $materia): ?>
+                                <div class="form-check">
+                                    <input class="form-check-input check-materia" type="checkbox" name="materias_a_retirar[]" value="<?php echo $materia['id_inscripcion']; ?>" id="materia_<?php echo $materia['id_inscripcion']; ?>">
+                                    <label class="form-check-label" for="materia_<?php echo $materia['id_inscripcion']; ?>">
+                                        <span><?php echo htmlspecialchars($materia['nombre_materia']); ?></span>
+                                        <span class="materia-grado">Grado: <?php echo htmlspecialchars($materia['grado']); ?></span>
+                                    </label>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <button type="button" class="btn btn-danger mt-4 btn-retirar" data-bs-toggle="modal" data-bs-target="#confirmacionModal">
+                            Retirar Materias Seleccionadas
+                        </button>
+                    <?php else: ?>
+                        <div class="alert alert-info">Este estudiante no tiene materias 'En curso' para retirar.</div>
+                    <?php endif; ?>
 
-                 <!-- Modal de Confirmación -->
-                <div class="modal fade" id="confirmacionModal" tabindex="-1" aria-labelledby="confirmacionModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="confirmacionModalLabel">Confirmar Retiro</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p>Estás a punto de cambiar el estado de las siguientes materias a "Retirado" para el estudiante <strong><?php echo htmlspecialchars($estudiante_seleccionado['nombre'] . ' ' . $estudiante_seleccionado['apellido']); ?></strong>.</p>
-                                <ul id="listaMateriasConfirmacion">
-                                    <!-- Las materias seleccionadas se insertarán aquí con JavaScript -->
-                                </ul>
-                                <p class="text-danger"><strong>¿Estás seguro? Esta acción no se puede deshacer fácilmente.</strong></p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" name="retirar_materias" class="btn btn-danger">Sí, Retirar</button>
+                     <!-- Modal de Confirmación -->
+                    <div class="modal fade" id="confirmacionModal" tabindex="-1" aria-labelledby="confirmacionModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="confirmacionModalLabel">Confirmar Retiro</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Estás a punto de cambiar el estado de las siguientes materias a "Retirado" para el estudiante <strong><?php echo htmlspecialchars($estudiante_seleccionado['nombre'] . ' ' . $estudiante_seleccionado['apellido']); ?></strong>.</p>
+                                    <ul id="listaMateriasConfirmacion">
+                                        <!-- Las materias seleccionadas se insertarán aquí con JavaScript -->
+                                    </ul>
+                                    <p class="text-danger"><strong>¿Estás seguro? Esta acción no se puede deshacer fácilmente.</strong></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" name="retirar_materias" class="btn btn-danger">Sí, Retirar</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </form>
-        <?php endif; ?>
+                </form>
+            <?php endif; ?>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Lógica para mostrar las materias seleccionadas en el modal de confirmación
-        const confirmacionModal = document.getElementById('confirmacionModal');
-        if(confirmacionModal) {
-            confirmacionModal.addEventListener('show.bs.modal', function (event) {
-                const listaConfirmacion = document.getElementById('listaMateriasConfirmacion');
-                listaConfirmacion.innerHTML = ''; // Limpiar lista
-                
-                const checkboxes = document.querySelectorAll('input[name="materias_a_retirar[]"]:checked');
-                
-                if (checkboxes.length === 0) {
-                     // Si no hay nada seleccionado, modifica el modal para mostrar una advertencia
-                    const modalBody = confirmacionModal.querySelector('.modal-body');
-                    modalBody.innerHTML = '<p class="text-warning">No has seleccionado ninguna materia para retirar. Por favor, cancela y selecciona al menos una.</p>';
-                    // Ocultar el botón de confirmar
-                    confirmacionModal.querySelector('button[name="retirar_materias"]').style.display = 'none';
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchForm = document.getElementById('searchForm');
+            const searchInput = document.getElementById('searchInput');
+            const resultadosDiv = document.getElementById('resultadosBusqueda');
+            const loader = document.getElementById('loader');
+            const mensajesContenedor = document.getElementById('mensajesContenedor');
+            let typingTimer;
+            const doneTypingInterval = 500; // 500ms
 
-                } else {
-                     // Restaura el contenido original si ya había una advertencia
-                    const modalBody = confirmacionModal.querySelector('.modal-body');
-                     modalBody.innerHTML = `<p>Estás a punto de cambiar el estado de las siguientes materias a "Retirado" para el estudiante <strong><?php echo htmlspecialchars($estudiante_seleccionado['nombre'] . ' ' . $estudiante_seleccionado['apellido']); ?></strong>.</p>
-                                <ul id="listaMateriasConfirmacion"></ul>
-                                <p class="text-danger"><strong>¿Estás seguro? Esta acción no se puede deshacer fácilmente.</strong></p>`;
+            // Función para ejecutar búsqueda AJAX
+            const fetchResultados = async (query) => {
+                if (!query.trim()) {
+                    resultadosDiv.innerHTML = '';
+                    mensajesContenedor.innerHTML = '';
+                    return;
+                }
+                
+                loader.style.display = 'block';
+                resultadosDiv.innerHTML = '';
+                mensajesContenedor.innerHTML = '';
+
+                try {
+                    const response = await fetch(`?ajax=1&search=${encodeURIComponent(query)}`);
+                    const data = await response.json();
                     
-                    const newListaConfirmacion = document.getElementById('listaMateriasConfirmacion');
-                    checkboxes.forEach(checkbox => {
-                        const label = document.querySelector('label[for="' + checkbox.id + '"]');
-                        const nombreMateria = label.querySelector('span:first-child').textContent;
-                        const li = document.createElement('li');
-                        li.textContent = nombreMateria;
-                        newListaConfirmacion.appendChild(li);
-                    });
-                    // Muestra el botón de confirmar si estaba oculto
-                    confirmacionModal.querySelector('button[name="retirar_materias"]').style.display = 'inline-block';
+                    loader.style.display = 'none';
+
+                    if (data.mensaje) {
+                        mensajesContenedor.innerHTML = data.mensaje;
+                    }
+
+                    if (data.estudiante) {
+                        let html = `
+                            <div class="student-info">
+                                <h5>Estudiante: <strong>${escapeHtml(data.estudiante.nombre)} ${escapeHtml(data.estudiante.apellido)}</strong></h5>
+                                <p class="mb-0">ID: ${escapeHtml(data.estudiante.id_usuario)}</p>
+                            </div>
+                            
+                            <form id="retiroForm" method="POST" action="">
+                                <input type="hidden" name="id_estudiante" value="${escapeHtml(data.estudiante.id_usuario)}">
+                                <h4 class="mt-4 mb-3">Materias Inscritas (En Curso)</h4>
+                        `;
+
+                        if (data.materias && data.materias.length > 0) {
+                            html += `
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="selectAllCheckbox">
+                                    <label class="form-check-label" for="selectAllCheckbox">
+                                        <strong>Seleccionar Todas</strong>
+                                    </label>
+                                </div>
+                                <div class="materias-list">
+                            `;
+
+                            data.materias.forEach(materia => {
+                                html += `
+                                    <div class="form-check">
+                                        <input class="form-check-input check-materia" type="checkbox" name="materias_a_retirar[]" value="${materia.id_inscripcion}" id="materia_${materia.id_inscripcion}">
+                                        <label class="form-check-label" for="materia_${materia.id_inscripcion}">
+                                            <span>${escapeHtml(materia.nombre_materia)}</span>
+                                            <span class="materia-grado">Grado: ${escapeHtml(materia.grado)}</span>
+                                        </label>
+                                    </div>
+                                `;
+                            });
+
+                            html += `
+                                </div>
+                                <button type="button" class="btn btn-danger mt-4 btn-retirar" data-bs-toggle="modal" data-bs-target="#confirmacionModal">
+                                    Retirar Materias Seleccionadas
+                                </button>
+                            `;
+                        } else {
+                            html += `<div class="alert alert-info">Este estudiante no tiene materias 'En curso' para retirar.</div>`;
+                        }
+
+                        // Modal de confirmación
+                        html += `
+                             <div class="modal fade" id="confirmacionModal" tabindex="-1" aria-labelledby="confirmacionModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="confirmacionModalLabel">Confirmar Retiro</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Estás a punto de cambiar el estado de las siguientes materias a "Retirado" para el estudiante <strong>${escapeHtml(data.estudiante.nombre)} ${escapeHtml(data.estudiante.apellido)}</strong>.</p>
+                                            <ul id="listaMateriasConfirmacion"></ul>
+                                            <p class="text-danger"><strong>¿Estás seguro? Esta acción no se puede deshacer fácilmente.</strong></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" name="retirar_materias" class="btn btn-danger">Sí, Retirar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>`;
+                        
+                        resultadosDiv.innerHTML = html;
+                        inicializarEventos();
+                    }
+                } catch (error) {
+                    console.error("Error en la petición AJAX:", error);
+                    loader.style.display = 'none';
+                    mensajesContenedor.innerHTML = "<div class='alert alert-danger'>Ocurrió un error al realizar la búsqueda. Verifique su conexión.</div>";
+                }
+            };
+
+            // Interceptar el envío del formulario para evitar recarga
+            searchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                fetchResultados(searchInput.value);
+            });
+
+            // Búsqueda interactiva mientras se escribe (debounced)
+            searchInput.addEventListener('input', () => {
+                clearTimeout(typingTimer);
+                if (searchInput.value.trim() !== '') {
+                    typingTimer = setTimeout(() => {
+                        fetchResultados(searchInput.value);
+                    }, doneTypingInterval);
+                } else {
+                    resultadosDiv.innerHTML = '';
+                    mensajesContenedor.innerHTML = '';
                 }
             });
-        }
-        
-        // Lógica para "Seleccionar Todos"
-        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-        const materiaCheckboxes = document.querySelectorAll('input[name="materias_a_retirar[]"]');
 
-        if(selectAllCheckbox) {
-            selectAllCheckbox.addEventListener('change', function() {
-                materiaCheckboxes.forEach(checkbox => {
-                    checkbox.checked = this.checked;
-                });
-            });
+            // Función para escapar caracteres HTML (seguridad XSS)
+            function escapeHtml(unsafe) {
+                return (unsafe || '').toString()
+                     .replace(/&/g, "&amp;")
+                     .replace(/</g, "&lt;")
+                     .replace(/>/g, "&gt;")
+                     .replace(/"/g, "&quot;")
+                     .replace(/'/g, "&#039;");
+            }
 
-            materiaCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    const allChecked = Array.from(materiaCheckboxes).every(cb => cb.checked);
-                    selectAllCheckbox.checked = allChecked;
-                });
-            });
-        }
+            // Lógica de validaciones de Checkboxes y el Modal
+            function inicializarEventos() {
+                const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+                const materiaCheckboxes = document.querySelectorAll('.check-materia');
+                
+                if (selectAllCheckbox && materiaCheckboxes.length > 0) {
+                    selectAllCheckbox.addEventListener('change', function() {
+                        materiaCheckboxes.forEach(cb => cb.checked = this.checked);
+                    });
+                    
+                    materiaCheckboxes.forEach(cb => {
+                        cb.addEventListener('change', function() {
+                            selectAllCheckbox.checked = Array.from(materiaCheckboxes).every(c => c.checked);
+                        });
+                    });
+                }
+
+                const confirmacionModalEl = document.getElementById('confirmacionModal');
+                if (confirmacionModalEl) {
+                    // Limpiar listeners antiguos clonando el nodo si es necesario, 
+                    // pero al reinyectar HTML los eventos previos del DOM interno se borran.
+                    confirmacionModalEl.addEventListener('show.bs.modal', function (event) {
+                        const listaConfirmacion = document.getElementById('listaMateriasConfirmacion');
+                        listaConfirmacion.innerHTML = '';
+                        
+                        const checkboxes = document.querySelectorAll('.check-materia:checked');
+                        const modalBody = confirmacionModalEl.querySelector('.modal-body');
+                        const btnConfirmar = confirmacionModalEl.querySelector('button[name="retirar_materias"]');
+                        
+                        if (checkboxes.length === 0) {
+                            modalBody.innerHTML = '<p class="text-warning">No has seleccionado ninguna materia para retirar. Por favor, cancela y selecciona al menos una.</p>';
+                            if (btnConfirmar) btnConfirmar.style.display = 'none';
+                        } else {
+                            // Restaurar el contenido original del body del modal
+                            const nombreEstudiante = escapeHtml(document.querySelector('.student-info strong').textContent);
+                            modalBody.innerHTML = `
+                                <p>Estás a punto de cambiar el estado de las siguientes materias a "Retirado" para el estudiante <strong>${nombreEstudiante}</strong>.</p>
+                                <ul id="listaMateriasConfirmacion"></ul>
+                                <p class="text-danger"><strong>¿Estás seguro? Esta acción no se puede deshacer fácilmente.</strong></p>`;
+                                
+                            const newListaConfirmacion = document.getElementById('listaMateriasConfirmacion');
+                            checkboxes.forEach(checkbox => {
+                                const label = document.querySelector('label[for="' + checkbox.id + '"]');
+                                const nombreMateria = label.querySelector('span:first-child').textContent;
+                                const li = document.createElement('li');
+                                li.textContent = nombreMateria;
+                                newListaConfirmacion.appendChild(li);
+                            });
+                            if (btnConfirmar) btnConfirmar.style.display = 'inline-block';
+                        }
+                    });
+                }
+            }
+
+            // Inicializar eventos para la carga inicial (si hubo GET directo)
+            inicializarEventos();
+        });
     </script>
 </body>
 </html>

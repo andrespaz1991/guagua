@@ -17,16 +17,12 @@ public function __construct($identificacion=""){
 
 
 public function periodo_academico(){
-  $sql="SELECT *
+  $sql="SELECT fecha_inicio,fecha_fin
             FROM periodo
-            WHERE fecha_inicio IS NOT NULL AND fecha_inicio != '0000-00-00'
-            ORDER BY
-                CASE
-                    WHEN CURDATE() BETWEEN fecha_inicio AND fecha_fin THEN 1
-                    ELSE 2
-                END ASC,
-                fecha_fin DESC
+            WHERE estado_periodo ='1' 
+            ORDER BY nombre_periodo DESC
             LIMIT 1";
+  #echo $sql;
   return $datos = json_decode($this->consultar_datos($sql,true),true);
 }
 
@@ -38,7 +34,8 @@ return '';
         $asignacion_hoy = $this->consultar_horario(1);
 
         if (!empty($datos_curso)) {
-            echo "<select onchange='listarEstudiantes();' class='form-control mb-2' name='asignaciones' id='asignaciones'>";
+        
+        echo "<select style='display: none;' onchange='listarEstudiantes();' class='form-control mb-2' name='asignaciones' id='asignaciones'>";
             echo '<option value=""> Todos los cursos </option>';
             foreach ($datos_curso as $clave => $valor) {
                 echo '<option value="'.$valor['id_asignacion'].'" style="width: 150px; white-space: pre-wrap; word-wrap: break-word;"';
@@ -48,6 +45,7 @@ return '';
                 echo '>'.$valor['nombre_materia'].' ('.$valor['mid_categoria_curso'].')</option>';
             }
             echo '</select>';
+           
         } else {
             echo "<p>No hay cursos disponibles.</p>";
         }
@@ -122,17 +120,15 @@ $categoria_curso=($mat[0]->nombre_categoria_curso);
 <menu id="menu_curso<?php echo $rowa['id_asignacion'] ?>" style="display:none" class="showcase">
   <command label="<?php echo $rowa['nombre_materia']; ?>" onclick="
   document.location='<?php echo SGA_CURSOS_URL ?>/curso.php?asignacion=<?php echo $rowa['id_asignacion'] ?>'">
+  <command label="Nueva planeación" onclick="
+  document.location='<?php echo SGA_URL ?>/apps/PlanMind/index.php?asignacion=<?php echo $rowa['id_asignacion'] ?>'">
   <hr>
   <?php @session_start(); if ($_SESSION['rol']<>"estudiante" and $_SESSION['rol']<>"acudiente" ){ ?>
   
    <command  label="Nuevo RED"  onclick="
   document.location='<?php echo SGA_RED_URL ?>/nuevo_red.php?asignacion=<?php echo $rowa['id_asignacion'] ?>'">
 
-
-  <command  label="Nueva Planeación"  onclick="
-  document.location='<?php echo SGA_PLANEADOR_URL ?>/index.php?asignacion=<?php echo $rowa['id_asignacion'] ?>'">
- 
- <command  label="Planeaciones"  onclick="
+  <command  label="Planeaciones"  onclick="
   document.location='<?php echo SGA_PLANEADOR_URL ?>/planeador.php?idasignacion=<?php echo $rowa['id_asignacion'] ?>'">
   
     <command  label="Nueva Actividad"  onclick="
@@ -521,27 +517,41 @@ return    $sqlp;
 
 
 
-public function estudiantes_de_una_asignacion($nombre = "",$id_asignacion='') {
+public function estudiantes_de_una_asignacion($nombre = "",$id_asignacion='',$name="") {
  
-$parametro_grado = $nombre ; 
-$ano_lectivo=17;
-$sql_curso = "
-SELECT DISTINCT id_usuario, u.* FROM usuario u where u.estado='activo' ";
-#$sql_curso .= " and i.id_asignacion=".$id_asignacion." ";
+#$parametro_grado = $nombre ; 
+$ano_lectivo=date('Y');
+$busqueda=$nombre;
+$anio=date('Y');
+$sql = "SELECT id_usuario, nombre, apellido, foto, observaciones AS grado, genero 
+            FROM usuario 
+            WHERE rol = 'estudiante' 
+              AND estado != 'inactivo' 
+              AND observaciones IS NOT NULL 
+              AND observaciones != '' 
+              AND YEAR(fecha_creacion) = '$ano_lectivo'";
 
-// Evaluación del parámetro que viene del frontend
-if ($parametro_grado === '6-8') {
-    $sql_curso .= " AND  u.observaciones in (6,7,8)";
-    
-} 
-if ($parametro_grado === '9-11') {
-    $sql_curso .= "AND  u.observaciones in (9,10,11)";
-} 
-#echo "<pre>";
-#print_r($sql_curso);
-#echo "</pre>";
+    // Evaluación dinámica del parámetro de búsqueda
+    if ($busqueda === '6-8') {
+        $sql .= " AND CAST(observaciones AS UNSIGNED) BETWEEN 6 AND 8";
+    } elseif ($busqueda === '9-11') {
+        $sql .= " AND CAST(observaciones AS UNSIGNED) BETWEEN 9 AND 11";
+    } 
+    if (!empty($name)) {
+        $termino = "%$name%";
+        // Búsqueda robusta por ID, Nombre, Apellido o Nombre Completo
+        $sql .= " AND (
+                    id_usuario LIKE '%$name%' OR 
+                    UPPER(nombre) LIKE UPPER('%$name%') OR 
+                    UPPER(apellido) LIKE UPPER('%$name%') OR 
+                    UPPER(CONCAT(nombre, ' ', apellido)) LIKE UPPER('%$name%')
+                  )";
+    }
 
-  $datos = json_decode($this->consultar_datos($sql_curso, true), true);
+    // Ordenamiento numérico descendente para el grado, seguido de alfabetico
+    $sql .= " ORDER BY CAST(observaciones AS UNSIGNED) DESC, apellido ASC, nombre ASC LIMIT 50";
+
+  $datos = json_decode($this->consultar_datos($sql, true), true);
 
   return(($datos));
 
@@ -828,6 +838,16 @@ public function mis_cursos_otros() {
         if (!$id_usuario) {
             return []; // Si no hay usuario, no se pueden mostrar cursos.
         }
+
+        // Obtener fechas del periodo activo
+        $sql_periodo = "SELECT fecha_inicio, fecha_fin FROM periodo WHERE estado_periodo = '1' LIMIT 1";
+        $periodo_data = json_decode($this->consultar_datos($sql_periodo, true), true);
+        $periodo_inicio = null;
+        $periodo_fin = null;
+        if (!empty($periodo_data) && isset($periodo_data[0])) {
+            $periodo_inicio = $periodo_data[0]['fecha_inicio'];
+            $periodo_fin = $periodo_data[0]['fecha_fin'];
+        }
         
         // --- INICIO DE LA CONSULTA AJUSTADA ---
         // Se utiliza la estructura de la consulta que proporcionaste como base.
@@ -845,14 +865,20 @@ public function mis_cursos_otros() {
                 materia_oficial mo ON a.id_asignatura = mo.id_materia
             INNER JOIN
                 ano_lectivo al ON a.ano_lectivo = al.id_ano_lectivo
+            INNER JOIN
+                horario h ON a.id_asignacion = h.id_asignacion
             LEFT JOIN
                 categoria_curso cg ON a.id_categoria_curso = cg.id_categoria_curso               
         ";
         // Se mantiene la lógica PHP para añadir condiciones dinámicas.
         // 1. Condición CRÍTICA para filtrar solo por el año lectivo activo.
      $sql_conditions = " WHERE al.estado = 'Activo' ";
-     $sql_conditions = " and a.institucion_educativa = '".$_SESSION['id_institucion']."' ";
+     $sql_conditions .= " and a.institucion_educativa = '".$_SESSION['id_institucion']."' ";
 
+        // Validar fechas del periodo contra el horario
+        if ($periodo_inicio && $periodo_fin && $periodo_inicio != '0000-00-00' && $periodo_fin != '0000-00-00') {
+            $sql_conditions .= " AND (h.fecha_inicio <= '" . $periodo_fin . "' OR h.fecha_inicio = '0000-00-00' OR h.fecha_inicio IS NULL) AND (h.fecha_fin >= '" . $periodo_inicio . "' OR h.fecha_fin = '0000-00-00' OR h.fecha_fin IS NULL) ";
+        }
 
         // 2. Se construye el resto de condiciones según el ROL.
         // ADVERTENCIA: Se recomienda usar sentencias preparadas para evitar inyección SQL.

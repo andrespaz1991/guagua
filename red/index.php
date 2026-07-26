@@ -1,634 +1,644 @@
 <?php
-/**
- * =================================================================
- * INICIO DE LA LÓGICA DE PHP
- * =================================================================
- *
- * Todas las operaciones de servidor, como la gestión de sesiones,
- * la conexión a la base de datos y la obtención de datos, se realizan aquí,
- * antes de enviar cualquier salida al navegador.
- */
-
-// 1. GESTIÓN DE SESIÓN Y CONFIGURACIÓN
-// Iniciar la sesión una sola vez al principio del script.
-// Es una buena práctica evitar el operador de supresión de errores (@).
-if (session_status() == PHP_SESSION_NONE) {
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Configuración de errores para el entorno de desarrollo.
-// En producción, esto debería registrar errores en un archivo en lugar de mostrarlos.
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// 2. INCLUSIÓN DE ARCHIVOS
-// Incluir todos los archivos necesarios una sola vez.
-// Usar rutas absolutas basadas en __DIR__ hace que el código sea más portable.
-require_once __DIR__ . '/../comun/conexion.php'; // Se asume que $mysqli se crea aquí.
+require_once __DIR__ . '/../comun/conexion.php';
 require_once __DIR__ . '/../comun/funciones.php';
 require_once __DIR__ . '/../comun/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/guagua/comun/autoload.php';
+require_once __DIR__ . '/../comun/autoload.php';
 
-// 3. VERIFICACIÓN DE SEGURIDAD Y ENTRADA DE USUARIO
-// Descomentar para requerir un rol específico para acceder a la página.
-/*
-if (!isset($_SESSION['rol'])) {
-    header("Location: /login.php"); // Redirigir a la página de inicio de sesión
-    exit();
-}
-*/
 $id_usuario = $_SESSION['id_usuario'] ?? null;
 if (!$id_usuario) {
-    die("Error: El usuario no ha iniciado sesión.");
+    die('Error: El usuario no ha iniciado sesion.');
 }
 
-// Obtener parámetros de búsqueda de forma segura.
-$parametro_busqueda = $_POST['datos'] ?? $_GET['buscar_red'] ?? '';
-$campo_busqueda = $_GET['campo'] ?? 'titulo_red'; // Campo por defecto
+$parametro_busqueda = trim((string) ($_POST['datos'] ?? $_GET['buscar_red'] ?? ''));
+$campo_busqueda = (string) ($_POST['campo'] ?? $_GET['campo'] ?? 'titulo_red');
+$rol_usuario = $_SESSION['rol'] ?? 'invitado';
+$titulo_pagina = ($rol_usuario === 'estudiante') ? 'Entretenimiento' : 'Recursos Educativos Digitales';
 
-// 4. DEFINICIÓN DE FUNCIONES
-// Agrupar las funciones en un solo lugar.
+function red_e($valor)
+{
+    return htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
+}
 
-/**
- * Obtiene los recursos educativos digitales para una materia específica, con opción de filtrado.
- *
- * @param mysqli $db Conexión a la base de datos.
- * @param int $id_materia ID de la materia a buscar.
- * @param string $termino_busqueda Término para filtrar los resultados.
- * @param string $campo_busqueda Campo de la base de datos en el que se buscará.
- * @return array Lista de recursos encontrados.
- */
-function obtener_recursos_por_materia(mysqli $db, int $id_materia, string $termino_busqueda, string $campo_busqueda): array {
-    // CORRECCIÓN FINAL: Se reemplaza JSON_CONTAINS por un LIKE para mayor compatibilidad.
-    // Esto busca el ID de la materia entre comillas (ej: '%"1"%') dentro del campo materia_red.
-    // Es una búsqueda más flexible que la de JSON y debería encontrar todos los recursos.
-    $sql = "SELECT id_red, titulo_red, nivel_eductivo, formato, enlace, scorm, icono_red 
-            FROM red 
-            WHERE materia_red LIKE ?";
+function red_lower($valor)
+{
+    $valor = (string) $valor;
+    return function_exists('mb_strtolower') ? mb_strtolower($valor, 'UTF-8') : strtolower($valor);
+}
 
-    $params = ['%\"' . $id_materia . '\"%'];
-    $types = 's';
-
-    if (!empty($termino_busqueda)) {
-        // Mapeo seguro de campos para evitar inyección SQL en nombres de columna.
-        $campos_permitidos = ['titulo_red', 'descripcion', 'palabras_clave'];
-        if (in_array($campo_busqueda, $campos_permitidos)) {
-            $terminos = explode(' ', $termino_busqueda);
-            foreach ($terminos as $termino) {
-                if (!empty($termino)) {
-                    $sql .= " AND LOWER({$campo_busqueda}) LIKE ?";
-                    $params[] = '%' . mb_strtolower($termino, 'UTF-8') . '%';
-                    $types .= 's';
-                }
-            }
-        }
+function red_bind_params(mysqli_stmt $stmt, $types, array $params)
+{
+    if ($types === '' || empty($params)) {
+        return;
     }
 
+    $refs = [];
+    foreach ($params as $key => $value) {
+        $refs[$key] = &$params[$key];
+    }
+
+    array_unshift($refs, $types);
+    call_user_func_array([$stmt, 'bind_param'], $refs);
+}
+
+function red_fetch_all(mysqli $db, $sql, $types = '', array $params = [])
+{
     $stmt = $db->prepare($sql);
     if (!$stmt) {
-        // En producción, registrar este error en lugar de mostrarlo.
-        error_log("Error en la preparación de la consulta: " . $db->error);
+        error_log('RED SQL prepare error: ' . $db->error);
+        return ['ok' => false, 'rows' => [], 'error' => $db->error];
+    }
+
+    red_bind_params($stmt, $types, $params);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $rows = [];
+
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+    }
+
+    $stmt->close();
+    return ['ok' => true, 'rows' => $rows, 'error' => ''];
+}
+
+function red_materia_ids($materia_red)
+{
+    $materia_red = trim((string) $materia_red);
+    if ($materia_red === '') {
         return [];
     }
-    
-    $stmt->bind_param($types, ...$params);
-    $stmt->execute();
-    $resultado = $stmt->get_result();
-    
-    $recursos = [];
-    if ($resultado) {
-        $recursos = $resultado->fetch_all(MYSQLI_ASSOC);
+
+    $decoded = json_decode($materia_red, true);
+    if (is_array($decoded)) {
+        return array_values(array_unique(array_filter(array_map('intval', $decoded))));
     }
-    $stmt->close();
-    
-    return $recursos;
+
+    preg_match_all('/\d+/', $materia_red, $matches);
+    return array_values(array_unique(array_filter(array_map('intval', $matches[0] ?? []))));
 }
 
-/**
- * Obtiene todas las materias y sus recursos asociados.
- *
- * @param mysqli $db Conexión a la base de datos.
- * @param string $parametro_busqueda Término de búsqueda.
- * @param string $campo_busqueda Campo de búsqueda.
- * @return array Lista de materias con sus recursos.
- */
-function obtener_datos_red(mysqli $db, string $parametro_busqueda, string $campo_busqueda): array {
-    $sql_materias = 'SELECT DISTINCT id_materia, nombre_materia FROM materia';
-    $consulta_materias = $db->query($sql_materias);
-    
-    $datos_completos = [];
-    if ($consulta_materias) {
-        while ($materia = $consulta_materias->fetch_assoc()) {
-            $recursos = obtener_recursos_por_materia($db, $materia['id_materia'], $parametro_busqueda, $campo_busqueda);
-            // Solo añadir la materia si tiene recursos que coincidan con la búsqueda.
-            if (!empty($recursos)) {
-                $datos_completos[] = [
-                    'id_materia' => $materia['id_materia'],
-                    'nombre_materia' => $materia['nombre_materia'],
-                    'recursos' => $recursos
-                ];
+function red_obtener_materias(mysqli $db)
+{
+    $sql = 'SELECT id_materia, nombre_materia FROM materia ORDER BY nombre_materia ASC';
+    $result = $db->query($sql);
+    $materias = [];
+
+    if (!$result) {
+        error_log('RED materias query error: ' . $db->error);
+        return [];
+    }
+
+    while ($row = $result->fetch_assoc()) {
+        $materias[(int) $row['id_materia']] = [
+            'id_materia' => (int) $row['id_materia'],
+            'nombre_materia' => $row['nombre_materia'],
+            'recursos' => [],
+        ];
+    }
+
+    return $materias;
+}
+
+function red_obtener_recursos(mysqli $db, $termino_busqueda = '', $campo_busqueda = 'titulo_red')
+{
+    $campos_permitidos = [
+        'titulo_red' => 'r.titulo_red',
+        'descripcion' => 'r.descripcion',
+        'palabras_clave' => 'r.palabras_clave',
+    ];
+
+    $campo_sql = $campos_permitidos[$campo_busqueda] ?? $campos_permitidos['titulo_red'];
+    $sql = "SELECT
+                r.id_red,
+                r.titulo_red,
+                r.nivel_eductivo,
+                r.formato,
+                r.enlace,
+                r.scorm,
+                r.icono_red,
+                r.materia_red,
+                i.imagen_icono
+            FROM red r
+            LEFT JOIN iconos i ON i.id_iconos = r.icono_red";
+
+    $conditions = [];
+    $types = '';
+    $params = [];
+    $terminos = preg_split('/\s+/', trim((string) $termino_busqueda));
+
+    foreach ($terminos as $termino) {
+        if ($termino === '') {
+            continue;
+        }
+        $conditions[] = 'LOWER(' . $campo_sql . ') LIKE ?';
+        $types .= 's';
+        $params[] = '%' . red_lower($termino) . '%';
+    }
+
+    if (!empty($conditions)) {
+        $sql .= ' WHERE ' . implode(' AND ', $conditions);
+    }
+
+    $sql .= ' ORDER BY r.titulo_red ASC';
+    return red_fetch_all($db, $sql, $types, $params);
+}
+
+function obtener_datos_red(mysqli $db, $parametro_busqueda = '', $campo_busqueda = 'titulo_red')
+{
+    $materias = red_obtener_materias($db);
+    $recursos_data = red_obtener_recursos($db, $parametro_busqueda, $campo_busqueda);
+
+    if (!$recursos_data['ok']) {
+        return [];
+    }
+
+    foreach ($recursos_data['rows'] as $recurso) {
+        foreach (red_materia_ids($recurso['materia_red'] ?? '') as $id_materia) {
+            if (!isset($materias[$id_materia])) {
+                continue;
             }
+            $materias[$id_materia]['recursos'][] = $recurso;
         }
     }
-    return $datos_completos;
+
+    return array_values(array_filter($materias, function ($materia) {
+        return !empty($materia['recursos']);
+    }));
 }
 
+function red_icono_url($imagen_icono)
+{
+    $imagen = $imagen_icono ?: 'folder-10.png';
+    return SGA_COMUN_URL . '/img/png/' . $imagen;
+}
 
-// 5. PROCESAMIENTO PRINCIPAL
-// El script ahora llama a la función principal para obtener todos los datos necesarios.
 $datos_para_vista = obtener_datos_red($mysqli, $parametro_busqueda, $campo_busqueda);
-$rol_usuario = $_SESSION['rol'] ?? 'invitado';
 
-// Se define el título de la página según el rol.
-$titulo_pagina = ($rol_usuario === "estudiante") ? 'Entretenimiento' : 'Recursos Educativos Digitales';
-
-// Finalizar la ejecución de PHP si es una llamada AJAX para buscar.
-if (isset($_GET['buscar_red'])) {
-    // Si fuera una llamada AJAX, aquí se imprimiría el resultado como JSON y se saldría.
-    // echo json_encode($datos_para_vista);
-    // exit();
-}
-
-
-// Buffer de salida para la plantilla
 ob_start();
-
-/**
- * =================================================================
- * INICIO DE LA VISTA (HTML, CSS, JS)
- * =================================================================
- *
- * Esta sección se encarga únicamente de mostrar los datos que
- * la lógica de PHP ya ha preparado en la variable $datos_para_vista.
- */
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($titulo_pagina) ?></title>
-    <!-- Aquí irían tus enlaces a CSS, Bootstrap, jQuery, etc. -->
-    <!-- <link rel="stylesheet" href="path/to/bootstrap.css"> -->
-    <!-- <link rel="stylesheet" href="path/to/jquery.contextMenu.css"> -->
-    <style>
-        /* 7. MEJORA DE ESTILOS UI/UX */
-        :root {
-            --primary-color: #4A90E2; /* Un azul moderno */
-            --accent-color: #f2721d;   /* Mantenemos el naranja como acento */
-            --background-color: #f4f7f9;
-            --card-background: #ffffff;
-            --text-color: #333333;
-            --light-gray: #e0e0e0;
-            --shadow-color: rgba(0, 0, 0, 0.08);
-        }
+<style>
+    :root {
+        --red-primary: #3d7fc2;
+        --red-primary-dark: #2f6aa4;
+        --red-accent: #f2721d;
+        --red-bg: #f4f7f9;
+        --red-card: #ffffff;
+        --red-text: #333333;
+        --red-line: #e0e0e0;
+        --red-shadow: rgba(0, 0, 0, 0.08);
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-        }
+    body {
+        background-color: var(--red-bg);
+        color: var(--red-text);
+    }
 
-        .main-container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
-        }
+    .red-main-container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 0 20px;
+    }
 
-        .jumbotron {
-            background: linear-gradient(135deg, var(--primary-color), #357ABD);
-            color: white;
-            border-radius: 12px;
-            padding: 30px; /* Reducido para dar espacio al search bar */
-            margin-bottom: 40px;
-            text-align: center;
-            position: relative;
-            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
-        }
-        .jumbotron h1 {
-            margin: 0;
-            margin-bottom: 20px; /* Espacio para el search bar */
-            font-size: 2.5em;
-            font-weight: 700;
-        }
-        
-        .search-wrapper {
-            position: relative;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        
-        #recurso-search-input {
-            width: 100%;
-            padding: 12px 20px 12px 45px; /* Espacio para el ícono */
-            border-radius: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 1em;
-            transition: background-color 0.3s, box-shadow 0.3s;
-        }
-        #recurso-search-input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-        #recurso-search-input:focus {
-            outline: none;
-            background-color: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
-        }
-        
-        .search-wrapper::before {
-            content: '🔍';
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            opacity: 0.7;
-        }
+    .red-jumbotron {
+        background: linear-gradient(135deg, var(--red-primary), var(--red-primary-dark));
+        color: white;
+        border-radius: 8px;
+        padding: 30px;
+        margin-bottom: 34px;
+        text-align: center;
+        position: relative;
+        box-shadow: 0 4px 15px rgba(61, 127, 194, 0.35);
+    }
 
+    .red-jumbotron h1 {
+        margin: 0 0 20px;
+        font-size: 2.4em;
+        font-weight: 700;
+    }
 
-        .btn-opciones {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 10;
-            background-color: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            color: white;
-        }
+    .red-search-wrapper {
+        position: relative;
+        max-width: 520px;
+        margin: 0 auto;
+    }
 
-        .materia-header {
-            background-color: var(--card-background);
-            color: var(--primary-color);
-            padding: 15px 20px;
-            margin-bottom: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px var(--shadow-color);
-            font-size: 1.3em;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 5px solid var(--accent-color);
-            transition: box-shadow 0.2s ease;
-        }
-        .materia-header:hover {
-            box-shadow: 0 4px 10px var(--shadow-color);
-        }
-        .materia-header::after {
-            content: '▼'; /* Icono para indicar que es desplegable */
-            font-size: 0.8em;
-            transition: transform 0.3s ease;
-        }
-        .materia-header.collapsed::after {
-             transform: rotate(-90deg);
-        }
-        
-        .recursos-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 25px;
-            overflow: hidden;
-            transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
-            opacity: 1;
-        }
+    .red-search-wrapper::before {
+        content: '';
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(255, 255, 255, 0.75);
+        border-radius: 50%;
+        transform: translateY(-55%);
+    }
 
-        .grid-hidden {
-            max-height: 0;
-            opacity: 0;
-            padding-bottom: 0;
-        }
-        
-        .recurso-card {
-            background-color: var(--card-background);
-            border: 1px solid var(--light-gray);
-            border-radius: 12px;
-            padding: 20px 15px;
-            text-align: center;
-            cursor: pointer;
-            box-shadow: 0 4px 6px var(--shadow-color);
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-        }
-        .recurso-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px var(--shadow-color);
-        }
+    .red-search-wrapper::after {
+        content: '';
+        position: absolute;
+        left: 31px;
+        top: 56%;
+        width: 8px;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.75);
+        transform: rotate(45deg);
+        transform-origin: left center;
+    }
 
-        .recurso-card h3 {
-            font-size: 1em;
-            font-weight: 600;
-            margin: 0 0 15px 0;
-            min-height: 45px; /* Para alinear tarjetas con títulos de 1, 2 o 3 líneas */
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
+    #recurso-search-input {
+        width: 100%;
+        padding: 12px 20px 12px 48px;
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        background-color: rgba(255, 255, 255, 0.18);
+        color: white;
+        font-size: 1em;
+        transition: background-color 0.2s, box-shadow 0.2s;
+    }
 
-        .recurso-card img {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-            margin-top: auto; /* Empuja la imagen hacia abajo */
-        }
-        
-        .no-recursos {
-            text-align: center;
-            padding: 50px;
-            font-size: 1.2em;
-            color: #777;
-        }
+    #recurso-search-input::placeholder {
+        color: rgba(255, 255, 255, 0.72);
+    }
 
-        /* Estilos para Paginación */
-        .pagination-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            margin-top: 25px; /* Espacio después de la rejilla de recursos */
-            margin-bottom: 40px;
-            padding: 10px 0;
-        }
+    #recurso-search-input:focus {
+        outline: none;
+        background-color: rgba(255, 255, 255, 0.28);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.28);
+    }
 
-        .pagination-button {
-            background-color: var(--card-background);
-            border: 1px solid var(--light-gray);
-            color: var(--primary-color);
-            padding: 8px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.2s, color 0.2s;
-        }
+    .red-btn-opciones {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 10;
+        background-color: rgba(255, 255, 255, 0.22);
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        color: white;
+    }
 
-        .pagination-button:hover:not(:disabled) {
-            background-color: var(--primary-color);
-            color: white;
-        }
+    .materia-wrapper {
+        margin-bottom: 26px;
+    }
 
-        .pagination-button.active {
-            background-color: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
+    .materia-header {
+        background-color: var(--red-card);
+        color: var(--red-primary);
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px var(--red-shadow);
+        font-size: 1.3em;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 5px solid var(--red-accent);
+        transition: box-shadow 0.2s ease;
+    }
 
-        .pagination-button:disabled {
-            background-color: #f0f0f0;
-            color: #b0b0b0;
-            cursor: not-allowed;
-            border-color: var(--light-gray);
-        }
-    </style>
-</head>
-<body>
+    .materia-header:hover {
+        box-shadow: 0 4px 10px var(--red-shadow);
+    }
 
-<div class="main-container">
-    <div class="jumbotron">
+    .materia-header::after {
+        content: 'v';
+        font-size: 0.8em;
+        transition: transform 0.25s ease;
+    }
+
+    .materia-header.collapsed::after {
+        transform: rotate(-90deg);
+    }
+
+    .recursos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 22px;
+        overflow: hidden;
+        opacity: 1;
+        transition: max-height 0.35s ease, opacity 0.35s ease;
+    }
+
+    .grid-hidden {
+        max-height: 0;
+        opacity: 0;
+        padding-bottom: 0;
+    }
+
+    .recurso-card {
+        background-color: var(--red-card);
+        border: 1px solid var(--red-line);
+        border-radius: 8px;
+        padding: 18px 14px;
+        min-height: 155px;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 4px 6px var(--red-shadow);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .recurso-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 15px var(--red-shadow);
+    }
+
+    .recurso-card h3 {
+        font-size: 1em;
+        font-weight: 600;
+        margin: 0 0 15px;
+        min-height: 45px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .recurso-card img {
+        width: 60px;
+        height: 60px;
+        object-fit: contain;
+        margin-top: auto;
+    }
+
+    .no-recursos {
+        text-align: center;
+        padding: 42px;
+        font-size: 1.15em;
+        color: #777;
+    }
+
+    .pagination-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 22px 0 36px;
+        padding: 10px 0;
+    }
+
+    .pagination-button {
+        background-color: var(--red-card);
+        border: 1px solid var(--red-line);
+        color: var(--red-primary);
+        padding: 8px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.2s, color 0.2s;
+    }
+
+    .pagination-button:hover:not(:disabled),
+    .pagination-button.active {
+        background-color: var(--red-primary);
+        color: white;
+        border-color: var(--red-primary);
+    }
+
+    .pagination-button:disabled {
+        background-color: #f0f0f0;
+        color: #aaa;
+        cursor: not-allowed;
+    }
+</style>
+
+<div class="red-main-container">
+    <div class="red-jumbotron">
         <?php if ($rol_usuario === 'admin' || $rol_usuario === 'docente'): ?>
-            <button type="button" class="btn btn-warning btn-opciones" onclick="window.location.href='nuevo_red.php'">Nuevo</button>
+            <button type="button" class="btn btn-warning red-btn-opciones" onclick="window.location.href='nuevo_red.php'">Nuevo</button>
         <?php endif; ?>
-        <h1><?= htmlspecialchars($titulo_pagina) ?></h1>
-        <div class="search-wrapper">
-             <input type="search" id="recurso-search-input" placeholder="Buscar recursos por título...">
+        <h1><?php echo red_e($titulo_pagina); ?></h1>
+        <div class="red-search-wrapper">
+            <input type="search" id="recurso-search-input" placeholder="Buscar recursos por titulo...">
         </div>
     </div>
-    
+
     <div id="recursos-container">
         <?php if (empty($datos_para_vista)): ?>
-            <p class="no-recursos">Aún no hay recursos o no se encontraron coincidencias.</p>
+            <p class="no-recursos">Aun no hay recursos o no se encontraron coincidencias.</p>
         <?php else: ?>
             <?php foreach ($datos_para_vista as $materia): ?>
+                <?php $materia_id = (int) $materia['id_materia']; ?>
                 <div class="materia-wrapper">
-                    <p class="materia-header" data-toggle-target="#materia-<?= $materia['id_materia'] ?>">
-                        <span><?= htmlspecialchars($materia['nombre_materia']) ?></span>
+                    <p class="materia-header" data-toggle-target="#materia-<?php echo $materia_id; ?>">
+                        <span><?php echo red_e($materia['nombre_materia']); ?></span>
                     </p>
-                    
-                    <div class="recursos-grid" id="materia-<?= $materia['id_materia'] ?>">
+
+                    <div class="recursos-grid" id="materia-<?php echo $materia_id; ?>">
                         <?php foreach ($materia['recursos'] as $recurso): ?>
                             <?php
-                                $titulo_seguro = htmlspecialchars($recurso['titulo_red'], ENT_QUOTES, 'UTF-8');
-                                $id_red_seguro = htmlspecialchars($recurso['id_red'], ENT_QUOTES, 'UTF-8');
-                                
-                                $url_visor = sprintf(
-                                    '../red/visor_red.php?red=%s&formato=%s&enlace=%s&scorm=%s',
-                                    $id_red_seguro,
-                                    htmlspecialchars($recurso['formato']),
-                                    urlencode($recurso['enlace']),
-                                    htmlspecialchars($recurso['scorm'])
-                                );
+                            $id_red = (int) $recurso['id_red'];
+                            $titulo_red = $recurso['titulo_red'] ?? '';
+                            $titulo_seguro = red_e($titulo_red);
+                            $url_visor = '../red/visor_red.php?red=' . $id_red .
+                                '&formato=' . rawurlencode((string) ($recurso['formato'] ?? '')) .
+                                '&enlace=' . rawurlencode((string) ($recurso['enlace'] ?? '')) .
+                                '&scorm=' . rawurlencode((string) ($recurso['scorm'] ?? ''));
                             ?>
-                            <div class="recurso-card context-menu-red" 
-                                 data-url="<?= $url_visor ?>" 
-                                 data-id-red="<?= $id_red_seguro ?>" 
-                                 data-titulo-red="<?= $titulo_seguro ?>">
-                                
-                                <h3 title="<?= $titulo_seguro ?>">
-                                    <strong><?= htmlspecialchars(puntos_suspensivos($recurso['titulo_red'], 50)) ?></strong>
+                            <div class="recurso-card context-menu-red"
+                                 data-url="<?php echo red_e($url_visor); ?>"
+                                 data-id-red="<?php echo $id_red; ?>"
+                                 data-titulo-red="<?php echo $titulo_seguro; ?>">
+                                <h3 title="<?php echo $titulo_seguro; ?>">
+                                    <strong><?php echo red_e(puntos_suspensivos($titulo_red, 50)); ?></strong>
                                 </h3>
-                                <img src="<?= consultar_link_icono($recurso['icono_red']) ?>" alt="Icono de recurso">
+                                <img src="<?php echo red_e(red_icono_url($recurso['imagen_icono'] ?? '')); ?>" alt="Icono de recurso">
                             </div>
                         <?php endforeach; ?>
                     </div>
-                     <div class="no-recursos" style="display: none;">No se encontraron resultados en esta materia.</div>
-                    <!-- El contenedor para la paginación se creará aquí con JS -->
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
-        <p class="no-recursos" id="no-recursos-global" style="display: none;">No se encontraron recursos con ese término de búsqueda.</p>
+        <p class="no-recursos" id="no-recursos-global" style="display: none;">No se encontraron recursos con ese termino de busqueda.</p>
     </div>
 </div>
 
-<!-- Scripts al final del body para un mejor rendimiento de carga -->
-<!-- <script src="path/to/jquery.js"></script> -->
-<!-- <script src="path/to/jquery.contextMenu.js"></script> -->
-<script type="text/javascript">
+<script>
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // --- LÓGICA DE PAGINACIÓN Y BÚSQUEDA ---
-    const RESOURCES_PER_PAGE = 8;
-    const searchInput = document.getElementById('recurso-search-input');
-    const noRecursosGlobalMessage = document.getElementById('no-recursos-global');
+    var RESOURCES_PER_PAGE = 8;
+    var searchInput = document.getElementById('recurso-search-input');
+    var noRecursosGlobalMessage = document.getElementById('no-recursos-global');
+    var canManageRed = <?php echo ($rol_usuario === 'admin' || $rol_usuario === 'docente') ? 'true' : 'false'; ?>;
+    var paginationSystems = new Map();
 
-    const setupPagination = (materiaWrapper) => {
-        let currentPage = 1;
-        const grid = materiaWrapper.querySelector('.recursos-grid');
-        const paginationControlsContainer = materiaWrapper.querySelector('.pagination-controls') || document.createElement('div');
-        if (!paginationControlsContainer.classList.contains('pagination-controls')) {
-            paginationControlsContainer.className = 'pagination-controls';
-            materiaWrapper.appendChild(paginationControlsContainer);
+    function getFilteredCards(grid) {
+        return Array.prototype.slice.call(grid.querySelectorAll('.recurso-card')).filter(function(card) {
+            return card.dataset.searchMatch !== '0';
+        });
+    }
+
+    function setupPagination(materiaWrapper) {
+        var currentPage = 1;
+        var grid = materiaWrapper.querySelector('.recursos-grid');
+        var controls = materiaWrapper.querySelector('.pagination-controls') || document.createElement('div');
+
+        if (!controls.classList.contains('pagination-controls')) {
+            controls.className = 'pagination-controls';
+            materiaWrapper.appendChild(controls);
         }
 
-        const showPage = (page) => {
-            const visibleResources = Array.from(grid.querySelectorAll('.recurso-card:not([style*="display: none"])'));
-            
-            const startIndex = (page - 1) * RESOURCES_PER_PAGE;
-            const endIndex = startIndex + RESOURCES_PER_PAGE;
+        function showPage(page) {
+            var visibleResources = getFilteredCards(grid);
+            var totalPages = Math.max(1, Math.ceil(visibleResources.length / RESOURCES_PER_PAGE));
+            currentPage = Math.min(Math.max(page, 1), totalPages);
+            var startIndex = (currentPage - 1) * RESOURCES_PER_PAGE;
+            var endIndex = startIndex + RESOURCES_PER_PAGE;
 
-            visibleResources.forEach((resource, index) => {
+            Array.prototype.forEach.call(grid.querySelectorAll('.recurso-card'), function(resource) {
+                resource.style.display = 'none';
+            });
+
+            visibleResources.forEach(function(resource, index) {
                 resource.style.display = (index >= startIndex && index < endIndex) ? 'flex' : 'none';
             });
-            updatePaginationUI();
-        };
 
-        const updatePaginationUI = () => {
-             const visibleResources = Array.from(grid.querySelectorAll('.recurso-card:not([style*="display: none"])'));
-            const totalResources = visibleResources.length;
-            const totalPages = Math.ceil(totalResources / RESOURCES_PER_PAGE);
+            updateControls(visibleResources.length, totalPages);
+        }
 
-            paginationControlsContainer.innerHTML = ''; // Limpiar
-
-            if (totalPages <= 1) {
-                return; // No mostrar controles si no son necesarios
+        function updateControls(totalResources, totalPages) {
+            controls.innerHTML = '';
+            if (totalResources <= RESOURCES_PER_PAGE) {
+                return;
             }
 
-            // Botón "Anterior"
-            const prevButton = document.createElement('button');
+            var prevButton = document.createElement('button');
             prevButton.textContent = 'Anterior';
             prevButton.className = 'pagination-button';
             prevButton.disabled = currentPage === 1;
-            prevButton.addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    showPage(currentPage);
-                }
+            prevButton.addEventListener('click', function() {
+                showPage(currentPage - 1);
             });
-            paginationControlsContainer.appendChild(prevButton);
+            controls.appendChild(prevButton);
 
-            // Botones de número
-            for (let i = 1; i <= totalPages; i++) {
-                const pageButton = document.createElement('button');
+            for (var i = 1; i <= totalPages; i++) {
+                var pageButton = document.createElement('button');
                 pageButton.textContent = i;
                 pageButton.className = 'pagination-button';
-                if (i === currentPage) pageButton.classList.add('active');
-                pageButton.addEventListener('click', () => {
-                    currentPage = i;
-                    showPage(currentPage);
-                });
-                paginationControlsContainer.appendChild(pageButton);
+                if (i === currentPage) {
+                    pageButton.classList.add('active');
+                }
+                pageButton.addEventListener('click', (function(pageNumber) {
+                    return function() {
+                        showPage(pageNumber);
+                    };
+                })(i));
+                controls.appendChild(pageButton);
             }
 
-            // Botón "Siguiente"
-            const nextButton = document.createElement('button');
+            var nextButton = document.createElement('button');
             nextButton.textContent = 'Siguiente';
             nextButton.className = 'pagination-button';
             nextButton.disabled = currentPage === totalPages;
-            nextButton.addEventListener('click', () => {
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    showPage(currentPage);
-                }
+            nextButton.addEventListener('click', function() {
+                showPage(currentPage + 1);
             });
-            paginationControlsContainer.appendChild(nextButton);
-        };
-        
-        const resetAndShowPage = (page) => {
-             const allResources = grid.querySelectorAll('.recurso-card');
-             allResources.forEach(r => r.style.display = 'flex'); // Restaurar la visibilidad antes de filtrar
-             showPage(page);
-        };
-        
-        // Initial setup
-        resetAndShowPage(1); // Mostrar la primera página por defecto
+            controls.appendChild(nextButton);
+        }
 
-        // Devolver la función para poder llamarla desde el filtro
-        return { update: updatePaginationUI, show: showPage, reset: resetAndShowPage };
-    };
+        showPage(1);
+        return {
+            show: showPage
+        };
+    }
 
-    const materiaPaginationSystems = new Map();
-    document.querySelectorAll('.materia-wrapper').forEach(materiaWrapper => {
-        const system = setupPagination(materiaWrapper);
-        materiaPaginationSystems.set(materiaWrapper, system);
+    document.querySelectorAll('.materia-wrapper').forEach(function(materiaWrapper) {
+        materiaWrapper.querySelectorAll('.recurso-card').forEach(function(card) {
+            card.dataset.searchMatch = '1';
+        });
+        paginationSystems.set(materiaWrapper, setupPagination(materiaWrapper));
     });
 
-    searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.trim().toLowerCase();
-        let totalVisibleResources = 0;
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            var searchTerm = this.value.trim().toLowerCase();
+            var totalVisibleResources = 0;
 
-        document.querySelectorAll('.materia-wrapper').forEach(materiaWrapper => {
-            const grid = materiaWrapper.querySelector('.recursos-grid');
-            const resources = grid.querySelectorAll('.recurso-card');
-            let visibleInSection = 0;
-            
-            resources.forEach(resource => {
-                const title = resource.dataset.tituloRed.toLowerCase();
-                const isMatch = title.includes(searchTerm);
-                resource.style.display = isMatch ? 'flex' : 'none'; // Se oculta aquí si no coincide
-                if (isMatch) {
-                    visibleInSection++;
-                    totalVisibleResources++;
+            document.querySelectorAll('.materia-wrapper').forEach(function(materiaWrapper) {
+                var visibleInSection = 0;
+
+                materiaWrapper.querySelectorAll('.recurso-card').forEach(function(resource) {
+                    var title = (resource.dataset.tituloRed || '').toLowerCase();
+                    var isMatch = title.indexOf(searchTerm) !== -1;
+                    resource.dataset.searchMatch = isMatch ? '1' : '0';
+                    if (isMatch) {
+                        visibleInSection++;
+                        totalVisibleResources++;
+                    }
+                });
+
+                materiaWrapper.style.display = visibleInSection > 0 ? 'block' : 'none';
+                var system = paginationSystems.get(materiaWrapper);
+                if (system) {
+                    system.show(1);
                 }
             });
 
-            materiaWrapper.style.display = visibleInSection > 0 ? 'block' : 'none';
-
-            // Re-paginar los elementos ahora visibles
-            const paginationSystem = materiaPaginationSystems.get(materiaWrapper);
-            if(paginationSystem) {
-                 paginationSystem.reset(1); // Reiniciar y mostrar la página 1 con los resultados filtrados
+            if (noRecursosGlobalMessage) {
+                noRecursosGlobalMessage.style.display = totalVisibleResources === 0 ? 'block' : 'none';
             }
         });
+    }
 
-        noRecursosGlobalMessage.style.display = totalVisibleResources === 0 ? 'block' : 'none';
-    });
-
-
-    // --- Lógica de UI existente ---
-    if (typeof $.contextMenu === 'function') {
-        // Menú contextual para cada recurso individual
+    if (typeof $ !== 'undefined' && typeof $.contextMenu === 'function') {
         $.contextMenu({
             selector: '.context-menu-red',
-            build: function($trigger, e) {
-                // Usar .data() de jQuery es más robusto que .dataset
-                const idRed = $trigger.data('id-red');
-                const tituloRed = $trigger.data('titulo-red');
-                
+            build: function($trigger) {
+                var idRed = $trigger.data('id-red');
+                var tituloRed = $trigger.data('titulo-red');
+                var items = {
+                    info: { name: tituloRed, icon: 'info', disabled: true },
+                    sep1: '---------',
+                    descargar: { name: 'Descargar', icon: 'download' }
+                };
+
+                if (canManageRed) {
+                    items.modificar = { name: 'Modificar', icon: 'edit' };
+                    items.eliminar = { name: 'Eliminar', icon: 'delete' };
+                }
+
+                items.sep2 = '---------';
+                items.salir = { name: 'Salir', icon: 'quit' };
+
                 return {
-                    callback: function(key, options) {
-                        switch(key) {
-                            case 'descargar':
-                                window.location.href = `../comun/funciones.php?ruta_red=${idRed}`;
-                                break;
-                            case 'modificar':
-                                window.location.href = `nuevo_red.php?id_red=${idRed}`;
-                                break;
-                            case 'eliminar':
-                                if (confirm(`¿Está seguro que desea eliminar "${tituloRed}"?`)) {
-                                    window.location.href = `../comun/funciones.php?elred=${idRed}`;
-                                }
-                                break;
+                    callback: function(key) {
+                        if (key === 'descargar') {
+                            window.location.href = '../comun/funciones.php?ruta_red=' + encodeURIComponent(idRed);
+                        } else if (key === 'modificar' && canManageRed) {
+                            window.location.href = 'nuevo_red.php?id_red=' + encodeURIComponent(idRed);
+                        } else if (key === 'eliminar' && canManageRed && confirm('Esta seguro que desea eliminar "' + tituloRed + '"?')) {
+                            window.location.href = '../comun/funciones.php?elred=' + encodeURIComponent(idRed);
                         }
                     },
-                    items: {
-                        "info": { name: tituloRed, icon: "info", disabled: true },
-                        "sep1": "---------",
-                        "descargar": { name: "Descargar", icon: "download" },
-                        "modificar": { name: "Modificar", icon: "edit" },
-                        "eliminar": { name: "Eliminar", icon: "delete" },
-                        "sep2": "---------",
-                        "salir": { name: "Salir", icon: "quit" }
-                    }
+                    items: items
                 };
             }
         });
     }
 
-    // Lógica para mostrar/ocultar recursos de una materia
-    document.querySelectorAll('.materia-header').forEach(header => {
+    document.querySelectorAll('.materia-header').forEach(function(header) {
         header.addEventListener('click', function() {
-            const targetSelector = this.getAttribute('data-toggle-target');
-            const gridElement = document.querySelector(targetSelector);
-            const paginationElement = this.parentElement.querySelector('.pagination-controls');
-            
+            var targetSelector = this.getAttribute('data-toggle-target');
+            var gridElement = document.querySelector(targetSelector);
+            var paginationElement = this.parentElement.querySelector('.pagination-controls');
+
             if (gridElement) {
-                const isCollapsed = gridElement.classList.toggle('grid-hidden');
+                var isCollapsed = gridElement.classList.toggle('grid-hidden');
                 this.classList.toggle('collapsed', isCollapsed);
                 if (paginationElement) {
                     paginationElement.style.display = isCollapsed ? 'none' : 'flex';
@@ -637,11 +647,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Lógica para el clic en una tarjeta de recurso
-    document.querySelectorAll('.recurso-card').forEach(card => {
+    document.querySelectorAll('.recurso-card').forEach(function(card) {
         card.addEventListener('mousedown', function(event) {
-            if (event.button === 0) { // Botón izquierdo
-                const url = this.getAttribute('data-url');
+            if (event.button === 0) {
+                var url = this.getAttribute('data-url');
                 if (url) {
                     window.location.href = url;
                 }
@@ -650,12 +659,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
-</body>
-</html>
 <?php
-// Recoger el contenido del buffer y enviarlo a la plantilla principal.
 $contenido = ob_get_clean();
-require __DIR__ . '/../comun/plantilla.php'; // Se asume que esta plantilla imprime la variable $contenido.
+require __DIR__ . '/../comun/plantilla.php';
 ?>
-

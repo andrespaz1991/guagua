@@ -1,70 +1,106 @@
 <?php
-    include_once('tbs_class.php'); 
-    include_once('plugins/tbs_plugin_opentbs.php'); 
-    require_once("../comun/autoload.php");
-    require '../comun/conexion.php';
-    $TBS = new clsTinyButStrong; 
-    $TBS->Plugin(TBS_INSTALL, OPENTBS_PLUGIN); 
-    //Parametros
+/**
+ * Script Refactorizado para Gestión de Planeaciones Vallesol 2026
+ * Configuración: Jerarquía [Mes] -> [Materia] (Sin subcarpetas extras)
+ * Autor: Andres Paz
+ */
 
-$sql_vallesol='select * from planeador_vallesol
-inner join materia on materia.id_materia=planeador_vallesol.materia
-where planeador_vallesol.id_plan="'.$_GET['id'].'"';
-$consulta_vallesol=$mysqli->query($sql_vallesol);
+include_once('tbs_class.php'); 
+include_once('plugins/tbs_plugin_opentbs.php'); 
+require_once("../comun/autoload.php");
+require_once("../Clases/Fecha.Class.php");
+require '../comun/conexion.php';
 
-while($row=$consulta_vallesol->fetch_assoc()){ 
-    $fecha_creacion=$row['fecha_creacion'];
-    $fecha_inicio=Fecha::formato_fecha($row['fecha_inicio']).' al '.Fecha::formato_fecha($row['fecha_fin']);
-    $fecha_fin=$row['fecha_fin'];
-    $grado=Comun::extraerTextoEntreParentesisValida($row['nombre_materia']);
-    $materia=Comun::eliminar_sobrante($row['nombre_materia']);
-    $periodo=$row['periodo'];
-    $tiempo_plan=$row['tiempo_plan'].' Horas';
-    $dba=$row['dba'];
-    $estrategias=$row['estrategias'];
-    $evidencias=$row['evidencias'];
-    $observaciones=$row['observaciones'];
-    $recursos=$row['recursos'];
-    $reflexion=$row['reflexion'];
-    $objetivo=$row['objetivo'];
-    $eje_tematico=$row['eje_tematico'];
+// Inicializar TBS
+$TBS = new clsTinyButStrong; 
+$TBS->Plugin(TBS_INSTALL, OPENTBS_PLUGIN); 
 
-     
-    #$nomprofesor = 'Anderson Code';
-    #$fechaprofesor = '04/06/2020';
-    #$firmadecano = 'firma.png';
-    //Cargando template
-    $template = 'planeador.docx';
+// 1. Obtención de parámetros
+$id_plan = isset($_GET['id']) ? $_GET['id'] : exit("ID no proporcionado");
+// Modo predeterminado: guardar
+$modo_salida = isset($_GET['modo']) ? $_GET['modo'] : 'guardar'; 
+
+$sql_vallesol = "SELECT * FROM planeador_vallesol
+                INNER JOIN asignacion ON asignacion.id_asignacion = planeador_vallesol.materia
+                INNER JOIN materia_oficial ON asignacion.id_asignatura = materia_oficial.id_materia
+                WHERE planeador_vallesol.id_plan = '$id_plan'";
+
+$consulta_vallesol = $mysqli->query($sql_vallesol);
+
+if ($row = $consulta_vallesol->fetch_assoc()) {
+    // 2. Procesamiento de variables
+    $fecha_inicio = Fecha::formato_fecha($row['fecha_inicio']) . ' al ' . Fecha::formato_fecha($row['fecha_fin']);
+    $mes = Fecha::mes($row['fecha_inicio'], true);
+    $grado = $row['grado']; // Grado directo como se solicitó
+    $materia_raw = trim(Comun::eliminar_sobrante($row['nombre_materia']));
+    $docente = 'Andres Paz';
+
+    // 3. Lógica de Mapeo y Excepción para Economía (evita subcarpetas como "politica")
+    $mapeo_carpetas = [
+        'Ciencias Sociales' => 'Ciencias Sociales',
+        'Educación Física'  => 'Ed Fisicia',
+        'Ed. Física'        => 'Ed Fisicia',
+        'Física'            => 'Fisica',
+        'Matemáticas'       => 'Matematicas',
+        'Tecnología'        => 'Tecnologia',
+        'Emprendimiento'    => 'Emprendimiento',
+        'Urbanidad'         => 'Urbanidad'
+    ];
+
+    // Normalización de Economía: Si contiene "Economia" (con o sin tilde), se fuerza a Ciencias Sociales
+    if (stripos($materia_raw, 'Economia') !== false || stripos($materia_raw, 'Economía') !== false) {
+        $carpeta_materia = 'Ciencias Sociales';
+        $materia_para_nombre = 'Ciencias Sociales';
+    } else {
+        $carpeta_materia = isset($mapeo_carpetas[$materia_raw]) ? $mapeo_carpetas[$materia_raw] : $materia_raw;
+        $materia_para_nombre = $materia_raw;
+    }
+
+    // 4. Configuración de Archivo y Rutas (Mes -> Materia)
+    // Limpiamos el nombre de la materia para el archivo (un solo nivel, sin subcarpetas)
+    $materia_clean = str_replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], '', $materia_para_nombre);
+    $nombre_archivo = "{$materia_clean} {$grado}.docx";
+    
+    // Ruta final: Planeaciones \ [Mes] \ [Materia]
+    $base_path = "G:\\Mi unidad\\Vallesol2026\\Planeaciones\\";
+    $target_dir = $base_path . $mes . "\\" . $carpeta_materia;
+    $full_path = $target_dir . "\\" . $nombre_archivo;
+
+    // 5. Carga de Plantilla y Mezcla de Campos
+    $template = 'PLANEADOR2026.docx';
     $TBS->LoadTemplate($template, OPENTBS_ALREADY_UTF8);
-    //Escribir Nuevos campos
-    $TBS->MergeField('pro.fecha_inicio', trim($fecha_inicio));
-    $TBS->MergeField('pro.fecha_fin', trim($fecha_fin));
-    $TBS->MergeField('pro.materia', trim($materia));
-    $TBS->MergeField('pro.grado', trim($grado));
-    $TBS->MergeField('pro.periodo', trim($periodo));
-    $TBS->MergeField('pro.tiempo_plan', trim($tiempo_plan));
-    $TBS->MergeField('pro.dba', trim($dba));
-    $TBS->MergeField('pro.estrategias', trim($estrategias));
-    $TBS->MergeField('pro.evidencias', trim($evidencias));
-    $TBS->MergeField('pro.observaciones', trim($observaciones));
-    $TBS->MergeField('pro.recursos', trim($recursos));
-    $TBS->MergeField('pro.reflexion', trim($reflexion));
-    $TBS->MergeField('pro.objetivo', trim( $objetivo));
-    $TBS->MergeField('pro.eje_tematico', trim(str_replace(' ','', $eje_tematico)));
-    
-    
-    $TBS->VarRef['x'] = $firmadecano;
+
+    $TBS->MergeField('fecha_inicio', trim($fecha_inicio));
+    $TBS->MergeField('periodo',      trim($row['periodo']));
+    $TBS->MergeField('dba',          trim($row['dba']));
+    $TBS->MergeField('objetivo',     trim($row['objetivo']));
+    $TBS->MergeField('tiempo',       trim($row['tiempo_plan'] . ' Horas semanales'));
+    $TBS->MergeField('estrategia',   trim($row['estrategias']));
+    $TBS->MergeField('momentos',     trim(strip_tags($row['observaciones'])));
+    $TBS->MergeField('materia',      trim($materia_para_nombre));
+    $TBS->MergeField('evaluacion',   trim($row['recursos']));
+    $TBS->MergeField('mes',          trim($mes));
+    $TBS->MergeField('docente',      trim($docente));
 
     $TBS->PlugIn(OPENTBS_DELETE_COMMENTS);
 
-    $save_as = (isset($_POST['save_as']) && (trim($_POST['save_as'])!=='') && ($_SERVER['SERVER_NAME']=='localhost')) ? trim($_POST['save_as']) : '';
-    $output_file_name = str_replace('.', '_'.date('Y-m-d').$save_as.'.', $template);
-    if ($save_as==='') {
-        $TBS->Show(OPENTBS_DOWNLOAD, $output_file_name); 
-        exit();
+    // 6. Ejecución de Salida
+    if ($modo_salida === 'guardar') {
+        // Creamos la carpeta del mes y la de la materia (sin niveles extra)
+        if (!is_dir($target_dir)) {
+            mkdir($target_dir, 0777, true);
+        }
+        
+        $TBS->Show(OPENTBS_FILE, $full_path);
+        echo "Planeación guardada con éxito en: " . $full_path;
+        echo '<meta http-equiv="refresh" content="2; url=../planeador/index.php?asignacion='. $_GET['asignacion'].'&id='.$id_nuevo_planeador . '" />';
+
     } else {
-        $TBS->Show(OPENTBS_FILE, $output_file_name);
-        exit("File [$output_file_name] has been created.");
+        // Descarga si es necesario
+        $TBS->Show(OPENTBS_DOWNLOAD, $nombre_archivo);
     }
+    exit();
+} else {
+    echo "No se encontró información para el ID: " . $id_plan;
 }
 ?>

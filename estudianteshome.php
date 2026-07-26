@@ -1,17 +1,27 @@
 <?php
 require("comun/autoload.php");
 $academico=new Academico;
-if(!empty($_GET['nid'])){
-$academico->id_asignacion =$_GET['nid'];
-/*
-$nid=$_GET['nid'];
+
+if(!empty($_GET['name'])){
+$name=$_GET['name'];
+}else{
+$name='';
 }
-if(!isset($_GET['nid'])){
-    $nid="";
-*/
+
+if(!empty($_GET['nombre'])){
+$nombre=$_GET['nombre'];
+}else{
+$nombre='';
+}
+
+
+if(!empty($_GET['nid'])){
+$nid =$_GET['nid'];
+    }else{
+        $nid='';
     }
 
-$lista= $academico->estudiantes_de_una_asignacion($_GET['nombre'],$_GET['nid']);
+$lista= $academico->estudiantes_de_una_asignacion($nombre,$nid,$name);
 #echo "<pre>";
 #print_r($_GET['nombre']);
 #echo "</pre>";

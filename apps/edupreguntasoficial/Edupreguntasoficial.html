@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafío Lógico-Matemático</title>
+    <script src="../../comun/css/tailwindcss.css"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="../../comun/css/cssedupreguntas.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f4; /* stone-100 */
+        }
+        .control-btn, .nav-arrow, .answer-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .control-btn:hover, .nav-arrow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .answer-btn:hover:not(.disabled) {
+             transform: scale(1.02);
+        }
+        .correct {
+            background-color: #22c55e !important; /* green-500 */
+            color: white !important;
+            border-color: #16a34a !important; /* green-700 */
+        }
+        .incorrect {
+            background-color: #ef4444 !important; /* red-500 */
+            color: white !important;
+            border-color: #dc2626 !important; /* red-700 */
+        }
+        .disabled {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        .modal-backdrop {
+            background-color: rgba(0,0,0,0.6);
+            transition: opacity 0.3s ease-in-out;
+        }
+        .math sup { font-size: .78em; }
+    </style>
+</head>
+<body class="text-stone-800 flex items-center justify-center min-h-screen p-4">
+
+    <div id="app-container" class="w-full max-w-3xl mx-auto">
+
+        <!-- Pantalla de Inicio -->
+        <div id="start-screen" class="text-center bg-white p-8 rounded-2xl shadow-lg">
+            <h1 class="text-4xl md:text-5xl font-bold text-sky-600 mb-4">Desafío Lógico-Matemático 🧠✨</h1>
+            <p class="text-lg text-stone-600 mb-8">¡Pon a prueba tu ingenio con estos 12 desafíos! ¿Estás listo?</p>
+            <div class="space-y-4">
+                <button id="start-btn" class="control-btn w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-4 px-8 rounded-xl text-xl">
+                    ¡Comenzar!
+                </button>
+                <button id="config-btn" class="control-btn w-full bg-stone-200 hover:bg-stone-300 text-stone-700 font-bold py-3 px-8 rounded-xl text-lg">
+                    Configurar Tiempo ⚙️
+                </button>
+            </div>
+        </div>
+
+        <!-- Pantalla de Juego -->
+        <div id="game-screen" class="hidden relative">
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <span id="question-counter" class="text-sm font-semibold text-stone-500">Reto 1 / 12</span>
+                        <h2 id="score" class="text-2xl font-bold text-sky-600">Puntos: 0</h2>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button id="pause-resume-btn" class="control-btn bg-amber-100 text-amber-700 rounded-full w-14 h-14 flex items-center justify-center text-3xl">
+                            ⏸️
+                        </button>
+                        <div id="timer" class="text-3xl font-bold bg-stone-100 text-stone-700 rounded-full w-24 h-24 flex items-center justify-center border-4 border-stone-200">
+                            --
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-6 min-h-[100px] flex items-center">
+                    <p id="question-text" class="text-xl md:text-2xl font-semibold leading-relaxed"></p>
+                </div>
+
+                <div id="answers-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Las respuestas se generan aquí -->
+                </div>
+
+                <div id="feedback-container" class="mt-6 text-center min-h-[60px] flex flex-col items-center justify-center">
+                     <p id="feedback-text" class="text-lg font-semibold h-7"></p>
+                     <!-- El botón de explicación aparecerá aquí -->
+                </div>
+            </div>
+            
+            <button id="prev-btn" class="nav-arrow absolute top-1/2 -translate-y-1/2 -left-5 md:-left-8 bg-white rounded-full w-14 h-14 flex items-center justify-center shadow-md text-3xl text-stone-600 hover:bg-stone-100">
+                ‹
+            </button>
+            <button id="next-btn" class="nav-arrow absolute top-1/2 -translate-y-1/2 -right-5 md:-right-8 bg-white rounded-full w-14 h-14 flex items-center justify-center shadow-md text-3xl text-stone-600 hover:bg-stone-100">
+                ›
+            </button>
+        </div>
+
+        <!-- Pantalla Final -->
+        <div id="end-screen" class="hidden text-center bg-white p-8 rounded-2xl shadow-lg">
+            <h1 class="text-4xl md:text-5xl font-bold text-sky-600 mb-4">¡Juego Terminado!</h1>
+            <p class="text-2xl text-stone-600 mb-2">Tu puntaje final es:</p>
+            <p id="final-score" class="text-6xl font-bold text-green-600 mb-8">0</p>
+            <button id="restart-btn" class="control-btn w-full mt-8 bg-sky-500 hover:bg-sky-600 text-white font-bold py-4 px-8 rounded-xl text-xl">
+                Jugar de Nuevo
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Configuración de Tiempo -->
+    <div id="config-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+        <div class="bg-white w-full max-w-lg p-8 rounded-2xl shadow-2xl">
+            <h2 class="text-2xl font-bold text-stone-800 mb-6">Configurar Tiempo por Pregunta</h2>
+            <div id="time-config-container" class="max-h-[60vh] overflow-y-auto space-y-4 pr-2">
+                <!-- Inputs de tiempo se generan aquí -->
+            </div>
+            <button id="save-config-btn" class="control-btn w-full mt-6 bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-6 rounded-xl text-lg">
+                Guardar y Cerrar
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Explicación -->
+    <div id="explanation-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+        <div class="bg-white w-full max-w-lg p-8 rounded-2xl shadow-2xl relative">
+            <h2 class="text-2xl font-bold text-stone-800 mb-4">¡Así se resuelve!</h2>
+            <div id="explanation-text" class="text-stone-600 space-y-3 leading-relaxed"></div>
+            <button id="close-explanation-btn" class="absolute top-4 right-4 bg-stone-200 hover:bg-stone-300 rounded-full w-8 h-8 flex items-center justify-center font-bold text-stone-600">
+                X
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        const questions = [
+            {
+                question: "Si $x^2 - y^2 = 77$ y $x - y = 7$, ¿cuál es el valor de $x$?",
+                options: ["11", "4", "9", "18"], correctAnswer: 2, time: 120,
+                explanation: `
+                    <p><strong>Respuesta:</strong> 9.</p>
+                    <p class="text-sm text-stone-500">Porque si uno suma y resta se descubre: x+y=11 y x−y=7. Sumando da x=9.</p>`
+            },
+            {
+                question: "La suma de las edades de tres hermanos es 42. El mayor tiene el doble de la edad del menor y el del medio tiene 3 años menos que el mayor. ¿Qué edad tiene el hermano del medio?",
+                options: ["12", "9", "18", "15"], correctAnswer: 3, time: 150,
+                explanation: `
+                    <p><strong>Respuesta:</strong> 15 años.</p>
+                    <p class="text-sm text-stone-500">Mayor 18, menor 9, medio 15. 9+15+18=42, funciona perfecto.</p>`
+            },
+            {
+                question: "Una caja contiene 5 bolas rojas, 3 azules y 2 verdes (10 en total). ¿Cuál es la probabilidad de sacar una bola roja y luego una azul sin reposición?",
+                options: ["1/6", "8/10", "1/10", "3/20"], correctAnswer: 0, time: 120,
+                explanation: `
+                    <p><strong>Respuesta:</strong> 1/6.</p>
+                    <p class="text-sm text-stone-500">Primero roja 5/10, después azul 3/9. Multiplico y da 1/6.</p>`
+            },
+            {
+                question: "Si 4 obreros construyen un muro en 10 horas, ¿cuántos obreros se necesitan para construir el mismo muro en 8 horas?",
+                options: ["5 obreros", "6 obreros", "3 obreros", "8 obreros"], correctAnswer: 0, time: 90,
+                explanation: `
+                    <p><strong>Respuesta:</strong> 5 obreros.</p>
+                    <p class="text-sm text-stone-500">Trabajo total = 40. En 8 horas toca dividir: 40/8=5.</p>`
+            },
+            {
+                question: "En una urna hay 4 bolas rojas, 2 azules y 1 amarilla (7 en total). Si se extraen dos bolas al azar sin reposición, ¿cuál es la probabilidad de que ambas sean rojas?",
+                options: ["2/7", "4/7", "1/3", "3/7"], correctAnswer: 0, time: 120,
+                explanation: `
+                    <p><strong>Respuesta:</strong> 2/7.</p>
+                    <p class="text-sm text-stone-500">Primera roja 4/7, segunda 3/6. Multiplico: 2/7.</p>`
+            },
+            {
+                question: "Un padre tiene 47 años y su hijo 11. ¿Cuántos años han de transcurrir para que la edad del padre sea el triple que la del hijo?",
+                options: ["7", "5", "8", "10"], correctAnswer: 0, time: 150,
+                explanation: `
+                    <p><strong>Respuesta:</strong> 7 años.</p>
+                    <p class="text-sm text-stone-500">En 7: hijo 18, papá 54. 18×3=54, justo triple.</p>`
+            },
+            {
+                question: "Un granjero necesita cruzar un río con un lobo, una oveja y un repollo. Su barca solo tiene espacio para él y uno más. Si se quedan solos, el lobo se come a la oveja y la oveja se come el repollo. ¿Cuál es el primer paso crucial para resolver el acertijo?",
+                options: ["Cruzar con el lobo", "Cruzar con la oveja", "Cruzar con el repollo", "Cruzar solo para inspeccionar"], correctAnswer: 1, time: 90,
+                explanation: `
+                    <p><strong>Respuesta:</strong> Llevar la oveja.</p>
+                    <p class="text-sm text-stone-500">Si no, el lobo o la oveja comen algo.</p>`
+            },
+            {
+                question: "Hay 15 monedas sobre la mesa. Dos jugadores se turnan para quitar 1, 2 o 3 monedas. Gana el que se lleva la última. Si tú eres el primer jugador, ¿cuántas monedas debes quitar para garantizar la victoria?",
+                options: ["1 moneda", "2 monedas", "3 monedas", "Cualquier cantidad, es suerte"], correctAnswer: 2, time: 150,
+                explanation: `
+                    <p><strong>Respuesta:</strong> Quitar 3 monedas.</p>
+                    <p class="text-sm text-stone-500">Así quedan 12, múltiplo de 4. Eso asegura ganar.</p>`
+            },
+             {
+                question: "Secuencia: 0, 6, 24, 60, 120… ¿qué sigue?",
+                options: ["180", "210", "150", "240"], correctAnswer: 1, time: 150,
+                explanation: `
+                    <p><strong>Respuesta:</strong> 210.</p>
+                    <p class="text-sm text-stone-500 math">Es n<sup>3</sup> − n. Con n=6: 216−6=210.</p>`
+            },
+            {
+                question: "Estás frente a 3 interruptores fuera de una habitación cerrada con una bombilla dentro. Solo puedes entrar una vez. ¿Qué acción te permite saber qué interruptor es el correcto?",
+                options: ["Encender un interruptor y entrar", "Encender uno, apagarlo, encender otro y entrar", "Dejar todos apagados y entrar", "Encender los tres al mismo tiempo"], correctAnswer: 1, time: 100,
+                explanation: `
+                    <p><strong>Respuesta:</strong> Encender 1, esperar, apagarlo. Encender 2 y entrar.</p>
+                    <p class="text-sm text-stone-500">Si está prendida es 2; si está apagada y caliente es 1; si fría es 3.</p>`
+            },
+            {
+                question: "Usando una jarra de 5 litros y otra de 3 litros, buscas medir 4 litros. En el proceso, ¿cuál de estas cantidades de agua NUNCA tendrás en la jarra de 5 litros?",
+                options: ["2 litros", "4 litros", "1 litro", "3 litros"], correctAnswer: 2, time: 120,
+                explanation: `
+                    <p><strong>Respuesta:</strong> 1 litro.</p>
+                    <p class="text-sm text-stone-500">Se logran 5,3,2,4… pero nunca 1.</p>`
+            },
+            {
+                question: "Estás frente a dos puertas y dos guardianes (uno miente, uno dice la verdad). ¿Qué única pregunta, hecha a un solo guardián, te garantiza encontrar la puerta a la libertad?",
+                options: ["¿Cuál es la puerta a la libertad?", "¿La puerta de la libertad es la de la derecha?", "Si le preguntara al otro guardián cuál es la puerta a la libertad, ¿qué me respondería?", "¿Eres tú el guardián que miente?"], correctAnswer: 2, time: 180,
+                explanation: `
+                    <p><strong>Respuesta:</strong> “¿Qué puerta diría tu compañero que es la correcta?”</p>
+                    <p class="text-sm text-stone-500">Ambos señalarán la mala, así eliges la otra.</p>`
+            }
+        ];
+
+        // --- Elementos del DOM ---
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        const explanationModal = document.getElementById('explanation-modal');
+        const configModal = document.getElementById('config-modal');
+
+        const startBtn = document.getElementById('start-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const closeExplanationBtn = document.getElementById('close-explanation-btn');
+        const configBtn = document.getElementById('config-btn');
+        const saveConfigBtn = document.getElementById('save-config-btn');
+        const pauseResumeBtn = document.getElementById('pause-resume-btn');
+        
+        const timeConfigContainer = document.getElementById('time-config-container');
+        const questionCounterEl = document.getElementById('question-counter');
+        const scoreEl = document.getElementById('score');
+        const timerEl = document.getElementById('timer');
+        const questionTextEl = document.getElementById('question-text');
+        const answersGridEl = document.getElementById('answers-grid');
+        const feedbackContainerEl = document.getElementById('feedback-container');
+        let feedbackTextEl = document.getElementById('feedback-text'); 
+        
+        const finalScoreEl = document.getElementById('final-score');
+        const explanationTextEl = document.getElementById('explanation-text');
+        
+        // --- Estado del Juego ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timerInterval;
+        let timeLeft = 0;
+        let isPaused = false;
+        let answeredState = [];
+        let userAnswers = [];
+
+
+        function initializeGame() {
+            startScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            score = 0;
+            answeredState = new Array(questions.length).fill(false);
+            userAnswers = new Array(questions.length).fill(null);
+            updateScore();
+            showQuestion();
+        }
+
+        function updateScore() {
+            let calculatedScore = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer !== null && answer === questions[index].correctAnswer) {
+                    calculatedScore += 10;
+                }
+            });
+            score = calculatedScore;
+            scoreEl.textContent = `Puntos: ${score}`;
+        }
+
+        function showQuestion() {
+            resetState();
+            const question = questions[currentQuestionIndex];
+            questionCounterEl.textContent = `Reto ${currentQuestionIndex + 1} / ${questions.length}`;
+            questionTextEl.innerHTML = question.question;
+            
+            const optionsLetters = ['A', 'B', 'C', 'D'];
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.innerHTML = `<span class="font-bold mr-2">${optionsLetters[index]})</span> ${option}`;
+                button.className = 'answer-btn w-full p-4 border-2 border-stone-200 rounded-xl text-left hover:bg-sky-100 hover:border-sky-300';
+                button.addEventListener('click', () => selectAnswer(index));
+                answersGridEl.appendChild(button);
+            });
+
+            if (answeredState[currentQuestionIndex]) {
+                restoreAnsweredState();
+            } else {
+                timeLeft = question.time;
+                startTimer();
+                showExplanationButton();
+            }
+            updateNavButtons();
+        }
+
+        function restoreAnsweredState() {
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const question = questions[currentQuestionIndex];
+            timerEl.textContent = '---';
+
+            if (userAnswer === -1) { // Time up
+                feedbackTextEl.textContent = "¡Se acabó el tiempo!";
+                feedbackTextEl.classList.add('text-red-600');
+                const correctButton = answersGridEl.children[question.correctAnswer];
+                if(correctButton) correctButton.classList.add('correct');
+            } else if (userAnswer !== null) {
+                const correct = userAnswer === question.correctAnswer;
+                feedbackTextEl.textContent = correct ? "¡Respuesta Correcta!" : "Respuesta Incorrecta";
+                feedbackTextEl.classList.add(correct ? 'text-green-600' : 'text-red-600');
+                
+                const selectedButton = answersGridEl.children[userAnswer];
+                if(selectedButton) selectedButton.classList.add(correct ? 'correct' : 'incorrect');
+                
+                if (!correct) {
+                    const correctButton = answersGridEl.children[question.correctAnswer];
+                    if(correctButton) correctButton.classList.add('correct');
+                }
+            }
+            
+            Array.from(answersGridEl.children).forEach(btn => btn.classList.add('disabled'));
+            showExplanationButton();
+        }
+
+
+        function startTimer() {
+            isPaused = false;
+            pauseResumeBtn.innerHTML = '⏸️';
+            timerEl.textContent = formatTime(timeLeft);
+            timerInterval = setInterval(() => {
+                if (!isPaused) {
+                    timeLeft--;
+                    timerEl.textContent = formatTime(timeLeft);
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        handleTimeUp();
+                    }
+                }
+            }, 1000);
+        }
+        
+        function togglePause() {
+            isPaused = !isPaused;
+            pauseResumeBtn.innerHTML = isPaused ? '▶️' : '⏸️';
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+
+        function handleTimeUp() {
+            answeredState[currentQuestionIndex] = true;
+            userAnswers[currentQuestionIndex] = -1; // -1 for time up
+            feedbackTextEl.textContent = "¡Se acabó el tiempo!";
+            feedbackTextEl.classList.add('text-red-600');
+            disableAnswers(true);
+        }
+
+        function resetState() {
+            clearInterval(timerInterval);
+            const oldBtn = feedbackContainerEl.querySelector('button');
+            if(oldBtn) oldBtn.remove();
+            feedbackTextEl.textContent = '';
+            feedbackTextEl.className = 'text-lg font-semibold h-7';
+            answersGridEl.innerHTML = '';
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (answeredState[currentQuestionIndex]) return;
+
+            clearInterval(timerInterval);
+            answeredState[currentQuestionIndex] = true;
+            userAnswers[currentQuestionIndex] = selectedIndex;
+            
+            updateScore();
+            restoreAnsweredState();
+        }
+
+        function disableAnswers(isTimeUp) {
+             Array.from(answersGridEl.children).forEach(btn => btn.classList.add('disabled'));
+             if (isTimeUp) {
+                const correctButton = answersGridEl.children[questions[currentQuestionIndex].correctAnswer];
+                if(correctButton) correctButton.classList.add('correct');
+             }
+             showExplanationButton();
+        }
+        
+        function showExplanationButton() {
+            if (feedbackContainerEl.querySelector('button')) return;
+
+            const explanationBtn = document.createElement('button');
+            explanationBtn.textContent = 'Ver Explicación';
+            explanationBtn.className = 'control-btn mt-2 bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-lg';
+            explanationBtn.onclick = () => showExplanation(currentQuestionIndex);
+            feedbackContainerEl.appendChild(explanationBtn);
+        }
+        
+        function showExplanation(index) {
+            explanationTextEl.innerHTML = questions[index].explanation;
+            explanationModal.classList.remove('hidden');
+        }
+        
+        function closeExplanation() {
+            explanationModal.classList.add('hidden');
+        }
+
+        function navigateQuestion(direction) {
+            const newIndex = currentQuestionIndex + direction;
+            if (newIndex >= 0 && newIndex < questions.length) {
+                currentQuestionIndex = newIndex;
+                showQuestion();
+            } else if (newIndex >= questions.length) {
+                showEndScreen();
+            }
+        }
+
+        function updateNavButtons() {
+            prevBtn.classList.remove('hidden');
+            nextBtn.classList.toggle('hidden', currentQuestionIndex === questions.length - 1);
+        }
+
+        function showEndScreen() {
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalScoreEl.textContent = `${score} Puntos`;
+        }
+
+        function openConfigModal() {
+            timeConfigContainer.innerHTML = '';
+            questions.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between gap-4';
+                div.innerHTML = `
+                    <label for="time-q-${index}" class="text-stone-600 truncate pr-4 flex-1">Reto ${index + 1}</label>
+                    <input type="number" id="time-q-${index}" value="${q.time}" min="10" step="10" class="w-24 p-2 border border-stone-300 rounded-lg text-center">
+                `;
+                timeConfigContainer.appendChild(div);
+            });
+            configModal.classList.remove('hidden');
+        }
+
+        function saveConfig() {
+            questions.forEach((q, index) => {
+                const input = document.getElementById(`time-q-${index}`);
+                if (input) {
+                    q.time = parseInt(input.value, 10) || 120;
+                }
+            });
+            configModal.classList.add('hidden');
+        }
+
+        startBtn.addEventListener('click', initializeGame);
+        nextBtn.addEventListener('click', () => navigateQuestion(1));
+        prevBtn.addEventListener('click', () => navigateQuestion(-1));
+        restartBtn.addEventListener('click', () => location.reload());
+        closeExplanationBtn.addEventListener('click', closeExplanation);
+        explanationModal.addEventListener('click', (e) => {
+             if (e.target === explanationModal) closeExplanation();
+        });
+        configBtn.addEventListener('click', openConfigModal);
+        saveConfigBtn.addEventListener('click', saveConfig);
+        configModal.addEventListener('click', (e) => {
+             if (e.target === configModal) configModal.classList.add('hidden');
+        });
+        pauseResumeBtn.addEventListener('click', togglePause);
+    </script>
+</body>
+</html>
+

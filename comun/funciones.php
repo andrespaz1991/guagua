@@ -13,7 +13,7 @@ if (file_exists("../instalar/index.php")) header("Location: ../instalar/index.ph
 require (dirname(__FILE__)."/funciones.rutas.php");
 /*Fin Rutas*/
 /*Clases*/
-include_once (dirname(__FILE__)."/foro.class.php");
+#include_once (dirname(__FILE__)."/foro.class.php");
 /*Fin Clases*/
 @session_start();
 if(isset($_POST['valora'])){
@@ -410,7 +410,7 @@ require 'conexion.php';
 
        }
        $_SESSION['roles'] = $row['rol'];
-       $ruta = $_SERVER['DOCUMENT_ROOT']."/../sga-data/foto/".$row['foto'];
+       $ruta = dirname(__DIR__)."/sga-data/foto/".$row['foto'];
        //recordarme
 if (isset($_POST['recordarme']) and $_POST['recordarme']=="SI"){
 $cookie_name = "usuarios[".$row['id_usuario']."]";
@@ -1695,7 +1695,7 @@ if ($inscribir_est==true) inscribir_estudiante($ano_lectivo);
 
 function play_scorm($carpeta){
     require dirname(__FILE__).'/config.php';
- $carpeta1= $_SERVER['DOCUMENT_ROOT'].'/red/'.$carpeta;
+ $carpeta1= dirname(__DIR__).'/red/'.$carpeta;
 #function buscar_html_en_scorm($directorio)
     $scorm= simplexml_load_file($carpeta1.'/imsmanifest.xml');
     #echo "<pre>";
@@ -1886,7 +1886,7 @@ if(isset($_GET['scorm']) and $_GET['scorm']=="si"){ eliminarDir($rutaa); }
 else{
 $rutaa=str_replace("///localhost//guagua/comun/sga-data/banco_red/","",$rutaa);
 
-$rutaa=$_SERVER['DOCUMENT_ROOT'].'/guagua/comun/sga-data/banco_red/'.$rutaa;
+$rutaa=__DIR__.'/sga-data/banco_red/'.$rutaa;
 
 ///localhost//guagua/comun/sga-data/banco_red/
  if (unlink($rutaa)) { ?>

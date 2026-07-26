@@ -209,7 +209,7 @@ echo '<center>';
                                 <td>${row.grado}</td>
                                 <td>${row.nombre_materia}</td>
                                 <td>${row.dba}</td>
-                                <td><a href='../Planeador/phpword/ejemplo.php?descargar&id=${row.id_plan}' target='_blank'>Descargar</a></td>
+                                <td><a href='ejemplo.php?modo=guardar&id=${row.id_plan}' target='_blank'>Descargar</a></td>
                             `;
                             tbody.appendChild(tr);
                         });

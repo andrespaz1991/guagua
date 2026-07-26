@@ -13,7 +13,7 @@
 ob_start();
 session_start();
 
-// Inclusión de dependencias
+// Inclusión de dependencias (Asegúrate de que este archivo exista y configure $mysqli)
 require_once("../comun/conexion.php");
 
 // =================================================================
@@ -33,101 +33,88 @@ function renderizar_tabla_usuarios($busqueda, $pagina, $mysqli) {
     $limite = 10; // Cantidad de registros por página
     if ($pagina < 1) $pagina = 1;
     $offset = ($pagina - 1) * $limite;
-    
-    // Sanitización exhaustiva
-    $busqueda_segura = $mysqli->real_escape_string($busqueda);
-    $termino = "%" . $busqueda_segura . "%";
-    
-    // Consulta para contar el total de registros (para la paginación)
-    $sql_count = "SELECT COUNT(*) as total 
-                  FROM usuario 
-                  WHERE LOWER(nombre) LIKE LOWER('$termino') 
-                     OR LOWER(apellido) LIKE LOWER('$termino') 
-                     OR LOWER(id_usuario) LIKE LOWER('$termino')";
-    
-    $res_count = $mysqli->query($sql_count);
-    $total_registros = $res_count->fetch_assoc()['total'];
+
+    $where = "WHERE 1=1";
+    if ($busqueda !== '') {
+        $busqueda_esc = strtolower($mysqli->real_escape_string($busqueda));
+        $where .= " AND (LOWER(nombre) LIKE '%$busqueda_esc%' 
+                     OR LOWER(apellido) LIKE '%$busqueda_esc%' 
+                     OR id_usuario LIKE '%$busqueda_esc%' 
+                     OR LOWER(usuario) LIKE '%$busqueda_esc%')";
+    }
+
+    // Contar total de registros
+    $query_count = $mysqli->query("SELECT COUNT(*) as total FROM usuario $where");
+    $total_registros = $query_count->fetch_assoc()['total'];
     $total_paginas = ceil($total_registros / $limite);
 
-    // Consulta principal con LIMIT y OFFSET
-    $sql = "SELECT id_usuario, usuario, nombre, apellido, rol, estado 
-            FROM usuario 
-            WHERE LOWER(nombre) LIKE LOWER('$termino') 
-               OR LOWER(apellido) LIKE LOWER('$termino') 
-               OR LOWER(id_usuario) LIKE LOWER('$termino') 
-            ORDER BY apellido ASC 
-            LIMIT $limite OFFSET $offset";
-            
-    $resultado = $mysqli->query($sql);
+    // Obtener registros de la página actual
+    $query = $mysqli->query("SELECT * FROM usuario $where ORDER BY fecha_creacion DESC LIMIT $limite OFFSET $offset");
 
-    if ($resultado && $resultado->num_rows > 0) {
-        echo '<div class="overflow-x-auto w-full min-h-[400px] flex flex-col justify-between">';
-        echo '<table class="w-full text-sm text-left text-gray-600 relative">';
-        echo '<thead class="text-xs text-slate-700 uppercase bg-slate-100 shadow-sm z-10">';
+    if ($query->num_rows > 0) {
+        echo '<div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">';
+        echo '<table class="w-full text-left text-sm text-slate-600">';
+        echo '<thead class="bg-slate-50 text-xs uppercase text-slate-500 font-semibold border-b border-slate-200">';
         echo '<tr>
                 <th class="px-6 py-4">Documento</th>
-                <th class="px-6 py-4">Nombre Completo</th>
                 <th class="px-6 py-4">Usuario</th>
+                <th class="px-6 py-4">Nombre Completo</th>
                 <th class="px-6 py-4">Rol</th>
                 <th class="px-6 py-4">Estado</th>
-                <th class="px-6 py-4 text-right">Acciones</th>
+                <th class="px-6 py-4 text-center">Acciones</th>
               </tr>';
-        echo '</thead><tbody class="divide-y divide-gray-200">';
+        echo '</thead>';
+        echo '<tbody class="divide-y divide-slate-100 bg-white">';
         
-        while ($fila = $resultado->fetch_assoc()) {
-            $badgeColor = ($fila['estado'] === 'activo') ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200';
-            $nombre_completo = trim($fila['nombre'] . ' ' . $fila['apellido']);
+        while ($row = $query->fetch_assoc()) {
+            $estado_class = $row['estado'] == 'activo' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
+            $nombre_completo = htmlspecialchars($row['nombre'] . ' ' . $row['apellido']);
             
-            echo '<tr class="bg-white hover:bg-blue-50 transition-colors duration-200 group">';
-            echo '<td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">' . htmlspecialchars($fila['id_usuario']) . '</td>';
-            echo '<td class="px-6 py-4 font-semibold text-slate-800">' . htmlspecialchars($nombre_completo) . '</td>';
-            echo '<td class="px-6 py-4 text-slate-500">' . htmlspecialchars($fila['usuario']) . '</td>';
-            echo '<td class="px-6 py-4 uppercase text-[10px] tracking-wider font-bold text-slate-500">' . htmlspecialchars($fila['rol']) . '</td>';
-            echo '<td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-semibold border ' . $badgeColor . '">' . htmlspecialchars($fila['estado']) . '</span></td>';
-            echo '<td class="px-6 py-4 text-right flex justify-end gap-4 opacity-0 group-hover:opacity-100 transition-opacity">';
-            echo '<a href="?Actualizar=' . urlencode($fila['id_usuario']) . '" class="text-blue-600 hover:text-blue-800 flex items-center gap-1" title="Editar"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></a>';
-            echo '<button onclick="confirmarEliminacion(\'' . htmlspecialchars($fila['id_usuario']) . '\')" class="text-red-500 hover:text-red-700 flex items-center gap-1" title="Eliminar"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>';
-            echo '</td></tr>';
+            echo '<tr class="hover:bg-slate-50 transition-colors">';
+            echo '<td class="px-6 py-4 font-medium text-slate-900">' . htmlspecialchars($row['id_usuario']) . '</td>';
+            echo '<td class="px-6 py-4">' . htmlspecialchars($row['usuario']) . '</td>';
+            echo '<td class="px-6 py-4">' . $nombre_completo . '</td>';
+            echo '<td class="px-6 py-4 capitalize">' . htmlspecialchars($row['rol']) . '</td>';
+            echo '<td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-bold ' . $estado_class . '">' . htmlspecialchars($row['estado']) . '</span></td>';
+            echo '<td class="px-6 py-4 text-center">
+                    <div class="flex items-center justify-center gap-2">
+                        <a href="usuario.php?Actualizar=' . htmlspecialchars($row['id_usuario']) . '" class="text-blue-500 hover:text-blue-700 p-2 hover:bg-blue-50 rounded-lg transition-colors" title="Editar">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        </a>
+                        <a href="#" onclick="confirmarEliminacion(\'' . htmlspecialchars($row['id_usuario']) . '\')" class="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition-colors" title="Eliminar">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </a>
+                    </div>
+                  </td>';
+            echo '</tr>';
         }
-        echo '</tbody></table>';
+        echo '</tbody></table></div>';
 
-        // Renderizado de Controles de Paginación
+        // Paginación
         if ($total_paginas > 1) {
-            echo '<div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">';
-            echo '<div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">';
-            echo '<div><p class="text-sm text-gray-700">Mostrando página <span class="font-medium">'.$pagina.'</span> de <span class="font-medium">'.$total_paginas.'</span> (<span class="font-medium">'.$total_registros.'</span> registros)</p></div>';
-            echo '<div><nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">';
+            echo '<div class="flex items-center justify-between mt-6">';
+            echo '<span class="text-sm text-slate-500">Mostrando página ' . $pagina . ' de ' . $total_paginas . '</span>';
+            echo '<div class="flex gap-1">';
             
-            // Botón Anterior
             if ($pagina > 1) {
-                echo '<button data-page="'.($pagina - 1).'" class="page-link relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"><span class="sr-only">Anterior</span><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg></button>';
+                echo '<button class="page-link px-3 py-1 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors" data-page="' . ($pagina - 1) . '">Anterior</button>';
+            }
+            
+            for ($i = max(1, $pagina - 2); $i <= min($total_paginas, $pagina + 2); $i++) {
+                $active = $i === $pagina ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50';
+                echo '<button class="page-link px-3 py-1 rounded-md border transition-colors ' . $active . '" data-page="' . $i . '">' . $i . '</button>';
             }
 
-            // Números de Página (Lógica de ventana simple)
-            $inicio = max(1, $pagina - 2);
-            $fin = min($total_paginas, $pagina + 2);
-            for ($i = $inicio; $i <= $fin; $i++) {
-                if ($i == $pagina) {
-                    echo '<button aria-current="page" class="relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">'.$i.'</button>';
-                } else {
-                    echo '<button data-page="'.$i.'" class="page-link relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">'.$i.'</button>';
-                }
-            }
-
-            // Botón Siguiente
             if ($pagina < $total_paginas) {
-                echo '<button data-page="'.($pagina + 1).'" class="page-link relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"><span class="sr-only">Siguiente</span><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg></button>';
+                echo '<button class="page-link px-3 py-1 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors" data-page="' . ($pagina + 1) . '">Siguiente</button>';
             }
-
-            echo '</nav></div></div></div>';
+            echo '</div></div>';
         }
-        echo '</div>';
     } else {
-        echo '<div class="flex flex-col items-center justify-center p-12 text-center bg-slate-50 rounded-lg border border-dashed border-slate-300">';
-        echo '<svg class="w-12 h-12 text-slate-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
-        echo '<h3 class="text-lg font-medium text-slate-900">No se encontraron resultados</h3>';
-        echo '<p class="text-sm text-slate-500 mt-1">Intenta con otro término de búsqueda o verifica el documento.</p>';
-        echo '</div>';
+        echo '<div class="p-8 text-center bg-slate-50 rounded-xl border border-slate-200 border-dashed">
+                <svg class="w-12 h-12 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <p class="text-slate-500 font-medium">No se encontraron usuarios que coincidan con la búsqueda.</p>
+              </div>';
     }
 }
 
@@ -136,20 +123,34 @@ function renderizar_tabla_usuarios($busqueda, $pagina, $mysqli) {
 // =================================================================
 $alerta_js = '';
 
+// Funciones auxiliares para manejar campos vacíos o nulos en SQL
+function nullify($value, $mysqli) {
+    $val = trim($value);
+    return $val === '' ? "NULL" : "'" . $mysqli->real_escape_string($val) . "'";
+}
+
 // A. CREAR
 if (isset($_POST['Ingresar']) && !empty($_POST['id_usuario'])) {
-    $id_usuario = $mysqli->real_escape_string(trim($_POST['id_usuario']));
-    $usuario    = $mysqli->real_escape_string(trim($_POST['usuario']));
-    $nombre     = $mysqli->real_escape_string(trim($_POST['nombre']));
-    $apellido   = $mysqli->real_escape_string(trim($_POST['apellido']));
-    $rol        = $mysqli->real_escape_string(trim($_POST['rol']));
-    $sexo       = $mysqli->real_escape_string(trim($_POST['sexo']));
-    $estado     = $mysqli->real_escape_string(trim($_POST['estado']));
-    $correo     = $mysqli->real_escape_string(trim($_POST['correo'] ?? ''));
-    $clave      = sha1($id_usuario); 
+    $id_usuario       = $mysqli->real_escape_string(trim($_POST['id_usuario']));
+    $tipo_documento   = $mysqli->real_escape_string(trim($_POST['tipo_documento'] ?? ''));
+    $usuario          = $mysqli->real_escape_string(trim($_POST['usuario']));
+    $nombre           = $mysqli->real_escape_string(trim($_POST['nombre']));
+    $apellido         = $mysqli->real_escape_string(trim($_POST['apellido']));
+    $rol              = $mysqli->real_escape_string(trim($_POST['rol']));
+    $genero           = $mysqli->real_escape_string(trim($_POST['genero'] ?? 'f'));
+    $estado           = $mysqli->real_escape_string(trim($_POST['estado']));
+    $correo           = nullify($_POST['correo'] ?? '', $mysqli);
+    $direccion        = nullify($_POST['direccion'] ?? '', $mysqli);
+    $telefono         = nullify($_POST['telefono'] ?? '', $mysqli);
+    $tipo_sangre      = nullify($_POST['tipo_sangre'] ?? '', $mysqli);
+    $mascota          = $mysqli->real_escape_string(trim($_POST['mascota'] ?? 'NO'));
+    $fecha_nacimiento = nullify($_POST['fecha_nacimiento'] ?? '', $mysqli);
+    $fecha_retiro     = nullify($_POST['fecha_retiro'] ?? '', $mysqli);
+    $observaciones    = nullify($_POST['observaciones'] ?? '', $mysqli);
+    $clave            = sha1($id_usuario); 
 
-    $sql = "INSERT INTO usuario (id_usuario, usuario, clave, nombre, apellido, rol, sexo, estado, correo, fecha_registro) 
-            VALUES ('$id_usuario', '$usuario', '$clave', '$nombre', '$apellido', '$rol', '$sexo', '$estado', '$correo', NOW())";
+    $sql = "INSERT INTO usuario (id_usuario, tipo_documento, usuario, clave, nombre, apellido, rol, genero, estado, correo, direccion, telefono, tipo_sangre, mascota, fecha_nacimiento, fecha_retiro, observaciones) 
+            VALUES ('$id_usuario', '$tipo_documento', '$usuario', '$clave', '$nombre', '$apellido', '$rol', '$genero', '$estado', $correo, $direccion, $telefono, $tipo_sangre, '$mascota', $fecha_nacimiento, $fecha_retiro, $observaciones)";
             
     if ($mysqli->query($sql)) {
         $alerta_js = "Swal.fire('¡Registrado!', 'El usuario ha sido creado con éxito.', 'success');";
@@ -163,28 +164,44 @@ if (isset($_POST['Ingresar']) && !empty($_POST['id_usuario'])) {
 }
 
 // B. ACTUALIZAR
-if (isset($_POST['Actualizar']) && !empty($_POST['id_usuario_original'])) {
-    $id_original = $mysqli->real_escape_string(trim($_POST['id_usuario_original']));
-    $id_usuario  = $mysqli->real_escape_string(trim($_POST['id_usuario']));
-    $usuario     = $mysqli->real_escape_string(trim($_POST['usuario']));
-    $nombre      = $mysqli->real_escape_string(trim($_POST['nombre']));
-    $apellido    = $mysqli->real_escape_string(trim($_POST['apellido']));
-    $rol         = $mysqli->real_escape_string(trim($_POST['rol']));
-    $sexo        = $mysqli->real_escape_string(trim($_POST['sexo']));
-    $estado      = $mysqli->real_escape_string(trim($_POST['estado']));
-    $correo      = $mysqli->real_escape_string(trim($_POST['correo'] ?? ''));
+if (isset($_POST['Actualizar_Registro']) && !empty($_POST['id_usuario_original'])) {
+    $id_original      = $mysqli->real_escape_string(trim($_POST['id_usuario_original']));
+    $id_usuario       = $mysqli->real_escape_string(trim($_POST['id_usuario']));
+    $tipo_documento   = $mysqli->real_escape_string(trim($_POST['tipo_documento'] ?? ''));
+    $usuario          = $mysqli->real_escape_string(trim($_POST['usuario']));
+    $nombre           = $mysqli->real_escape_string(trim($_POST['nombre']));
+    $apellido         = $mysqli->real_escape_string(trim($_POST['apellido']));
+    $rol              = $mysqli->real_escape_string(trim($_POST['rol']));
+    $genero           = $mysqli->real_escape_string(trim($_POST['genero'] ?? 'f'));
+    $estado           = $mysqli->real_escape_string(trim($_POST['estado']));
+    $correo           = nullify($_POST['correo'] ?? '', $mysqli);
+    $direccion        = nullify($_POST['direccion'] ?? '', $mysqli);
+    $telefono         = nullify($_POST['telefono'] ?? '', $mysqli);
+    $tipo_sangre      = nullify($_POST['tipo_sangre'] ?? '', $mysqli);
+    $mascota          = $mysqli->real_escape_string(trim($_POST['mascota'] ?? 'NO'));
+    $fecha_nacimiento = nullify($_POST['fecha_nacimiento'] ?? '', $mysqli);
+    $fecha_retiro     = nullify($_POST['fecha_retiro'] ?? '', $mysqli);
+    $observaciones    = nullify($_POST['observaciones'] ?? '', $mysqli);
     
     $sql = "UPDATE usuario 
             SET id_usuario='$id_usuario', 
+                tipo_documento='$tipo_documento',
                 usuario='$usuario', 
                 nombre='$nombre', 
                 apellido='$apellido', 
                 rol='$rol', 
- genero='$sexo', 
+                genero='$genero', 
                 estado='$estado', 
-                correo='$correo' 
+                correo=$correo,
+                direccion=$direccion,
+                telefono=$telefono,
+                tipo_sangre=$tipo_sangre,
+                mascota='$mascota',
+                fecha_nacimiento=$fecha_nacimiento,
+                fecha_retiro=$fecha_retiro,
+                observaciones=$observaciones
             WHERE id_usuario='$id_original'";
-            #echo $sql;
+            
     if ($mysqli->query($sql)) {
         $alerta_js = "Swal.fire('¡Actualizado!', 'Los datos se modificaron correctamente.', 'success');";
     } else {
@@ -207,8 +224,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && !empty($_GET['id'])
 // =================================================================
 $modo_edicion = false;
 $datos_editar = [
-    'id_usuario' => '', 'usuario' => '', 'nombre' => '', 'apellido' => '', 
-    'rol' => 'estudiante', 'sexo' => 'm', 'estado' => 'activo', 'correo' => ''
+    'id_usuario' => '', 'tipo_documento' => 'CC', 'usuario' => '', 'nombre' => '', 'apellido' => '', 
+    'rol' => 'estudiante', 'genero' => 'f', 'estado' => 'activo', 'correo' => '',
+    'direccion' => '', 'telefono' => '', 'tipo_sangre' => '', 'mascota' => 'NO', 
+    'fecha_nacimiento' => '', 'fecha_retiro' => '', 'observaciones' => ''
 ];
 
 if (isset($_GET['Actualizar']) && !empty($_GET['Actualizar'])) {
@@ -219,7 +238,7 @@ if (isset($_GET['Actualizar']) && !empty($_GET['Actualizar'])) {
     $res_edit = $mysqli->query($sql_edit);
     
     if ($res_edit && $res_edit->num_rows > 0) {
-        $datos_editar = $res_edit->fetch_assoc();
+        $datos_editar = array_merge($datos_editar, $res_edit->fetch_assoc());
     }
 }
 ?>
@@ -229,47 +248,53 @@ if (isset($_GET['Actualizar']) && !empty($_GET['Actualizar'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Usuarios - Vallesol</title>
+    <title>Gestión de Usuarios - Sede Vallesol</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        /* Loader Animation */
         .loader-line {
-            height: 3px;
             width: 100%;
+            height: 3px;
             background-color: #e2e8f0;
-            overflow: hidden;
             position: relative;
+            overflow: hidden;
         }
-        .loader-line::before {
-            content: '';
+        .loader-line::after {
+            content: "";
             position: absolute;
             left: -50%;
-            height: 3px;
-            width: 40%;
+            width: 50%;
+            height: 100%;
             background-color: #3b82f6;
-            animation: lineAnim 1s linear infinite;
+            animation: loading 1s infinite linear;
         }
-        @keyframes lineAnim {
-            0% { left: -40%; }
+        @keyframes loading {
+            0% { left: -50%; }
             100% { left: 100%; }
         }
     </style>
 </head>
-<body class="antialiased text-slate-800">
+<body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto space-y-8">
         
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Gestión de Usuarios</h1>
-            <p class="text-slate-500 text-sm mt-2">Administre los perfiles de estudiantes, docentes y administrativos de Vallesol de forma ágil.</p>
-        </div>
+        <!-- CABECERA -->
+        <header class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div>
+                <h1 class="text-2xl font-black text-slate-800">Gestión de Usuarios</h1>
+                <p class="text-slate-500 text-sm mt-1">Administración de perfiles y accesos de la Sede Vallesol</p>
+            </div>
+            <div class="hidden sm:block">
+                <svg class="w-12 h-12 text-blue-500 opacity-20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </div>
+        </header>
 
-        <div class="flex flex-col gap-8">
-            
-            <!-- BLOQUE SUPERIOR: Formulario -->
-            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 w-full transition-all duration-300">
+        <!-- FORMULARIO DE REGISTRO / EDICIÓN -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden transition-all duration-300">
+            <div class="p-6 md:p-8">
                 <div class="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
                     <div class="p-2 <?php echo $modo_edicion ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600'; ?> rounded-lg">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<?php echo $modo_edicion ? 'M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z' : 'M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z'; ?>"></path></svg>
@@ -279,145 +304,229 @@ if (isset($_GET['Actualizar']) && !empty($_GET['Actualizar'])) {
                     </h2>
                 </div>
                 
-                <form method="POST" action="usuario.php" class="space-y-6">
+                <form method="POST" action="usuario.php" class="space-y-8">
                     <?php if($modo_edicion): ?>
                         <input type="hidden" name="id_usuario_original" value="<?php echo htmlspecialchars($datos_editar['id_usuario']); ?>">
                     <?php endif; ?>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <!-- Fila 1 -->
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Documento de Identidad <span class="text-red-500">*</span></label>
-                            <input type="text" name="id_usuario" required 
-                                   value="<?php echo htmlspecialchars($datos_editar['id_usuario']); ?>"
-                                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nombre de Usuario <span class="text-red-500">*</span></label>
-                            <input type="text" name="usuario"  
-                                   value="<?php echo htmlspecialchars($datos_editar['usuario']); ?>"
-                                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
-                        </div>
+                    <!-- SECCIÓN: Información Personal -->
+                    <div>
+                        <h3 class="text-sm font-semibold text-slate-700 mb-4 border-b border-slate-100 pb-2">Información Personal</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tipo de Doc.</label>
+                                <select name="tipo_documento" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                                    <option value="CC" <?php echo ($datos_editar['tipo_documento'] == 'CC') ? 'selected' : ''; ?>>Cédula (CC)</option>
+                                    <option value="TI" <?php echo ($datos_editar['tipo_documento'] == 'TI') ? 'selected' : ''; ?>>Tarjeta Identidad (TI)</option>
+                                    <option value="CE" <?php echo ($datos_editar['tipo_documento'] == 'CE') ? 'selected' : ''; ?>>Cédula Extranjería (CE)</option>
+                                    <option value="RC" <?php echo ($datos_editar['tipo_documento'] == 'RC') ? 'selected' : ''; ?>>Reg. Civil (RC)</option>
+                                </select>
+                            </div>
 
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nombres <span class="text-red-500">*</span></label>
-                            <input type="text" name="nombre" required 
-                                   value="<?php echo htmlspecialchars($datos_editar['nombre']); ?>"
-                                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Apellidos <span class="text-red-500">*</span></label>
-                            <input type="text" name="apellido"  
-                                   value="<?php echo htmlspecialchars($datos_editar['apellido']); ?>"
-                                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
-                        </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Documento <span class="text-red-500">*</span></label>
+                                <input type="text" name="id_usuario" required 
+                                       value="<?php echo htmlspecialchars($datos_editar['id_usuario']); ?>"
+                                       class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                            </div>
 
-                        <!-- Fila 2 -->
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Rol</label>
-                            <select name="rol" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer">
-                                <option value="estudiante" <?php echo ($datos_editar['rol'] == 'estudiante') ? 'selected' : ''; ?>>Estudiante</option>
-                                <option value="docente" <?php echo ($datos_editar['rol'] == 'docente') ? 'selected' : ''; ?>>Docente</option>
-                                <option value="admin" <?php echo ($datos_editar['rol'] == 'admin') ? 'selected' : ''; ?>>Administrador</option>
-                                <option value="acudiente" <?php echo ($datos_editar['rol'] == 'acudiente') ? 'selected' : ''; ?>>Acudiente</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Género</label>
-                            <select name="sexo" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer">
-                                <option value="m" <?php echo ($datos_editar['sexo'] == 'm') ? 'selected' : ''; ?>>Masculino</option>
-                                <option value="f" <?php echo ($datos_editar['sexo'] == 'f') ? 'selected' : ''; ?>>Femenino</option>
-                            </select>
-                        </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nombres <span class="text-red-500">*</span></label>
+                                <input type="text" name="nombre" required 
+                                       value="<?php echo htmlspecialchars($datos_editar['nombre']); ?>"
+                                       class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                            </div>
 
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Estado</label>
-                            <select name="estado" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer">
-                                <option value="activo" <?php echo ($datos_editar['estado'] == 'activo') ? 'selected' : ''; ?>>Activo</option>
-                                <option value="inactivo" <?php echo ($datos_editar['estado'] == 'inactivo') ? 'selected' : ''; ?>>Inactivo</option>
-                            </select>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Apellidos <span class="text-red-500">*</span></label>
+                                <input type="text" name="apellido" required 
+                                       value="<?php echo htmlspecialchars($datos_editar['apellido']); ?>"
+                                       class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Género</label>
+                                <select name="genero" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                                    <option value="m" <?php echo ($datos_editar['genero'] == 'm') ? 'selected' : ''; ?>>Masculino</option>
+                                    <option value="f" <?php echo ($datos_editar['genero'] == 'f') ? 'selected' : ''; ?>>Femenino</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Fecha Nacimiento</label>
+                                <input type="date" name="fecha_nacimiento" 
+                                       value="<?php echo htmlspecialchars($datos_editar['fecha_nacimiento']); ?>"
+                                       class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tipo Sangre</label>
+                                <select name="tipo_sangre" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                                    <option value="">Seleccione...</option>
+                                    <?php 
+                                    $tipos = ['O+','O-','A+','A-','B+','B-','AB+','AB-'];
+                                    foreach($tipos as $t) {
+                                        $sel = ($datos_editar['tipo_sangre'] == $t) ? 'selected' : '';
+                                        echo "<option value=\"$t\" $sel>$t</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Correo Electrónico</label>
-                            <input type="email" name="correo" 
-                                   value="<?php echo htmlspecialchars($datos_editar['correo']); ?>"
-                                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                    </div>
+
+                    <!-- SECCIÓN: Contacto -->
+                    <div>
+                        <h3 class="text-sm font-semibold text-slate-700 mb-4 border-b border-slate-100 pb-2">Datos de Contacto</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Correo Electrónico</label>
+                                <input type="email" name="correo" 
+                                       value="<?php echo htmlspecialchars($datos_editar['correo']); ?>"
+                                       class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Teléfono</label>
+                                <input type="text" name="telefono" 
+                                       value="<?php echo htmlspecialchars($datos_editar['telefono']); ?>"
+                                       class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Dirección</label>
+                                <input type="text" name="direccion" 
+                                       value="<?php echo htmlspecialchars($datos_editar['direccion']); ?>"
+                                       class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                            </div>
                         </div>
+                    </div>
+
+                    <!-- SECCIÓN: Sistema -->
+                    <div>
+                        <h3 class="text-sm font-semibold text-slate-700 mb-4 border-b border-slate-100 pb-2">Sistema y Cuenta</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Usuario <span class="text-red-500">*</span></label>
+                                <input type="text" name="usuario" required 
+                                       value="<?php echo htmlspecialchars($datos_editar['usuario']); ?>"
+                                       class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Rol</label>
+                                <select name="rol" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                                    <option value="estudiante" <?php echo ($datos_editar['rol'] == 'estudiante') ? 'selected' : ''; ?>>Estudiante</option>
+                                    <option value="docente" <?php echo ($datos_editar['rol'] == 'docente') ? 'selected' : ''; ?>>Docente</option>
+                                    <option value="admin" <?php echo ($datos_editar['rol'] == 'admin') ? 'selected' : ''; ?>>Administrador</option>
+                                    <option value="acudiente" <?php echo ($datos_editar['rol'] == 'acudiente') ? 'selected' : ''; ?>>Acudiente</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Estado</label>
+                                <select name="estado" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                                    <option value="activo" <?php echo ($datos_editar['estado'] == 'activo') ? 'selected' : ''; ?>>Activo</option>
+                                    <option value="inactivo" <?php echo ($datos_editar['estado'] == 'inactivo') ? 'selected' : ''; ?>>Inactivo</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Mascota Institucional</label>
+                                <select name="mascota" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                                    <option value="NO" <?php echo ($datos_editar['mascota'] == 'NO') ? 'selected' : ''; ?>>NO</option>
+                                    <option value="SI" <?php echo ($datos_editar['mascota'] == 'SI') ? 'selected' : ''; ?>>SÍ</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Fecha Retiro</label>
+                                <input type="date" name="fecha_retiro" 
+                                       value="<?php echo htmlspecialchars($datos_editar['fecha_retiro']); ?>"
+                                       class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-slate-500">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- SECCIÓN: Observaciones -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Observaciones Médicas / Generales</label>
+                        <textarea name="observaciones" rows="3" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"><?php echo htmlspecialchars($datos_editar['observaciones']); ?></textarea>
                     </div>
 
                     <div class="flex justify-end gap-3 pt-6 border-t border-slate-100">
                         <?php if($modo_edicion): ?>
                             <a href="usuario.php" class="text-slate-700 bg-slate-100 hover:bg-slate-200 font-semibold rounded-xl text-sm px-6 py-3 transition-all">Cancelar</a>
-                            <button type="submit" name="Actualizar" class="text-white bg-blue-600 hover:bg-blue-700 font-semibold rounded-xl text-sm px-8 py-3 shadow-sm hover:shadow transition-all">Guardar Cambios</button>
+                            <button type="submit" name="Actualizar_Registro" class="text-white bg-blue-600 hover:bg-blue-700 font-semibold rounded-xl text-sm px-8 py-3 shadow-sm hover:shadow transition-all">Guardar Cambios</button>
                         <?php else: ?>
                             <button type="submit" name="Ingresar" class="text-white bg-slate-900 hover:bg-slate-800 font-semibold rounded-xl text-sm px-8 py-3 shadow-sm hover:shadow transition-all">Crear Perfil</button>
                         <?php endif; ?>
                     </div>
                 </form>
             </div>
+        </div>
 
-            <!-- BLOQUE INFERIOR: Listado y Búsqueda -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col w-full">
+        <!-- BLOQUE INFERIOR: Listado y Búsqueda -->
+        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-100">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-slate-100 pb-4">
+                <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    Directorio de Usuarios
+                </h3>
                 
-                <!-- Header Buscador -->
-                <div class="p-6 border-b border-slate-100 bg-white z-20">
-                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                            Directorio Activo
-                            <span class="bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">En tiempo real</span>
-                        </h2>
-                        
-                        <div class="relative w-full sm:w-96">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                            </div>
-                            <input type="text" id="searchInput" placeholder="Buscar por nombre, apellido o documento..." 
-                                   class="block w-full py-2.5 pl-10 pr-10 text-sm text-slate-900 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:bg-white focus:border-blue-500 outline-none transition-all shadow-inner">
-                            <!-- Spinner interno del buscador -->
-                            <div id="searchSpinner" class="absolute inset-y-0 right-0 flex items-center pr-3 hidden">
-                                <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                            </div>
-                        </div>
+                <div class="relative w-full md:w-96">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
-                </div>
-                
-                <!-- Linea de carga decorativa -->
-                <div id="loaderLine" class="loader-line hidden"></div>
-
-                <!-- Contenedor dinámico de la tabla y paginación -->
-                <div id="tableContainer" class="flex-1 bg-slate-50/50 p-6">
-                    <?php renderizar_tabla_usuarios('', 1, $mysqli); ?>
+                    <input type="text" id="searchInput" placeholder="Buscar por documento, nombre o usuario..." class="block w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder-slate-400">
+                    <div id="searchSpinner" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    </div>
                 </div>
             </div>
 
+            <!-- Loader superior de la tabla -->
+            <div id="loaderLine" class="loader-line hidden mb-4 rounded-full"></div>
+
+            <!-- Contenedor dinámico de la tabla -->
+            <div id="tableContainer" class="transition-opacity duration-300">
+                <!-- Se cargará por AJAX o inicialmente en PHP -->
+                <?php renderizar_tabla_usuarios('', 1, $mysqli); ?>
+            </div>
         </div>
+
     </div>
 
+    <!-- SCRIPTS -->
     <script>
-        // 1. Ejecución de Alertas SweetAlert2 (desde PHP)
-        <?php echo $alerta_js; ?>
+        // Alertas de PHP a JS usando SweetAlert2
+        <?php if (!empty($alerta_js)) echo $alerta_js; ?>
 
-        // 2. Función de Confirmación para Eliminar (SweetAlert2)
+        // Confirmación de eliminación
         function confirmarEliminacion(id) {
             Swal.fire({
                 title: '¿Estás seguro?',
-                text: "Esta acción no se puede deshacer y el usuario perderá el acceso.",
+                text: "Esta acción no se puede deshacer y el usuario será eliminado.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#64748b',
                 confirmButtonText: 'Sí, eliminar',
                 cancelButtonText: 'Cancelar',
-                reverseButtons: true
+                customClass: {
+                    confirmButton: 'rounded-xl',
+                    cancelButton: 'rounded-xl'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = `usuario.php?action=delete&id=${encodeURIComponent(id)}`;
+                    window.location.href = `usuario.php?action=delete&id=${id}`;
                 }
             })
         }
 
-        // 3. Lógica de Búsqueda Asíncrona y Paginación
+        // Lógica de Búsqueda Asíncrona y Paginación (Debounce + Fetch)
         document.addEventListener('DOMContentLoaded', () => {
             const searchInput = document.getElementById('searchInput');
             const tableContainer = document.getElementById('tableContainer');
@@ -426,21 +535,20 @@ if (isset($_GET['Actualizar']) && !empty($_GET['Actualizar'])) {
             let debounceTimer;
             let currentPage = 1;
 
-            // Función principal para obtener los datos
             const fetchData = async (query, page) => {
-                // Mostrar UI de carga
+                // UI Feedback
                 searchSpinner.classList.remove('hidden');
                 loaderLine.classList.remove('hidden');
-                tableContainer.style.opacity = '0.6'; 
+                tableContainer.style.opacity = '0.5';
 
                 try {
                     const response = await fetch(`usuario.php?ajax_search=${encodeURIComponent(query)}&page=${page}`);
-                    if (!response.ok) throw new Error('Error en la red');
+                    if (!response.ok) throw new Error('Error en red');
+                    const html = await response.text();
                     
-                    const htmlString = await response.text();
-                    tableContainer.innerHTML = htmlString;
+                    tableContainer.innerHTML = html;
                 } catch (error) {
-                    console.error('Error durante la solicitud:', error);
+                    console.error('Error fetching data:', error);
                     Swal.fire({
                         toast: true, position: 'top-end', showConfirmButton: false, 
                         timer: 3000, icon: 'error', title: 'Error de conexión'
@@ -464,7 +572,7 @@ if (isset($_GET['Actualizar']) && !empty($_GET['Actualizar'])) {
                 }, 400); 
             });
 
-            // Delegación de eventos para la paginación (ya que los botones se re-renderizan)
+            // Delegación de eventos para la paginación
             tableContainer.addEventListener('click', function(e) {
                 const btn = e.target.closest('.page-link');
                 if (btn) {

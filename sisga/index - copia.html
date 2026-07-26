@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador SISGA V8 - Procesador de Notas con Autoguardado Secuencial</title>
+    <!-- SheetJS para procesar CSV/Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .drag-area { transition: all 0.3s ease; }
+        .drag-area.active { border-color: #2563eb; background-color: #eff6ff; }
+        input:checked ~ .dot { transform: translateX(100%); background-color: #fff; }
+        input:checked ~ .block { background-color: #2563eb; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-12 text-slate-800">
+
+    <div class="max-w-4xl mx-auto space-y-6">
+        
+        <!-- Tarjeta de Control Principal -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <div class="flex items-center space-x-3 border-b border-slate-100 pb-5 mb-6">
+                <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Generador SISGA V8</h1>
+                    <p class="text-sm text-slate-500">Inyección Directa y Simulación de Clics de Hardware Autónomos</p>
+                </div>
+            </div>
+            
+            <!-- Zona de arrastre de archivos -->
+            <div id="dropZone" class="drag-area border-2 border-dashed border-slate-300 hover:border-blue-400 rounded-xl p-8 text-center cursor-pointer hover:bg-slate-50/50 flex flex-col items-center justify-center mb-6">
+                <div class="p-3 bg-slate-50 text-slate-400 rounded-full mb-3 drag-icon">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                </div>
+                <p class="text-base font-semibold text-slate-700">Arrastra tu archivo CSV o Excel aquí</p>
+                <p class="text-xs text-slate-400 mt-1">Formatos soportados: .xlsx, .xls, .csv</p>
+                <input type="file" id="fileInput" class="hidden" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+            </div>
+
+            <!-- Panel de Configuración Simplificado (Sin sliders de tiempo) -->
+            <div class="bg-slate-50 rounded-xl p-5 border border-slate-100">
+                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3">Parámetros del Sistema</h3>
+                
+                <!-- Opción: Clonar Nota -->
+                <label class="flex items-start cursor-pointer select-none">
+                    <div class="relative mt-0.5">
+                        <input type="checkbox" id="chkNotaUnica" class="sr-only" checked>
+                        <div class="block bg-slate-300 w-11 h-6 rounded-full transition-colors duration-200"></div>
+                        <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-200 shadow"></div>
+                    </div>
+                    <div class="ml-3">
+                        <span class="block text-sm font-semibold text-slate-700">Clonar Nota Final (Valoración)</span>
+                        <span class="block text-xs text-slate-400 mt-0.5">Asigna el valor de la columna 'Valoración' a todas las dimensiones académicas disponibles.</span>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Contenedor del Script Generado -->
+        <div id="resultContainer" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hidden">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900">Script Generado Listo</h2>
+                    <p class="text-xs text-slate-500">Copia el código de abajo y pégalo en la consola de desarrollador (F12) en la planilla de SISGA.</p>
+                </div>
+                <button id="btnCopy" class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-lg text-sm transition shadow-sm active:scale-95 duration-100">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                    </svg>
+                    Copiar Script
+                </button>
+            </div>
+            <textarea id="outputScript" class="w-full h-96 p-4 bg-slate-900 text-teal-400 font-mono text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500" readonly></textarea>
+        </div>
+
+        <!-- Contenedor para Notificaciones In-App -->
+        <div id="notificationArea" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const chkNotaUnica = document.getElementById('chkNotaUnica');
+        const resultContainer = document.getElementById('resultContainer');
+        const outputScript = document.getElementById('outputScript');
+        const btnCopy = document.getElementById('btnCopy');
+        const notificationArea = document.getElementById('notificationArea');
+
+        let lastRawData = null;
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('active'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('active');
+            if (e.dataTransfer.files.length) procesarArchivo(e.dataTransfer.files[0]);
+        });
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) procesarArchivo(e.target.files[0]);
+        });
+
+        chkNotaUnica.addEventListener('change', () => {
+            if (lastRawData) generarJSONyScript(lastRawData);
+        });
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `p-4 rounded-xl shadow-lg border text-sm font-medium transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto flex items-center space-x-2 ${
+                type === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' :
+                type === 'error' ? 'bg-rose-50 text-rose-800 border-rose-200' :
+                'bg-blue-50 text-blue-800 border-blue-200'
+            }`;
+            toast.innerHTML = `
+                <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                <span>${message}</span>
+            `;
+            notificationArea.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-1');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        function procesarArchivo(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    lastRawData = XLSX.utils.sheet_to_json(worksheet, {defval: "", raw: false});
+                    generarJSONyScript(lastRawData);
+                    showToast("Archivo procesado con éxito.", "success");
+                } catch (err) {
+                    showToast("Error leyendo el archivo. Verifica el formato.", "error");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function generarJSONyScript(data) {
+            const usarNotaUnica = chkNotaUnica.checked;
+
+            const parseNota = (valor) => {
+                if (valor === null || valor === undefined || valor === "") return null;
+                const cadena = String(valor).trim().replace(',', '.');
+                let numero = parseFloat(cadena);
+                
+                if (!isNaN(numero)) {
+                    if (numero >= 10 && numero <= 50) numero = numero / 10;
+                    else if (numero > 50 && numero <= 500) numero = numero / 100;
+                    else if (numero > 500) numero = numero / 1000;
+                }
+
+                return isNaN(numero) ? null : numero;
+            };
+
+            const estudiantesProcesados = data.map(row => {
+                const nombre = row['Nombre'] ? row['Nombre'].toString().trim() : "";
+                
+                if (!nombre) return null;
+
+                const valoracion = parseNota(row['Valoración']);
+                let notasObj = {};
+
+                if (usarNotaUnica) {
+                    notasObj = {
+                        actitudinal: valoracion,
+                        cognitivo: valoracion,
+                        comportamental: valoracion,
+                        auto: valoracion,
+                        co: valoracion
+                    };
+                } else {
+                    const col40 = parseNota(row['40%']);
+                    const col25_1 = parseNota(row['25%']);
+                    const col25_2 = parseNota(row['25%_1']) || col25_1;
+                    const col10 = parseNota(row['10%']);
+
+                    notasObj = {
+                        cognitivo: col40,
+                        actitudinal: col25_1,
+                        comportamental: col25_2,
+                        auto: col10,
+                        co: col10
+                    };
+                }
+
+                return {
+                    nombre: nombre,
+                    notas: notasObj
+                };
+            }).filter(est => est !== null);
+
+            construirScript(estudiantesProcesados);
+        }
+
+        function construirScript(estudiantesJSON) {
+            const scriptCode = `
+// --- SCRIPT GENERADOR SISGA V8 (AUTOGUARDADO COMPLETO Y AUTOMÁTICO) ---
+const datosEstudiantes = ${JSON.stringify(estudiantesJSON, null, 4)};
+
+(async function inyectarNotasConGuardadoAutonomo() {
+    // Consola de visualización de procesos en SISGA
+    const crearConsolaVisual = () => {
+        let panel = document.getElementById('sisga-logger');
+        if (!panel) {
+            panel = document.createElement('div');
+            panel.id = 'sisga-logger';
+            panel.style.position = 'fixed';
+            panel.style.bottom = '20px';
+            panel.style.right = '20px';
+            panel.style.zIndex = '999999';
+            panel.style.backgroundColor = '#0f172a';
+            panel.style.color = '#38bdf8';
+            panel.style.padding = '16px';
+            panel.style.borderRadius = '16px';
+            panel.style.fontFamily = 'monospace';
+            panel.style.fontSize = '12px';
+            panel.style.maxHeight = '280px';
+            panel.style.overflowY = 'auto';
+            panel.style.boxShadow = '0 12px 30px -5px rgba(0, 0, 0, 0.4)';
+            panel.style.width = '360px';
+            panel.style.border = '1px solid #334155';
+            document.body.appendChild(panel);
+        }
+        panel.innerHTML = '<strong>🚀 Inyector SISGA v8 (Automático)</strong><hr style="border-color:#334155; margin:8px 0;">';
+        return panel;
+    };
+
+    const logger = crearConsolaVisual();
+    const logMsg = (texto, color = '#38bdf8') => {
+        const item = document.createElement('div');
+        item.style.color = color;
+        item.style.marginBottom = '4px';
+        item.innerText = \`[\${new Date().toLocaleTimeString()}] \${texto}\`;
+        logger.appendChild(item);
+        logger.scrollTop = logger.scrollHeight;
+    };
+
+    // Retardo interno: evita que la cola AJAX de ASP.NET cancele guardados consecutivos.
+    const waitTick = (ms = 180) => new Promise(resolve => setTimeout(resolve, ms));
+
+    try {
+        logMsg("Iniciando inyección de datos... Espere un momento.");
+        
+        const todasLasFilas = Array.from(document.querySelectorAll('tr'));
+        const filasCalificacion = todasLasFilas.filter(tr => {
+            const inputs = tr.querySelectorAll('input[type="text"]:not([readonly]), input.numeric:not([readonly])');
+            return inputs.length >= 3;
+        });
+
+        if (filasCalificacion.length === 0) {
+            throw new Error("No se detectaron casillas de calificación editables en esta página.");
+        }
+
+        logMsg(\`Filas editables detectadas: \${filasCalificacion.length}\`, '#a7f3d0');
+        let estudiantesEncontrados = 0;
+        const filasParaGuardar = [];
+
+        const norm = (str) => str ? str.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toUpperCase().trim() : "";
+
+        const esMismoEstudiante = (textoFila, nombreCsv) => {
+            const s1 = norm(textoFila);
+            const s2 = norm(nombreCsv);
+            if (!s1 || !s2) return false;
+            if (s1.includes(s2) || s2.includes(s1)) return true;
+            
+            const partesCsv = s2.split(/\\s+/).filter(p => p.length > 2);
+            let coincidencias = 0;
+            for (let p of partesCsv) {
+                if (s1.includes(p)) coincidencias++;
+            }
+            return coincidencias >= Math.max(2, Math.ceil(partesCsv.length * 0.6));
+        };
+
+        const formatearValorNota = (valor) => {
+            if (valor === null || valor === undefined || valor === "") return null;
+            return String(valor).trim().replace(',', '.');
+        };
+
+        const detectarOrdenCampos = () => {
+            const grupos = Array.from(document.querySelectorAll('#tbl_estudiantes thead tr:first-child th, table thead tr:first-child th'));
+            const orden = [];
+            const normalizar = (texto) => norm(texto).replace(/[^A-Z0-9]+/g, ' ');
+
+            for (const th of grupos) {
+                const texto = normalizar(th.textContent || '');
+                if (!texto) continue;
+                if (texto.includes('AUTO')) orden.push('auto');
+                else if (texto.includes('COEVALU')) orden.push('co');
+                else if (texto.includes('COGNIT')) orden.push('cognitivo');
+                else if (texto.includes('ACTITUD')) orden.push('actitudinal');
+                else if (texto.includes('COMPORT')) orden.push('comportamental');
+            }
+
+            return orden.length >= 3
+                ? orden
+                : ['auto', 'co', 'cognitivo', 'actitudinal', 'comportamental'];
+        };
+
+        const ordenCampos = detectarOrdenCampos();
+        logMsg(\`Orden de columnas detectado: \${ordenCampos.join(', ')}\`, '#a7f3d0');
+
+        const agregarTareaFila = (tareas, inputsFila, dataEstudiante, indiceArray, claveNota) => {
+            const el = inputsFila[indiceArray];
+            const valorFinal = formatearValorNota(dataEstudiante.notas[claveNota]);
+            if (!el || valorFinal === null) return false;
+
+            tareas.push({
+                nombre: dataEstudiante.nombre,
+                elemento: el,
+                tipo: claveNota,
+                valor: valorFinal
+            });
+            return true;
+        };
+
+        // --- FASE 1: ARMAR LA RUTA DE GUARDADO, SIN ESCRIBIR TODAVIA ---
+        // SISGA guarda cuando el focusin entra a una matricula diferente. Por eso guardamos
+        // por estudiante: primero recalculamos sus notas y luego forzamos el cambio de matricula.
+        for (const fila of filasCalificacion) {
+            const textoFila = fila.innerText.replace(/\\n/g, " ");
+            const dataEstudiante = datosEstudiantes.find(e => esMismoEstudiante(textoFila, e.nombre));
+
+            if (dataEstudiante && dataEstudiante.notas) {
+                const inputsFila = Array.from(fila.querySelectorAll('input[type="text"]:not([readonly]), input.numeric:not([readonly])'))
+                                        .filter(i => i.offsetParent !== null && (i.classList.contains('numeric') || /^N\\d+-_-/.test(i.name || i.id || '')));
+
+                const tareasFila = [];
+                let camposDelEstudiante = 0;
+                ordenCampos.forEach((claveNota, indice) => {
+                    if (agregarTareaFila(tareasFila, inputsFila, dataEstudiante, indice, claveNota)) camposDelEstudiante++;
+                });
+
+                if (camposDelEstudiante > 0) {
+                    filasParaGuardar.push({
+                        nombre: dataEstudiante.nombre,
+                        fila,
+                        tareas: tareasFila
+                    });
+                    estudiantesEncontrados++;
+                }
+            }
+        }
+
+        const totalNotas = filasParaGuardar.reduce((total, item) => total + item.tareas.length, 0);
+        logMsg(\`Ruta preparada: \${totalNotas} notas de \${estudiantesEncontrados} estudiantes.\`, '#34d399');
+
+        const jq = window.jQuery || window.$;
+
+        const obtenerMatricula = (el) => {
+            const partes = (el.name || el.id || '').split('-_-');
+            return partes[1] || '';
+        };
+
+        const activarCampo = (el) => {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            el.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, cancelable: true, view: window }));
+            el.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, cancelable: true, view: window }));
+            el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: window }));
+            el.focus();
+            el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: window }));
+            el.click();
+            try { el.select(); } catch (_) {}
+        };
+
+        const escribirNota = (el, valor) => {
+            const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+            if (setter) setter.call(el, valor);
+            else el.value = valor;
+
+            // prsnl.js guarda leyendo attr("value"), no solamente val().
+            el.setAttribute('value', valor);
+            if (jq) jq(el).val(valor).attr('value', valor);
+            el.dispatchEvent(new KeyboardEvent('keydown', { key: valor.slice(-1) || '0', bubbles: true, cancelable: true }));
+            try {
+                el.dispatchEvent(new InputEvent('input', {
+                    bubbles: true,
+                    cancelable: true,
+                    data: valor,
+                    inputType: 'insertReplacementText'
+                }));
+            } catch (_) {
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            el.dispatchEvent(new KeyboardEvent('keyup', { key: valor.slice(-1) || '0', bubbles: true, cancelable: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+            if (jq) jq(el).trigger('input').trigger('change').trigger('textchange');
+        };
+
+        const esperarGuardadoFila = async (matricula) => {
+            const indicador = document.getElementById('divEst' + matricula);
+            const inicio = Date.now();
+
+            while (Date.now() - inicio < 8000) {
+                if (!indicador) {
+                    await waitTick(350);
+                    return;
+                }
+
+                if (indicador.className && indicador.className.includes('errorPic')) {
+                    throw new Error('SISGA reportó error guardando la matrícula ' + matricula);
+                }
+
+                if (indicador.className && indicador.className.includes('donePic')) return;
+                await waitTick(250);
+            }
+
+            logMsg('No se pudo confirmar visualmente el guardado de la matrícula ' + matricula + ', se continúa.', '#fbbf24');
+        };
+
+        const forzarGuardadoFila = async (campoActual, campoSiguiente) => {
+            const nombreActual = campoActual.name || campoActual.id;
+            const matriculaActual = obtenerMatricula(campoActual);
+
+            if (jq) {
+                jq('#lastFocus').val(nombreActual);
+                if (jq(campoActual).triggerHandler) jq(campoActual).triggerHandler('focusout');
+                else jq(campoActual).trigger('focusout');
+
+                if (jq(campoSiguiente).triggerHandler) jq(campoSiguiente).triggerHandler('focusin');
+                else jq(campoSiguiente).trigger('focusin');
+                jq('#lastFocus').val(campoSiguiente.name || campoSiguiente.id);
+            } else {
+                const lastFocus = document.getElementById('lastFocus');
+                const actualFocus = document.getElementById('actualFocus');
+                if (lastFocus) lastFocus.value = nombreActual;
+                if (actualFocus) actualFocus.value = campoSiguiente.name || campoSiguiente.id;
+                campoActual.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: campoSiguiente }));
+                campoActual.blur();
+                activarCampo(campoSiguiente);
+                if (lastFocus) lastFocus.value = campoSiguiente.name || campoSiguiente.id;
+            }
+
+            await esperarGuardadoFila(matriculaActual);
+        };
+
+        // --- FASE 2: ESCRITURA Y AUTOGUARDADO SECUENCIAL ---
+        if (totalNotas > 0) {
+            logMsg("Iniciando guardado automático por fila SISGA...", '#f472b6');
+
+            for (let i = 0; i < filasParaGuardar.length; i++) {
+                const item = filasParaGuardar[i];
+                const siguiente = filasParaGuardar[(i + 1) % filasParaGuardar.length];
+                const primerCampoFila = item.tareas[0].elemento;
+                const ultimoCampoFila = item.tareas[item.tareas.length - 1].elemento;
+                const campoSiguienteFila = siguiente.tareas[0].elemento;
+
+                activarCampo(primerCampoFila);
+                await waitTick(120);
+
+                for (const tarea of item.tareas) {
+                    escribirNota(tarea.elemento, tarea.valor);
+                    tarea.elemento.style.outline = "2px solid #2563eb";
+                    tarea.elemento.style.backgroundColor = "#dbeafe";
+                    await waitTick(80);
+                    tarea.elemento.style.outline = "";
+                    tarea.elemento.style.backgroundColor = "#e8f5e9";
+                }
+
+                await waitTick(160);
+                await forzarGuardadoFila(ultimoCampoFila, campoSiguienteFila);
+                logMsg(\`Guardado \${i + 1} de \${filasParaGuardar.length}: \${item.nombre}\`, '#60a5fa');
+            }
+
+            const primerEl = filasParaGuardar[0].tareas[0].elemento;
+            primerEl.style.outline = "2px solid #10b981";
+            primerEl.style.backgroundColor = "#dcfce7";
+            await waitTick();
+            primerEl.style.outline = "";
+
+            logMsg(\`✅ Proceso completado: \${totalNotas} notas procesadas y \${filasParaGuardar.length} filas guardadas.\`, '#10b981');
+        } else {
+            logMsg("⚠️ No se encontraron notas validas para iniciar el autoguardado.", '#fbbf24');
+        }
+
+    } catch (error) {
+        logMsg("❌ Error crítico: " + error.message, '#f87171');
+    }
+})();
+`;
+            outputScript.value = scriptCode.trim();
+            resultContainer.classList.remove('hidden');
+        }
+
+        btnCopy.addEventListener('click', () => {
+            outputScript.select();
+            document.execCommand('copy');
+            
+            const originalText = btnCopy.innerHTML;
+            btnCopy.innerHTML = `
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                ¡Copiado con éxito!
+            `;
+            btnCopy.classList.replace('bg-blue-600', 'bg-emerald-600');
+            btnCopy.classList.replace('hover:bg-blue-700', 'hover:bg-emerald-700');
+            showToast("Script copiado al portapapeles. Listo para pegar en consola.", "success");
+            
+            setTimeout(() => {
+                btnCopy.innerHTML = originalText;
+                btnCopy.classList.replace('bg-emerald-600', 'bg-blue-600');
+                btnCopy.classList.replace('hover:bg-emerald-700', 'hover:bg-blue-700');
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meet the Team - Editor Interactivo Pro</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- html2canvas CDN para exportación directa a PNG -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Merriweather:wght@300;400;700;900&family=Montserrat:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Ocultar scrollbars estéticamente en las pestañas */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Estilos específicos para impresión limpia de la diapositiva */
+    @media print {
+      body {
+        background-color: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-slide {
+        box-shadow: none !important;
+        border: none !important;
+        width: 100% !important;
+        height: 100vh !important;
+        max-width: none !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        margin: 0 !important;
+        padding: 3.5rem !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col lg:flex-row overflow-x-hidden">
+
+  <!-- ================= SIDEBAR EDITOR (NO PRINT) ================= -->
+  <aside id="editor-panel" class="no-print w-full lg:w-[420px] bg-slate-950 border-b lg:border-b-0 lg:border-r border-slate-800 flex flex-col h-auto lg:h-screen shrink-0 transition-all duration-300 relative z-20">
+    
+    <!-- Header del editor -->
+    <div class="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+      <div class="flex items-center gap-2">
+        <svg class="w-6 h-6 text-lime-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+        </svg>
+        <h2 class="font-bold text-lg tracking-wide text-white">Panel de Edición</h2>
+      </div>
+      <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white lg:hidden">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <!-- Pestañas de Navegación del Editor -->
+    <div class="flex border-b border-slate-800 text-sm overflow-x-auto no-scrollbar">
+      <button onclick="switchTab('general')" id="tab-btn-general" class="flex-1 py-3 px-4 text-center font-semibold border-b-2 border-lime-500 text-lime-500 transition-all whitespace-nowrap">
+        General
+      </button>
+      <button onclick="switchTab('members')" id="tab-btn-members" class="flex-1 py-3 px-4 text-center font-semibold border-b-2 border-transparent text-slate-400 hover:text-white transition-all whitespace-nowrap">
+        Integrantes (5)
+      </button>
+      <button onclick="switchTab('thanks')" id="tab-btn-thanks" class="flex-1 py-3 px-4 text-center font-semibold border-b-2 border-transparent text-slate-400 hover:text-white transition-all whitespace-nowrap">
+        Cierre
+      </button>
+    </div>
+
+    <!-- Contenido del Editor (Con scroll) -->
+    <div class="flex-1 overflow-y-auto p-5 space-y-6">
+      
+      <!-- SECCIÓN: CONFIGURACIÓN GENERAL -->
+      <div id="tab-content-general" class="space-y-5">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Diseño de Diapositiva Principal</h3>
+        
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1.5">Título Principal</label>
+          <input type="text" id="input-title" oninput="updateGeneral('title', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500 transition-colors">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1.5">Nombre del Proyecto</label>
+          <input type="text" id="input-project-name" oninput="updateGeneral('projectName', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500 transition-colors" placeholder="Ej. Semillero de Innovación Educativa">
+        </div>
+
+        <!-- Personalización avanzada de la Línea de Acento -->
+        <div class="space-y-3 pt-3 border-t border-slate-800">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Línea de Acento Principal</h4>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Color Global</label>
+              <div class="flex gap-2 items-center">
+                <input type="color" id="input-accent-color" oninput="updateGeneral('accentColor', this.value)" class="w-10 h-10 bg-transparent border-0 rounded cursor-pointer">
+                <span id="accent-hex-text" class="text-xs font-mono text-slate-400">#84cc16</span>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="font-medium text-slate-300">Grosor (Alto)</span>
+                <span id="val-accent-height" class="text-slate-400 font-mono">6px</span>
+              </div>
+              <input type="range" id="input-accent-height" min="2" max="24" step="1" oninput="updateGeneral('accentLineHeight', parseInt(this.value))" class="w-full accent-lime-500 bg-slate-900 h-1.5 rounded-lg appearance-none cursor-pointer">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="font-medium text-slate-300">Ancho</span>
+                <span id="val-accent-width" class="text-slate-400 font-mono">144px</span>
+              </div>
+              <input type="range" id="input-accent-width" min="20" max="400" step="4" oninput="updateGeneral('accentLineWidth', parseInt(this.value))" class="w-full accent-lime-500 bg-slate-900 h-1.5 rounded-lg appearance-none cursor-pointer">
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="font-medium text-slate-300">Ubicación Y (Subir/Bajar)</span>
+                <span id="val-accent-y" class="text-slate-400 font-mono">12px</span>
+              </div>
+              <input type="range" id="input-accent-y" min="-20" max="100" step="1" oninput="updateGeneral('accentLineY', parseInt(this.value))" class="w-full accent-lime-500 bg-slate-900 h-1.5 rounded-lg appearance-none cursor-pointer">
+            </div>
+          </div>
+        </div>
+
+        <!-- Carga y posicionamiento de Logo de la Universidad -->
+        <div class="space-y-3 pt-3 border-t border-slate-800">
+          <label class="block text-xs font-medium text-slate-300">Logo de la Institución (Global)</label>
+          <div class="flex gap-3 items-center">
+            <div id="editor-logo-preview-container" class="w-16 h-12 rounded border border-slate-700 overflow-hidden shrink-0 bg-slate-800 flex items-center justify-center p-1">
+              <span id="editor-logo-no-img" class="text-[10px] text-slate-500">Sin Logo</span>
+              <img id="editor-logo-preview" src="" alt="Logo Preview" class="max-w-full max-h-full object-contain hidden">
+            </div>
+            <div class="flex-1 space-y-1.5">
+              <button onclick="triggerLogoFileInput()" class="w-full bg-slate-850 hover:bg-slate-700 text-white text-xs font-semibold py-1.5 px-3 rounded-lg border border-slate-750 transition-colors flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                Subir Logo
+              </button>
+              <input type="file" id="logo-file-input" onchange="onLogoSelected(this)" accept="image/*" class="hidden">
+            </div>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-500 block mb-1">O pega una URL directa del logo:</span>
+            <input type="text" id="input-logo-url" oninput="updateGeneral('universityLogo', this.value)" placeholder="https://ejemplo.com/logo.png" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-lime-500">
+          </div>
+          
+          <!-- Controles de dimensión y ubicación libre del logo -->
+          <div class="space-y-2 pt-1">
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="font-medium text-slate-300">Altura del Logo</span>
+                <span id="val-logo-height" class="text-slate-400 font-mono">56px</span>
+              </div>
+              <input type="range" id="input-logo-height" min="20" max="150" step="2" oninput="updateGeneral('universityLogoHeight', parseInt(this.value))" class="w-full accent-lime-500 bg-slate-900 h-1.5 rounded-lg appearance-none cursor-pointer">
+            </div>
+          </div>
+
+          <button id="btn-remove-logo" onclick="removeLogo()" class="text-[10px] text-red-400 hover:text-red-300 font-semibold underline hidden">Eliminar Logo</button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-800">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1.5">Número Diapositiva</label>
+            <input type="text" id="input-slide-num" oninput="updateGeneral('slideNumber', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500 transition-colors">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1.5">Texto del Pie (Global)</label>
+            <input type="text" id="input-footer" oninput="updateGeneral('companyName', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500 transition-colors">
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-800">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" id="input-show-decorations" onchange="updateGeneral('showDecorations', this.checked)" class="rounded bg-slate-900 border-slate-700 text-lime-500 focus:ring-lime-500 h-4 w-4">
+            <span class="text-sm text-slate-300">Mostrar círculos abstractos de fondo</span>
+          </label>
+        </div>
+
+        <!-- NUEVA SECCIÓN: TIPOGRAFÍA Y TEXTOS -->
+        <div class="space-y-4 pt-4 border-t border-slate-800">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Tipografía y Colores</h4>
+          
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1.5">Fuente de la Presentación</label>
+            <select id="input-font-family" onchange="updateGeneral('fontFamily', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500 transition-colors">
+              <option value="'Plus Jakarta Sans', sans-serif">Plus Jakarta Sans</option>
+              <option value="'Inter', sans-serif">Inter</option>
+              <option value="'Montserrat', sans-serif">Montserrat</option>
+              <option value="'Merriweather', serif">Merriweather (Serif)</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Color Títulos</label>
+              <div class="flex gap-2 items-center">
+                <input type="color" id="input-title-color" oninput="updateGeneral('titleColor', this.value)" class="w-8 h-8 bg-transparent border-0 rounded cursor-pointer p-0">
+                <span id="title-color-hex" class="text-[10px] font-mono text-slate-400">#1e293b</span>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Color Textos</label>
+              <div class="flex gap-2 items-center">
+                <input type="color" id="input-text-color" oninput="updateGeneral('textColor', this.value)" class="w-8 h-8 bg-transparent border-0 rounded cursor-pointer p-0">
+                <span id="text-color-hex" class="text-[10px] font-mono text-slate-400">#64748b</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-[11px] mb-1">
+              <span class="font-medium text-slate-300">Tamaño Título Principal</span>
+              <span id="val-title-size" class="text-slate-400 font-mono">45px</span>
+            </div>
+            <input type="range" id="input-title-size" min="20" max="80" step="1" oninput="updateGeneral('titleFontSize', parseInt(this.value))" class="w-full accent-lime-500 bg-slate-900 h-1.5 rounded-lg appearance-none cursor-pointer">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN: GESTIÓN DE INTEGRANTES -->
+      <div id="tab-content-members" class="hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Lista de Integrantes</h3>
+          <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full font-semibold">5 Personas</span>
+        </div>
+
+        <!-- Selector de integrante actual a editar -->
+        <div class="grid grid-cols-5 gap-1 bg-slate-900 p-1 rounded-lg">
+          <button onclick="selectMemberToEdit(0)" id="member-sel-0" class="py-2 text-xs font-bold rounded text-slate-400 hover:text-white transition-colors bg-transparent">P1</button>
+          <button onclick="selectMemberToEdit(1)" id="member-sel-1" class="py-2 text-xs font-bold rounded text-slate-400 hover:text-white transition-colors bg-transparent">P2</button>
+          <button onclick="selectMemberToEdit(2)" id="member-sel-2" class="py-2 text-xs font-bold rounded text-slate-400 hover:text-white transition-colors bg-transparent">P3</button>
+          <button onclick="selectMemberToEdit(3)" id="member-sel-3" class="py-2 text-xs font-bold rounded text-slate-400 hover:text-white transition-colors bg-transparent">P4</button>
+          <button onclick="selectMemberToEdit(4)" id="member-sel-4" class="py-2 text-xs font-bold rounded text-slate-400 hover:text-white transition-colors bg-transparent">P5</button>
+        </div>
+
+        <!-- Formulario del integrante seleccionado -->
+        <div class="space-y-4 bg-slate-900/40 p-4 rounded-xl border border-slate-800/80">
+          <h4 class="text-sm font-semibold text-white flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-lime-500"></span>
+            Editando Integrante <span id="editing-member-label">1</span>
+          </h4>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Nombre Completo</label>
+            <input type="text" id="input-member-name" oninput="updateCurrentMember('name', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Cargo / Designación</label>
+            <input type="text" id="input-member-role" oninput="updateCurrentMember('role', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500">
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="block text-xs font-medium text-slate-300">Descripción Corta</label>
+              <span id="char-counter" class="text-[10px] text-slate-500">0/90 sugerido</span>
+            </div>
+            <textarea id="input-member-bio" oninput="updateCurrentMember('bio', this.value)" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500 resize-none"></textarea>
+          </div>
+
+          <!-- Selección de imagen -->
+          <div class="space-y-2">
+            <label class="block text-xs font-medium text-slate-300">Foto del Integrante</label>
+            <div class="flex gap-3 items-center">
+              <div class="w-12 h-12 rounded-full border border-slate-700 overflow-hidden shrink-0 bg-slate-800 flex items-center justify-center">
+                <img id="editor-img-preview" src="" alt="Thumbnail" class="w-full h-full object-cover">
+              </div>
+              <div class="flex-1 space-y-1">
+                <button onclick="triggerFileInput()" class="w-full bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold py-2 px-3 rounded-lg border border-slate-700 transition-colors flex items-center justify-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                  Subir Foto Local
+                </button>
+                <input type="file" id="member-file-input" onchange="onFileSelected(this)" accept="image/*" class="hidden">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN: DIAPOSITIVA DE CIERRE / AGRADECIMIENTO -->
+      <div id="tab-content-thanks" class="hidden space-y-5">
+        <div class="bg-lime-500/10 border border-lime-500/20 rounded-xl p-3 flex items-start gap-3 mb-2">
+          <svg class="w-5 h-5 text-lime-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <p class="text-xs text-lime-100/70">Estás visualizando y editando la diapositiva de cierre. Al exportar, se descargará esta vista.</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1.5">Texto de Agradecimiento</label>
+          <input type="text" id="input-thanks-title" oninput="updateGeneral('thanksTitle', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500 transition-colors">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1.5">Subtítulo / Mensaje Final</label>
+          <input type="text" id="input-thanks-subtitle" oninput="updateGeneral('thanksSubtitle', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500 transition-colors">
+        </div>
+
+        <div class="space-y-3 pt-3 border-t border-slate-800">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Línea de Acento Central</h4>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="font-medium text-slate-300">Ancho</span>
+                <span id="val-thanks-accent-width" class="text-slate-400 font-mono">200px</span>
+              </div>
+              <input type="range" id="input-thanks-accent-width" min="50" max="600" step="10" oninput="updateGeneral('thanksAccentWidth', parseInt(this.value))" class="w-full accent-lime-500 bg-slate-900 h-1.5 rounded-lg appearance-none cursor-pointer">
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="font-medium text-slate-300">Grosor</span>
+                <span id="val-thanks-accent-height" class="text-slate-400 font-mono">8px</span>
+              </div>
+              <input type="range" id="input-thanks-accent-height" min="2" max="24" step="1" oninput="updateGeneral('thanksAccentHeight', parseInt(this.value))" class="w-full accent-lime-500 bg-slate-900 h-1.5 rounded-lg appearance-none cursor-pointer">
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-[11px] mb-1">
+              <span class="font-medium text-slate-300">Separación Superior (Margen)</span>
+              <span id="val-thanks-accent-y" class="text-slate-400 font-mono">24px</span>
+            </div>
+            <input type="range" id="input-thanks-accent-y" min="0" max="100" step="2" oninput="updateGeneral('thanksAccentY', parseInt(this.value))" class="w-full accent-lime-500 bg-slate-900 h-1.5 rounded-lg appearance-none cursor-pointer">
+          </div>
+        </div>
+
+        <!-- Configuración de Colores y Tamaños específicos de Cierre -->
+        <div class="space-y-4 pt-4 border-t border-slate-800">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Estilos de Texto (Cierre)</h4>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Color Título</label>
+              <input type="color" id="input-thanks-title-color" oninput="updateGeneral('thanksTitleColor', this.value)" class="w-8 h-8 bg-transparent border-0 rounded cursor-pointer p-0">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Color Subtítulo</label>
+              <input type="color" id="input-thanks-subtitle-color" oninput="updateGeneral('thanksSubtitleColor', this.value)" class="w-8 h-8 bg-transparent border-0 rounded cursor-pointer p-0">
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-[11px] mb-1">
+              <span class="font-medium text-slate-300">Tamaño Título Agradecimiento</span>
+              <span id="val-thanks-title-size" class="text-slate-400 font-mono">80px</span>
+            </div>
+            <input type="range" id="input-thanks-title-size" min="40" max="140" step="2" oninput="updateGeneral('thanksTitleFontSize', parseInt(this.value))" class="w-full accent-lime-500 bg-slate-900 h-1.5 rounded-lg appearance-none cursor-pointer">
+          </div>
+
+          <div>
+            <div class="flex justify-between text-[11px] mb-1">
+              <span class="font-medium text-slate-300">Tamaño Subtítulo (Participación)</span>
+              <span id="val-thanks-subtitle-size" class="text-slate-400 font-mono">30px</span>
+            </div>
+            <input type="range" id="input-thanks-subtitle-size" min="14" max="60" step="1" oninput="updateGeneral('thanksSubtitleFontSize', parseInt(this.value))" class="w-full accent-lime-500 bg-slate-900 h-1.5 rounded-lg appearance-none cursor-pointer">
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Botones de Acción Global -->
+    <div class="p-5 border-t border-slate-800 bg-slate-950 space-y-3">
+      <button onclick="downloadAsImage()" class="w-full bg-sky-550 hover:bg-sky-500 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-lg hover:shadow-sky-500/10 flex items-center justify-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+        Descargar Vista Actual (PNG)
+      </button>
+
+      <button onclick="confirmReset()" class="w-full bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white font-medium py-2.5 px-4 rounded-xl transition-all border border-slate-800 text-xs flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15H9m5.586-1.586L12 10.828l-2.586 2.586"></path>
+        </svg>
+        Restaurar Valores por Defecto
+      </button>
+    </div>
+  </aside>
+
+  <!-- Botón Flotante para abrir/cerrar Editor en móviles (NO PRINT) -->
+  <button onclick="toggleSidebar()" class="no-print lg:hidden fixed bottom-6 right-6 bg-lime-500 text-slate-950 p-4 rounded-full shadow-2xl z-30 focus:outline-none hover:bg-lime-400 transition-colors">
+    <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+    </svg>
+  </button>
+
+  <!-- ================= VISTA DE PRESENTACIÓN (EL CANVAS) ================= -->
+  <main class="flex-1 bg-slate-100 p-4 sm:p-8 lg:p-12 flex items-center justify-center min-h-screen overflow-y-auto relative">
+    
+    <!-- Contenedor diapositiva principal -->
+    <div id="slide-container" class="print-slide bg-white shadow-2xl rounded-3xl p-10 lg:p-14 relative overflow-hidden flex flex-col justify-between w-full max-w-[1100px] min-h-[640px] transition-all duration-300">
+      
+      <!-- Fondo decorativo abstracto (Global) -->
+      <div id="decorations-bg">
+        <div class="absolute -top-40 -right-20 w-[600px] h-[600px] rounded-full bg-gray-50 pointer-events-none -z-0"></div>
+        <div class="absolute -bottom-20 -right-10 w-[450px] h-[450px] rounded-full bg-gray-50/70 pointer-events-none -z-0"></div>
+      </div>
+
+      <!-- Logo de la Universidad (Global) -->
+      <div id="preview-logo-container" class="absolute flex items-center justify-center pointer-events-none z-20" style="right: 40px; top: 40px;">
+        <img id="preview-logo-img" src="" alt="Logo Universidad" class="h-full object-contain hidden">
+        <div id="preview-logo-placeholder" class="no-print border-2 border-dashed border-slate-300 rounded-xl p-2 text-[10px] text-slate-400 font-semibold flex items-center gap-1 bg-white/50 backdrop-blur-xs">
+          <span>Logo U.</span>
+        </div>
+      </div>
+
+
+      <!-- ================= VISTA: EQUIPO ================= -->
+      <div id="view-team" class="relative z-10 flex flex-col flex-1 transition-opacity duration-300">
+        
+        <!-- Cabecera de la diapositiva -->
+        <div class="flex flex-col select-none">
+          <div class="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-4">
+            <h1 id="preview-title" class="text-3xl sm:text-4xl lg:text-[45px] font-extrabold text-slate-800 tracking-tight leading-none">
+              Meet the Team
+            </h1>
+            <span id="preview-project-name" class="text-sm md:text-base lg:text-lg font-semibold text-slate-400 tracking-wide">
+              | Proyecto de Investigación
+            </span>
+          </div>
+          
+          <div id="preview-accent-line-container" class="relative z-10 transition-transform duration-350">
+            <div id="preview-accent-line" class="rounded-full transition-colors duration-300"></div>
+          </div>
+        </div>
+
+        <!-- Grid Dinámico de Integrantes -->
+        <div id="preview-grid-container" class="relative z-10 flex flex-col gap-y-6 lg:gap-y-8 my-auto max-w-[980px] mx-auto w-full transition-all duration-350 pt-8">
+          
+          <!-- Fila Superior: Integrantes 1 y 2 -->
+          <div class="flex flex-wrap justify-center gap-x-12 lg:gap-x-16 gap-y-6">
+            
+            <div class="flex items-center gap-4 w-[280px] shrink-0 transition-all duration-300 hover:scale-[1.02]">
+              <div class="relative flex-shrink-0">
+                <div id="preview-circle-bg-0" class="absolute rounded-full opacity-80 -z-10 transition-all duration-300 shadow-sm" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px;"></div>
+                <div class="rounded-full overflow-hidden shadow-md border-2 border-white bg-slate-200 relative shrink-0" style="width: 96px; height: 96px; min-width: 96px; min-height: 96px;">
+                  <img id="preview-img-0" src="" alt="Avatar" class="absolute w-full h-full object-cover origin-center">
+                </div>
+              </div>
+              <div class="flex flex-col">
+                <h3 id="preview-name-0" class="font-extrabold text-slate-800 text-lg leading-snug">Cargando...</h3>
+                <p id="preview-role-0" class="text-xs font-semibold uppercase tracking-wider text-slate-400 mt-0.5">Cargo</p>
+                <p id="preview-bio-0" class="text-[11px] text-slate-500 mt-2 leading-relaxed max-w-[165px] line-clamp-3">Descripción...</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-4 w-[280px] shrink-0 transition-all duration-300 hover:scale-[1.02]">
+              <div class="relative flex-shrink-0">
+                <div id="preview-circle-bg-1" class="absolute rounded-full opacity-80 -z-10 transition-all duration-300 shadow-sm" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px;"></div>
+                <div class="rounded-full overflow-hidden shadow-md border-2 border-white bg-slate-200 relative shrink-0" style="width: 96px; height: 96px; min-width: 96px; min-height: 96px;">
+                  <img id="preview-img-1" src="" alt="Avatar" class="absolute w-full h-full object-cover origin-center">
+                </div>
+              </div>
+              <div class="flex flex-col">
+                <h3 id="preview-name-1" class="font-extrabold text-slate-800 text-lg leading-snug">Cargando...</h3>
+                <p id="preview-role-1" class="text-xs font-semibold uppercase tracking-wider text-slate-400 mt-0.5">Cargo</p>
+                <p id="preview-bio-1" class="text-[11px] text-slate-500 mt-2 leading-relaxed max-w-[165px] line-clamp-3">Descripción...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fila Central: Integrante 5 -->
+          <div class="flex justify-center">
+            <div class="flex items-center gap-4 w-[280px] shrink-0 transition-all duration-300 hover:scale-[1.02]">
+              <div class="relative flex-shrink-0">
+                <div id="preview-circle-bg-4" class="absolute rounded-full opacity-80 -z-10 transition-all duration-300 shadow-sm" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px;"></div>
+                <div class="rounded-full overflow-hidden shadow-md border-2 border-white bg-slate-200 relative shrink-0" style="width: 96px; height: 96px; min-width: 96px; min-height: 96px;">
+                  <img id="preview-img-4" src="" alt="Avatar" class="absolute w-full h-full object-cover origin-center">
+                </div>
+              </div>
+              <div class="flex flex-col">
+                <h3 id="preview-name-4" class="font-extrabold text-slate-800 text-lg leading-snug">Cargando...</h3>
+                <p id="preview-role-4" class="text-xs font-semibold uppercase tracking-wider text-slate-400 mt-0.5">Cargo</p>
+                <p id="preview-bio-4" class="text-[11px] text-slate-500 mt-2 leading-relaxed max-w-[165px] line-clamp-3">Descripción...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fila Inferior: Integrantes 3 y 4 -->
+          <div class="flex flex-wrap justify-center gap-x-12 lg:gap-x-16 gap-y-6">
+            
+            <div class="flex items-center gap-4 w-[280px] shrink-0 transition-all duration-300 hover:scale-[1.02]">
+              <div class="relative flex-shrink-0">
+                <div id="preview-circle-bg-2" class="absolute rounded-full opacity-80 -z-10 transition-all duration-300 shadow-sm" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px;"></div>
+                <div class="rounded-full overflow-hidden shadow-md border-2 border-white bg-slate-200 relative shrink-0" style="width: 96px; height: 96px; min-width: 96px; min-height: 96px;">
+                  <img id="preview-img-2" src="" alt="Avatar" class="absolute w-full h-full object-cover origin-center">
+                </div>
+              </div>
+              <div class="flex flex-col">
+                <h3 id="preview-name-2" class="font-extrabold text-slate-800 text-lg leading-snug">Cargando...</h3>
+                <p id="preview-role-2" class="text-xs font-semibold uppercase tracking-wider text-slate-400 mt-0.5">Cargo</p>
+                <p id="preview-bio-2" class="text-[11px] text-slate-500 mt-2 leading-relaxed max-w-[165px] line-clamp-3">Descripción...</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-4 w-[280px] shrink-0 transition-all duration-300 hover:scale-[1.02]">
+              <div class="relative flex-shrink-0">
+                <div id="preview-circle-bg-3" class="absolute rounded-full opacity-80 -z-10 transition-all duration-300 shadow-sm" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px;"></div>
+                <div class="rounded-full overflow-hidden shadow-md border-2 border-white bg-slate-200 relative shrink-0" style="width: 96px; height: 96px; min-width: 96px; min-height: 96px;">
+                  <img id="preview-img-3" src="" alt="Avatar" class="absolute w-full h-full object-cover origin-center">
+                </div>
+              </div>
+              <div class="flex flex-col">
+                <h3 id="preview-name-3" class="font-extrabold text-slate-800 text-lg leading-snug">Cargando...</h3>
+                <p id="preview-role-3" class="text-xs font-semibold uppercase tracking-wider text-slate-400 mt-0.5">Cargo</p>
+                <p id="preview-bio-3" class="text-[11px] text-slate-500 mt-2 leading-relaxed max-w-[165px] line-clamp-3">Descripción...</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- ================= VISTA: CIERRE / AGRADECIMIENTO ================= -->
+      <div id="view-thanks" class="hidden relative z-10 flex-1 flex flex-col items-center justify-center text-center transition-opacity duration-300">
+        <h1 id="preview-thanks-title" class="text-6xl sm:text-7xl lg:text-[80px] font-black text-slate-800 tracking-tight leading-tight">
+          ¡Muchas Gracias!
+        </h1>
+        <p id="preview-thanks-subtitle" class="text-xl md:text-2xl lg:text-3xl font-medium text-slate-500 tracking-wide mt-2">
+          Por su atención y participación.
+        </p>
+        <div id="preview-thanks-accent-container" class="relative z-10 transition-transform duration-350">
+          <div id="preview-thanks-accent" class="rounded-full transition-colors duration-300"></div>
+        </div>
+      </div>
+
+
+      <!-- Pie de página de la diapositiva (Global) -->
+      <div class="relative z-10 flex justify-between items-end border-t border-slate-100/80 pt-4 mt-4 shrink-0">
+        <span id="preview-footer" class="text-xs font-semibold text-slate-400 select-none">
+          Edit Company Name Here
+        </span>
+        <span id="preview-slide-num" class="absolute bottom-[-16px] right-8 text-[100px] font-black text-slate-100/90 pointer-events-none select-none leading-none">
+          1
+        </span>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Toast de Notificaciones -->
+  <div id="toast-notif" class="fixed top-5 right-5 bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-[150%] flex items-center gap-3 z-50">
+    <div class="w-2 h-2 rounded-full bg-lime-400 animate-ping"></div>
+    <span id="toast-text" class="text-xs font-medium">Cambio guardado</span>
+  </div>
+
+  <!-- Modal de confirmación para reinicio -->
+  <div id="confirm-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+      <div class="w-12 h-12 bg-red-500/10 text-red-400 rounded-full flex items-center justify-center">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+      </div>
+      <div>
+        <h4 class="text-white font-bold text-lg">¿Restaurar plantilla?</h4>
+        <p class="text-slate-400 text-xs mt-1">Esta acción borrará todas tus modificaciones restableciendo la muestra original.</p>
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal()" class="flex-1 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-700 transition-colors">Cancelar</button>
+        <button onclick="resetToDefaults()" class="flex-1 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-colors">Sí, restaurar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CODIGO JAVASCRIPT LÓGICO Y REACTIVO ================= -->
+  <script>
+    // Configuración y datos por defecto (Expandido para soportar la nueva vista)
+    const DEFAULT_STATE = {
+      // Estado General / Vista Equipo
+      title: "Meet the Team",
+      projectName: "Proyecto de Investigación TIC",
+      universityLogo: "",
+      universityLogoHeight: 56,
+      accentColor: "#84cc16",
+      accentLineWidth: 144,
+      accentLineHeight: 6,
+      accentLineY: 12,
+      companyName: "Edit Company Name Here",
+      slideNumber: "1",
+      showDecorations: true,
+
+      // Tipografía y Textos
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      titleColor: "#1e293b", // Slate 800
+      textColor: "#64748b", // Slate 500
+      titleFontSize: 45,
+      thanksTitleFontSize: 80,
+      
+      // Estado Vista Cierre
+      thanksTitle: "¡Muchas Gracias!",
+      thanksSubtitle: "Por su atención y participación.",
+      thanksTitleColor: "#1e293b",
+      thanksSubtitleColor: "#64748b",
+      thanksSubtitleFontSize: 30,
+      thanksAccentWidth: 200,
+      thanksAccentHeight: 8,
+      thanksAccentY: 24,
+
+      members: [
+        {
+          name: "Luz Amparo Jacinto Jiménez",
+          role: "Doctorante",
+          bio: "",
+          image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80",
+          circleColor: "#1e3a8a",
+          circlePos: "bottom-left",
+          zoom: 1.0, panX: 0, panY: 0
+        },
+        {
+          name: "Viviana Yaneth Mora Varela",
+          role: "Doctorante",
+          bio: "",
+          image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&auto=format&fit=crop&q=80",
+          circleColor: "#84cc16",
+          circlePos: "top-left",
+          zoom: 1.0, panX: 0, panY: 0
+        },
+        {
+          name: "Gladys Elena Arias García",
+          role: "Gerente de Producto",
+          bio: "Lidera estrategias ágiles que conectan las necesidades del usuario con soluciones tecnológicas estables.",
+          image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80",
+          circleColor: "#14b8a6",
+          circlePos: "top-right",
+          zoom: 1.0, panX: 0, panY: 0
+        },
+        {
+          name: "Valeria Duque",
+          role: "Especialista SEO/Marketing",
+          bio: "Estratega digital enfocada en optimizar el posicionamiento de marca y conversiones a través de datos.",
+          image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&auto=format&fit=crop&q=80",
+          circleColor: "#e11d48",
+          circlePos: "bottom-right",
+          zoom: 1.0, panX: 0, panY: 0
+        },
+        {
+          name: "Daniel Restrepo",
+          role: "Líder de Operaciones",
+          bio: "Coordina flujos operativos internos garantizando la sinergia y entregas de alta calidad en tiempos óptimos.",
+          image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&auto=format&fit=crop&q=80",
+          circleColor: "#f59e0b",
+          circlePos: "top-left",
+          zoom: 1.0, panX: 0, panY: 0
+        }
+      ]
+    };
+
+    let state = {};
+    let activeMemberIndex = 0; 
+    let currentViewMode = 'team'; // 'team' o 'thanks'
+
+    window.onload = function() {
+      loadState();
+      renderAll();
+      initEditorInputs();
+    };
+
+    function loadState() {
+      const saved = localStorage.getItem('meet_team_v6_state');
+      if (saved) {
+        try {
+          state = JSON.parse(saved);
+          // Patching for new properties if migrating from old save
+          if(state.thanksTitle === undefined) state.thanksTitle = DEFAULT_STATE.thanksTitle;
+          if(state.thanksSubtitle === undefined) state.thanksSubtitle = DEFAULT_STATE.thanksSubtitle;
+          if(state.thanksTitleColor === undefined) state.thanksTitleColor = DEFAULT_STATE.thanksTitleColor;
+          if(state.thanksSubtitleColor === undefined) state.thanksSubtitleColor = DEFAULT_STATE.thanksSubtitleColor;
+          if(state.thanksSubtitleFontSize === undefined) state.thanksSubtitleFontSize = DEFAULT_STATE.thanksSubtitleFontSize;
+          if(state.thanksAccentWidth === undefined) state.thanksAccentWidth = DEFAULT_STATE.thanksAccentWidth;
+          if(state.thanksAccentHeight === undefined) state.thanksAccentHeight = DEFAULT_STATE.thanksAccentHeight;
+          if(state.thanksAccentY === undefined) state.thanksAccentY = DEFAULT_STATE.thanksAccentY;
+
+          // Compatibilidad Tipografía
+          if(state.fontFamily === undefined) state.fontFamily = DEFAULT_STATE.fontFamily;
+          if(state.titleColor === undefined) state.titleColor = DEFAULT_STATE.titleColor;
+          if(state.textColor === undefined) state.textColor = DEFAULT_STATE.textColor;
+          if(state.titleFontSize === undefined) state.titleFontSize = DEFAULT_STATE.titleFontSize;
+          if(state.thanksTitleFontSize === undefined) state.thanksTitleFontSize = DEFAULT_STATE.thanksTitleFontSize;
+        } catch(e) {
+          state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+        }
+      } else {
+        state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem('meet_team_v6_state', JSON.stringify(state));
+    }
+
+    function renderAll() {
+      // -- ESTILOS GLOBALES DE TEXTO Y TIPOGRAFÍA --
+      document.getElementById('slide-container').style.fontFamily = state.fontFamily;
+      
+      // Aplicación de Colores
+      document.getElementById('preview-title').style.color = state.titleColor;
+      document.getElementById('preview-thanks-title').style.color = state.thanksTitleColor || state.titleColor;
+      
+      document.getElementById('preview-project-name').style.color = state.textColor;
+      document.getElementById('preview-thanks-subtitle').style.color = state.thanksSubtitleColor || state.textColor;
+
+      // Aplicación de Tamaños principales
+      document.getElementById('preview-title').style.fontSize = `${state.titleFontSize || 45}px`;
+      document.getElementById('preview-thanks-title').style.fontSize = `${state.thanksTitleFontSize || 80}px`;
+      document.getElementById('preview-thanks-subtitle').style.fontSize = `${state.thanksSubtitleFontSize || 30}px`;
+
+      // -- VISTA EQUIPO --
+      document.getElementById('preview-title').innerText = state.title;
+      
+      const projEl = document.getElementById('preview-project-name');
+      if (state.projectName && state.projectName.trim() !== "") {
+        projEl.innerText = `| ${state.projectName}`;
+        projEl.classList.remove('hidden');
+      } else {
+        projEl.classList.add('hidden');
+      }
+
+      // -- VISTA CIERRE --
+      document.getElementById('preview-thanks-title').innerText = state.thanksTitle;
+      document.getElementById('preview-thanks-subtitle').innerText = state.thanksSubtitle;
+
+      // -- GLOBALES --
+      const logoImg = document.getElementById('preview-logo-img');
+      const logoPlaceholder = document.getElementById('preview-logo-placeholder');
+      const removeLogoBtn = document.getElementById('btn-remove-logo');
+      const editorLogoPreview = document.getElementById('editor-logo-preview');
+      const editorLogoNoImg = document.getElementById('editor-logo-no-img');
+      const logoContainer = document.getElementById('preview-logo-container');
+
+      logoContainer.style.height = `${state.universityLogoHeight || 56}px`;
+
+      if (state.universityLogo && state.universityLogo.trim() !== "") {
+        logoImg.src = state.universityLogo;
+        logoImg.classList.remove('hidden');
+        logoPlaceholder.classList.add('hidden');
+        removeLogoBtn.classList.remove('hidden');
+        
+        editorLogoPreview.src = state.universityLogo;
+        editorLogoPreview.classList.remove('hidden');
+        editorLogoNoImg.classList.add('hidden');
+      } else {
+        logoImg.src = "";
+        logoImg.classList.add('hidden');
+        logoPlaceholder.classList.remove('hidden');
+        removeLogoBtn.classList.add('hidden');
+        
+        editorLogoPreview.src = "";
+        editorLogoPreview.classList.add('hidden');
+        editorLogoNoImg.classList.remove('hidden');
+      }
+
+      // Línea de acento Equipo
+      const accentLine = document.getElementById('preview-accent-line');
+      const accentLineContainer = document.getElementById('preview-accent-line-container');
+      accentLine.style.backgroundColor = state.accentColor;
+      accentLine.style.height = `${state.accentLineHeight || 6}px`;
+      accentLine.style.width = `${state.accentLineWidth || 144}px`;
+      accentLineContainer.style.marginTop = `${state.accentLineY !== undefined ? state.accentLineY : 12}px`;
+
+      // Línea de acento Cierre (Mismo color global, dimensiones independientes)
+      const thanksAccentLine = document.getElementById('preview-thanks-accent');
+      const thanksAccentContainer = document.getElementById('preview-thanks-accent-container');
+      thanksAccentLine.style.backgroundColor = state.accentColor; // Hereda el verde
+      thanksAccentLine.style.height = `${state.thanksAccentHeight || 8}px`;
+      thanksAccentLine.style.width = `${state.thanksAccentWidth || 200}px`;
+      thanksAccentContainer.style.marginTop = `${state.thanksAccentY !== undefined ? state.thanksAccentY : 24}px`;
+
+      document.getElementById('preview-footer').innerText = state.companyName;
+      document.getElementById('preview-slide-num').innerText = state.slideNumber;
+      
+      const decor = document.getElementById('decorations-bg');
+      if (state.showDecorations) decor.classList.remove('hidden');
+      else decor.classList.add('hidden');
+
+      // Render Integrantes
+      state.members.forEach((member, i) => {
+        const nameEl = document.getElementById(`preview-name-${i}`);
+        const roleEl = document.getElementById(`preview-role-${i}`);
+        const bioEl = document.getElementById(`preview-bio-${i}`);
+        
+        nameEl.innerText = member.name;
+        roleEl.innerText = member.role;
+        bioEl.innerText = member.bio;
+
+        // Aplicar colores de texto a integrantes
+        nameEl.style.color = state.titleColor;
+        roleEl.style.color = state.textColor;
+        bioEl.style.color = state.textColor;
+        
+        const imgEl = document.getElementById(`preview-img-${i}`);
+        imgEl.src = member.image || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="%23ccc"><circle cx="50" cy="50" r="50"/></svg>';
+        imgEl.style.transform = `scale(${member.zoom || 1.0}) translate(${member.panX || 0}%, ${member.panY || 0}%)`;
+
+        const bgCircle = document.getElementById(`preview-circle-bg-${i}`);
+        bgCircle.style.backgroundColor = member.circleColor;
+        bgCircle.className = "absolute rounded-full opacity-80 -z-10 transition-all duration-300 shadow-sm";
+        switch(member.circlePos) {
+          case 'top-left': bgCircle.classList.add('-top-2', '-left-3'); break;
+          case 'top-right': bgCircle.classList.add('-top-2', '-right-3'); break;
+          case 'bottom-left': bgCircle.classList.add('-bottom-2', '-left-3'); break;
+          case 'bottom-right': bgCircle.classList.add('-bottom-2', '-right-3'); break;
+          default: bgCircle.classList.add('-top-2', '-left-3');
+        }
+      });
+    }
+
+    function initEditorInputs() {
+      // General
+      document.getElementById('input-title').value = state.title;
+      document.getElementById('input-project-name').value = state.projectName || "";
+      document.getElementById('input-logo-url').value = state.universityLogo || "";
+      document.getElementById('input-accent-color').value = state.accentColor;
+      document.getElementById('accent-hex-text').innerText = state.accentColor;
+      document.getElementById('input-slide-num').value = state.slideNumber;
+      document.getElementById('input-footer').value = state.companyName;
+      document.getElementById('input-show-decorations').checked = state.showDecorations;
+      
+      document.getElementById('input-logo-height').value = state.universityLogoHeight || 56;
+      document.getElementById('val-logo-height').innerText = `${state.universityLogoHeight || 56}px`;
+
+      document.getElementById('input-accent-width').value = state.accentLineWidth || 144;
+      document.getElementById('val-accent-width').innerText = `${state.accentLineWidth || 144}px`;
+      document.getElementById('input-accent-height').value = state.accentLineHeight || 6;
+      document.getElementById('val-accent-height').innerText = `${state.accentLineHeight || 6}px`;
+      document.getElementById('input-accent-y').value = state.accentLineY !== undefined ? state.accentLineY : 12;
+      document.getElementById('val-accent-y').innerText = `${state.accentLineY !== undefined ? state.accentLineY : 12}px`;
+
+      // Inicialización Tipografía
+      document.getElementById('input-font-family').value = state.fontFamily;
+      
+      document.getElementById('input-title-color').value = state.titleColor;
+      document.getElementById('title-color-hex').innerText = state.titleColor;
+      
+      document.getElementById('input-text-color').value = state.textColor;
+      document.getElementById('text-color-hex').innerText = state.textColor;
+      
+      document.getElementById('input-title-size').value = state.titleFontSize || 45;
+      document.getElementById('val-title-size').innerText = `${state.titleFontSize || 45}px`;
+
+      // Cierre
+      document.getElementById('input-thanks-title').value = state.thanksTitle;
+      document.getElementById('input-thanks-subtitle').value = state.thanksSubtitle;
+      
+      document.getElementById('input-thanks-title-color').value = state.thanksTitleColor || state.titleColor;
+      document.getElementById('input-thanks-subtitle-color').value = state.thanksSubtitleColor || state.textColor;
+      
+      document.getElementById('input-thanks-accent-width').value = state.thanksAccentWidth || 200;
+      document.getElementById('val-thanks-accent-width').innerText = `${state.thanksAccentWidth || 200}px`;
+      document.getElementById('input-thanks-accent-height').value = state.thanksAccentHeight || 8;
+      document.getElementById('val-thanks-accent-height').innerText = `${state.thanksAccentHeight || 8}px`;
+      document.getElementById('input-thanks-accent-y').value = state.thanksAccentY !== undefined ? state.thanksAccentY : 24;
+      document.getElementById('val-thanks-accent-y').innerText = `${state.thanksAccentY !== undefined ? state.thanksAccentY : 24}px`;
+
+      document.getElementById('input-thanks-title-size').value = state.thanksTitleFontSize || 80;
+      document.getElementById('val-thanks-title-size').innerText = `${state.thanksTitleFontSize || 80}px`;
+
+      document.getElementById('input-thanks-subtitle-size').value = state.thanksSubtitleFontSize || 30;
+      document.getElementById('val-thanks-subtitle-size').innerText = `${state.thanksSubtitleFontSize || 30}px`;
+
+      selectMemberToEdit(activeMemberIndex);
+    }
+
+    function switchTab(tab) {
+      const btnClassActive = "flex-1 py-3 px-2 text-center font-semibold border-b-2 border-lime-500 text-lime-500 transition-all whitespace-nowrap";
+      const btnClassInactive = "flex-1 py-3 px-2 text-center font-semibold border-b-2 border-transparent text-slate-400 hover:text-white transition-all whitespace-nowrap";
+
+      document.getElementById('tab-btn-general').className = tab === 'general' ? btnClassActive : btnClassInactive;
+      document.getElementById('tab-btn-members').className = tab === 'members' ? btnClassActive : btnClassInactive;
+      document.getElementById('tab-btn-thanks').className = tab === 'thanks' ? btnClassActive : btnClassInactive;
+
+      document.getElementById('tab-content-general').classList.add('hidden');
+      document.getElementById('tab-content-members').classList.add('hidden');
+      document.getElementById('tab-content-thanks').classList.add('hidden');
+
+      document.getElementById(`tab-content-${tab}`).classList.remove('hidden');
+
+      // Lógica de transición de vistas en el Canvas
+      const viewTeam = document.getElementById('view-team');
+      const viewThanks = document.getElementById('view-thanks');
+
+      if (tab === 'thanks') {
+        currentViewMode = 'thanks';
+        viewTeam.classList.add('hidden');
+        viewThanks.classList.remove('hidden');
+      } else {
+        currentViewMode = 'team';
+        viewTeam.classList.remove('hidden');
+        viewThanks.classList.add('hidden');
+      }
+    }
+
+    function updateGeneral(field, value) {
+      state[field] = value;
+      saveState();
+      
+      // Mapeo dinámico a elementos del DOM
+      const updaters = {
+        title: () => document.getElementById('preview-title').innerText = value,
+        projectName: () => {
+          const el = document.getElementById('preview-project-name');
+          if (value) { el.innerText = `| ${value}`; el.classList.remove('hidden'); } 
+          else { el.classList.add('hidden'); }
+        },
+        thanksTitle: () => document.getElementById('preview-thanks-title').innerText = value,
+        thanksSubtitle: () => document.getElementById('preview-thanks-subtitle').innerText = value,
+        thanksTitleColor: () => document.getElementById('preview-thanks-title').style.color = value,
+        thanksSubtitleColor: () => document.getElementById('preview-thanks-subtitle').style.color = value,
+        companyName: () => document.getElementById('preview-footer').innerText = value,
+        slideNumber: () => document.getElementById('preview-slide-num').innerText = value,
+        
+        accentColor: () => {
+          document.getElementById('preview-accent-line').style.backgroundColor = value;
+          document.getElementById('preview-thanks-accent').style.backgroundColor = value;
+          document.getElementById('accent-hex-text').innerText = value;
+        },
+        accentLineWidth: () => {
+          document.getElementById('preview-accent-line').style.width = `${value}px`;
+          document.getElementById('val-accent-width').innerText = `${value}px`;
+        },
+        accentLineHeight: () => {
+          document.getElementById('preview-accent-line').style.height = `${value}px`;
+          document.getElementById('val-accent-height').innerText = `${value}px`;
+        },
+        accentLineY: () => {
+          document.getElementById('preview-accent-line-container').style.marginTop = `${value}px`;
+          document.getElementById('val-accent-y').innerText = `${value}px`;
+        },
+
+        thanksAccentWidth: () => {
+          document.getElementById('preview-thanks-accent').style.width = `${value}px`;
+          document.getElementById('val-thanks-accent-width').innerText = `${value}px`;
+        },
+        thanksAccentHeight: () => {
+          document.getElementById('preview-thanks-accent').style.height = `${value}px`;
+          document.getElementById('val-thanks-accent-height').innerText = `${value}px`;
+        },
+        thanksAccentY: () => {
+          document.getElementById('preview-thanks-accent-container').style.marginTop = `${value}px`;
+          document.getElementById('val-thanks-accent-y').innerText = `${value}px`;
+        },
+        
+        universityLogoHeight: () => {
+          document.getElementById('preview-logo-container').style.height = `${value}px`;
+          document.getElementById('val-logo-height').innerText = `${value}px`;
+        },
+        
+        // Renderizadores Reactivos Tipografía
+        fontFamily: () => {
+          document.getElementById('slide-container').style.fontFamily = value;
+        },
+        titleColor: () => {
+          document.getElementById('title-color-hex').innerText = value;
+          document.getElementById('preview-title').style.color = value;
+          state.members.forEach((m, i) => document.getElementById(`preview-name-${i}`).style.color = value);
+        },
+        textColor: () => {
+          document.getElementById('text-color-hex').innerText = value;
+          document.getElementById('preview-project-name').style.color = value;
+          state.members.forEach((m, i) => {
+            document.getElementById(`preview-role-${i}`).style.color = value;
+            document.getElementById(`preview-bio-${i}`).style.color = value;
+          });
+        },
+        titleFontSize: () => {
+          document.getElementById('preview-title').style.fontSize = `${value}px`;
+          document.getElementById('val-title-size').innerText = `${value}px`;
+        },
+        thanksTitleFontSize: () => {
+          document.getElementById('preview-thanks-title').style.fontSize = `${value}px`;
+          document.getElementById('val-thanks-title-size').innerText = `${value}px`;
+        },
+        thanksSubtitleFontSize: () => {
+          document.getElementById('preview-thanks-subtitle').style.fontSize = `${value}px`;
+          document.getElementById('val-thanks-subtitle-size').innerText = `${value}px`;
+        },
+
+        showDecorations: () => {
+          const el = document.getElementById('decorations-bg');
+          if (value) el.classList.remove('hidden'); else el.classList.add('hidden');
+        },
+        universityLogo: () => {
+           // La lógica de logo es compleja, llamamos a un repintado parcial
+           renderAll();
+        }
+      };
+
+      if(updaters[field]) updaters[field]();
+    }
+
+    function removeLogo() {
+      document.getElementById('input-logo-url').value = '';
+      updateGeneral('universityLogo', '');
+      showToast("Logo removido");
+    }
+
+    function selectMemberToEdit(index) {
+      activeMemberIndex = index;
+      
+      for (let i = 0; i < 5; i++) {
+        const btn = document.getElementById(`member-sel-${i}`);
+        if (i === index) btn.className = "py-2 text-xs font-bold rounded bg-lime-500 text-slate-950 transition-colors shadow";
+        else btn.className = "py-2 text-xs font-bold rounded text-slate-400 hover:text-white transition-colors bg-transparent";
+      }
+
+      document.getElementById('editing-member-label').innerText = index + 1;
+      const member = state.members[index];
+      
+      document.getElementById('input-member-name').value = member.name;
+      document.getElementById('input-member-role').value = member.role;
+      document.getElementById('input-member-bio').value = member.bio;
+      document.getElementById('editor-img-preview').src = member.image || '';
+      
+      updateCharCounter(member.bio.length);
+    }
+
+    function updateCurrentMember(field, value) {
+      state.members[activeMemberIndex][field] = value;
+      saveState();
+
+      const index = activeMemberIndex;
+      if (field === 'name') document.getElementById(`preview-name-${index}`).innerText = value;
+      else if (field === 'role') document.getElementById(`preview-role-${index}`).innerText = value;
+      else if (field === 'bio') {
+        document.getElementById(`preview-bio-${index}`).innerText = value;
+        updateCharCounter(value.length);
+      }
+    }
+
+    function updateCharCounter(length) {
+      const counter = document.getElementById('char-counter');
+      counter.innerText = `${length}/90 sugerido`;
+      counter.className = length > 90 ? "text-[10px] text-amber-400 font-semibold" : "text-[10px] text-slate-500";
+    }
+
+    function triggerFileInput() { document.getElementById('member-file-input').click(); }
+    function triggerLogoFileInput() { document.getElementById('logo-file-input').click(); }
+
+    function onFileSelected(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const dataUrl = e.target.result; // Subida directa sin compresión para mantener calidad
+          state.members[activeMemberIndex].image = dataUrl;
+          saveState();
+          document.getElementById(`preview-img-${activeMemberIndex}`).src = dataUrl;
+          document.getElementById('editor-img-preview').src = dataUrl;
+          showToast("Foto subida!");
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function onLogoSelected(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const dataUrl = e.target.result;
+          document.getElementById('input-logo-url').value = '';
+          updateGeneral('universityLogo', dataUrl);
+          showToast("Logo subido!");
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function downloadAsImage() {
+      const originalSlide = document.getElementById('slide-container');
+      showToast("Generando captura...");
+
+      const sandbox = document.createElement('div');
+      sandbox.style.position = 'absolute';
+      sandbox.style.left = '-9999px';
+      sandbox.style.width = '1100px';
+      sandbox.style.height = '640px';
+      document.body.appendChild(sandbox);
+
+      const clonedSlide = originalSlide.cloneNode(true);
+      clonedSlide.style.width = '1100px';
+      clonedSlide.style.height = '640px';
+      clonedSlide.style.margin = '0';
+      clonedSlide.style.padding = '3.5rem';
+      clonedSlide.style.boxShadow = 'none';
+
+      const clonedPlaceholder = clonedSlide.querySelector('#preview-logo-placeholder');
+      if (clonedPlaceholder) clonedPlaceholder.style.display = 'none';
+
+      sandbox.appendChild(clonedSlide);
+
+      setTimeout(() => {
+        html2canvas(clonedSlide, {
+          scale: 3, 
+          backgroundColor: '#ffffff',
+          width: 1100, height: 640
+        }).then(canvas => {
+          document.body.removeChild(sandbox);
+          const link = document.createElement('a');
+          const prefix = currentViewMode === 'team' ? 'Equipo' : 'Cierre';
+          link.download = `${prefix}_${state.title.replace(/\s+/g, '_')}.png`;
+          link.href = canvas.toDataURL('image/png', 1.0);
+          link.click();
+          showToast("¡Imagen descargada!");
+        });
+      }, 150);
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast-notif');
+      document.getElementById('toast-text').innerText = message;
+      toast.classList.remove('translate-x-[150%]');
+      setTimeout(() => toast.classList.add('translate-x-[150%]'), 3000);
+    }
+
+    function confirmReset() { document.getElementById('confirm-modal').classList.remove('hidden'); }
+    function closeModal() { document.getElementById('confirm-modal').classList.add('hidden'); }
+    
+    function resetToDefaults() {
+      state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+      saveState(); renderAll(); initEditorInputs(); closeModal();
+      showToast("Restaurado con éxito.");
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('editor-panel');
+      const menuIcon = document.getElementById('menu-icon');
+      if (sidebar.classList.contains('hidden')) {
+        sidebar.classList.remove('hidden');
+        menuIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
+      } else {
+        sidebar.classList.add('hidden');
+        menuIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>`;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test VVIQ: Mide la Viveza de tu Imaginación</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .app-bg {
+            background-color: #121826;
+            background-image: radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.1), transparent 70%);
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        /* Custom radio button styles */
+        .rating-input {
+            display: none;
+        }
+        .rating-label {
+            border: 2px solid #e5e7eb;
+            transition: all 0.2s ease-in-out;
+        }
+        .rating-input:checked + .rating-label {
+            border-color: #3b82f6;
+            background-color: #dbeafe;
+            transform: scale(1.05);
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="app-bg flex items-center justify-center min-h-screen p-4">
+
+    <div id="vviq-app" class="max-w-2xl w-full bg-white rounded-xl shadow-2xl overflow-hidden">
+        
+        <!-- Start Screen -->
+        <div id="start-screen" class="p-8 md:p-12 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Test de Imaginación Visual (VVIQ)</h1>
+            <p class="text-slate-600 mb-8">Este test te ayudará a descubrir qué tan vívidas son las imágenes en tu mente. Consta de 16 preguntas. Para cada una, lee el escenario, intenta visualizarlo y luego califica la claridad de tu imagen mental.</p>
+            <button id="start-btn" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors text-lg">Comenzar Test</button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden p-8 md:p-12">
+            <div class="mb-6">
+                <p class="text-sm text-slate-500">Pregunta <span id="question-number">1</span> de 16</p>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                    <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 6.25%"></div>
+                </div>
+            </div>
+            
+            <p class="text-slate-700 text-lg mb-4">Considera a un familiar o amigo cercano. Piensa en su rostro, su cuerpo y sus movimientos. Ahora, visualiza lo siguiente:</p>
+            <h2 id="question-text" class="text-2xl font-bold text-slate-800 mb-8">El contorno exacto de su cara, cabeza, hombros y cuerpo.</h2>
+            
+            <div id="ratings" class="grid grid-cols-1 sm:grid-cols-5 gap-3 mb-8">
+                <!-- Rating options will be injected here by JS -->
+            </div>
+
+            <div id="error-message" class="text-red-500 text-center mb-4 hidden">Por favor, selecciona una opción.</div>
+
+            <div class="text-center">
+                <button id="next-btn" class="bg-blue-600 text-white font-bold py-3 px-12 rounded-lg hover:bg-blue-700 transition-colors text-lg">Siguiente</button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden p-8 md:p-12 text-center">
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">Tu Resultado</h1>
+            <p class="text-slate-600 mb-6">Tu puntuación total en el test es:</p>
+            <p id="score" class="text-7xl font-bold text-blue-600 mb-4">0</p>
+            <h2 id="result-category" class="text-2xl font-bold mb-4">Categoría</h2>
+            <p id="result-description" class="text-slate-600 max-w-md mx-auto mb-8">Descripción de la categoría.</p>
+            <button id="retake-btn" class="bg-slate-700 text-white font-bold py-3 px-8 rounded-lg hover:bg-slate-800 transition-colors text-lg">Realizar de Nuevo</button>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const startScreen = document.getElementById('start-screen');
+            const quizScreen = document.getElementById('quiz-screen');
+            const resultScreen = document.getElementById('result-screen');
+            
+            const startBtn = document.getElementById('start-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const retakeBtn = document.getElementById('retake-btn');
+
+            const questionNumberEl = document.getElementById('question-number');
+            const progressBar = document.getElementById('progress-bar');
+            const questionTextEl = document.getElementById('question-text');
+            const ratingsContainer = document.getElementById('ratings');
+            const errorMessage = document.getElementById('error-message');
+
+            const scoreEl = document.getElementById('score');
+            const resultCategoryEl = document.getElementById('result-category');
+            const resultDescriptionEl = document.getElementById('result-description');
+
+            // --- Quiz Data ---
+            const questions = [
+                // Scenario 1: Friend/Relative
+                { scenario: "Considera a un familiar o amigo cercano. Piensa en su rostro, su cuerpo y sus movimientos. Ahora, visualiza lo siguiente:", item: "El contorno exacto de su cara, cabeza, hombros y cuerpo." },
+                { scenario: "Considera a un familiar o amigo cercano. Piensa en su rostro, su cuerpo y sus movimientos. Ahora, visualiza lo siguiente:", item: "Sus posturas características al caminar." },
+                { scenario: "Considera a un familiar o amigo cercano. Piensa en su rostro, su cuerpo y sus movimientos. Ahora, visualiza lo siguiente:", item: "Los diferentes colores de su ropa habitual." },
+                { scenario: "Considera a un familiar o amigo cercano. Piensa en su rostro, su cuerpo y sus movimientos. Ahora, visualiza lo siguiente:", item: "La cara de esa persona sonriendo." },
+                // Scenario 2: Sunrise
+                { scenario: "Visualiza un amanecer. Piensa en el sol saliendo en el horizonte. Ahora, visualiza lo siguiente:", item: "El sol justo por encima del horizonte." },
+                { scenario: "Visualiza un amanecer. Piensa en el sol saliendo en el horizonte. Ahora, visualiza lo siguiente:", item: "El cielo azul sobre el paisaje." },
+                { scenario: "Visualiza un amanecer. Piensa en el sol saliendo en el horizonte. Ahora, visualiza lo siguiente:", item: "Las nubes en el cielo y su forma." },
+                { scenario: "Visualiza un amanecer. Piensa en el sol saliendo en el horizonte. Ahora, visualiza lo siguiente:", item: "Una tormenta que se acerca, con relámpagos." },
+                // Scenario 3: A shop
+                { scenario: "Piensa en una tienda que conozcas bien. Imagina su exterior e interior. Ahora, visualiza lo siguiente:", item: "La apariencia general de la tienda desde el otro lado de la calle." },
+                { scenario: "Piensa en una tienda que conozcas bien. Imagina su exterior e interior. Ahora, visualiza lo siguiente:", item: "La entrada de la tienda, las puertas y los escaparates." },
+                { scenario: "Piensa en una tienda que conozcas bien. Imagina su exterior e interior. Ahora, visualiza lo siguiente:", item: "Los productos en los estantes y el mostrador." },
+                { scenario: "Piensa en una tienda que conozcas bien. Imagina su exterior e interior. Ahora, visualiza lo siguiente:", item: "Los detalles de un producto específico que comprarías." },
+                // Scenario 4: A country scene
+                { scenario: "Imagina una escena campestre con árboles, montañas y un lago. Ahora, visualiza lo siguiente:", item: "El contorno de las montañas en el horizonte." },
+                { scenario: "Imagina una escena campestre con árboles, montañas y un lago. Ahora, visualiza lo siguiente:", item: "El color y la forma de los árboles." },
+                { scenario: "Imagina una escena campestre con árboles, montañas y un lago. Ahora, visualiza lo siguiente:", item: "El color y la superficie del lago." },
+                { scenario: "Imagina una escena campestre con árboles, montañas y un lago. Ahora, visualiza lo siguiente:", item: "Un fuerte viento agitando los árboles y el agua del lago." },
+            ];
+            
+            const ratingOptions = [
+                { score: 5, label: "Perfectamente clara y vívida", description: "Tan real como la visión normal." },
+                { score: 4, label: "Clara y razonablemente vívida", description: "Puedo ver detalles definidos." },
+                { score: 3, label: "Moderadamente clara y vívida", description: "La imagen es reconocible pero no perfecta." },
+                { score: 2, label: "Vaga y borrosa", description: "La imagen es muy tenue, como un fantasma." },
+                { score: 1, label: "Sin imagen, solo 'sé' que estoy pensando en el objeto", description: "No veo nada, solo pienso en el concepto." }
+            ];
+
+            // --- State ---
+            let currentQuestionIndex = 0;
+            let userScores = [];
+
+            // --- Functions ---
+            function startQuiz() {
+                currentQuestionIndex = 0;
+                userScores = [];
+                startScreen.classList.add('hidden');
+                resultScreen.classList.add('hidden');
+                quizScreen.classList.remove('hidden');
+                loadQuestion();
+            }
+
+            function loadQuestion() {
+                if (currentQuestionIndex >= questions.length) {
+                    showResults();
+                    return;
+                }
+
+                const question = questions[currentQuestionIndex];
+                const scenarioEl = quizScreen.querySelector('p.text-slate-700');
+                
+                scenarioEl.textContent = question.scenario;
+                questionTextEl.textContent = question.item;
+                questionNumberEl.textContent = currentQuestionIndex + 1;
+                progressBar.style.width = `${((currentQuestionIndex + 1) / questions.length) * 100}%`;
+
+                ratingsContainer.innerHTML = '';
+                ratingOptions.forEach((option, index) => {
+                    const ratingId = `rating-${index}`;
+                    const ratingEl = `
+                        <div class="relative">
+                            <input type="radio" name="rating" id="${ratingId}" value="${option.score}" class="rating-input">
+                            <label for="${ratingId}" class="rating-label block w-full p-4 rounded-lg cursor-pointer text-center">
+                                <span class="font-bold text-slate-800">${option.label}</span>
+                                <span class="block text-sm text-slate-500 mt-1">${option.description}</span>
+                            </label>
+                        </div>
+                    `;
+                    ratingsContainer.innerHTML += ratingEl;
+                });
+                
+                errorMessage.classList.add('hidden');
+            }
+
+            function handleNext() {
+                const selectedRating = document.querySelector('input[name="rating"]:checked');
+                
+                if (!selectedRating) {
+                    errorMessage.classList.remove('hidden');
+                    return;
+                }
+
+                userScores.push(parseInt(selectedRating.value));
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+
+            function showResults() {
+                quizScreen.classList.add('hidden');
+                resultScreen.classList.remove('hidden');
+
+                const totalScore = userScores.reduce((sum, score) => sum + score, 0);
+                scoreEl.textContent = totalScore;
+
+                let category = '';
+                let description = '';
+
+                if (totalScore >= 16 && totalScore <= 24) {
+                    category = 'Afantasía / Hipofantasía';
+                    description = 'Tu imaginación visual es muy baja o inexistente. Piensas más en conceptos y hechos que en imágenes. Es una forma normal de pensar.';
+                } else if (totalScore >= 25 && totalScore <= 40) {
+                    category = 'Imaginación Debajo del Promedio';
+                    description = 'Tus imágenes mentales tienden a ser vagas y poco detalladas. Puedes visualizar, pero no con mucha claridad.';
+                } else if (totalScore >= 41 && totalScore <= 64) {
+                    category = 'Imaginación Promedio';
+                    description = 'Tienes una capacidad de visualización normal. Puedes crear imágenes mentales claras cuando te concentras en ello.';
+                } else if (totalScore >= 65 && totalScore <= 80) {
+                    category = 'Hiperfantasía';
+                    description = 'Tu imaginación visual es excepcionalmente vívida y detallada, casi como ver una película en tu mente. Tienes un "ojo mental" muy poderoso.';
+                }
+                
+                resultCategoryEl.textContent = category;
+                resultDescriptionEl.textContent = description;
+            }
+
+            // --- Event Listeners ---
+            startBtn.addEventListener('click', startQuiz);
+            nextBtn.addEventListener('click', handleNext);
+            retakeBtn.addEventListener('click', startQuiz);
+        });
+    </script>
+</body>
+</html>

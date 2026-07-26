@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Generador de Circulares - IER La Josefina</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Dependencias para exportación -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- Quill.js para el editor WYSIWYG -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
+    <!-- Archivos JS locales con los Base64 -->
+    <script src="membrete-superior.js"></script>
+    <script src="membrete-inferior.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            overscroll-behavior-y: none;
+        }
+        .graphic-content {
+            font-family: 'Open Sans', sans-serif;
+        }
+        .graphic-title {
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        /* Scrollbars */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        
+        .img-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f1f5f9;
+            color: #64748b;
+            font-size: 0.875rem;
+            text-align: center;
+            border: 2px dashed #cbd5e1;
+            padding: 2rem;
+        }
+        .resizing {
+            cursor: col-resize !important;
+            user-select: none;
+        }
+        
+        /* Ajustes de Caja de Texto Quill */
+        .ql-container.ql-snow { 
+            border-color: #cbd5e1 !important; 
+            border-bottom-left-radius: 0.375rem; 
+            border-bottom-right-radius: 0.375rem; 
+            resize: vertical; 
+            overflow-y: hidden; 
+            min-height: 250px;
+        }
+        .ql-toolbar.ql-snow { 
+            border-color: #cbd5e1 !important; 
+            border-top-left-radius: 0.375rem; 
+            border-top-right-radius: 0.375rem; 
+            background: #f8fafc;
+        }
+        .editor-focus .ql-toolbar.ql-snow { border-color: #1c6628 !important; }
+        .editor-focus .ql-container.ql-snow { border-color: #1c6628 !important; }
+
+        /* Ajustes de Tablas para Quill y Previsualización */
+        .ql-editor table, .preview-editor-styles table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            table-layout: fixed;
+        }
+        .ql-editor td, .preview-editor-styles td, .preview-editor-styles th {
+            border: 1px solid #94a3b8;
+            padding: 0.5rem;
+            min-width: 50px;
+            word-break: break-word;
+        }
+
+        /* Ajustes de previsualización WYSIWYG */
+        .preview-editor-styles.ql-editor {
+            font-family: inherit !important;
+            font-size: inherit !important;
+            line-height: inherit !important;
+            padding: 0 !important;
+            white-space: normal !important;
+            overflow-y: visible !important;
+            word-break: break-word;
+        }
+        .preview-editor-styles p { margin-bottom: 0.75em; }
+        .preview-editor-styles li { margin-bottom: 0.25em; }
+
+        /* Soporte para notch y barras inferiores en iOS/Android */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 1rem); }
+    </style>
+    
+    <script>
+        function handleImageError(imgElement, placeholderId) {
+            imgElement.style.display = 'none';
+            imgElement.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+            setTimeout(() => {
+                const placeholder = document.getElementById(placeholderId);
+                if (placeholder) {
+                    placeholder.style.display = 'flex';
+                }
+            }, 0);
+        }
+    </script>
+</head>
+<body class="bg-slate-200 text-slate-800 h-screen flex flex-col md:flex-row overflow-hidden relative">
+
+    <!-- Modal de Opciones de Pegado (ESTILO WORD) -->
+    <div id="modal-paste" class="fixed inset-0 bg-slate-900 bg-opacity-60 z- hidden flex items-center justify-center backdrop-blur-sm transition-opacity p-4">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-[400px] overflow-hidden transform transition-all">
+            <div class="p-4 border-b border-slate-200 bg-[#f4f9f5] flex items-center gap-3">
+                <div class="bg-[#1c6628] p-2 rounded-full text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                </div>
+                <h3 class="font-bold text-[#1c6628] text-lg">Opciones de Pegado</h3>
+            </div>
+            <div class="p-6 flex flex-col gap-3">
+                <p class="text-sm text-slate-600 mb-2">Se ha detectado contenido en el portapapeles. ¿Cómo deseas insertarlo?</p>
+                
+                <button id="btn-paste-format" class="w-full flex items-start gap-3 p-3 border-2 border-slate-200 rounded-lg hover:border-[#1c6628] hover:bg-[#f4f9f5] transition text-left group">
+                    <span class="text-2xl mt-1 opacity-70 group-hover:opacity-100 transition">📝</span>
+                    <div>
+                        <p class="font-bold text-sm text-slate-800 group-hover:text-[#1c6628]">Mantener formato de origen</p>
+                        <p class="text-xs text-slate-500 mt-1">Conserva negritas, viñetas, tablas y estilos originales.</p>
+                    </div>
+                </button>
+                
+                <button id="btn-paste-text" class="w-full flex items-start gap-3 p-3 border-2 border-slate-200 rounded-lg hover:border-blue-600 hover:bg-blue-50 transition text-left group">
+                    <span class="text-2xl mt-1 opacity-70 group-hover:opacity-100 transition">🅰️</span>
+                    <div>
+                        <p class="font-bold text-sm text-slate-800 group-hover:text-blue-700">Conservar solo texto</p>
+                        <p class="text-xs text-slate-500 mt-1">Limpia el formato y adapta el texto al estilo limpio.</p>
+                    </div>
+                </button>
+
+                <button id="btn-paste-cancel" class="w-full text-center text-sm font-semibold text-slate-500 hover:text-slate-800 mt-3 p-2">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pestañas Móviles -->
+    <nav class="md:hidden flex bg-white border-b border-slate-200 z-40 shrink-0 w-full shadow-sm sticky top-0">
+        <button id="tab-edit" class="flex-1 py-3.5 text-[15px] font-bold text-[#1c6628] border-b-[3px] border-[#1c6628] bg-slate-50 transition-colors">
+            📝 Editar
+        </button>
+        <button id="tab-preview" class="flex-1 py-3.5 text-[15px] font-bold text-slate-500 border-b-[3px] border-transparent hover:bg-slate-50 transition-colors">
+            👁️ Vista Previa
+        </button>
+    </nav>
+
+    <!-- Panel de Formulario (Izquierda) -->
+    <aside id="sidebar" class="bg-white md:shadow-xl z-20 flex flex-col flex-1 md:h-full border-r border-slate-300 w-full md:w-auto shrink-0 overflow-hidden transition-all duration-300">
+        <div class="p-5 md:p-6 border-b border-slate-200 bg-slate-50 flex justify-between items-start shrink-0">
+            <div>
+                <h1 class="text-lg md:text-xl font-bold text-[#1c6628]">Generador de Circulares</h1>
+                <p class="text-xs md:text-sm text-slate-600 mt-1">IER La Josefina - Sede Vallesol</p>
+            </div>
+        </div>
+
+        <!-- Área Scrolleable del Formulario -->
+        <div class="p-5 md:p-6 flex-1 overflow-y-auto space-y-5 pb-32 md:pb-6">
+            
+            <!-- Carga de Imágenes (Acordeón) -->
+            <div class="bg-slate-50 border border-slate-200 rounded-md overflow-hidden">
+                <button id="btn-toggle-membretes" class="w-full flex items-center justify-between p-4 focus:outline-none hover:bg-slate-100 transition-colors">
+                    <h3 class="text-sm font-bold text-slate-800">Cargar Membretes</h3>
+                    <svg id="icon-chevron-membretes" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 transform"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                
+                <div id="content-membretes" class="hidden p-4 pt-0 space-y-4 border-t border-slate-200 mt-2">
+                    <div class="pt-2">
+                        <label class="block text-xs font-semibold text-slate-600 mb-2">Membrete Superior</label>
+                        <div class="flex gap-4 mb-2">
+                            <label class="text-xs flex items-center gap-1 cursor-pointer">
+                                <input type="radio" name="top-source" value="file" class="accent-[#1c6628]"> Archivo
+                            </label>
+                            <label class="text-xs flex items-center gap-1 cursor-pointer">
+                                <input type="radio" name="top-source" value="url" class="accent-[#1c6628]"> URL
+                            </label>
+                            <label class="text-xs flex items-center gap-1 cursor-pointer" title="Carga desde membrete-superior.js">
+                                <input type="radio" name="top-source" value="base64" checked class="accent-[#1c6628]"> Auto (JS)
+                            </label>
+                        </div>
+                        <input type="file" id="input-img-top-file" accept="image/*" class="hidden w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[#1c6628] file:text-white hover:file:bg-[#144b1c] cursor-pointer">
+                        <input type="text" id="input-img-top-url" placeholder="Ej. https://... o ./imagen.jpg" class="hidden w-full border border-slate-300 rounded-md p-2 text-xs focus:ring-2 focus:ring-[#1c6628] focus:border-[#1c6628] outline-none transition">
+                        <div id="input-img-top-base64" class="text-xs text-slate-500 italic p-2 bg-slate-100 rounded-md border border-slate-200 break-words">Lee desde membrete-superior.js</div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200">
+                        <label class="block text-xs font-semibold text-slate-600 mb-2">Membrete Inferior</label>
+                        <div class="flex gap-4 mb-2">
+                            <label class="text-xs flex items-center gap-1 cursor-pointer">
+                                <input type="radio" name="bottom-source" value="file" class="accent-[#1c6628]"> Archivo
+                            </label>
+                            <label class="text-xs flex items-center gap-1 cursor-pointer">
+                                <input type="radio" name="bottom-source" value="url" class="accent-[#1c6628]"> URL
+                            </label>
+                            <label class="text-xs flex items-center gap-1 cursor-pointer" title="Carga desde membrete-inferior.js">
+                                <input type="radio" name="bottom-source" value="base64" checked class="accent-[#1c6628]"> Auto (JS)
+                            </label>
+                        </div>
+                        <input type="file" id="input-img-bottom-file" accept="image/*" class="hidden w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[#1c6628] file:text-white hover:file:bg-[#144b1c] cursor-pointer">
+                        <input type="text" id="input-img-bottom-url" placeholder="Ej. https://... o ./imagen.jpg" class="hidden w-full border border-slate-300 rounded-md p-2 text-xs focus:ring-2 focus:ring-[#1c6628] focus:border-[#1c6628] outline-none transition">
+                        <div id="input-img-bottom-base64" class="text-xs text-slate-500 italic p-2 bg-slate-100 rounded-md border border-slate-200 break-words">Lee desde membrete-inferior.js</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Título / Asunto</label>
+                <input type="text" id="input-title" class="w-full border border-slate-300 rounded-md p-2.5 focus:ring-2 focus:ring-[#1c6628] focus:border-[#1c6628] outline-none transition text-sm" placeholder="Ej. Reunión de Padres de Familia" value="Citación a Reunión de Padres">
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Fecha y Hora <span class="text-xs font-normal text-slate-400">(Opcional)</span></label>
+                <input type="text" id="input-date" class="w-full border border-slate-300 rounded-md p-2.5 focus:ring-2 focus:ring-[#1c6628] focus:border-[#1c6628] outline-none transition text-sm" placeholder="Ej. Viernes, 15 de Noviembre - 8:00 AM" value="Viernes, 20 de Noviembre - 8:00 AM">
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Lugar <span class="text-xs font-normal text-slate-400">(Opcional)</span></label>
+                <input type="text" id="input-place" class="w-full border border-slate-300 rounded-md p-2.5 focus:ring-2 focus:ring-[#1c6628] focus:border-[#1c6628] outline-none transition text-sm" placeholder="Ej. Sede Principal - Aula Múltiple" value="Sede Vallesol - Aula Múltiple">
+            </div>
+
+            <div>
+                <div class="flex flex-col xl:flex-row justify-between xl:items-end mb-1 gap-1">
+                    <label class="block text-sm font-semibold text-slate-700">Motivo / Mensaje</label>
+                    <span class="text-[10px] text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded shadow-sm w-max" title="Opciones de pegado nativas">
+                        💡 <b>Ctrl+V</b>: Mantener formato | <b>Ctrl+Shift+V</b>: Texto limpio
+                    </span>
+                </div>
+                <!-- Editor enriquecido Quill.js -->
+                <div id="editor-wrapper" class="transition-colors duration-200">
+                    <div id="editor-container" class="bg-white text-sm"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Espacio Reservado para las Acciones de Descarga -->
+    </aside>
+
+    <!-- Divisor redimensionable (Solo en Desktop) -->
+    <div id="resizer" class="hidden md:block w-1.5 bg-slate-300 hover:bg-[#1c6628] cursor-col-resize z-20 transition-colors shrink-0" title="Ajustar ancho del panel"></div>
+
+    <!-- Área de Previsualización (Derecha) -->
+    <main id="preview-area" class="hidden md:flex flex-1 p-4 md:p-8 items-start justify-center overflow-auto preview-container relative bg-slate-200 pb-32 md:pb-8">
+        
+        <!-- Wrapper para controlar el Zoom y la adaptabilidad -->
+        <div id="zoom-wrapper" class="relative transition-all duration-200 ease-in-out">
+            <div class="w-[800px] h-fit min-h-[1035px] origin-top-left transition-transform duration-200 ease-in-out absolute top-0 left-0 shadow-2xl bg-white flex flex-col shrink-0" id="graphic-card">
+                
+                <!-- Encabezado -->
+                <div id="container-top" class="w-full">
+                    <img id="img-top" src="" alt="Membrete Superior" class="w-full object-cover block" style="display: none;" onerror="handleImageError(this, 'placeholder-top')">
+                    <div id="placeholder-top" class="img-placeholder w-full h-[150px]">
+                        Sin membrete cargado. Use el menú izquierdo para cargar el Membrete Superior.
+                    </div>
+                </div>
+                
+                <!-- Cuerpo del mensaje -->
+                <div class="px-14 py-12 graphic-content text-slate-800 flex-1">
+                    <h2 id="out-title" class="graphic-title text-3xl font-bold text-center text-[#1c6628] mb-10 uppercase tracking-wide">Citación a Reunión de Padres</h2>
+                    
+                    <!-- Contenedor condicional -->
+                    <div id="container-meta" class="bg-[#f4f9f5] border-l-4 border-[#1c6628] p-5 mb-8 shadow-sm transition-all duration-300">
+                        <p id="container-out-date" class="mb-2 text-lg"><strong class="text-[#154a1d]">📅 Fecha:</strong> <span id="out-date">Viernes, 20 de Noviembre - 8:00 AM</span></p>
+                        <p id="container-out-place" class="text-lg"><strong class="text-[#154a1d]">📍 Lugar:</strong> <span id="out-place">Sede Vallesol - Aula Múltiple</span></p>
+                    </div>
+
+                    <!-- Contenedor del texto enriquecido -->
+                    <div class="text-[17px] leading-[1.8] text-gray-700 ql-editor preview-editor-styles text-justify" id="out-reason"></div>
+                </div>
+
+                <!-- Pie de página -->
+                <div id="container-bottom" class="mt-auto w-full">
+                    <img id="img-bottom" src="" alt="Membrete Inferior" class="w-full object-cover block" style="display: none;" onerror="handleImageError(this, 'placeholder-bottom')">
+                    <div id="placeholder-bottom" class="img-placeholder w-full h-[100px]">
+                        Sin membrete cargado. Use el menú izquierdo para cargar el Membrete Inferior.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Controles flotantes de Zoom -->
+        <div class="fixed bottom-[90px] right-4 md:bottom-8 md:right-8 bg-white shadow-lg rounded-full flex items-center border border-slate-200 z- overflow-hidden">
+            <button onclick="zoomOut()" class="p-3 hover:bg-slate-100 text-slate-700 transition" title="Alejar">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+            <span id="zoom-level-text" class="px-2 text-sm font-semibold text-slate-700 w-12 text-center">100%</span>
+            <button onclick="zoomIn()" class="p-3 hover:bg-slate-100 text-slate-700 transition" title="Acercar">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+            <div class="w-px h-6 bg-slate-300"></div>
+            <button onclick="autoFitZoom()" class="p-3 hover:bg-slate-100 text-slate-700 transition" title="Ajustar a la pantalla">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+            </button>
+        </div>
+    </main>
+
+    <!-- Contenedor Universal de Descargas -->
+    <div id="download-actions">
+        <div id="download-buttons-container" class="flex w-full">
+            <button id="btn-download-img" class="flex-1 bg-[#1c6628] hover:bg-[#144b1c] text-white font-bold py-3 px-3 rounded-md transition duration-200 flex items-center justify-center gap-2 shadow-sm text-[13px] md:text-sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                <span class="whitespace-nowrap">Imagen PNG</span>
+            </button>
+            <button id="btn-download-pdf" class="flex-1 bg-[#b91c1c] hover:bg-[#991b1b] text-white font-bold py-3 px-3 rounded-md transition duration-200 flex items-center justify-center gap-2 shadow-sm text-[13px] md:text-sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span class="whitespace-nowrap">Documento PDF</span>
+            </button>
+        </div>
+        <p id="download-msg" class="text-xs text-center text-slate-500 mt-2 hidden">Procesando alta calidad, por favor espere...</p>
+    </div>
+
+    <script>
+        // --- GESTIÓN RESPONSIVE Y MOVER BARRA DE DESCARGAS ---
+        const sidebar = document.getElementById('sidebar');
+        const previewArea = document.getElementById('preview-area');
+        const tabEdit = document.getElementById('tab-edit');
+        const tabPreview = document.getElementById('tab-preview');
+
+        const updateMobileTabs = (activeTab) => {
+            if (activeTab === 'edit') {
+                tabEdit.classList.add('text-[#1c6628]', 'border-[#1c6628]', 'bg-slate-50');
+                tabEdit.classList.remove('text-slate-500', 'border-transparent');
+                tabPreview.classList.add('text-slate-500', 'border-transparent');
+                tabPreview.classList.remove('text-[#1c6628]', 'border-[#1c6628]', 'bg-slate-50');
+                
+                sidebar.classList.remove('hidden');
+                sidebar.classList.add('flex');
+                previewArea.classList.add('hidden');
+                previewArea.classList.remove('flex');
+            } else {
+                tabPreview.classList.add('text-[#1c6628]', 'border-[#1c6628]', 'bg-slate-50');
+                tabPreview.classList.remove('text-slate-500', 'border-transparent');
+                tabEdit.classList.add('text-slate-500', 'border-transparent');
+                tabEdit.classList.remove('text-[#1c6628]', 'border-[#1c6628]', 'bg-slate-50');
+                
+                previewArea.classList.remove('hidden');
+                previewArea.classList.add('flex');
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('flex');
+                
+                setTimeout(autoFitZoom, 50);
+            }
+        };
+
+        tabEdit.addEventListener('click', () => updateMobileTabs('edit'));
+        tabPreview.addEventListener('click', () => updateMobileTabs('preview'));
+
+        // Control maestro de layout dinámico
+        const checkResponsiveLayout = () => {
+            const isDesktop = window.innerWidth >= 768;
+            const downloadActions = document.getElementById('download-actions');
+            const dlContainer = document.getElementById('download-buttons-container');
+
+            if (isDesktop) {
+                let savedWidthPct = localStorage.getItem('ier_sidebar_width') || 40;
+                sidebar.style.width = `${savedWidthPct}vw`;
+                sidebar.style.minWidth = '350px';
+                sidebar.style.maxWidth = '60vw';
+                
+                sidebar.classList.remove('hidden');
+                sidebar.classList.add('flex');
+                previewArea.classList.remove('hidden');
+                previewArea.classList.add('flex');
+                
+                downloadActions.className = "p-5 md:p-6 border-t border-slate-200 bg-white shrink-0";
+                dlContainer.className = "flex flex-col w-full gap-3";
+                sidebar.appendChild(downloadActions);
+            } else {
+                sidebar.style.width = '100%';
+                sidebar.style.minWidth = '100%';
+                sidebar.style.maxWidth = '100%';
+                
+                const currentTab = tabEdit.classList.contains('text-[#1c6628]') ? 'edit' : 'preview';
+                updateMobileTabs(currentTab);
+                
+                downloadActions.className = "fixed bottom-0 left-0 w-full p-4 border-t border-slate-200 bg-white z- shadow-[0_-5px_15px_rgba(0,0,0,0.1)] pb-safe";
+                dlContainer.className = "flex flex-row w-full gap-2";
+                document.body.appendChild(downloadActions);
+            }
+        };
+
+        window.addEventListener('resize', checkResponsiveLayout);
+        checkResponsiveLayout(); 
+
+        // --- LÓGICA DE ACORDEÓN MEMBRETES ---
+        const btnToggleMembretes = document.getElementById('btn-toggle-membretes');
+        const contentMembretes = document.getElementById('content-membretes');
+        const iconChevron = document.getElementById('icon-chevron-membretes');
+
+        btnToggleMembretes.addEventListener('click', () => {
+            contentMembretes.classList.toggle('hidden');
+            iconChevron.classList.toggle('rotate-180');
+        });
+
+        // --- LÓGICA DEL REDIMENSIONADOR DEL PANEL (DESKTOP) ---
+        const resizer = document.getElementById('resizer');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            if (window.innerWidth < 768) return; 
+            isResizing = true;
+            document.body.classList.add('resizing');
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing || window.innerWidth < 768) return;
+            const minWidth = 350;
+            const maxWidth = window.innerWidth * 0.60;
+            let newWidth = e.clientX;
+            
+            if (newWidth >= minWidth && newWidth <= maxWidth) {
+                sidebar.style.width = `${newWidth}px`;
+                const pct = (newWidth / window.innerWidth) * 100;
+                localStorage.setItem('ier_sidebar_width', pct);
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                document.body.classList.remove('resizing');
+            }
+        });
+
+        // --- LÓGICA DE ZOOM ADAPTATIVO ---
+        let currentZoom = 1.0;
+        const graphicCard = document.getElementById('graphic-card');
+        const zoomWrapper = document.getElementById('zoom-wrapper');
+        const zoomText = document.getElementById('zoom-level-text');
+
+        const applyZoom = () => {
+            graphicCard.style.transform = `scale(${currentZoom})`;
+            zoomText.innerText = Math.round(currentZoom * 100) + '%';
+            
+            zoomWrapper.style.width = `${800 * currentZoom}px`;
+            zoomWrapper.style.height = `${graphicCard.offsetHeight * currentZoom}px`;
+        };
+
+        const zoomIn = () => { if (currentZoom < 2.0) { currentZoom += 0.1; applyZoom(); } };
+        const zoomOut = () => { if (currentZoom > 0.2) { currentZoom -= 0.1; applyZoom(); } };
+        
+        const autoFitZoom = () => {
+            const availableWidth = previewArea.clientWidth - 32; 
+            if (availableWidth < 800) {
+                currentZoom = availableWidth / 800;
+                if(currentZoom < 0.2) currentZoom = 0.2;
+            } else {
+                currentZoom = 1.0; 
+            }
+            applyZoom();
+        };
+
+        const cardObserver = new ResizeObserver(() => applyZoom());
+        cardObserver.observe(graphicCard);
+
+        setTimeout(autoFitZoom, 100);
+
+        // --- NOMBRES DE ARCHIVO ---
+        const getFileName = (extension) => {
+            const rawTitle = document.getElementById('input-title').value.trim();
+            const safeTitle = rawTitle.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_');
+            const dateStr = new Date().toISOString().split('T');
+            const finalTitle = safeTitle.length > 0 ? safeTitle : 'Circular';
+            return `IER_Vallesol_${finalTitle}_${dateStr}.${extension}`;
+        };
+
+        // --- SINCRONIZACIÓN BÁSICA ---
+        const bindData = (inputId, outputId) => {
+            const input = document.getElementById(inputId);
+            const output = document.getElementById(outputId);
+            input.addEventListener('input', (e) => output.textContent = e.target.value);
+        };
+        bindData('input-title', 'out-title');
+
+        // --- OCULTAMIENTO DINÁMICO ---
+        const inputDate = document.getElementById('input-date');
+        const inputPlace = document.getElementById('input-place');
+        const outDate = document.getElementById('out-date');
+        const outPlace = document.getElementById('out-place');
+        
+        const containerOutDate = document.getElementById('container-out-date');
+        const containerOutPlace = document.getElementById('container-out-place');
+        const containerMeta = document.getElementById('container-meta');
+
+        const updateMetaVisibility = () => {
+            const dateVal = inputDate.value.trim();
+            const placeVal = inputPlace.value.trim();
+
+            if (dateVal === '') containerOutDate.style.display = 'none';
+            else { containerOutDate.style.display = 'block'; outDate.textContent = dateVal; }
+
+            if (placeVal === '') containerOutPlace.style.display = 'none';
+            else { containerOutPlace.style.display = 'block'; outPlace.textContent = placeVal; }
+
+            if (dateVal === '' && placeVal === '') containerMeta.style.display = 'none';
+            else containerMeta.style.display = 'block';
+        };
+
+        inputDate.addEventListener('input', updateMetaVisibility);
+        inputPlace.addEventListener('input', updateMetaVisibility);
+        updateMetaVisibility();
+
+        // --- CONFIGURACIÓN WYSIWYG (QUILL) ---
+        // 1. Configurar iconos SVG para la gestión de tablas
+        const icons = Quill.import('ui/icons');
+        icons['table-insert'] = '<svg viewBox="0 0 18 18"><rect class="ql-stroke" height="12" width="12" x="3" y="3"></rect><line class="ql-stroke" x1="3" x2="15" y1="9" y2="9"></line><line class="ql-stroke" x1="9" x2="9" y1="3" y2="15"></line></svg>';
+        icons['table-row-add'] = '<svg viewBox="0 0 18 18"><rect class="ql-stroke" height="8" width="12" x="3" y="3"></rect><line class="ql-stroke" x1="3" x2="15" y1="7" y2="7"></line><line class="ql-stroke" x1="9" x2="9" y1="3" y2="11"></line><line class="ql-stroke" x1="9" x2="9" y1="13" y2="17"></line><line class="ql-stroke" x1="7" x2="11" y1="15" y2="15"></line></svg>';
+        icons['table-col-add'] = '<svg viewBox="0 0 18 18"><rect class="ql-stroke" height="12" width="8" x="3" y="3"></rect><line class="ql-stroke" x1="7" x2="7" y1="3" y2="15"></line><line class="ql-stroke" x1="3" x2="11" y1="9" y2="9"></line><line class="ql-stroke" x1="13" x2="17" y1="9" y2="9"></line><line class="ql-stroke" x1="15" x2="15" y1="7" y2="11"></line></svg>';
+        icons['table-row-drop'] = '<svg viewBox="0 0 18 18"><rect class="ql-stroke" height="8" width="12" x="3" y="3"></rect><line class="ql-stroke" x1="3" x2="15" y1="7" y2="7"></line><line class="ql-stroke" x1="9" x2="9" y1="3" y2="11"></line><line class="ql-stroke" x1="7" x2="11" y1="15" y2="15"></line></svg>';
+        icons['table-col-drop'] = '<svg viewBox="0 0 18 18"><rect class="ql-stroke" height="12" width="8" x="3" y="3"></rect><line class="ql-stroke" x1="7" x2="7" y1="3" y2="15"></line><line class="ql-stroke" x1="3" x2="11" y1="9" y2="9"></line><line class="ql-stroke" x1="13" x2="17" y1="9" y2="9"></line></svg>';
+
+        const quill = new Quill('#editor-container', {
+            theme: 'snow',
+            placeholder: 'Escriba el cuerpo del mensaje aquí o péguelo desde Word...',
+            modules: {
+                table: true, // Activamos módulo de tabla nativo de Quill 2.0.2
+                toolbar: {
+                    container: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline'],
+                        [{ 'color': [] }],
+                        [{ 'align': [] }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'indent': '-1'}, { 'indent': '+1' }],
+                        // Integramos el grupo de botones de tabla
+                        ['table-insert', 'table-row-add', 'table-col-add', 'table-row-drop', 'table-col-drop'],
+                        ['clean'] 
+                    ],
+                    handlers: {
+                        'table-insert': function() { this.quill.getModule('table').insertTable(2, 2); },
+                        'table-row-add': function() { this.quill.getModule('table').insertRowBelow(); },
+                        'table-col-add': function() { this.quill.getModule('table').insertColumnRight(); },
+                        'table-row-drop': function() { this.quill.getModule('table').deleteRow(); },
+                        'table-col-drop': function() { this.quill.getModule('table').deleteColumn(); }
+                    }
+                },
+                clipboard: { matchVisual: false }
+            }
+        });
+
+        // Añadir tooltips descriptivos tras la renderización
+        setTimeout(() => {
+            const setTooltip = (cls, text) => {
+                const el = document.querySelector('.ql-' + cls);
+                if (el) el.setAttribute('title', text);
+            };
+            setTooltip('table-insert', 'Insertar tabla (2x2)');
+            setTooltip('table-row-add', 'Añadir fila abajo');
+            setTooltip('table-col-add', 'Añadir columna a la derecha');
+            setTooltip('table-row-drop', 'Eliminar fila');
+            setTooltip('table-col-drop', 'Eliminar columna');
+        }, 300);
+
+        const editorWrapper = document.getElementById('editor-wrapper');
+        quill.root.addEventListener('focus', () => editorWrapper.classList.add('editor-focus'));
+        quill.root.addEventListener('blur', () => editorWrapper.classList.remove('editor-focus'));
+
+        const outReason = document.getElementById('out-reason');
+
+        quill.on('text-change', () => {
+            outReason.innerHTML = quill.root.innerHTML;
+        });
+
+        // --- OPCIONES DE PEGADO ---
+        let pendingPasteData = { html: null, text: null, index: 0 };
+        const modalPaste = document.getElementById('modal-paste');
+
+        quill.root.addEventListener('paste', function(e) {
+            e.preventDefault(); 
+            const html = e.clipboardData.getData('text/html');
+            const text = e.clipboardData.getData('text/plain');
+            const range = quill.getSelection(true);
+            const insertIndex = range ? range.index : quill.getLength();
+
+            pendingPasteData = { html: html, text: text, index: insertIndex };
+
+            if (html && html.trim() !== '') {
+                modalPaste.classList.remove('hidden');
+            } else if (text && text.trim() !== '') {
+                quill.insertText(insertIndex, text);
+            }
+        });
+
+        document.getElementById('btn-paste-format').addEventListener('click', () => {
+            modalPaste.classList.add('hidden');
+            if(pendingPasteData.html) {
+                quill.clipboard.dangerouslyPasteHTML(pendingPasteData.index, pendingPasteData.html);
+            }
+        });
+
+        document.getElementById('btn-paste-text').addEventListener('click', () => {
+            modalPaste.classList.add('hidden');
+            if(pendingPasteData.text) {
+                quill.insertText(pendingPasteData.index, pendingPasteData.text);
+            }
+        });
+
+        document.getElementById('btn-paste-cancel').addEventListener('click', () => {
+            modalPaste.classList.add('hidden');
+        });
+
+        // Contenido Inicial
+        const initialHtmlContent = `
+            <p>Cordial saludo estimados padres de familia y cuidadores.</p>
+            <p><br></p>
+            <p>Por medio de la presente nos permitimos convocarlos a la reunión de entrega de informes académicos correspondientes al periodo en curso.</p>
+            <p><br></p>
+            <p>Su asistencia y puntualidad son de vital importancia para el seguimiento del proceso formativo de nuestros estudiantes en el modelo de postprimaria.</p>
+            <p><br></p>
+            <p>Atentamente,</p>
+            <p><br></p>
+            <p><strong>Andrés Paz</strong></p>
+            <p>Docente</p>
+            <p>IER La Josefina - Sede Vallesol</p>
+        `;
+        quill.clipboard.dangerouslyPasteHTML(initialHtmlContent);
+        outReason.innerHTML = quill.root.innerHTML;
+
+        // --- CARGA DE IMÁGENES ---
+        const setupImageSource = (prefix) => {
+            const radios = document.querySelectorAll(`input[name="${prefix}-source"]`);
+            const fileInput = document.getElementById(`input-img-${prefix}-file`);
+            const urlInput = document.getElementById(`input-img-${prefix}-url`);
+            const base64Div = document.getElementById(`input-img-${prefix}-base64`);
+            const img = document.getElementById(`img-${prefix}`);
+            const placeholder = document.getElementById(`placeholder-${prefix}`);
+
+            const updateView = (sourceType) => {
+                fileInput.classList.add('hidden');
+                urlInput.classList.add('hidden');
+                base64Div.classList.add('hidden');
+                
+                if (sourceType === 'file') fileInput.classList.remove('hidden');
+                else if (sourceType === 'url') urlInput.classList.remove('hidden');
+                else if (sourceType === 'base64') {
+                    base64Div.classList.remove('hidden');
+                    loadFromLocalJS();
+                }
+            };
+
+            const renderImage = (src) => {
+                if (src && src.trim() !== '') {
+                    img.src = src.trim();
+                    img.style.display = 'block';
+                    placeholder.style.display = 'none';
+                } else {
+                    img.style.display = 'none';
+                    placeholder.style.display = 'flex';
+                }
+            };
+
+            const loadFromLocalJS = () => {
+                if (prefix === 'top' && typeof base64Top !== 'undefined') {
+                    renderImage(base64Top);
+                } else if (prefix === 'bottom' && typeof base64Bottom !== 'undefined') {
+                    renderImage(base64Bottom);
+                } else {
+                    renderImage('');
+                    placeholder.innerHTML = `<span class="text-red-500 text-[11px]">No se encontró el archivo <b>membrete-${prefix === 'top' ? 'superior' : 'inferior'}.js</b></span>`;
+                }
+            };
+
+            radios.forEach(radio => radio.addEventListener('change', (e) => updateView(e.target.value)));
+
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files;
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) { renderImage(event.target.result); }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            urlInput.addEventListener('input', (e) => renderImage(e.target.value));
+
+            const checkedRadio = document.querySelector(`input[name="${prefix}-source"]:checked`);
+            if(checkedRadio && checkedRadio.value === 'base64') loadFromLocalJS();
+        };
+
+        setupImageSource('top');
+        setupImageSource('bottom');
+
+        // --- RENDERIZACIÓN HD ---
+        const renderHighQualityCanvas = async () => {
+            const card = document.getElementById('graphic-card');
+            const originalTransform = card.style.transform;
+            card.style.transform = 'scale(1)';
+            
+            const canvas = await html2canvas(card, {
+                scale: 2, 
+                useCORS: true, 
+                backgroundColor: '#ffffff',
+                logging: false,
+                allowTaint: false
+            });
+            
+            card.style.transform = originalTransform;
+            return canvas;
+        };
+
+        const toggleButtons = (disabled) => {
+            const btnImg = document.getElementById('btn-download-img');
+            const btnPdf = document.getElementById('btn-download-pdf');
+            const msg = document.getElementById('download-msg');
+
+            btnImg.disabled = disabled;
+            btnPdf.disabled = disabled;
+            
+            if(disabled) {
+                btnImg.classList.add('opacity-75', 'cursor-not-allowed');
+                btnPdf.classList.add('opacity-75', 'cursor-not-allowed');
+                msg.classList.remove('hidden');
+            } else {
+                btnImg.classList.remove('opacity-75', 'cursor-not-allowed');
+                btnPdf.classList.remove('opacity-75', 'cursor-not-allowed');
+                msg.classList.add('hidden');
+            }
+        };
+
+        document.getElementById('btn-download-img').addEventListener('click', () => {
+            toggleButtons(true);
+            setTimeout(() => {
+                renderHighQualityCanvas().then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = getFileName('png');
+                    link.href = canvas.toDataURL('image/png', 1.0);
+                    link.click();
+                }).catch(err => {
+                    console.error("Error al renderizar la imagen: ", err);
+                    alert("El navegador bloqueó la exportación.");
+                }).finally(() => {
+                    toggleButtons(false);
+                });
+            }, 100);
+        });
+
+        document.getElementById('btn-download-pdf').addEventListener('click', () => {
+            toggleButtons(true);
+            setTimeout(() => {
+                renderHighQualityCanvas().then(canvas => {
+                    const { jsPDF } = window.jspdf;
+                    
+                    const pxToMm = 0.264583;
+                    const baseWidth = 800; 
+                    const baseHeight = graphicCard.offsetHeight; 
+                    
+                    const pdfWidth = baseWidth * pxToMm;
+                    const pdfHeight = baseHeight * pxToMm;
+                    
+                    const pdf = new jsPDF({
+                        orientation: pdfWidth > pdfHeight ? 'l' : 'p',
+                        unit: 'mm',
+                        format: [pdfWidth, pdfHeight]
+                    });
+                    
+                    let imgData;
+                    try {
+                        imgData = canvas.toDataURL('image/png', 1.0);
+                    } catch (e) {
+                        throw new Error("El Canvas está contaminado por políticas de CORS.");
+                    }
+                    
+                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                    pdf.save(getFileName('pdf'));
+                    
+                }).catch(err => {
+                    console.error("Error al renderizar el PDF: ", err);
+                    alert("Error: El navegador bloqueó la exportación.");
+                }).finally(() => {
+                    toggleButtons(false);
+                });
+            }, 100);
+        });
+    </script>
+</body>
+</html>

@@ -1,326 +1,493 @@
-<?php 
+<?php
+/**
+ * =================================================================
+ * MÓDULO CRUD - ASIGNACIÓN ACUDIENTE-ESTUDIANTE (Sede Vallesol)
+ * =================================================================
+ * Arquitectura:
+ * - Tabla puente: acudiente_estudiante (ae)
+ * - Doble JOIN a tabla usuario: Estudiante (ue) y Acudiente (ua).
+ * - Búsqueda Asíncrona + Paginación dinámica (Fetch API).
+ * - Ordenamiento de columnas (Click on headers).
+ * - Persistencia: $mysqli->query() con validación real_escape_string.
+ * - UX/UI: Layout Stacked (Formulario Superior / Tabla Inferior).
+ */
+
 ob_start();
-require("../comun/conexion.php");
- require_once("../comun/funciones.php"); 
- ?>
-<center>
-<?php 
-function buscar_acudiente_estudiante($datos="",$reporte=""){
-require("../comun/conexion.php");
-require_once ("../comun/lib/Zebra_Pagination/Zebra_Pagination.php");
-if (isset($_COOKIE['numeroresultados_acudiente_estudiante']) and $_COOKIE['numeroresultados_acudiente_estudiante']=="")  $_COOKIE['numeroresultados_acudiente_estudiante']="0";
-$resultados = ((isset($_COOKIE['numeroresultados_acudiente_estudiante']) and $_COOKIE['numeroresultados_acudiente_estudiante']!="" ) ? $_COOKIE['numeroresultados_acudiente_estudiante'] : 10);
-$paginacion = new Zebra_Pagination();
-$paginacion->records_per_page($resultados);
-$paginacion->records_per_page($resultados);
+session_start();
 
-$cookiepage="page_acudiente_estudiante";
-$funcionjs="buscar();";$paginacion->fn_js_page("$funcionjs");
-$paginacion->cookie_page($cookiepage);
-$paginacion->padding(false);
-if (isset($_COOKIE["$cookiepage"])) $_GET['page'] = $_COOKIE["$cookiepage"];
-$sql = "SELECT `acudiente_estudiante`.`id_acudiente_estudiante`, `acudiente_estudiante`.`id_estudiante`, `usuario`.`nombre` as usuarionombre, `acudiente_estudiante`.`id_acudiente`, `usuario2`.`nombre` as acudientenombre FROM `acudiente_estudiante` inner join `usuario` on `acudiente_estudiante`.`id_estudiante` = `usuario`.`id_usuario` inner join `usuario`as usuario2 on `acudiente_estudiante`.`id_acudiente` = `usuario2`.`id_usuario` ";
-$datosrecibidos = $datos;
-$datos = explode(" ",$datosrecibidos);
-$datos[]="";
-$cont =  0;
-$sql .= ' WHERE ';
-if (isset($_COOKIE['busqueda_avanzada_acudiente_estudiante']) and $_COOKIE['busqueda_avanzada_acudiente_estudiante']=="true"){
-if (isset($_COOKIE['busqueda_av_acudiente_estudianteid_estudiante']) and $_COOKIE['busqueda_av_acudiente_estudianteid_estudiante']!=""){
-$sql .= ' LOWER(`acudiente_estudiante`.`id_estudiante`) LIKE "%'.mb_strtolower($_COOKIE['busqueda_av_acudiente_estudianteid_estudiante'], 'UTF-8').'%" and ';
-}
-if (isset($_COOKIE['busqueda_av_acudiente_estudianteid_acudiente']) and $_COOKIE['busqueda_av_acudiente_estudianteid_acudiente']!=""){
-$sql .= ' LOWER(`acudiente_estudiante`.`id_acudiente`) LIKE "%'.mb_strtolower($_COOKIE['busqueda_av_acudiente_estudianteid_acudiente'], 'UTF-8').'%" and ';
-}
-}
-foreach ($datos as $id => $dato){
-$sql .= ' concat(LOWER(`usuario`.`nombre`)," ",LOWER(`usuario`.`nombre`)," "   ) LIKE "%'.mb_strtolower($dato, 'UTF-8').'%"';
-$cont ++;
-if (count($datos)>1 and count($datos)<>$cont){
-$sql .= " and ";
-}
-}
-$sql .=  " ORDER BY ";
-if (isset($_COOKIE['orderbyacudiente_estudiante']) and $_COOKIE['orderbyacudiente_estudiante']!=""){ $sql .= "`acudiente_estudiante`.`".$_COOKIE['orderbyacudiente_estudiante']."`";
-}else{ $sql .= "`acudiente_estudiante`.`id_acudiente_estudiante`";}
-if (isset($_COOKIE['orderad_acudiente_estudiante'])){
-$orderadacudiente_estudiante = $_COOKIE['orderad_acudiente_estudiante'];
-$sql .=  " $orderadacudiente_estudiante ";
-}else{
-$sql .=  " desc ";
-}
-$consulta_total_acudiente_estudiante = $mysqli->query($sql);
-$total_acudiente_estudiante = $consulta_total_acudiente_estudiante->num_rows;
-$paginacion->records($total_acudiente_estudiante);
-if ($reporte=="") $sql .=  " LIMIT " . (($paginacion->get_page() - 1) * $resultados) . ", " . $resultados;
-echo $sql;
+// Inclusión de dependencias
+require_once("../comun/conexion.php");
 
-$consulta = $mysqli->query($sql);
-$numero_acudiente_estudiante = $consulta->num_rows;
-$minimo_acudiente_estudiante = (($paginacion->get_page() - 1) * $resultados)+1;
-$maximo_acudiente_estudiante = (($paginacion->get_page() - 1) * $resultados) + $resultados;
-if ($maximo_acudiente_estudiante>$numero_acudiente_estudiante) $maximo_acudiente_estudiante=$numero_acudiente_estudiante;
-$maximo_acudiente_estudiante += $minimo_acudiente_estudiante-1;
-if ($reporte=="") echo "<p>Resultados de $minimo_acudiente_estudiante a $maximo_acudiente_estudiante del total de ".$total_acudiente_estudiante." en página ".$paginacion->get_page()."</p>";
- ?>
-<div align="center">
-<table border="1" id="tbacudiente_estudiante">
-<thead>
-<tr>
-<th <?php  if(isset($_COOKIE['orderbyacudiente_estudiante']) and $_COOKIE['orderbyacudiente_estudiante']== "id_estudiante"){ echo " style='text-decoration:underline' ";} ?>  onclick="grabarcookie('orderbyacudiente_estudiante','id_estudiante');buscar();" >Estudiante</th>
-<th <?php  if(isset($_COOKIE['orderbyacudiente_estudiante']) and $_COOKIE['orderbyacudiente_estudiante']== "id_acudiente"){ echo " style='text-decoration:underline' ";} ?>  onclick="grabarcookie('orderbyacudiente_estudiante','id_acudiente');buscar();" >Acudiente</th>
-<?php if ($reporte==""){ ?>
-<th data-label="Nuevo" colspan="2" class="thbotones"><form id="formNuevo" name="formNuevo" method="post" action="acudiente_estudiante.php">
-<input name="cod" type="hidden" id="cod" value="0">
-<input type="image" name="submit" id="submit" value="Nuevo" title="Nuevo" src="<?php echo SGA_COMUN_URL ?>/img/nuevo2.png">
-</form>
-</th>
-<?php } ?>
-</tr>
-</thead><tbody>
-<?php 
-while($row=$consulta->fetch_assoc()){
- ?>
-<tr>
-<td data-label="Estudiante"><?php echo $row['usuarionombre']?></td>
-<td data-label="Acudiente"><?php echo $row['acudientenombre']?></td>
-<?php if ($reporte==""){ ?>
-<td data-label="Modificar">
-<form id="formModificar" name="formModificar" method="post" action="acudiente_estudiante.php">
-<input name="cod" type="hidden" id="cod" value="<?php echo $row['id_acudiente_estudiante']; ?>">
-<input type="image" src="<?php echo SGA_COMUN_URL ?>/img/modificar.png"name="submit" id="submit" value="Modificar" title="Modificar">
-</form>
-</td>
-<td data-label="Eliminar">
-<input title="Eliminar" type="image" src="<?php echo SGA_COMUN_URL ?>/img/eliminar2.png" onClick="confirmeliminar2('acudiente_estudiante.php',{'del':'<?php echo $row['id_acudiente_estudiante'];?>'},'<?php echo $row['id_estudiante']." ".$row['id_acudiente'];?>');" value="Eliminar">
-</td>
-<?php } ?>
-</tr>
-<?php 
-}/*fin while*/
- ?>
-</tbody>
-</table>
-<?php if ($reporte=="") $paginacion->render2();?>
-</div>
-<?php 
-}/*fin function buscar*/
-if (isset($_GET['buscar'])){
-buscar_acudiente_estudiante($_POST['datos']);
-exit();
+// =================================================================
+// 1. ENDPOINT PARA BÚSQUEDA ASÍNCRONA, ORDENAMIENTO Y PAGINACIÓN
+// =================================================================
+if (isset($_GET['ajax_search'])) {
+    $busqueda = trim($_GET['ajax_search']);
+    $pagina = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    
+    $sort_by = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'id_acudiente_estudiante';
+    $sort_order = isset($_GET['sort_order']) && strtoupper($_GET['sort_order']) === 'DESC' ? 'DESC' : 'ASC';
+    
+    renderizar_tabla_relacion($busqueda, $pagina, $sort_by, $sort_order, $mysqli);
+    exit;
 }
 
-if (!empty($_POST)){
- /*Validación de los datos recibidos mediante el método POST*/ 
- foreach ($_POST as $id => $valor){$_POST[$id]=$mysqli->real_escape_string($valor);} 
+// =================================================================
+// 2. FUNCIÓN DE RENDERIZADO DE TABLA (Paginación + Sortable + Doble JOIN)
+// =================================================================
+function renderizar_tabla_relacion($busqueda, $pagina, $sort_by, $sort_order, $mysqli) {
+    $limite = 10; 
+    if ($pagina < 1) $pagina = 1;
+    $offset = ($pagina - 1) * $limite;
+    
+    $busqueda_segura = $mysqli->real_escape_string($busqueda);
+    $termino = "%" . $busqueda_segura . "%";
+    
+    // Diccionario de columnas permitidas con alias para evitar ambigüedad
+    $columnas_permitidas = [
+        'id_acudiente_estudiante' => 'ae.id_acudiente_estudiante',
+        'estudiante'              => 'ue.nombre',
+        'acudiente'               => 'ua.nombre',
+        'id_estudiante'           => 'ae.id_estudiante',
+        'id_acudiente'            => 'ae.id_acudiente'
+    ];
+
+    if (!array_key_exists($sort_by, $columnas_permitidas)) {
+        $sort_by = 'id_acudiente_estudiante';
+    }
+    
+    $columna_orden = $columnas_permitidas[$sort_by];
+
+    // Contar total (Doble JOIN a usuario)
+    $sql_count = "SELECT COUNT(*) as total 
+                  FROM acudiente_estudiante ae
+                  LEFT JOIN usuario ue ON ae.id_estudiante = ue.id_usuario
+                  LEFT JOIN usuario ua ON ae.id_acudiente = ua.id_usuario
+                  WHERE ae.id_estudiante LIKE '$termino' 
+                     OR ue.nombre LIKE '$termino' 
+                     OR ue.apellido LIKE '$termino'
+                     OR ae.id_acudiente LIKE '$termino'
+                     OR ua.nombre LIKE '$termino'
+                     OR ua.apellido LIKE '$termino'
+                     OR CAST(ae.id_acudiente_estudiante AS CHAR) LIKE '$termino'";
+    
+    $res_count = $mysqli->query($sql_count);
+    
+    if (!$res_count) {
+        echo '<div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 border border-red-200"><strong>Error SQL (Count):</strong> ' . htmlspecialchars($mysqli->error) . '</div>';
+        return;
+    }
+
+    $total_registros = $res_count->fetch_assoc()['total'];
+    $total_paginas = ceil($total_registros / $limite);
+
+    // Consulta principal
+    $sql = "SELECT ae.id_acudiente_estudiante, ae.id_estudiante, ae.id_acudiente,
+                   ue.nombre AS est_nombre, ue.apellido AS est_apellido,
+                   ua.nombre AS acu_nombre, ua.apellido AS acu_apellido
+            FROM acudiente_estudiante ae
+            LEFT JOIN usuario ue ON ae.id_estudiante = ue.id_usuario
+            LEFT JOIN usuario ua ON ae.id_acudiente = ua.id_usuario
+            WHERE ae.id_estudiante LIKE '$termino' 
+               OR ue.nombre LIKE '$termino' 
+               OR ue.apellido LIKE '$termino'
+               OR ae.id_acudiente LIKE '$termino'
+               OR ua.nombre LIKE '$termino'
+               OR ua.apellido LIKE '$termino'
+               OR CAST(ae.id_acudiente_estudiante AS CHAR) LIKE '$termino'
+            ORDER BY $columna_orden $sort_order 
+            LIMIT $limite OFFSET $offset";
+            
+    $resultado = $mysqli->query($sql);
+    
+    if (!$resultado) {
+        echo '<div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 border border-red-200"><strong>Error SQL (Select):</strong> ' . htmlspecialchars($mysqli->error) . '</div>';
+        return;
+    }
+
+    // Header generator
+    $crear_header = function($columna_key, $etiqueta) use ($sort_by, $sort_order) {
+        $icono = '↕️';
+        $claseActiva = 'text-slate-500';
+        if ($sort_by === $columna_key) {
+            $icono = $sort_order === 'ASC' ? '↑' : '↓';
+            $claseActiva = 'text-blue-600 font-bold';
+        }
+        return "<th class='px-6 py-4 cursor-pointer sortable hover:bg-slate-200 transition-colors select-none $claseActiva' data-sort='$columna_key'>
+                    $etiqueta <span class='inline-block ml-1 opacity-70'>$icono</span>
+                </th>";
+    };
+
+    if ($resultado->num_rows > 0) {
+        echo '<div class="overflow-x-auto w-full min-h-[400px] flex flex-col justify-between">';
+        echo '<table class="w-full text-sm text-left text-gray-600 relative">';
+        echo '<thead class="text-xs uppercase bg-slate-100 shadow-sm z-10 border-b border-slate-200">';
+        echo '<tr>';
+        echo $crear_header('id_acudiente_estudiante', 'ID Vínculo');
+        echo $crear_header('estudiante', 'Datos del Estudiante');
+        echo $crear_header('acudiente', 'Datos del Acudiente');
+        echo '<th class="px-6 py-4 text-right">Acciones</th>';
+        echo '</tr>';
+        echo '</thead><tbody class="divide-y divide-gray-200">';
+        
+        while ($fila = $resultado->fetch_assoc()) {
+            $nombre_estudiante = (!empty($fila['est_nombre']) || !empty($fila['est_apellido'])) ? trim($fila['est_nombre'] . ' ' . $fila['est_apellido']) : 'No registrado';
+            $nombre_acudiente  = (!empty($fila['acu_nombre']) || !empty($fila['acu_apellido'])) ? trim($fila['acu_nombre'] . ' ' . $fila['acu_apellido']) : 'No registrado';
+            
+            echo '<tr class="bg-white hover:bg-blue-50 transition-colors duration-200 group">';
+            echo '<td class="px-6 py-4 font-bold text-slate-900 whitespace-nowrap">#' . htmlspecialchars($fila['id_acudiente_estudiante']) . '</td>';
+            
+            // Columna Estudiante
+            echo '<td class="px-6 py-4">';
+            echo '<div class="font-semibold text-slate-800 text-base">' . htmlspecialchars($nombre_estudiante) . '</div>';
+            echo '<div class="text-xs text-slate-500 font-medium mt-0.5">Doc: ' . htmlspecialchars($fila['id_estudiante']) . '</div>';
+            echo '</td>';
+
+            // Columna Acudiente
+            echo '<td class="px-6 py-4">';
+            echo '<div class="font-semibold text-blue-700 text-base">' . htmlspecialchars($nombre_acudiente) . '</div>';
+            echo '<div class="text-xs text-blue-500 font-medium mt-0.5">Doc: ' . htmlspecialchars($fila['id_acudiente']) . '</div>';
+            echo '</td>';
+
+            echo '<td class="px-6 py-4 text-right flex justify-end gap-4 opacity-0 group-hover:opacity-100 transition-opacity items-center h-full pt-6">';
+            echo '<a href="?Actualizar=' . urlencode($fila['id_acudiente_estudiante']) . '" class="text-blue-600 hover:text-blue-800 flex items-center gap-1" title="Editar"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></a>';
+            echo '<button onclick="confirmarEliminacion(\'' . htmlspecialchars($fila['id_acudiente_estudiante']) . '\')" class="text-red-500 hover:text-red-700 flex items-center gap-1" title="Eliminar"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>';
+            echo '</td></tr>';
+        }
+        echo '</tbody></table>';
+
+        // Paginación
+        if ($total_paginas > 1) {
+            echo '<div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">';
+            echo '<div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">';
+            echo '<div><p class="text-sm text-gray-700">Página <span class="font-bold">'.$pagina.'</span> de <span class="font-bold">'.$total_paginas.'</span> (<span class="font-medium">'.$total_registros.'</span> registros)</p></div>';
+            echo '<div><nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">';
+            
+            if ($pagina > 1) {
+                echo '<button data-page="'.($pagina - 1).'" class="page-link relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"><span class="sr-only">Anterior</span><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg></button>';
+            }
+
+            $inicio = max(1, $pagina - 2);
+            $fin = min($total_paginas, $pagina + 2);
+            for ($i = $inicio; $i <= $fin; $i++) {
+                if ($i == $pagina) {
+                    echo '<button aria-current="page" class="relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white">'.$i.'</button>';
+                } else {
+                    echo '<button data-page="'.$i.'" class="page-link relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">'.$i.'</button>';
+                }
+            }
+
+            if ($pagina < $total_paginas) {
+                echo '<button data-page="'.($pagina + 1).'" class="page-link relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"><span class="sr-only">Siguiente</span><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg></button>';
+            }
+
+            echo '</nav></div></div></div>';
+        }
+        echo '</div>';
+    } else {
+        echo '<div class="flex flex-col items-center justify-center p-12 text-center bg-slate-50 rounded-lg border border-dashed border-slate-300">';
+        echo '<svg class="w-12 h-12 text-slate-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>';
+        echo '<h3 class="text-lg font-medium text-slate-900">No hay vínculos registrados</h3>';
+        echo '<p class="text-sm text-slate-500 mt-1">Busque o asigne un acudiente a un estudiante para comenzar.</p>';
+        echo '</div>';
+    }
 }
-if (isset($_POST['del'])){
- /*Instrucción SQL que permite eliminar en la BD*/ 
-$sql = 'DELETE FROM acudiente_estudiante WHERE concat(`acudiente_estudiante`.`id_acudiente_estudiante`)="'.$_POST['del'].'"';
- /*Se conecta a la BD y luego ejecuta la instrucción SQL*/
-$eliminar = $mysqli->query($sql);
-if ($mysqli->affected_rows>0){
- /*Validamos si el registro fue eliminado con éxito*/ 
- ?>
-Registro eliminado
-<meta http-equiv="refresh" content="1; url=acudiente_estudiante.php" />
-<?php 
-}else{
+
+// =================================================================
+// 3. LÓGICA DE TRANSACCIONES CRUD
+// =================================================================
+$alerta_js = '';
+
+// A. CREAR
+if (isset($_POST['Ingresar'])) {
+    $id_estudiante = $mysqli->real_escape_string(trim($_POST['id_estudiante']));
+    $id_acudiente  = $mysqli->real_escape_string(trim($_POST['id_acudiente']));
+
+    // Verificación básica: no se puede asignar a sí mismo
+    if ($id_estudiante === $id_acudiente) {
+        $alerta_js = "Swal.fire('¡Advertencia!', 'El estudiante no puede ser su propio acudiente.', 'warning');";
+    } else {
+        $sql = "INSERT INTO acudiente_estudiante (id_estudiante, id_acudiente) 
+                VALUES ('$id_estudiante', '$id_acudiente')";
+                
+        if ($mysqli->query($sql)) {
+            $alerta_js = "Swal.fire('¡Vinculado!', 'El acudiente ha sido asignado al estudiante correctamente.', 'success');";
+        } else {
+            $alerta_js = "Swal.fire('¡Error!', 'Error de base de datos: ".$mysqli->error."', 'error');";
+        }
+    }
+}
+
+// B. ACTUALIZAR
+if (isset($_POST['Actualizar']) && !empty($_POST['id_acudiente_estudiante'])) {
+    $id_original   = (int)$_POST['id_acudiente_estudiante'];
+    $id_estudiante = $mysqli->real_escape_string(trim($_POST['id_estudiante']));
+    $id_acudiente  = $mysqli->real_escape_string(trim($_POST['id_acudiente']));
+    
+    if ($id_estudiante === $id_acudiente) {
+        $alerta_js = "Swal.fire('¡Advertencia!', 'El estudiante no puede ser su propio acudiente.', 'warning');";
+    } else {
+        $sql = "UPDATE acudiente_estudiante 
+                SET id_estudiante='$id_estudiante',
+                    id_acudiente='$id_acudiente'
+                WHERE id_acudiente_estudiante=$id_original";
+                
+        if ($mysqli->query($sql)) {
+            $alerta_js = "Swal.fire('¡Actualizado!', 'El vínculo se ha modificado exitosamente.', 'success');";
+        } else {
+            $alerta_js = "Swal.fire('¡Error!', 'No se pudo actualizar la información.', 'error');";
+        }
+    }
+}
+
+// C. ELIMINAR
+if (isset($_GET['action']) && $_GET['action'] == 'delete' && !empty($_GET['id'])) {
+    $id = (int)$_GET['id'];
+    $sql = "DELETE FROM acudiente_estudiante WHERE id_acudiente_estudiante = $id";
+    
+    if ($mysqli->query($sql)) {
+        $alerta_js = "Swal.fire('¡Eliminado!', 'El vínculo entre el estudiante y acudiente ha sido removido.', 'success');";
+    }
+}
+
+// =================================================================
+// 4. RECUPERAR DATOS PARA EDICIÓN
+// =================================================================
+$modo_edicion = false;
+$datos_editar = [
+    'id_acudiente_estudiante' => '', 'id_estudiante' => '', 'id_acudiente' => ''
+];
+
+if (isset($_GET['Actualizar']) && !empty($_GET['Actualizar'])) {
+    $modo_edicion = true;
+    $id_editar = (int)$_GET['Actualizar'];
+    
+    $sql_edit = "SELECT * FROM acudiente_estudiante WHERE id_acudiente_estudiante = $id_editar";
+    $res_edit = $mysqli->query($sql_edit);
+    
+    if ($res_edit && $res_edit->num_rows > 0) {
+        $datos_editar = array_merge($datos_editar, $res_edit->fetch_assoc());
+    }
+}
 ?>
-Eliminación fallida, por favor compruebe que la usuario no esté en uso
-<meta http-equiv="refresh" content="2; url=acudiente_estudiante.php" />
-<?php 
-}
-}
- ?>
-<center>
-<h1>Acudiente Estudiante</h1>
-</center><?php 
-if (isset($_POST['submit'])){
-if ($_POST['submit']=="Registrar"){
- /*recibo los campos del formulario proveniente con el método POST*/ 
- @session_start(); 
-$sql = "INSERT INTO acudiente_estudiante (`id_acudiente_estudiante`, `id_estudiante`, `id_acudiente`) VALUES ('".$_POST['id_acudiente_estudiante']."', '".$_POST['id_estudiante']."', '".$_POST['id_acudiente']."')";
- /*echo $sql;*/
-$insertar = $mysqli->query($sql);
-if ($mysqli->errno != 1062){
-if ($mysqli->affected_rows>0){
-$insertid = $mysqli->insert_id;
- /*Validamos si el registro fue ingresado con éxito*/ 
- ?>
-<script>alert('Registro Exitoso');</script>
-<meta http-equiv="refresh" content="1; url=acudiente_estudiante.php" />
-<?php 
- }else{ 
- ?>
-Registro fallido
-<meta http-equiv="refresh" content="1; url=acudiente_estudiante.php" />
-<?php 
-}
- }else{ 
- ?><script>alert('Este registro ya existe');</script>
-<?php 
-}
-} /*fin Registrar*/ 
-if ($_POST['submit']=="Nuevo"){
 
-$textoh1 ="Registrar";
-$textobtn ="Registrar";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asignación de Acudientes - Vallesol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .loader-line {
+            height: 3px; width: 100%; background-color: #e2e8f0; overflow: hidden; position: relative;
+        }
+        .loader-line::before {
+            content: ''; position: absolute; left: -50%; height: 3px; width: 40%;
+            background-color: #3b82f6; animation: lineAnim 1s linear infinite;
+        }
+        @keyframes lineAnim { 0% { left: -40%; } 100% { left: 100%; } }
+    </style>
+</head>
+<body class="antialiased text-slate-800">
 
- ?>
-<div class="col-md-3"></div><form class="col-md-6" id="form1" name="form1" method="post" action="acudiente_estudiante.php" >
-<h1><?php echo $textoh1 ?></h1>
-<?php 
-echo '<div class="form-group"><p><input title="" class="form-control" name="id_acudiente_estudiante" type="hidden" id="id_acudiente_estudiante" value="';if (isset($row['id_acudiente_estudiante'])) echo $row['id_acudiente_estudiante'];echo '"';echo '></p>';
-echo "</div>";echo '<div class="form-group"><p><label for="id_estudiante">Estudiante:<span title="Este campo es obligatorio" style="color:red;font-size: 30px;margin: 2px;/top: 12px;top: 13px;position: relative;">*</span></label>';
-$sql2= "SELECT * FROM usuario;";
- ?>
-<select  title="" class="form-control" name="id_estudiante" id="id_estudiante"  required>
-<?php 
-echo '<option value="">Seleccione una opci&oacute;n</option>';
-$consulta2 = $mysqli->query($sql2);
-while($row2=$consulta2->fetch_assoc()){
-echo '<option value="'.$row2['id_usuario'].'"';if (isset($row['id_estudiante']) and $row['id_estudiante'] == $row2['id_usuario']) echo " selected ";echo '>'.$row2['nombre'].'</option>';
-}
-echo '</select></p>';
-echo "</div>";echo '<div class="form-group"><p><label for="id_acudiente">Acudiente:<span title="Este campo es obligatorio" style="color:red;font-size: 30px;margin: 2px;/top: 12px;top: 13px;position: relative;">*</span></label>';
-$sql3= "SELECT * FROM usuario;";
- ?>
-<select  title="" class="form-control" name="id_acudiente" id="id_acudiente"  required>
-<?php 
-echo '<option value="">Seleccione una opci&oacute;n</option>';
-$consulta3 = $mysqli->query($sql3);
-while($row3=$consulta3->fetch_assoc()){
-echo '<option value="'.$row3['id_usuario'].'"';if (isset($row['id_acudiente']) and $row['id_acudiente'] == $row3['id_usuario']) echo " selected ";echo '>'.$row3['nombre'].'</option>';
-}
-echo '</select></p>';
-echo "</div>";
-echo '<p><input type="hidden" name="submit" id="submit" value="'.$textobtn.'"><button type="submit" class="btn btn-primary">'.$textobtn.'</button></p>
-</form><div class="col-md-3"></div>';
-} /*fin nuevo*/ 
-if ($_POST['submit']=="Modificar"){
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Vínculo Estudiante - Acudiente</h1>
+            <p class="text-slate-500 text-sm mt-2">Administre las relaciones y responsables legales de los estudiantes matriculados en la sede Vallesol.</p>
+        </div>
 
-$sql = 'SELECT `id_acudiente_estudiante`, `id_estudiante`, `id_acudiente` FROM `acudiente_estudiante` WHERE concat(`acudiente_estudiante`.`id_acudiente_estudiante`) ="'.$_POST['cod'].'" Limit 1'; 
-$consulta = $mysqli->query($sql);
- /*echo $sql;*/ 
-$row=$consulta->fetch_assoc();
+        <div class="flex flex-col gap-8">
+            
+            <!-- BLOQUE SUPERIOR: Formulario -->
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 w-full transition-all duration-300">
+                <div class="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+                    <div class="p-2 <?php echo $modo_edicion ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600'; ?> rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<?php echo $modo_edicion ? 'M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z' : 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z'; ?>"></path></svg>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-800">
+                        <?php echo $modo_edicion ? 'Modificar Vínculo #' . $datos_editar['id_acudiente_estudiante'] : 'Crear Nuevo Vínculo'; ?>
+                    </h2>
+                </div>
+                
+                <form method="POST" action="acudiente_estudiante.php" class="space-y-6">
+                    <?php if($modo_edicion): ?>
+                        <input type="hidden" name="id_acudiente_estudiante" value="<?php echo htmlspecialchars($datos_editar['id_acudiente_estudiante']); ?>">
+                    <?php endif; ?>
 
-$textoh1 ="Modificar";
-$textobtn ="Actualizar";
- ?>
-<div class="col-md-3"></div><form class="col-md-6" id="form1" name="form1" method="post" action="acudiente_estudiante.php" >
-<h1><?php echo $textoh1 ?></h1>
-<p><input name="cod" type="hidden" id="cod" value="<?php if (isset($row['id_acudiente_estudiante']))  echo $row['id_acudiente_estudiante'] ?>" size="120" required></p>
-<?php 
-echo '<div class="form-group"><p><input title="" class="form-control" name="id_acudiente_estudiante" type="hidden" id="id_acudiente_estudiante" value="';if (isset($row['id_acudiente_estudiante'])) echo $row['id_acudiente_estudiante'];echo '"';echo '></p>';
-echo "</div>";echo '<div class="form-group"><p><label for="id_estudiante">Estudiante:<span title="Este campo es obligatorio" style="color:red;font-size: 30px;margin: 2px;/top: 12px;top: 13px;position: relative;">*</span></label>';
-$sql2= "SELECT id_usuario,nombre FROM usuario;";
- ?>
-<select  title="" class="form-control" name="id_estudiante" id="id_estudiante"  required>
-<?php 
-echo '<option value="">Seleccione una opci&oacute;n</option>';
-$consulta2 = $mysqli->query($sql2);
-while($row2=$consulta2->fetch_assoc()){
-echo '<option value="'.$row2['id_usuario'].'"';if (isset($row['id_estudiante']) and $row['id_estudiante'] == $row2['id_usuario']) echo " selected ";echo '>'.$row2['nombre'].'</option>';
-}
-echo '</select></p>';
-echo "</div>";echo '<div class="form-group"><p><label for="id_acudiente">Acudiente:<span title="Este campo es obligatorio" style="color:red;font-size: 30px;margin: 2px;/top: 12px;top: 13px;position: relative;">*</span></label>';
-$sql3= "SELECT id_usuario,nombre FROM usuario;";
- ?>
-<select  title="" class="form-control" name="id_acudiente" id="id_acudiente"  required>
-<?php 
-echo '<option value="">Seleccione una opci&oacute;n</option>';
-$consulta3 = $mysqli->query($sql3);
-while($row3=$consulta3->fetch_assoc()){
-echo '<option value="'.$row3['id_usuario'].'"';if (isset($row['id_acudiente']) and $row['id_acudiente'] == $row3['id_usuario']) echo " selected ";echo '>'.$row3['nombre'].'</option>';
-}
-echo '</select></p>';
-echo "</div>";
-echo '<p><input type="hidden" name="submit" id="submit" value="'.$textobtn.'"><button type="submit" class="btn btn-primary">'.$textobtn.'</button></p>
-</form><div class="col-md-3"></div>';
-} /*fin modificar*/ 
-if ($_POST['submit']=="Actualizar"){
- /*recibo los campos del formulario proveniente con el método POST*/ 
-$cod = $_POST['cod'];
- /*Instrucción SQL que permite insertar en la BD */ 
- @session_start(); 
-$sql = "UPDATE acudiente_estudiante SET id_acudiente_estudiante='".$_POST['id_acudiente_estudiante']."', id_estudiante='".$_POST['id_estudiante']."', id_acudiente='".$_POST['id_acudiente']."'WHERE  `acudiente_estudiante`.`id_acudiente_estudiante` = '".$cod."';";
-/* echo $sql;*/ 
- /*Se conecta a la BD y luego ejecuta la instrucción SQL*/ 
-$actualizar = $mysqli->query($sql);
-if ($mysqli->affected_rows>0){
- /*Validamos si el registro fue ingresado con éxito*/
-?>
-Modificación exitosa
-<meta http-equiv="refresh" content="1; url=acudiente_estudiante.php" />
-<?php 
- }else{ 
-?>
-Modificación fallida
-<meta http-equiv="refresh" content="2; url=acudiente_estudiante.php" />
-<?php 
-}
-} /*fin Actualizar*/ 
- }else{ 
-if (isset($_COOKIE['numeroresultados_acudiente_estudiante']) and $_COOKIE['numeroresultados_acudiente_estudiante']=="")  $_COOKIE['numeroresultados_acudiente_estudiante']="10";
- ?>
-<center>
-<b><label>Buscar: </label></b><input placeholder="Buscar por palabra clave" title="Buscar por palabra clave: Estudiante, Acudiente" type="search" id="buscar" onkeyup ="buscar(this.value);" onchange="buscar(this.value);"  style="margin: 15px;">
-<b><label>N° de Resultados:</label></b>
-<input type="number" min="0" id="numeroresultados_acudiente_estudiante" placeholder="Cant." title="Cantidad de resultados" value="<?php $no_resultados = ((isset($_COOKIE['numeroresultados_acudiente_estudiante']) and $_COOKIE['numeroresultados_acudiente_estudiante']!="" ) ? $_COOKIE['numeroresultados_acudiente_estudiante'] : 10); echo $no_resultados; ?>" onkeyup="grabarcookie('numeroresultados_acudiente_estudiante',this.value) ;buscar(document.getElementById('buscar').value);" mousewheel="grabarcookie('numeroresultados_acudiente_estudiante',this.value);buscar(document.getElementById('buscar').value);" onchange="grabarcookie('numeroresultados_acudiente_estudiante',this.value);buscar(document.getElementById('buscar').value);" size="4" style="width: 60px;">
-<button title="Orden Ascendente" onclick="grabarcookie('orderad_acudiente_estudiante','ASC');buscar(document.getElementById('buscar').value);"><span class="  glyphicon glyphicon-arrow-up"></span></button><button title="Orden Descendente" onclick="grabarcookie('orderad_acudiente_estudiante','DESC');buscar(document.getElementById('buscar').value);"><span class="  glyphicon glyphicon-arrow-down"></span></button>
-<p><label><input type="checkbox" onchange="grabarcookie('busqueda_avanzada_acudiente_estudiante',this.checked);mostrar_busqueda_avanzada(this.checked);buscar();" <?php if (isset($_COOKIE['busqueda_avanzada_acudiente_estudiante']) and $_COOKIE['busqueda_avanzada_acudiente_estudiante']=='true') echo 'checked' ?>>Búsqueda Avanzada</label></p>
-</center>
-<script>function mostrar_busqueda_avanzada(valor){
-  if (valor==true){
-    $(".busqueda_avanzada").show();
-    $(".input_busqueda_avanzada").val("");
-    $(".input_busqueda_avanzada").change();
-  }else if (valor==false){
-    $(".busqueda_avanzada").hide();
-  }
-}</script>
-<div class="busqueda_avanzada" <?php if (!isset($_COOKIE['busqueda_avanzada_acudiente_estudiante']) or (isset($_COOKIE['busqueda_avanzada_acudiente_estudiante']) and $_COOKIE['busqueda_avanzada_acudiente_estudiante']!='true')) echo 'style="display:none"' ?>>
-<div class="form-group"><p><label for="id_estudiante">Estudiante<input title="" class="form-control input_busqueda_avanzada" type="search" onchange="grabarcookie('busqueda_av_acudiente_estudianteid_estudiante',this.value);buscar();" onblur="this.onchange();" value="
-<?php if (isset($_COOKIE['busqueda_av_acudiente_estudianteid_estudiante'])) echo $_COOKIE['busqueda_av_acudiente_estudianteid_estudiante']; ?>
-"></label></p></div>
-<div class="form-group"><p><label for="id_acudiente">Acudiente<input title="" class="form-control input_busqueda_avanzada" type="search" onchange="grabarcookie('busqueda_av_acudiente_estudianteid_acudiente',this.value);buscar();" onblur="this.onchange();" value="
-<?php if (isset($_COOKIE['busqueda_av_acudiente_estudianteid_acudiente'])) echo $_COOKIE['busqueda_av_acudiente_estudianteid_acudiente']; ?>
-"></label></p></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        
+                        <!-- Panel Estudiante -->
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                            <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-blue-500"></span> Datos del Estudiante
+                            </h3>
+                            <label class="block text-xs font-semibold text-slate-500 mb-2">Documento de Identidad <span class="text-red-500">*</span></label>
+                            <input type="text" name="id_estudiante" required placeholder="Ingrese el documento del alumno..."
+                                   value="<?php echo htmlspecialchars($datos_editar['id_estudiante']); ?>"
+                                   class="w-full px-4 py-3 bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all shadow-sm">
+                            <p class="text-xs text-slate-400 mt-2">Asegúrese de que el usuario tenga el rol 'estudiante' en el sistema.</p>
+                        </div>
 
-<input type="button" onclick="buscar();" class="btn btn-primary" value="Buscar">
-</div>
+                        <!-- Panel Acudiente -->
+                        <div class="bg-blue-50/50 p-6 rounded-xl border border-blue-100">
+                            <h3 class="text-sm font-bold text-blue-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-blue-600"></span> Datos del Acudiente / Tutor
+                            </h3>
+                            <label class="block text-xs font-semibold text-blue-600 mb-2">Documento de Identidad <span class="text-red-500">*</span></label>
+                            <input type="text" name="id_acudiente" required placeholder="Ingrese el documento del acudiente..."
+                                   value="<?php echo htmlspecialchars($datos_editar['id_acudiente']); ?>"
+                                   class="w-full px-4 py-3 bg-white border border-blue-200 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all shadow-sm">
+                            <p class="text-xs text-blue-500/70 mt-2">Asegúrese de que el usuario tenga el rol 'acudiente' en el sistema.</p>
+                        </div>
 
-<div fn-dranganddrop="123d" dranganddrop-helper="clone" dranganddrop-datos='{"id_acudiente":"12345","nombre_acudiente":"Juan"}' style="width:50px">
-<span>Origen</span>
-</div>
+                    </div>
 
-<div class="123d" fn-droppable="asignar_acudiente" fn-confirm="Esta seguro que desea asignar el acudiente [nombre_acudiente]([id_acudiente]) a el estudiante [nombre_estudiante]([id_estudiante])" dranganddrop-datos='{"id_estudiante":"123","nombre_estudiante":"Pepito Perez"}'>
-<span>Destino</span>
-</div>
+                    <div class="flex justify-end gap-3 pt-6 border-t border-slate-100">
+                        <?php if($modo_edicion): ?>
+                            <a href="acudiente_estudiante.php" class="text-slate-700 bg-slate-100 hover:bg-slate-200 font-semibold rounded-xl text-sm px-6 py-3 transition-all">Cancelar</a>
+                            <button type="submit" name="Actualizar" class="text-white bg-blue-600 hover:bg-blue-700 font-semibold rounded-xl text-sm px-8 py-3 shadow-sm hover:shadow transition-all">Guardar Cambios</button>
+                        <?php else: ?>
+                            <button type="submit" name="Ingresar" class="text-white bg-slate-900 hover:bg-slate-800 font-semibold rounded-xl text-sm px-8 py-3 shadow-sm hover:shadow transition-all">Asignar Acudiente</button>
+                        <?php endif; ?>
+                    </div>
+                </form>
+            </div>
 
-<script>
- function asignar_acudiente2(parametros){
- confirm("id_acudiente:"+parametros.id_acudiente+" id_estudiante:"+parametros.id_estudiante);
- }
-</script>
-<span id="txtsugerencias">
-<?php 
-consultar_acudientes();
-buscar_acudiente_estudiante();
- ?>
-</span>
-<?php 
-}/*fin else if isset cod*/
-echo '</center>';
- ?>
-<script>
-var vmenu_acudiente_estudiante = document.getElementById('menu_acudiente_estudiante')
-if (vmenu_acudiente_estudiante){
-vmenu_acudiente_estudiante.className ='active '+vmenu_acudiente_estudiante.className;
-}
-</script>
-<?php $contenido = ob_get_contents();
-ob_clean();
-include ("../comun/plantilla.php");
- ?>
+            <!-- BLOQUE INFERIOR: Listado, Búsqueda y Ordenamiento -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col w-full">
+                
+                <!-- Header Buscador -->
+                <div class="p-6 border-b border-slate-100 bg-white z-20">
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                Matriz de Relaciones
+                                <span class="bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">En tiempo real</span>
+                            </h2>
+                            <p class="text-xs text-slate-400 mt-1">💡 Puede buscar por documento o nombre de cualquiera de las partes.</p>
+                        </div>
+                        
+                        <div class="relative w-full sm:w-[450px]">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            </div>
+                            <input type="text" id="searchInput" placeholder="Buscar nombre o documento..." 
+                                   class="block w-full py-2.5 pl-10 pr-10 text-sm text-slate-900 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:bg-white focus:border-blue-500 outline-none transition-all shadow-inner">
+                            <div id="searchSpinner" class="absolute inset-y-0 right-0 flex items-center pr-3 hidden">
+                                <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="loaderLine" class="loader-line hidden"></div>
+
+                <!-- Contenedor dinámico de la tabla y paginación -->
+                <div id="tableContainer" class="flex-1 bg-slate-50/50 p-6">
+                    <?php renderizar_tabla_relacion('', 1, 'id_acudiente_estudiante', 'ASC', $mysqli); ?>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // 1. Alertas
+        <?php echo $alerta_js; ?>
+
+        // 2. Eliminación (Manejo integral de referencias)
+        function confirmarEliminacion(id) {
+            Swal.fire({
+                title: '¿Remover Vínculo?',
+                text: "El acudiente dejará de tener permisos y acceso sobre los datos de este estudiante.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Sí, remover',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `acudiente_estudiante.php?action=delete&id=${encodeURIComponent(id)}`;
+                }
+            })
+        }
+
+        // 3. Lógica Frontend AJAX: Búsqueda, Ordenamiento y Paginación
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const tableContainer = document.getElementById('tableContainer');
+            const searchSpinner = document.getElementById('searchSpinner');
+            const loaderLine = document.getElementById('loaderLine');
+            
+            let debounceTimer;
+            let currentPage = 1;
+            let currentSortBy = 'id_acudiente_estudiante';
+            let currentSortOrder = 'ASC';
+
+            const fetchData = async () => {
+                searchSpinner.classList.remove('hidden');
+                loaderLine.classList.remove('hidden');
+                tableContainer.style.opacity = '0.6'; 
+
+                const query = searchInput.value.trim();
+                const url = `acudiente_estudiante.php?ajax_search=${encodeURIComponent(query)}&page=${currentPage}&sort_by=${currentSortBy}&sort_order=${currentSortOrder}`;
+
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Error en la red');
+                    tableContainer.innerHTML = await response.text();
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                    Swal.fire({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, icon: 'error', title: 'Error de conexión' });
+                } finally {
+                    searchSpinner.classList.add('hidden');
+                    loaderLine.classList.add('hidden');
+                    tableContainer.style.opacity = '1';
+                }
+            };
+
+            // Búsqueda (Debounce)
+            searchInput.addEventListener('input', function() {
+                currentPage = 1; 
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(fetchData, 400); 
+            });
+
+            // Delegación de eventos (Clicks en Tabla: Paginación y Headers)
+            tableContainer.addEventListener('click', function(e) {
+                // Click en Paginación
+                const btnPage = e.target.closest('.page-link');
+                if (btnPage) {
+                    e.preventDefault();
+                    const targetPage = btnPage.getAttribute('data-page');
+                    if (targetPage) {
+                        currentPage = parseInt(targetPage);
+                        fetchData();
+                    }
+                }
+
+                // Click en Encabezado Ordenable
+                const thSort = e.target.closest('.sortable');
+                if (thSort) {
+                    const sortBy = thSort.getAttribute('data-sort');
+                    if (currentSortBy === sortBy) {
+                        currentSortOrder = currentSortOrder === 'ASC' ? 'DESC' : 'ASC';
+                    } else {
+                        currentSortBy = sortBy;
+                        currentSortOrder = 'ASC'; // reset a Ascendente al cambiar columna
+                    }
+                    currentPage = 1; // Volver a pagina 1 al reordenar
+                    fetchData();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

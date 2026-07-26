@@ -2,6 +2,8 @@
 @session_start();
 date_default_timezone_set('America/Bogota'); 
 
+#Ruta para el archivo de sincronizacion de asistencia
+define('RUTA_EXCEL_SINCRONIZACION', 'd:/xampp/htdocs/guagua/Asistencia Vallesol 2026.xlsx');
 
 
 #Configuración para conexion a Base de datos

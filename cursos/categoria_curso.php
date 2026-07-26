@@ -6,6 +6,7 @@ ini_set('display_errors', '1');
 echo '<center>';
 require_once("../comun/funciones.php");
 require_once("../comun/config.php");
+require_once("../comun/conexion.php");
 function buscar_categoria_curso($datos="",$reporte=""){
   
 require("../comun/conexion.php");
@@ -33,26 +34,24 @@ $cont =  0;
 $sql .= ' WHERE ';
 foreach ($datos as $id => $dato){
 $sql .= ' concat(LOWER(`categoria_curso`.`id_categoria_curso`)," ", LOWER(`categoria_curso`.`nombre_categoria_curso`)," ", LOWER(`categoria_curso`.`descripcion_categoria_curso`)," ") LIKE "%'.mb_strtolower($dato, 'UTF-8').'%"';
-$consuta=$mysqli->query($sql);
-echo $paginacion->records($consuta->num_rows);
 
 $cont ++;
-if (count($datos)>1 and count($datos)<>$cont){
-$sql .= "";
-}
 
 if (count($datos)>1 and count($datos)<>$cont){
 $sql .= " and ";
 }
 }
-$sql .=  " ORDER BY `categoria_curso`.`id_categoria_curso` desc LIMIT ";
-$sql .=  "  " . (($paginacion->get_page() - 1) * $resultados) . ", " . $resultados;
+$sql .=  " ORDER BY `categoria_curso`.`id_categoria_curso` desc ";
 
+$consulta_total = $mysqli->query($sql);
+$total_registros = $consulta_total ? $consulta_total->num_rows : 0;
+$paginacion->records($total_registros);
 
+$sql .=  " LIMIT " . (($paginacion->get_page() - 1) * $resultados) . ", " . $resultados;
 
 $consulta = $mysqli->query($sql);
 
-$numero_usuario = $consulta->num_rows;
+$numero_usuario = $total_registros;
 $minimo_usuario = (($paginacion->get_page() - 1) * $resultados)+1;
 $maximo_usuario = (($paginacion->get_page() - 1) * $resultados) + $resultados;
 if ($maximo_usuario>$numero_usuario) $maximo_usuario=$numero_usuario;

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Hoja de Respuestas</title>
+    <style>
+        /* Variables de UI/UX Moderno */
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #16a34a;
+            --success-hover: #15803d;
+            --bg-color: #f3f4f6;
+            --panel-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #4b5563;
+            --border-color: #d1d5db;
+        }
+
+        /* Estilos Generales y de Pantalla */
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+        
+        #config-panel {
+            background-color: var(--panel-bg);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        #config-panel h2 {
+            margin-top: 0;
+            font-size: 20px;
+            color: var(--text-main);
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            flex: 1;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-print {
+            background-color: var(--success);
+        }
+
+        .btn-print:hover {
+            background-color: var(--success-hover);
+        }
+
+        /* Estilos de la Hoja (Impresión y Vista Previa) */
+        #sheet-container {
+            background-color: #fff;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            color: #000; /* Asegurar contraste para impresión */
+            
+            /* Variables de escala dinámica */
+            --bubble-size: 22px;
+            --bubble-font: 12px;
+            --col-padding: 15px 20px;
+            --row-gap: 10px;
+            --q-font: 15px;
+            --title-size: 22px;
+            --header-padding: 8px 10px;
+            --td-padding: 12px 10px;
+            --inst-margin: 25px;
+        }
+
+        #sheet-container.dense {
+            --bubble-size: 18px;
+            --bubble-font: 11px;
+            --col-padding: 10px 15px;
+            --row-gap: 8px;
+            --q-font: 14px;
+            --title-size: 18px;
+            --header-padding: 6px 8px;
+            --td-padding: 8px 8px;
+            --inst-margin: 15px;
+            padding: 20px;
+        }
+
+        #sheet-container.super-dense {
+            --bubble-size: 15px;
+            --bubble-font: 9px;
+            --col-padding: 8px 10px;
+            --row-gap: 5px;
+            --q-font: 12px;
+            --title-size: 16px;
+            --header-padding: 4px 6px;
+            --td-padding: 5px 6px;
+            --inst-margin: 10px;
+            padding: 15px;
+        }
+
+        #sheet-container.ultra-dense {
+            --bubble-size: 13px;
+            --bubble-font: 8px;
+            --col-padding: 5px 5px;
+            --row-gap: 3px;
+            --q-font: 11px;
+            --title-size: 14px;
+            --header-padding: 2px 4px;
+            --td-padding: 3px 4px;
+            --inst-margin: 8px;
+            padding: 10px;
+        }
+
+        /* Ajustes dinámicos de márgenes para asegurar que encaje en una hoja */
+        .sheet-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+            margin-bottom: var(--inst-margin, 20px);
+        }
+
+        .sheet-header-top h3 {
+            margin: 0;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+
+        .header-title {
+            text-align: center;
+            font-size: var(--title-size);
+            font-weight: bold;
+            margin-bottom: var(--inst-margin, 20px);
+            text-transform: uppercase;
+        }
+
+        .personal-data {
+            border: 2px solid #000;
+            margin-bottom: var(--inst-margin, 20px);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .personal-data-header {
+            background-color: #f3f4f6;
+            border-bottom: 2px solid #000;
+            padding: var(--header-padding);
+            font-weight: bold;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table td {
+            border: 1px solid #000;
+            padding: var(--td-padding);
+            vertical-align: top;
+            font-size: 14px;
+        }
+
+        .instructions {
+            border: 2px solid #000;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: var(--inst-margin);
+            text-align: center;
+            font-size: 14px;
+            background-color: #f9fafb;
+        }
+
+        .example-bubble {
+            display: inline-block;
+            width: var(--bubble-size);
+            height: var(--bubble-size);
+            background-color: #000;
+            color: #fff;
+            border-radius: 50%;
+            line-height: var(--bubble-size);
+            text-align: center;
+            font-size: var(--bubble-font);
+            font-weight: bold;
+            margin: 0 4px;
+        }
+
+        /* Sistema de Columnas con Borde */
+        .columns-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px; 
+            justify-content: space-around;
+        }
+
+        .question-column {
+            display: flex;
+            flex-direction: column;
+            gap: var(--row-gap); 
+            border: 1px solid #000; /* Borde solicitado en columnas */
+            border-radius: 6px;
+            padding: var(--col-padding);
+            background-color: #fff;
+            flex: 1;
+            min-width: 120px;
+            max-width: 220px;
+        }
+
+        .question-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .q-number {
+            width: 25px;
+            font-weight: bold;
+            text-align: right;
+            margin-right: 8px;
+            font-size: var(--q-font);
+        }
+
+        .options-container {
+            display: flex;
+            gap: 6px;
+        }
+
+        .bubble {
+            width: var(--bubble-size);
+            height: var(--bubble-size);
+            border: 1px solid #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--bubble-font);
+            color: #000;
+            font-weight: 500;
+        }
+
+        /* Reglas Específicas para Impresión */
+        @media print {
+            body {
+                background-color: #fff;
+                padding: 0;
+                font-family: Arial, Helvetica, sans-serif; /* Mejor fuente para impresión */
+            }
+            #config-panel {
+                display: none !important;
+            }
+            #sheet-container {
+                padding: 0;
+                box-shadow: none;
+                max-width: 100%;
+                border-radius: 0;
+            }
+            .instructions {
+                background-color: #fff;
+            }
+            .personal-data-header {
+                background-color: #eee !important;
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact;
+            }
+            @page {
+                margin: 1.5cm;
+                size: letter;
+            }
+            .columns-container {
+                page-break-inside: auto;
+            }
+            .question-column {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Panel de Configuración -->
+    <div id="config-panel">
+        <h2>⚙️ Configuración de la Hoja de Respuestas</h2>
+        <div class="config-grid">
+            <div class="form-group full-width">
+                <label for="testTitle">Título de la Prueba:</label>
+                <input type="text" id="testTitle" value="Matemáticas - Cuadernillo 1">
+            </div>
+            <div class="form-group">
+                <label for="institucion">Institución Educativa:</label>
+                <input type="text" id="institucion" value="IER Josefina - Sede Vallesol">
+            </div>
+            <div class="form-group">
+                <label for="docente">Docente:</label>
+                <input type="text" id="docente" value="Andrés Paz">
+            </div>
+            <div class="form-group">
+                <label for="startQuestion">Pregunta Inicial:</label>
+                <input type="number" id="startQuestion" value="1" min="1" max="500" onchange="generateSheet()">
+            </div>
+            <div class="form-group">
+                <label for="endQuestion">Pregunta Final:</label>
+                <input type="number" id="endQuestion" value="30" min="1" max="500" onchange="generateSheet()">
+            </div>
+            <div class="form-group">
+                <label for="qPerCol">Preguntas por Columna:</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="number" id="qPerCol" value="15" min="1" max="100" style="flex: 1;" onchange="generateSheet()">
+                    <label style="margin: 0; font-weight: normal; font-size: 14px; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                        <input type="checkbox" id="autoCols" checked onchange="generateSheet()" style="width: auto;"> Auto
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="numOptions">Opciones por Pregunta:</label>
+                <select id="numOptions">
+                    <option value="2">2 (A, B)</option>
+                    <option value="3">3 (A, B, C)</option>
+                    <option value="4" selected>4 (A, B, C, D)</option>
+                    <option value="5">5 (A, B, C, D, E)</option>
+                </select>
+            </div>
+        </div>
+        <div class="btn-group">
+            <button class="btn" onclick="generateSheet()">Actualizar Vista Previa</button>
+            <button class="btn btn-print" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+        </div>
+    </div>
+
+    <!-- Área de la Hoja de Respuestas -->
+    <div id="sheet-container">
+        <!-- Contenido generado dinámicamente -->
+    </div>
+
+    <script>
+        function generateSheet() {
+            // 1. Obtener valores de la configuración
+            const title = document.getElementById('testTitle').value || 'Hoja de Respuestas';
+            const institucion = document.getElementById('institucion').value || '';
+            const docente = document.getElementById('docente').value || '';
+            
+            let startQuestion = parseInt(document.getElementById('startQuestion').value) || 1;
+            let endQuestion = parseInt(document.getElementById('endQuestion').value) || 30;
+            
+            // Validar que el intervalo sea correcto
+            if (endQuestion < startQuestion) {
+                endQuestion = startQuestion;
+                document.getElementById('endQuestion').value = endQuestion;
+            }
+
+            const numQuestions = endQuestion - startQuestion + 1;
+            const numOptions = parseInt(document.getElementById('numOptions').value) || 4;
+            const autoCols = document.getElementById('autoCols').checked;
+            
+            let qPerColInput = document.getElementById('qPerCol');
+            let qPerCol = parseInt(qPerColInput.value) || 15;
+
+            // 1.1 Lógica estricta de auto-ajuste de columnas para encajar en 1 hoja física
+            // Se basa en la cantidad total de preguntas del intervalo (numQuestions)
+            if (autoCols) {
+                if (numQuestions <= 15) qPerCol = numQuestions;
+                else if (numQuestions <= 30) qPerCol = Math.ceil(numQuestions / 2);
+                else if (numQuestions <= 45) qPerCol = Math.ceil(numQuestions / 3);
+                else if (numQuestions <= 64) qPerCol = Math.ceil(numQuestions / 4);
+                else if (numQuestions <= 85) qPerCol = Math.ceil(numQuestions / 5);
+                else if (numQuestions <= 110) qPerCol = Math.ceil(numQuestions / 6);
+                else if (numQuestions <= 140) qPerCol = Math.ceil(numQuestions / 7);
+                else qPerCol = Math.ceil(numQuestions / 8);
+                
+                qPerColInput.value = qPerCol;
+            }
+
+            const totalColumns = Math.ceil(numQuestions / qPerCol);
+            const container = document.getElementById('sheet-container');
+
+            // 1.2 Aplicar clases de densidad CSS para reducir tamaños y evitar saltos de página
+            container.className = ''; // Limpiar clases previas
+            if (totalColumns >= 6 || numQuestions > 100) {
+                container.classList.add('ultra-dense');
+            } else if (totalColumns >= 5 || numQuestions > 70) {
+                container.classList.add('super-dense');
+            } else if (totalColumns >= 4 || numQuestions > 40) {
+                container.classList.add('dense');
+            }
+
+            const alphabet = ['A', 'B', 'C', 'D', 'E'];
+            
+            // 2. Construir encabezados y datos personales
+            let html = `
+                <div class="sheet-header-top">
+                    <h3>ICFES</h3>
+                    <h3>Evaluar para Avanzar 3° a 11°</h3>
+                </div>
+
+                <div class="header-title">${title}</div>
+                
+                <div class="personal-data">
+                    <div class="personal-data-header">INFORMACIÓN INSTITUCIONAL Y DEL ESTUDIANTE</div>
+                    <table class="data-table">
+                        <tr>
+                            <td colspan="2"><strong>Institución Educativa:</strong> ${institucion}</td>
+                            <td colspan="2"><strong>Docente:</strong> ${docente}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="height: 35px;"><strong>Nombres y apellidos:</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="width: 25%;"><strong>Tipo de documento:</strong></td>
+                            <td style="width: 25%;"></td>
+                            <td style="width: 25%;"><strong>Número de documento:</strong></td>
+                            <td style="width: 25%;"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Curso:</strong></td>
+                            <td></td>
+                            <td colspan="2">
+                                <strong>Sexo:</strong> &nbsp;&nbsp;&nbsp; 
+                                <span style="font-size: 16px;">&#9711;</span> Niño - Hombre &nbsp;&nbsp;&nbsp; 
+                                <span style="font-size: 16px;">&#9711;</span> Niña - Mujer
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="instructions">
+                    <strong>INSTRUCCIONES</strong><br><br>
+                    Para contestar en la Hoja de respuestas hazlo de la siguiente manera. 
+                    Por ejemplo, si la respuesta es la B, MARCA ASÍ: &nbsp; 
+                    <span class="bubble" style="display:inline-flex;">A</span> 
+                    <span class="example-bubble">B</span> 
+                    <span class="bubble" style="display:inline-flex;">C</span> 
+                    <span class="bubble" style="display:inline-flex;">D</span>
+                </div>
+            `;
+
+            // 3. Construir contenedor de columnas
+            html += `<div class="columns-container">`;
+
+            let currentQuestion = startQuestion;
+
+            // Bucle para iterar hasta que se procesen todas las preguntas del intervalo
+            while (currentQuestion <= endQuestion) {
+                // Iniciar nueva columna con el borde aplicado desde CSS (.question-column)
+                html += `<div class="question-column">`;
+
+                // Agregar preguntas a la columna actual según el límite qPerCol
+                for (let i = 0; i < qPerCol && currentQuestion <= endQuestion; i++) {
+                    html += `
+                        <div class="question-row">
+                            <div class="q-number">${currentQuestion}</div>
+                            <div class="options-container">
+                    `;
+                    
+                    // Agregar las opciones (A, B, C, D...)
+                    for (let j = 0; j < numOptions; j++) {
+                        html += `<div class="bubble">${alphabet[j]}</div>`;
+                    }
+
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                    currentQuestion++;
+                }
+
+                // Cerrar columna
+                html += `</div>`;
+            }
+
+            // Cerrar contenedor de columnas
+            html += `</div>`; 
+
+            // 4. Inyectar en el DOM
+            container.innerHTML = html;
+        }
+
+        // Ejecutar en la carga inicial
+        window.onload = generateSheet;
+    </script>
+
+</body>
+</html>

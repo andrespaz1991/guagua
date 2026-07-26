@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creador de Collages Pro</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Librerías de Exportación -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        /* Estilos personalizados para Drag & Drop y UI */
+        .drag-active {
+            border-color: #6366f1 !important;
+            background-color: #e0e7ff !important;
+        }
+        
+        .collage-cell {
+            overflow: hidden;
+            position: relative;
+            background-color: #f1f5f9;
+            transition: all 0.2s ease;
+        }
+
+        .collage-cell.drag-over {
+            background-color: #fce7f3;
+            box-shadow: inset 0 0 0 4px #ec4899;
+        }
+
+        /* Imagen dentro de la celda */
+        .collage-cell img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: scale(var(--zoom, 1)) translate(var(--x, 0px), var(--y, 0px));
+            cursor: grab;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .collage-cell img:active {
+            cursor: grabbing;
+        }
+
+        /* Ocultar scrollbar visualmente pero mantener funcionalidad */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col md:flex-row selection:bg-indigo-100 selection:text-indigo-800">
+
+    <!-- BARRA LATERAL (Herramientas y Galería) -->
+    <aside class="w-full md:w-80 lg:w-96 bg-white shadow-xl flex flex-col h-screen md:sticky top-0 z-40 border-r border-slate-200 flex-shrink-0">
+        
+        <div class="p-6 border-b border-slate-200 flex items-center gap-3">
+            <div class="bg-gradient-to-br from-indigo-500 to-pink-500 text-white w-10 h-10 rounded-xl flex items-center justify-center text-xl shadow-lg">
+                <i class="fa-solid fa-border-all"></i>
+            </div>
+            <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-pink-500">Collage Pro</h1>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6 space-y-8">
+            
+            <!-- 1. Carga de Imágenes -->
+            <section>
+                <h3 class="text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider"><i class="fa-solid fa-upload mr-2 text-indigo-500"></i>1. Sube tus fotos</h3>
+                <label id="dropZoneContainer" class="flex justify-center w-full h-32 px-4 transition bg-white border-2 border-slate-300 border-dashed rounded-2xl appearance-none cursor-pointer hover:border-indigo-400 focus:outline-none hover:bg-slate-50">
+                    <span class="flex flex-col items-center justify-center space-y-2">
+                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400"></i>
+                        <span class="font-medium text-slate-500 text-sm text-center">Haz clic o arrastra aquí</span>
+                    </span>
+                    <input type="file" id="fileInput" name="file_upload" class="hidden" multiple accept="image/*">
+                </label>
+            </section>
+
+            <!-- Galería de imágenes cargadas -->
+            <section id="gallerySection" class="hidden">
+                <div class="flex justify-between items-end mb-3">
+                    <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider"><i class="fa-solid fa-images mr-2 text-pink-500"></i>2. Tus Imágenes</h3>
+                    <button onclick="clearAll()" class="text-xs text-red-500 hover:text-red-700 font-medium transition-colors">Limpiar Todo</button>
+                </div>
+                <p class="text-xs text-slate-500 mb-3">Arrastra las miniaturas a los cuadros del lienzo.</p>
+                <div id="imageGallery" class="grid grid-cols-3 gap-2">
+                    <!-- Las imágenes cargadas aparecerán aquí -->
+                </div>
+            </section>
+
+            <!-- 2. Configuración de Cuadrícula -->
+            <section>
+                <h3 class="text-sm font-bold text-slate-700 mb-4 uppercase tracking-wider"><i class="fa-solid fa-table-cells mr-2 text-indigo-500"></i>3. Configurar Diseño</h3>
+                
+                <div class="space-y-4">
+                    <!-- Columnas -->
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <label class="text-sm font-medium text-slate-600">Columnas</label>
+                            <span id="colsValue" class="text-sm font-bold text-indigo-600">2</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="adjustGrid('cols', -1)" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition"><i class="fa-solid fa-minus"></i></button>
+                            <input type="range" id="colsSlider" min="1" max="6" value="2" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                            <button onclick="adjustGrid('cols', 1)" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Filas -->
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <label class="text-sm font-medium text-slate-600">Filas</label>
+                            <span id="rowsValue" class="text-sm font-bold text-indigo-600">2</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="adjustGrid('rows', -1)" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition"><i class="fa-solid fa-minus"></i></button>
+                            <input type="range" id="rowsSlider" min="1" max="6" value="2" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                            <button onclick="adjustGrid('rows', 1)" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-indigo-50 text-indigo-700 text-xs font-semibold py-2 px-3 rounded-lg text-center" id="totalImagesText">
+                        Capacidad: 4 imágenes
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Ajustes de Estilo -->
+            <section>
+                <h3 class="text-sm font-bold text-slate-700 mb-4 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-2 text-indigo-500"></i>4. Ajustes Visuales</h3>
+                
+                <div class="space-y-4">
+                    <!-- Espaciado (Gap) -->
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <label class="text-sm font-medium text-slate-600">Espaciado</label>
+                            <span id="gapValue" class="text-xs text-slate-500">10px</span>
+                        </div>
+                        <input type="range" id="gapSlider" min="0" max="50" value="10" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                    </div>
+
+                    <!-- Padding -->
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <label class="text-sm font-medium text-slate-600">Margen Exterior</label>
+                            <span id="paddingValue" class="text-xs text-slate-500">20px</span>
+                        </div>
+                        <input type="range" id="paddingSlider" min="0" max="100" value="20" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                    </div>
+
+                    <!-- Bordes Redondeados -->
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <label class="text-sm font-medium text-slate-600">Redondeo de Fotos</label>
+                            <span id="radiusValue" class="text-xs text-slate-500">8px</span>
+                        </div>
+                        <input type="range" id="radiusSlider" min="0" max="100" value="8" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                    </div>
+
+                    <!-- Color de Fondo -->
+                    <div>
+                        <label class="text-sm font-medium text-slate-600 block mb-2">Color de Fondo</label>
+                        <div class="flex items-center gap-3">
+                            <input type="color" id="bgColor" value="#ffffff" class="w-10 h-10 rounded cursor-pointer border-0 p-0">
+                            <button onclick="document.getElementById('bgColor').value = 'transparent'; updateCollageStyle();" class="text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-md font-medium text-slate-600 transition">Transparente</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </aside>
+
+    <!-- ÁREA PRINCIPAL (LIENZO) -->
+    <main class="flex-1 bg-slate-200 relative flex flex-col items-center py-10 px-4 min-h-screen overflow-x-hidden">
+        
+        <!-- Barra superior de instrucciones -->
+        <header class="mb-8 text-center px-4 w-full max-w-4xl relative">
+            <h2 class="text-3xl font-bold text-slate-800 mb-2">Tu Lienzo de Creación</h2>
+            <p class="text-slate-500 text-sm md:text-base">Sube fotos y arrástralas a las celdas. Una vez dentro, <strong class="text-indigo-500">haz clic y arrastra para encuadrar</strong> o usa la <strong class="text-indigo-500">rueda del ratón para hacer zoom</strong>.</p>
+        </header>
+
+        <!-- Contenedor del Collage -->
+        <section class="w-full flex flex-col items-center justify-start pb-20 relative">
+            
+            <!-- Barra superior: Control Flotante de Zoom y Botones de Descarga -->
+            <div class="sticky top-6 z-30 mb-8 w-full max-w-6xl px-4 flex flex-col md:flex-row justify-between items-center gap-4 pointer-events-none">
+                
+                <!-- Control de Zoom -->
+                <div class="bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-lg border border-slate-200/60 flex items-center gap-3 pointer-events-auto">
+                    <span class="text-xs font-bold text-slate-700 mr-2"><i class="fa-solid fa-magnifying-glass"></i> Lienzo</span>
+                    <button onclick="adjustCanvasZoom(-0.1)" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                    <input type="range" id="canvasZoomSlider" min="0.1" max="1.5" step="0.01" value="1" class="w-24 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                    <button onclick="adjustCanvasZoom(0.1)" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                    <span id="canvasZoomValue" class="text-xs font-medium w-10 text-right text-indigo-600">100%</span>
+                </div>
+
+                <!-- Botones de Descarga -->
+                <div class="flex gap-3 pointer-events-auto">
+                    <button onclick="downloadCollage()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-5 rounded-2xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2">
+                        <i class="fa-solid fa-image"></i> PNG
+                    </button>
+                    <button onclick="downloadPDF()" class="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-2.5 px-5 rounded-2xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2">
+                        <i class="fa-solid fa-file-pdf"></i> PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Wrapper para Zoom Global -->
+            <div id="zoomWrapper" class="transition-transform duration-300 flex justify-center" style="transform-origin: top center;">
+                <!-- Contenedor que será exportado. Este div tendrá un tamaño absoluto en píxeles. -->
+                <div id="exportWrapper" class="relative z-10 shrink-0" style="padding: 20px;">
+                    
+                    <!-- El Grid real del collage -->
+                    <div id="collageContainer" class="w-full h-full grid bg-white" style="gap: 10px; border-radius: 8px;">
+                        <!-- Las celdas se generarán por JS -->
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal de Carga / Generando Descarga -->
+    <div id="downloadModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex-col items-center justify-center">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl flex flex-col items-center max-w-sm w-full mx-4">
+            <i class="fa-solid fa-circle-notch fa-spin text-5xl text-indigo-500 mb-4"></i>
+            <h3 id="downloadModalText" class="text-xl font-bold text-slate-800 text-center">Generando...</h3>
+            <p class="text-slate-500 text-sm mt-2 text-center">Por favor espera, esto puede tomar unos segundos.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- Variables de Estado y Elementos ---
+        const dropZoneContainer = document.getElementById('dropZoneContainer');
+        const fileInput = document.getElementById('fileInput');
+        const imageGallery = document.getElementById('imageGallery');
+        const gallerySection = document.getElementById('gallerySection');
+        
+        const collageContainer = document.getElementById('collageContainer');
+        const exportWrapper = document.getElementById('exportWrapper');
+        const zoomWrapper = document.getElementById('zoomWrapper');
+        
+        const gapSlider = document.getElementById('gapSlider');
+        const paddingSlider = document.getElementById('paddingSlider');
+        const radiusSlider = document.getElementById('radiusSlider');
+        const bgColorPicker = document.getElementById('bgColor');
+        
+        const colsSlider = document.getElementById('colsSlider');
+        const rowsSlider = document.getElementById('rowsSlider');
+        const canvasZoomSlider = document.getElementById('canvasZoomSlider');
+
+        let uploadedImages = []; // Almacena base64 de las imágenes
+        let draggedImageSrc = null;
+
+        // --- Eventos de Carga de Archivos ---
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        dropZoneContainer.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZoneContainer.classList.add('drag-active');
+        });
+
+        dropZoneContainer.addEventListener('dragleave', () => {
+            dropZoneContainer.classList.remove('drag-active');
+        });
+
+        dropZoneContainer.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZoneContainer.classList.remove('drag-active');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        function handleFiles(files) {
+            if (!files || files.length === 0) return;
+
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        uploadedImages.push(e.target.result);
+                        renderGallery();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            gallerySection.classList.remove('hidden');
+        }
+
+        function renderGallery() {
+            imageGallery.innerHTML = '';
+            uploadedImages.forEach((src, index) => {
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = 'w-full h-20 object-cover rounded-lg cursor-grab hover:opacity-80 transition shadow-sm border border-slate-200';
+                img.draggable = true;
+                
+                // Iniciar arrastre desde la galería
+                img.addEventListener('dragstart', (e) => {
+                    draggedImageSrc = src;
+                    img.style.opacity = '0.5';
+                });
+                
+                img.addEventListener('dragend', () => {
+                    img.style.opacity = '1';
+                });
+
+                imageGallery.appendChild(img);
+            });
+        }
+
+        // --- Lógica de Cuadrícula (Filas/Columnas) ---
+        function adjustGrid(type, change) {
+            const slider = type === 'cols' ? colsSlider : rowsSlider;
+            let val = parseInt(slider.value) + change;
+            if(val >= 1 && val <= 6) {
+                slider.value = val;
+                updateCustomGrid();
+            }
+        }
+
+        colsSlider.addEventListener('input', updateCustomGrid);
+        rowsSlider.addEventListener('input', updateCustomGrid);
+
+        function updateCustomGrid() {
+            const cols = parseInt(colsSlider.value);
+            const rows = parseInt(rowsSlider.value);
+            
+            // Actualizar etiquetas UI
+            document.getElementById('colsValue').innerText = cols;
+            document.getElementById('rowsValue').innerText = rows;
+            document.getElementById('totalImagesText').innerText = `Capacidad: ${cols * rows} imágenes`;
+
+            // Aplicar estilos al contenedor
+            collageContainer.className = 'w-full h-full grid bg-white';
+            collageContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            collageContainer.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+            generateCells(cols * rows);
+            updateCollageStyle();
+            
+            // Ajustar el zoom para que quepa en la pantalla al cambiar la cuadrícula
+            setTimeout(autoFitZoom, 50);
+        }
+
+        function autoFitZoom() {
+            const container = document.querySelector('main');
+            const wrapper = document.getElementById('exportWrapper');
+            
+            // Margen para que no quede pegado a los bordes
+            const availableWidth = container.clientWidth - 40; 
+            const availableHeight = container.clientHeight - 200; // espacio para la barra superior
+            const wrapperWidth = wrapper.offsetWidth;
+            const wrapperHeight = wrapper.offsetHeight;
+            
+            if (wrapperWidth > 0 && wrapperHeight > 0) {
+                const zoomX = availableWidth / wrapperWidth;
+                const zoomY = availableHeight / wrapperHeight;
+                // Tomamos el menor zoom para asegurar que quepa
+                let optimalZoom = Math.min(zoomX, zoomY);
+                optimalZoom = Math.max(0.1, Math.min(1.5, optimalZoom)); // Límites lógicos
+                
+                canvasZoomSlider.value = optimalZoom;
+                adjustCanvasZoom(0); // Aplicar
+            }
+        }
+
+        // --- Generación y Control de Celdas ---
+        function generateCells(count) {
+            collageContainer.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'collage-cell relative flex items-center justify-center group';
+                
+                // Placeholder inicial
+                const placeholder = document.createElement('div');
+                placeholder.className = 'text-slate-300 flex flex-col items-center pointer-events-none';
+                placeholder.innerHTML = `<i class="fa-solid fa-image text-3xl mb-2"></i><span class="text-xs font-medium">Celda ${i+1}</span>`;
+                cell.appendChild(placeholder);
+
+                // --- Eventos Drop para la celda ---
+                cell.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    cell.classList.add('drag-over');
+                });
+
+                cell.addEventListener('dragleave', () => {
+                    cell.classList.remove('drag-over');
+                });
+
+                cell.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    cell.classList.remove('drag-over');
+
+                    // Verificar si es un archivo directo de la PC
+                    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                        const file = e.dataTransfer.files[0];
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                                const newSrc = event.target.result;
+                                uploadedImages.push(newSrc);
+                                renderGallery(); // Actualizar galería lateral
+                                gallerySection.classList.remove('hidden');
+                                addImageToCell(cell, newSrc); // Añadir a la celda
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    } 
+                    // Si viene arrastrado desde la galería
+                    else if (draggedImageSrc) {
+                        addImageToCell(cell, draggedImageSrc);
+                    }
+                });
+
+                collageContainer.appendChild(cell);
+            }
+        }
+
+        function addImageToCell(cell, src) {
+            cell.innerHTML = ''; // Limpiar placeholder
+            
+            const img = document.createElement('img');
+            img.src = src;
+            
+            // Estado interno de la imagen para paneo y zoom
+            const state = {
+                zoom: 1,
+                x: 0,
+                y: 0,
+                isDragging: false,
+                startX: 0,
+                startY: 0
+            };
+
+            const updateTransform = () => {
+                img.style.setProperty('--zoom', state.zoom);
+                img.style.setProperty('--x', `${state.x}px`);
+                img.style.setProperty('--y', `${state.y}px`);
+            };
+
+            // Eventos de Paneo (Arrastrar imagen dentro de la celda)
+            img.addEventListener('mousedown', (e) => {
+                state.isDragging = true;
+                const globalZoom = parseFloat(canvasZoomSlider.value);
+                // Ajustar al zoom global para precisión
+                state.startX = e.clientX - (state.x * globalZoom);
+                state.startY = e.clientY - (state.y * globalZoom);
+                img.style.cursor = 'grabbing';
+                e.preventDefault();
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!state.isDragging) return;
+                const globalZoom = parseFloat(canvasZoomSlider.value);
+                state.x = (e.clientX - state.startX) / globalZoom;
+                state.y = (e.clientY - state.startY) / globalZoom;
+                updateTransform();
+            });
+
+            window.addEventListener('mouseup', () => {
+                state.isDragging = false;
+                img.style.cursor = 'grab';
+            });
+
+            // Evento de Zoom de Rueda de ratón
+            cell.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const zoomFactor = 0.1;
+                if (e.deltaY < 0) {
+                    state.zoom += zoomFactor; // Zoom in
+                } else {
+                    state.zoom = Math.max(0.5, state.zoom - zoomFactor); // Zoom out (min 0.5)
+                }
+                updateTransform();
+            });
+
+            // Controles flotantes de la celda (aparecen en hover)
+            const controls = document.createElement('div');
+            controls.className = 'absolute bottom-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 backdrop-blur-sm p-1 rounded-lg z-10';
+            
+            const btnZoomOut = document.createElement('button');
+            btnZoomOut.innerHTML = '<i class="fa-solid fa-minus"></i>';
+            btnZoomOut.className = 'w-6 h-6 flex items-center justify-center text-white hover:bg-black/40 rounded text-[10px]';
+            btnZoomOut.onclick = (e) => { e.stopPropagation(); state.zoom = Math.max(0.5, state.zoom - 0.1); updateTransform(); };
+            
+            const btnZoomIn = document.createElement('button');
+            btnZoomIn.innerHTML = '<i class="fa-solid fa-plus"></i>';
+            btnZoomIn.className = 'w-6 h-6 flex items-center justify-center text-white hover:bg-black/40 rounded text-[10px]';
+            btnZoomIn.onclick = (e) => { e.stopPropagation(); state.zoom += 0.1; updateTransform(); };
+            
+            const btnDelete = document.createElement('button');
+            btnDelete.innerHTML = '<i class="fa-solid fa-trash"></i>';
+            btnDelete.className = 'w-6 h-6 flex items-center justify-center text-red-300 hover:text-red-500 hover:bg-black/40 rounded text-[10px] ml-1';
+            btnDelete.onclick = (e) => { 
+                e.stopPropagation(); 
+                cell.innerHTML = `<div class="text-slate-300 flex flex-col items-center pointer-events-none"><i class="fa-solid fa-image text-3xl mb-2"></i><span class="text-xs font-medium">Celda vacía</span></div>`;
+            };
+
+            controls.appendChild(btnZoomOut);
+            controls.appendChild(btnZoomIn);
+            controls.appendChild(btnDelete);
+
+            cell.appendChild(img);
+            cell.appendChild(controls);
+        }
+
+        // --- Estilos Visuales del Collage ---
+        function updateCollageStyle() {
+            const gapVal = parseInt(gapSlider.value);
+            const paddingVal = parseInt(paddingSlider.value);
+            const radius = radiusSlider.value + 'px';
+            const bgColor = bgColorPicker.value;
+            const cols = parseInt(colsSlider.value);
+            const rows = parseInt(rowsSlider.value);
+
+            // Tamaño base de cada celda para garantizar alta resolución de exportación (absoluto)
+            const baseCellSize = 600; 
+            const totalWidth = (cols * baseCellSize) + ((cols - 1) * gapVal) + (paddingVal * 2);
+            const totalHeight = (rows * baseCellSize) + ((rows - 1) * gapVal) + (paddingVal * 2);
+
+            exportWrapper.style.width = `${totalWidth}px`;
+            exportWrapper.style.height = `${totalHeight}px`;
+
+            document.getElementById('gapValue').innerText = gapVal + 'px';
+            document.getElementById('paddingValue').innerText = paddingVal + 'px';
+            document.getElementById('radiusValue').innerText = radiusSlider.value + 'px';
+
+            collageContainer.style.gap = gapVal + 'px';
+            exportWrapper.style.padding = paddingVal + 'px';
+            exportWrapper.style.backgroundColor = bgColor;
+            
+            if(bgColor === 'transparent' || bgColor === 'rgba(0,0,0,0)') {
+                 collageContainer.style.backgroundColor = 'transparent';
+            } else {
+                 collageContainer.style.backgroundColor = 'transparent';
+            }
+
+            const cells = document.querySelectorAll('.collage-cell');
+            cells.forEach(cell => cell.style.borderRadius = radius);
+        }
+
+        // Listeners para los estilos
+        gapSlider.addEventListener('input', updateCollageStyle);
+        paddingSlider.addEventListener('input', updateCollageStyle);
+        radiusSlider.addEventListener('input', updateCollageStyle);
+        bgColorPicker.addEventListener('input', updateCollageStyle);
+
+        // --- Control de Zoom Global ---
+        function adjustCanvasZoom(change = null) {
+            let val = parseFloat(canvasZoomSlider.value);
+            if (change !== null) {
+                val = Math.max(0.1, Math.min(1.5, val + change));
+                canvasZoomSlider.value = val;
+            }
+            document.getElementById('canvasZoomValue').innerText = Math.round(val * 100) + '%';
+            zoomWrapper.style.transform = `scale(${val})`;
+        }
+        canvasZoomSlider.addEventListener('input', () => adjustCanvasZoom(0));
+
+        function clearAll() {
+            uploadedImages = [];
+            imageGallery.innerHTML = '';
+            gallerySection.classList.add('hidden');
+            updateCustomGrid(); // Limpia las celdas
+        }
+
+        // --- Funciones de Exportación (¡SIN RECORTES!) ---
+        async function captureCanvasElement() {
+            const wrapper = document.getElementById('exportWrapper');
+            
+            // 1. Guardar el estado actual del zoom y el scroll
+            const currentZoom = zoomWrapper.style.transform;
+            const currentScrollX = window.scrollX;
+            const currentScrollY = window.scrollY;
+
+            // 2. Resetear el zoom a 1 para asegurar dimensiones reales absolutas
+            zoomWrapper.style.transform = 'scale(1)';
+            
+            // 3. Forzar el scroll a la parte superior izquierda temporalmente
+            // CRUCIAL: Esto evita que html2canvas recorte imágenes grandes basándose en lo visible de la pantalla
+            window.scrollTo(0, 0);
+
+            // 4. Pequeño delay para que el navegador aplique los cambios visuales
+            await new Promise(r => setTimeout(r, 200));
+
+            try {
+                // 5. Configurar html2canvas
+                const canvas = await html2canvas(wrapper, {
+                    scale: 1.5, // 1.5x de 600px por celda = Alta Calidad
+                    useCORS: true,
+                    backgroundColor: null,
+                    logging: false,
+                    // Forzar a usar coordenadas del elemento
+                    x: wrapper.offsetLeft,
+                    y: wrapper.offsetTop,
+                    width: wrapper.offsetWidth,
+                    height: wrapper.offsetHeight,
+                    // Desvincular de la posición del scroll de la ventana
+                    scrollX: 0,
+                    scrollY: 0,
+                    windowWidth: document.documentElement.scrollWidth,
+                    windowHeight: document.documentElement.scrollHeight
+                });
+                return canvas;
+            } finally {
+                // 6. Restaurar el estado al usuario, incluso si falla
+                zoomWrapper.style.transform = currentZoom;
+                window.scrollTo(currentScrollX, currentScrollY);
+            }
+        }
+
+        async function downloadCollage() {
+            const modal = document.getElementById('downloadModal');
+            document.getElementById('downloadModalText').innerText = "Generando Imagen PNG...";
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            try {
+                const canvas = await captureCanvasElement();
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = 'collage_pro.png';
+                link.click();
+            } catch (error) {
+                console.error("Error al exportar PNG:", error);
+                alert("Hubo un error al generar la imagen. Verifica la consola.");
+            } finally {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        async function downloadPDF() {
+            const modal = document.getElementById('downloadModal');
+            document.getElementById('downloadModalText').innerText = "Generando archivo PDF...";
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            try {
+                const canvas = await captureCanvasElement();
+                const imgData = canvas.toDataURL('image/jpeg', 0.95); 
+                
+                const wrapper = document.getElementById('exportWrapper');
+                const pdfWidth = wrapper.offsetWidth;
+                const pdfHeight = wrapper.offsetHeight;
+
+                const { jsPDF } = window.jspdf;
+
+                const pdf = new jsPDF({
+                    unit: 'px',
+                    format: [pdfWidth, pdfHeight]
+                });
+
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save('collage_pro.pdf');
+
+            } catch (error) {
+                console.error("Error al exportar PDF:", error);
+                alert("Hubo un error al generar el PDF. Verifica la consola.");
+            } finally {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        // Inicializar la aplicación al cargar
+        updateCustomGrid();
+    </script>
+</body>
+</html>

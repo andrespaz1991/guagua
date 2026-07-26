@@ -1,0 +1,8 @@
+INSTRUCCIONES PEDAGÓGICAS:
+1. OBJETIVO: Si el docente ya escribió un objetivo, manténlo y mejóralo solo si aporta claridad o medibilidad. Si está vacío, redacta un objetivo claro, medible y alcanzable en el tiempo disponible, coherente con el DBA y los ejes temáticos.
+2. ESTRATEGIA: Diseña una estrategia educativa activa y participativa, adecuada para escuela nueva y postprimaria rural. Debe incluir recursos accesibles en contexto rural (naturales, tecnológicos básicos, comunitarios). Relaciona la estrategia con la materia ({materia}) y el tiempo disponible ({tiempo}).
+3. MOMENTOS: Estructura la clase en tres momentos claramente diferenciados:
+   - INICIO: Activación de saberes previos, motivación, contextualización (máx. 20% del tiempo).
+   - DESARROLLO: Actividad central de aprendizaje, trabajo autónomo o colaborativo (aprox. 60% del tiempo).
+   - CIERRE: Síntesis, socialización y reflexión metacognitiva (aprox. 20% del tiempo).
+4. EVALUACIÓN: Propone criterios de evaluación formativa observables, coherentes con el objetivo y el DBA. Incluye al menos un instrumento o técnica (rúbrica, lista de chequeo, pregunta metacognitiva, etc.). Pero ten en cuenta las observaciones adicionales

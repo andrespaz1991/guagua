@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Imagen a ICO</title>
+    <!-- Cargamos Tailwind CSS para los estilos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos personalizados sutiles */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .drag-active {
+            border-color: #3b82f6 !important; /* blue-500 */
+            background-color: #eff6ff !important; /* blue-50 */
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen font-sans text-slate-800 selection:bg-blue-200">
+
+    <div class="container mx-auto px-4 py-12 max-w-2xl">
+        
+        <!-- Encabezado -->
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-600 text-white rounded-2xl shadow-lg shadow-blue-200 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-slate-900 mb-2">Creador de Iconos (ICO)</h1>
+            <p class="text-slate-600">Convierte fácilmente tus imágenes PNG o JPG en archivos .ico para tu web o aplicaciones.</p>
+        </div>
+
+        <!-- Tarjeta Principal -->
+        <div class="glass-panel rounded-3xl shadow-xl border border-slate-200 p-8">
+            
+            <!-- Zona de arrastrar y soltar -->
+            <div id="dropZone" class="border-2 border-dashed border-slate-300 rounded-2xl p-10 text-center cursor-pointer transition-all duration-200 hover:bg-slate-50 group">
+                <input type="file" id="fileInput" class="hidden" accept="image/png, image/jpeg, image/jpg">
+                
+                <div id="uploadContent">
+                    <svg class="mx-auto h-12 w-12 text-slate-400 group-hover:text-blue-500 transition-colors mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <p class="text-lg font-medium text-slate-700 mb-1">Haz clic para subir o arrastra una imagen</p>
+                    <p class="text-sm text-slate-500">Soporta PNG y JPG (Máx. 5MB recomendados)</p>
+                </div>
+
+                <!-- Vista previa de la imagen (Oculta por defecto) -->
+                <div id="previewContainer" class="hidden flex flex-col items-center">
+                    <div class="relative w-32 h-32 mb-4 rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-pattern">
+                        <!-- Patrón de cuadros para transparencias -->
+                        <div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(45deg, #808080 25%, transparent 25%), linear-gradient(-45deg, #808080 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #808080 75%), linear-gradient(-45deg, transparent 75%, #808080 75%); background-size: 10px 10px; background-position: 0 0, 0 5px, 5px -5px, -5px 0px;"></div>
+                        <img id="imagePreview" src="" alt="Vista previa" class="relative w-full h-full object-contain z-10">
+                    </div>
+                    <p id="fileName" class="text-sm font-medium text-slate-700 truncate max-w-xs"></p>
+                    <button id="changeImgBtn" class="text-sm text-blue-600 hover:text-blue-800 mt-2 font-medium focus:outline-none">
+                        Cambiar imagen
+                    </button>
+                </div>
+            </div>
+
+            <!-- Controles de Conversión (Ocultos hasta que haya imagen) -->
+            <div id="controlsContainer" class="hidden mt-8 pt-8 border-t border-slate-100">
+                <div class="flex flex-col sm:flex-row items-end gap-4">
+                    <div class="w-full sm:w-1/2">
+                        <label for="sizeSelect" class="block text-sm font-medium text-slate-700 mb-2">Tamaño del Icono</label>
+                        <div class="relative">
+                            <select id="sizeSelect" class="block w-full pl-3 pr-10 py-2.5 text-base border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-xl border appearance-none bg-white">
+                                <option value="256">256 x 256 (Alta calidad, recomendado)</option>
+                                <option value="128">128 x 128 (Media calidad)</option>
+                                <option value="64">64 x 64 (Icono estándar)</option>
+                                <option value="32">32 x 32 (Favicon web grande)</option>
+                                <option value="16">16 x 16 (Favicon web pequeño)</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full sm:w-1/2">
+                        <button id="convertBtn" class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors focus:ring-4 focus:ring-blue-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Convertir y Descargar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mensaje de estado/error -->
+            <div id="statusMessage" class="hidden mt-4 p-3 rounded-lg text-sm text-center font-medium"></div>
+
+        </div>
+        
+        <!-- Pie de página -->
+        <div class="text-center mt-8 text-slate-500 text-sm">
+            <p>El procesamiento se realiza localmente en tu navegador. Tus imágenes son privadas.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- Elementos del DOM ---
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadContent = document.getElementById('uploadContent');
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const fileNameDisplay = document.getElementById('fileName');
+        const changeImgBtn = document.getElementById('changeImgBtn');
+        const controlsContainer = document.getElementById('controlsContainer');
+        const sizeSelect = document.getElementById('sizeSelect');
+        const convertBtn = document.getElementById('convertBtn');
+        const statusMessage = document.getElementById('statusMessage');
+
+        // Variables globales para la imagen actual
+        let currentImageObj = null;
+        let originalFileName = '';
+
+        // --- Event Listeners para Drag & Drop ---
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                if (!currentImageObj) dropZone.classList.add('drag-active');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.remove('drag-active');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', handleDrop, false);
+        dropZone.addEventListener('click', (e) => {
+            // Evitar que el clic en "Cambiar imagen" dispare el input de archivo nuevo si ya hay imagen
+            if (e.target !== changeImgBtn && !currentImageObj) {
+                fileInput.click();
+            }
+        });
+
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                handleFile(this.files[0]);
+            }
+        });
+
+        changeImgBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evitar que el clic se propague al dropZone
+            resetUI();
+            fileInput.click();
+        });
+
+        // --- Funciones de Manejo de Archivos ---
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files && files.length > 0) {
+                handleFile(files[0]);
+            }
+        }
+
+        function handleFile(file) {
+            // Validar tipo de archivo
+            if (!file.type.match('image/jpeg') && !file.type.match('image/png')) {
+                showMessage('Por favor, selecciona una imagen PNG o JPG válida.', 'error');
+                return;
+            }
+
+            originalFileName = file.name;
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    currentImageObj = img;
+                    showPreview(e.target.result, originalFileName);
+                    hideMessage();
+                }
+                img.onerror = function() {
+                    showMessage('Error al leer la imagen.', 'error');
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function showPreview(src, name) {
+            imagePreview.src = src;
+            fileNameDisplay.textContent = name;
+            
+            uploadContent.classList.add('hidden');
+            previewContainer.classList.remove('hidden');
+            previewContainer.classList.add('flex');
+            
+            controlsContainer.classList.remove('hidden');
+            dropZone.classList.remove('hover:bg-slate-50', 'cursor-pointer');
+            dropZone.classList.add('cursor-default');
+        }
+
+        function resetUI() {
+            currentImageObj = null;
+            originalFileName = '';
+            fileInput.value = ''; // Limpiar el input
+            
+            uploadContent.classList.remove('hidden');
+            previewContainer.classList.add('hidden');
+            previewContainer.classList.remove('flex');
+            
+            controlsContainer.classList.add('hidden');
+            dropZone.classList.add('hover:bg-slate-50', 'cursor-pointer');
+            dropZone.classList.remove('cursor-default');
+            hideMessage();
+        }
+
+        function showMessage(text, type) {
+            statusMessage.textContent = text;
+            statusMessage.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+            
+            if (type === 'error') {
+                statusMessage.classList.add('bg-red-100', 'text-red-700');
+            } else if (type === 'success') {
+                statusMessage.classList.add('bg-green-100', 'text-green-700');
+            } else {
+                statusMessage.classList.add('bg-blue-100', 'text-blue-700');
+            }
+        }
+
+        function hideMessage() {
+            statusMessage.classList.add('hidden');
+        }
+
+        // --- Lógica de Conversión a ICO ---
+        convertBtn.addEventListener('click', async () => {
+            if (!currentImageObj) return;
+
+            const size = parseInt(sizeSelect.value, 10);
+            
+            // Cambiar estado del botón
+            const originalBtnText = convertBtn.innerHTML;
+            convertBtn.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Procesando...';
+            convertBtn.disabled = true;
+
+            try {
+                // 1. Dibujar la imagen en un canvas con el tamaño seleccionado
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+
+                // Hacer el fondo transparente
+                ctx.clearRect(0, 0, size, size);
+
+                // Calcular escala para mantener proporción (ajustando al centro)
+                const scale = Math.min(size / currentImageObj.width, size / currentImageObj.height);
+                const w = currentImageObj.width * scale;
+                const h = currentImageObj.height * scale;
+                const x = (size - w) / 2;
+                const y = (size - h) / 2;
+
+                // Para iconos, a veces es mejor estirar si es casi cuadrado, pero contain es más seguro
+                ctx.drawImage(currentImageObj, x, y, w, h);
+
+                // 2. Convertir Canvas a Buffer de ICO
+                const blobIco = await canvasToIco(canvas);
+
+                // 3. Descargar
+                const url = URL.createObjectURL(blobIco);
+                const a = document.createElement('a');
+                a.href = url;
+                
+                // Generar nombre de archivo
+                const baseName = originalFileName.replace(/\.[^/.]+$/, "");
+                a.download = `${baseName}_${size}x${size}.ico`;
+                
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showMessage('¡Icono generado y descargado con éxito!', 'success');
+
+            } catch (error) {
+                console.error(error);
+                showMessage('Hubo un error al generar el icono.', 'error');
+            } finally {
+                // Restaurar botón
+                convertBtn.innerHTML = originalBtnText;
+                convertBtn.disabled = false;
+            }
+        });
+
+        /**
+         * Función que construye manualmente un archivo .ico válido
+         * incrustando los datos binarios de un PNG generado por el canvas.
+         */
+        function canvasToIco(canvas) {
+            return new Promise((resolve, reject) => {
+                canvas.toBlob(async (blob) => {
+                    if (!blob) {
+                        reject(new Error("No se pudo crear el blob del canvas"));
+                        return;
+                    }
+
+                    try {
+                        const arrayBuffer = await blob.arrayBuffer();
+                        const pngBytes = new Uint8Array(arrayBuffer);
+                        const pngSize = pngBytes.length;
+
+                        // En el formato ICO, el tamaño de 256 se representa como 0
+                        let w = canvas.width;
+                        if (w >= 256) w = 0;
+                        let h = canvas.height;
+                        if (h >= 256) h = 0;
+
+                        // Tamaño del header (6 bytes) + Entrada de directorio (16 bytes) = 22 bytes
+                        const buffer = new ArrayBuffer(22 + pngSize);
+                        const view = new DataView(buffer);
+
+                        // --- ICONDIR (Cabecera del archivo ICO) ---
+                        view.setUint16(0, 0, true);     // Reservado (siempre 0)
+                        view.setUint16(2, 1, true);     // Tipo de imagen (1 = ICO)
+                        view.setUint16(4, 1, true);     // Número de imágenes (1)
+
+                        // --- ICONDIRENTRY (Directorio de la imagen) ---
+                        view.setUint8(6, w);            // Ancho en píxeles
+                        view.setUint8(7, h);            // Alto en píxeles
+                        view.setUint8(8, 0);            // Paleta de colores (0 = sin paleta)
+                        view.setUint8(9, 0);            // Reservado (0)
+                        view.setUint16(10, 1, true);    // Planos de color (1)
+                        view.setUint16(12, 32, true);   // Bits por píxel (32 para PNG con transparencia)
+                        view.setUint32(14, pngSize, true); // Tamaño de los datos de la imagen (Bytes)
+                        view.setUint32(18, 22, true);   // Desplazamiento donde empieza el PNG (byte 22)
+
+                        // Copiar los datos del PNG en el buffer después de las cabeceras
+                        const u8array = new Uint8Array(buffer);
+                        u8array.set(pngBytes, 22);
+
+                        // Devolver como archivo (Blob) tipo icon
+                        resolve(new Blob([buffer], { type: 'image/x-icon' }));
+                    } catch (err) {
+                        reject(err);
+                    }
+                }, 'image/png'); // Usamos PNG para preservar transparencias
+            });
+        }
+    </script>
+</body>
+</html>

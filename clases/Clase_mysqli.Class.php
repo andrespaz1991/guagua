@@ -22,8 +22,9 @@ class Clase_mysqli extends Comun {
             $server = $_SERVER['SERVER_NAME'];
             
             // Set connection details based on the server
-            if ($server == "pcomputacional.space") {
-                $conexion_mysqli = new mysqli("srv765.hstgr.io", "u417538463_root", "Handres2025..", "u417538463_guagua");
+            if ($server == "handres.io") {
+                $conexion_mysqli = new mysqli("srv691.hstgr.io","u578593511_root","Handres2026.","u578593511_guagua");
+
             } else {
                 // Default to localhost
                 $conexion_mysqli = new mysqli("127.0.0.1", "root", "", "guagua", 7000);

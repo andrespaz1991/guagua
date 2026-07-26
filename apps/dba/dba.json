@@ -1,0 +1,262 @@
+{
+  "PlanCurricular_6_11": [
+    {
+      "grado": "Sexto",
+      "materias": [
+        {
+          "nombre": "Ciencias Sociales (Postprimaria)",
+          "objetivo_principal": "Analizar e interpretar diversas situaciones problema para aproximarse a su cotidianidad y construir saberes significativos [1].",
+          "periodos": [
+            {
+              "periodo": 1,
+              "unidades": ["Módulo 1: ¿Cómo nos orientamos?", "Módulo 2: Pueblos originarios del mundo"],
+              "dba": ["DBA 4: Surgimiento de ciudades y papel de la agricultura", "DBA 6: Formas de gobierno antiguas vs contemporáneas", "DBA 7: Intereses en el escenario político democrático [2]"],
+              "ejes_tematicos": ["Democracia", "Gobierno escolar", "Civilizaciones mundiales (Mesopotamia, Egipto, India, China, Grecia, Roma) [2]"]
+            },
+            {
+              "periodo": 2,
+              "unidades": ["Módulo 3: Ambiente y territorio", "Módulo 4: Sistemas, condiciones y relaciones de producción"],
+              "dba": ["DBA 3: Proceso de hominización y desarrollo tecnológico [2]"],
+              "ejes_tematicos": ["Eras geológicas", "Evolución humana", "Geografía física del mundo y Colombia [2]"]
+            },
+            {
+              "periodo": 3,
+              "unidades": ["Módulo 5: Sistemas políticos y organización del poder", "Módulo 6: Población y medio ambiente"],
+              "dba": ["DBA 1: Teorías sobre el origen del universo", "DBA 2: Transformaciones de la Tierra y relieve [2]"],
+              "ejes_tematicos": ["El Universo y Sistema Solar", "Geosistema", "Relieve e hidrografía [2]"]
+            },
+            {
+              "periodo": 4,
+              "unidades": ["Unidad: Legados de sociedades americanas", "Unidad: Ciudadanía y discriminación"],
+              "dba": ["DBA 5: Legados de sociedades americanas prehispánicas", "DBA 8: Rechazo a la discriminación en democracia [2]"],
+              "ejes_tematicos": ["Primeros pobladores de América", "Civilizaciones mesoamericanas y andinas", "Primeros pobladores de Colombia [2]"]
+            }
+          ]
+        },
+        {
+          "nombre": "Matemáticas (Postprimaria)",
+          "objetivo_principal": "Construir saberes matemáticos útiles para el quehacer diario a través de la resolución de situaciones problema [3, 4].",
+          "periodos": [
+            {
+              "periodo": 1,
+              "unidades": ["Módulo 1: Números decimales", "Módulo 2: Números relativos"],
+              "dba": ["Comprensión de registros y operaciones con decimales", "Uso de números con signo en contextos de referencia [4, 5]"],
+              "ejes_tematicos": ["Expresión decimal", "Relaciones de orden", "Fracciones decimales", "Números positivos y negativos [4, 5]"]
+            },
+            {
+              "periodo": 2,
+              "unidades": ["Módulo 3: Operaciones con números enteros", "Módulo 4: Algunos sistemas de medidas"],
+              "dba": ["Desarrollo del pensamiento numérico y variacional", "Uso de magnitudes y unidades de medida (longitud, superficie, tiempo) [6, 7]"],
+              "ejes_tematicos": ["Adición, sustracción y multiplicación de enteros", "Potenciación", "Unidades del SI y agrarias [6, 8]"]
+            },
+            {
+              "periodo": 3,
+              "unidades": ["Módulo 5: Exploraciones geométricas", "Módulo 6: Manejo de la información"],
+              "dba": ["Uso de técnicas para construcción de figuras planas", "Interpretación y producción de gráficas de datos [9, 10]"],
+              "ejes_tematicos": ["Figuras y cuerpos geométricos", "Estadística (diagramas de barras y circulares) [9, 10]"]
+            },
+            {
+              "periodo": 4,
+              "unidades": ["Unidad: Razonamiento lógico", "Unidad: Aplicación integral"],
+              "dba": ["Resolución y formulación de problemas complejos", "Estimación de medidas en contextos rurales [9]"],
+              "ejes_tematicos": ["Modelación matemática", "Evaluación de competencias [4, 9]"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grado": "Séptimo",
+      "materias": [
+        {
+          "nombre": "Ciencias Sociales (Postprimaria)",
+          "objetivo_principal": "Reconocer legados culturales mundiales y su vínculo con el contexto rural colombiano [11, 12].",
+          "periodos": [
+            {
+              "periodo": 1,
+              "unidades": ["Módulo 1: Características organización social", "Módulo 2: Legado cultural siglos V al XV"],
+              "dba": ["DBA 7: Responsabilidad democrática ante violación de derechos", "DBA 8: Mediación de conflictos y cultura de paz [13]"],
+              "ejes_tematicos": ["Geografía política", "Derechos Humanos", "Grandes imperios de Asia y África [13]"]
+            },
+            {
+              "periodo": 2,
+              "unidades": ["Módulo 3: Ambiente y territorio siglos V al XV", "Módulo 4: Sistemas de producción siglos V al XV"],
+              "dba": ["DBA 2: Crecimiento poblacional y centros urbanos", "DBA 4: La Edad Media (instituciones sociales y económicas) [13]"],
+              "ejes_tematicos": ["Espacios rurales y urbanos", "Feudalismo", "Poder de la iglesia [13]"]
+            },
+            {
+              "periodo": 3,
+              "unidades": ["Módulo 5: Sistemas políticos siglos V al XV", "Módulo 6: Representaciones del mundo"],
+              "dba": ["DBA 3: Influencia del imperio romano en occidente", "DBA 1: Evolución de las representaciones del mundo y tecnología [13]"],
+              "ejes_tematicos": ["Imperio romano", "Regiones de Colombia y el mundo", "Cartografía [13]"]
+            },
+            {
+              "periodo": 4,
+              "unidades": ["Unidad: Conquista y colonización", "Unidad: Mundo cultural de la Nueva Granada"],
+              "dba": ["DBA 6: Causas y consecuencias de la Conquista en América", "DBA 5: Renacimiento y nueva configuración cultural [13]"],
+              "ejes_tematicos": ["Procesos de colonización europea", "Diversidad étnica y cultural", "El Renacimiento [13]"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grado": "Octavo",
+      "materias": [
+        {
+          "nombre": "Matemáticas (Postprimaria)",
+          "objetivo_principal": "Desarrollar pensamiento algebraico y espacial mediante el uso de expresiones complejas y modelación de sólidos [14, 15].",
+          "periodos": [
+            {
+              "periodo": 1,
+              "unidades": ["Módulo 1: Los números reales", "Módulo 2: Expresiones matemáticas y polinomios"],
+              "dba": ["Uso de propiedades de números reales en simplificación", "Comunicación y evaluación de expresiones algebraicas [16, 17]"],
+              "ejes_tematicos": ["Operaciones con reales", "Monomios, binomios y polinomios", "Ecuaciones y desigualdades [16]"]
+            },
+            {
+              "periodo": 2,
+              "unidades": ["Módulo 3: Equivalencias entre polinomios", "Módulo 4: Relaciones y propiedades entre figuras"],
+              "dba": ["Argumentación de procesos en productos notables", "Predicción de resultados en transformaciones rígidas [16, 18]"],
+              "ejes_tematicos": ["Productos notables", "Geometría plana", "Congruencia y semejanza [18]"]
+            },
+            {
+              "periodo": 3,
+              "unidades": ["Módulo 5: Cálculos de medidas en sólidos", "Módulo 6: Probabilidad de eventos"],
+              "dba": ["Cálculo de áreas y volúmenes de cuerpos geométricos", "Identificación de espacios muestrales y probabilidad simple [19, 20]"],
+              "ejes_tematicos": ["Prismas, pirámides y cilindros", "Diagramas de árbol", "Eventos aleatorios [19, 20]"]
+            },
+            {
+              "periodo": 4,
+              "unidades": ["Unidad: Modelación a escala", "Unidad: Evaluación final"],
+              "dba": ["Resolución de problemas de cuantificación generalizada", "Modelamiento de situaciones de la finca (hectáreas/cultivos) [15]"],
+              "ejes_tematicos": ["Cálculos complejos", "Proyectos matemáticos aplicados [15]"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grado": "Noveno",
+      "materias": [
+        {
+          "nombre": "Ciencias Sociales (Postprimaria)",
+          "objetivo_principal": "Analizar críticamente la globalización y las problemáticas rurales originadas en procesos históricos del siglo XX [21, 22].",
+          "periodos": [
+            {
+              "periodo": 1,
+              "unidades": ["Módulo 1: Globalización y mercantilización", "Módulo 2: Violencia, desempleo y pobreza"],
+              "dba": ["DBA 5: Protección de derechos en un Estado Social de Derecho", "DBA 7: Solución de conflictos mediante acuerdos [23]"],
+              "ejes_tematicos": ["Mecanismos de participación", "Constitución de 1991", "Conflictos del siglo XX [23]"]
+            },
+            {
+              "periodo": 2,
+              "unidades": ["Módulo 3: Historia y geopolítica", "Módulo 4: Derechos humanos en contexto rural"],
+              "dba": ["DBA 4: Cambios sociales y económicos en Colombia siglo XX", "DBA 8: Impacto del crecimiento económico desigual [23]"],
+              "ejes_tematicos": ["Guerras mundiales", "Guerra Fría", "Derechos del campo y reforma agraria [23, 24]"]
+            },
+            {
+              "periodo": 3,
+              "unidades": ["Módulo 5: Identidad en comunidades campesinas", "Módulo 6: Fiestas y derechos humanos"],
+              "dba": ["DBA 1: Situación ambiental de geosistemas biodiversos", "DBA 3: Crisis económicas y repercusiones cotidianas [23]"],
+              "ejes_tematicos": ["Biodiversidad (selvas, paramos)", "Geografía económica", "Cultura e identidad rural [23, 25]"]
+            },
+            {
+              "periodo": 4,
+              "unidades": ["Unidad: Migración y urbanización", "Unidad: Papel de la mujer en la historia"],
+              "dba": ["DBA 2: Consecuencias de procesos migratorios", "DBA 6: Derechos y participación de las mujeres [23]"],
+              "ejes_tematicos": ["Crecimiento urbano", "Derechos civiles de la mujer", "Movimientos de población [23]"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grado": "Décimo",
+      "materias": [
+        {
+          "nombre": "Emprendimiento",
+          "objetivo_principal": "Vivenciar la mentalidad emprendedora como estrategia para mejorar la calidad de vida e impactar positivamente el entorno [26].",
+          "periodos": [
+            {
+              "periodo": 1,
+              "dba": ["Vivencia la mentalidad emprendedora [26]."],
+              "ejes_tematicos": ["Planeación de emprendimiento", "Estrategias", "Contraloría", "Seguridad vial [26]."]
+            },
+            {
+              "periodo": 2,
+              "dba": ["Aplica el ciclo contable y toma de decisiones empresariales [26]."],
+              "ejes_tematicos": ["Toma de decisiones", "Proyecto de vida", "Ciclo contable básico [26]."]
+            },
+            {
+              "periodo": 3,
+              "dba": ["Aplica principios de organización empresarial y análisis de riesgos [26]."],
+              "ejes_tematicos": ["Riesgos y oportunidades", "Matriz DOFA", "Emprendimiento académico/laboral [26]."]
+            },
+            {
+              "periodo": 4,
+              "dba": ["Respeta la legislación comercial, tributaria y laboral vigente [26]."],
+              "ejes_tematicos": ["Pensamiento emprendedor", "Sueños y metas personales", "Legislación empresarial [26]."]
+            }
+          ]
+        },
+        {
+          "nombre": "Ciencias Sociales (Económicas y Políticas)",
+          "objetivo_principal": "Comprender el ejercicio político como resolución de conflictos y analizar teorías económicas del siglo XX [27].",
+          "periodos": [
+            {
+              "periodo": 1,
+              "dba": ["DBA 2: Causas y consecuencias de la violencia en Colombia (siglo XX)", "DBA 5: Conflictos bélicos contemporáneos [27]"],
+              "ejes_tematicos": ["Pensamiento político moderno", "Panorama de violencia", "Procesos de paz [27]"]
+            },
+            {
+              "periodo": 2,
+              "dba": ["DBA 4: Papel de organismos internacionales", "Interpretación de alianzas entre Estados [27]"],
+              "ejes_tematicos": ["FMI, Banco Mundial, ONU", "Globalización", "Crecimiento demográfico [27]"]
+            },
+            {
+              "periodo": 3,
+              "dba": ["DBA 1: Conflictos territoriales por degradación ambiental", "Posición crítica frente a modelos económicos [27]"],
+              "ejes_tematicos": ["Deterioro ambiental", "Sostenibilidad", "Recurso hídrico [27]"]
+            },
+            {
+              "periodo": 4,
+              "dba": ["DBA 3: Diversidad cultural y exclusión de grupos", "Comprensión de una sola humanidad [27]"],
+              "ejes_tematicos": ["Mecanismos de protección de DDHH", "DIH", "Derechos Humanos en Colombia [27]"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grado": "Undécimo",
+      "materias": [
+        {
+          "nombre": "Ciencias Sociales (Económicas y Políticas)",
+          "objetivo_principal": "Analizar la globalización y la supervivencia de la humanidad dependiente de la protección ambiental [28].",
+          "periodos": [
+            {
+              "periodo": 1,
+              "dba": ["DBA 2: Importancia de la solución negociada de conflictos armados", "DBA 4: Implicaciones de la Guerra Fría en el mundo y Latinoamérica [28]"],
+              "ejes_tematicos": ["Sociedad civil y conflicto", "Neoliberalismo", "Dictaduras y guerrillas [28]"]
+            },
+            {
+              "periodo": 2,
+              "dba": ["DBA 5: La globalización como redefinición del territorio y mercados [28]"],
+              "ejes_tematicos": ["TLC y libre mercado", "Deuda externa", "Bolsa de valores", "Teorías del desarrollo [28]"]
+            },
+            {
+              "periodo": 3,
+              "dba": ["DBA 1: Bienestar y supervivencia dependiente de protección ambiental [28]"],
+              "ejes_tematicos": ["Desarrollo sostenible", "Objetivos de Desarrollo Sostenible (ODS)", "Calentamiento global [28]"]
+            },
+            {
+              "periodo": 4,
+              "dba": ["DBA 3: Consecuencias políticas y sociales de conflictos geopolíticos actuales [28]"],
+              "ejes_tematicos": ["Políticas públicas", "Nuevas ciudadanías", "Pluriculturalidad", "Tratados internacionales de salud [28]"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

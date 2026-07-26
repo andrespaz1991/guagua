@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Froggy Jumps - Juego de Preguntas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #4da8da; /* Un azul similar al agua */
+        }
+        .game-container {
+            background-image: url('https://www.transparenttextures.com/patterns/clean-textile.png');
+            background-color: #1a759f; /* Un azul más oscuro para el agua */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .header-bar {
+            background-color: #6a994e; /* Verde oscuro */
+            color: white;
+            border-bottom: 4px solid #4a7c59;
+        }
+        .question-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+        }
+        .lily-pad {
+            background-color: #55a630; /* Verde nenúfar */
+            border: 4px solid #386641;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            cursor: pointer;
+            position: absolute;
+            z-index: 2;
+        }
+        .lily-pad:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #a7c957;
+        }
+        .lily-pad.correct {
+            animation: bounce 0.5s ease;
+        }
+        .lily-pad.incorrect {
+            animation: shake 0.5s ease;
+        }
+        #start-frog-pad {
+            cursor: default;
+            z-index: 1;
+        }
+        #start-frog-pad:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        .frog {
+            width: 80px;
+            height: 80px;
+            transition: top 0.5s cubic-bezier(0.25, 0.1, 0.25, 1.0), left 0.5s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+            position: absolute;
+            z-index: 5;
+        }
+        .answer-text {
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+        }
+        .option-letter {
+            background-color: #a7c957; /* Verde claro */
+            color: #386641; /* Verde oscuro */
+            border: 2px solid #386641;
+        }
+        .timer-bar {
+            background-color: #fca311;
+            transition: width 1s linear;
+        }
+        .modal {
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 50; /* Asegura que el modal esté por encima de todo */
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) scale(1.0); }
+            50% { transform: translateY(-15px) scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+            20%, 40%, 60%, 80% { transform: translateX(8px); }
+        }
+
+        .path-pad {
+            background-color: #386641; /* Verde nenúfar oscuro */
+            border: 3px solid #2b5133;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            text-shadow: 1px 1px 2px black;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        }
+        .path-pad.correct-answer {
+            background-color: #55a630; /* Verde brillante */
+            border-color: #a7c957;
+            transform: scale(1.1);
+        }
+        .path-pad.incorrect-answer {
+            background-color: #e63946; /* Rojo */
+            border-color: #c1121f;
+            transform: scale(1.1);
+        }
+        .path-pad.next-stop {
+            box-shadow: 0 0 25px #fca311;
+            animation: pulse 1.5s infinite;
+        }
+        
+        #notification {
+            transition: transform 0.5s ease-in-out;
+        }
+        #notification.show {
+            transform: translateX(0);
+        }
+        #notification.error {
+            background-color: #e63946; /* Rojo */
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(252, 163, 17, 0.7); }
+            70% { box-shadow: 0 0 10px 15px rgba(252, 163, 17, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(252, 163, 17, 0); }
+        }
+
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 bg-blue-300">
+
+    <div id="game-container" class="game-container w-full max-w-4xl mx-auto rounded-2xl shadow-lg overflow-hidden">
+        <!-- Encabezado con Vidas, Puntos y Título -->
+        <div class="header-bar p-4 flex justify-between items-center text-white">
+            <div id="lives-container" class="flex items-center space-x-2">
+                <span class="font-bold text-lg">VIDAS:</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 fill-current" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
+                <span id="lives-count" class="font-bold text-xl">5</span>
+            </div>
+             <div class="flex items-center space-x-2">
+                <button id="decrease-time" title="Disminuir tiempo" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/40 text-lg font-bold transition-colors">-</button>
+                <span id="time-config-display" class="font-bold text-lg w-12 text-center">15s</span>
+                <button id="increase-time" title="Aumentar tiempo" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/40 text-lg font-bold transition-colors">+</button>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="font-bold text-lg">PUNTOS:</span>
+                <span id="score" class="font-bold text-xl bg-yellow-400 text-gray-800 px-3 py-1 rounded-full">0</span>
+            </div>
+        </div>
+
+        <!-- Caja de la Pregunta -->
+        <div class="p-4">
+            <div id="question-box" class="question-box w-full p-4 rounded-xl shadow-md border-2 border-gray-200">
+                <p class="text-center text-gray-800 text-lg md:text-xl">
+                    <span id="question-number" class="font-bold text-blue-600">1 / 10</span>
+                    <span id="question-text" class="ml-2">Cargando pregunta...</span>
+                </p>
+                 <div class="w-full bg-gray-300 rounded-full h-4 mt-3 overflow-hidden border border-gray-400">
+                    <div id="timer-bar" class="timer-bar h-full rounded-full"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Camino de Progreso -->
+        <div class="p-4 flex justify-center items-center gap-2 md:gap-3 flex-wrap bg-green-900 bg-opacity-20 border-y-2 border-green-800/30">
+            <div id="path-pad-0" class="path-pad w-10 h-10 md:w-12 md:h-12 rounded-full">1</div>
+            <div id="path-pad-1" class="path-pad w-10 h-10 md:w-12 md:h-12 rounded-full">2</div>
+            <div id="path-pad-2" class="path-pad w-10 h-10 md:w-12 md:h-12 rounded-full">3</div>
+            <div id="path-pad-3" class="path-pad w-10 h-10 md:w-12 md:h-12 rounded-full">4</div>
+            <div id="path-pad-4" class="path-pad w-10 h-10 md:w-12 md:h-12 rounded-full">5</div>
+            <div id="path-pad-5" class="path-pad w-10 h-10 md:w-12 md:h-12 rounded-full">6</div>
+            <div id="path-pad-6" class="path-pad w-10 h-10 md:w-12 md:h-12 rounded-full">7</div>
+            <div id="path-pad-7" class="path-pad w-10 h-10 md:w-12 md:h-12 rounded-full">8</div>
+            <div id="path-pad-8" class="path-pad w-10 h-10 md:w-12 md:h-12 rounded-full">9</div>
+            <div id="path-pad-9" class="path-pad w-10 h-10 md:w-12 md:h-12 rounded-full text-xl">🏁</div>
+       </div>
+
+        <!-- Área del juego (El estanque) -->
+        <div id="pond" class="relative h-[450px] md:h-[550px] p-4">
+            <!-- Nenúfares de respuesta -->
+            <div id="lily-pad-A" class="lily-pad w-40 h-40 md:w-48 md:h-48 rounded-full flex items-center justify-center text-center p-4" style="top: 25%; left: 10%;">
+                <span class="option-letter absolute -top-4 -left-4 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl">A</span>
+                <p class="answer-text font-semibold"></p>
+            </div>
+            <div id="lily-pad-B" class="lily-pad w-40 h-40 md:w-48 md:h-48 rounded-full flex items-center justify-center text-center p-4" style="top: 10%; left: 50%; transform: translateX(-50%);">
+                <span class="option-letter absolute -top-4 -right-4 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl">B</span>
+                <p class="answer-text font-semibold"></p>
+            </div>
+            <div id="lily-pad-C" class="lily-pad w-40 h-40 md:w-48 md:h-48 rounded-full flex items-center justify-center text-center p-4" style="top: 25%; right: 10%;">
+                <span class="option-letter absolute -top-4 -left-4 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl">C</span>
+                <p class="answer-text font-semibold"></p>
+            </div>
+
+            <!-- Nenúfar de inicio de la rana -->
+            <div id="start-frog-pad" class="lily-pad w-44 h-44 md:w-52 md:h-52 rounded-full" style="bottom: 5%; left: 50%; transform: translateX(-50%);"></div>
+            
+            <!-- Rana -->
+            <div id="frog" class="frog">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="grad1" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                            <stop offset="0%" style="stop-color:#a7c957;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#55a630;stop-opacity:1" />
+                        </radialGradient>
+                    </defs>
+                    <g transform="translate(0, 5)">
+                        <!-- Cuerpo -->
+                        <path d="M 50,20 C 20,20 10,50 10,70 C 10,95 40,95 50,95 C 60,95 90,95 90,70 C 90,50 80,20 50,20 Z" fill="url(#grad1)" stroke="#386641" stroke-width="2"/>
+                        <!-- Panza -->
+                        <path d="M 30,75 C 40,85 60,85 70,75 Q 50,90 30,75 Z" fill="#d4e09b" />
+                        <!-- Ojos -->
+                        <circle cx="35" cy="30" r="12" fill="#FFFFFF" stroke="#386641" stroke-width="1.5"/>
+                        <circle cx="35" cy="30" r="6" fill="#000000"/>
+                        <circle cx="38" cy="27" r="2" fill="#FFFFFF"/>
+                        <circle cx="65" cy="30" r="12" fill="#FFFFFF" stroke="#386641" stroke-width="1.5"/>
+                        <circle cx="65" cy="30" r="6" fill="#000000"/>
+                        <circle cx="68" cy="27" r="2" fill="#FFFFFF"/>
+                        <!-- Manchas -->
+                        <path d="M 25,50 C 20,55 25,65 30,60 C 35,55 30,45 25,50 Z" fill="#386641" opacity="0.6"/>
+                        <path d="M 75,50 C 80,55 75,65 70,60 C 65,55 70,45 75,50 Z" fill="#386641" opacity="0.6"/>
+                        <path d="M 50,45 C 45,50 50,55 55,50 C 60,45 55,40 50,45 Z" fill="#386641" opacity="0.6"/>
+                    </g>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Modal de Inicio/Fin de Juego -->
+        <div id="game-modal" class="modal absolute inset-0 flex items-center justify-center">
+            <div class="bg-white p-8 rounded-2xl shadow-xl text-center max-w-md w-full mx-4">
+                <h2 id="modal-title" class="text-3xl font-bold text-gray-800 mb-2">¡Bienvenido a Froggy Jumps!</h2>
+                <p id="modal-text" class="text-gray-600 mb-6">Configura tu partida y presiona Empezar.</p>
+                
+                <div class="space-y-4 mb-6 text-left">
+                    <div>
+                        <label for="player-name" class="block text-sm font-medium text-gray-700 mb-1">Nombre del Participante:</label>
+                        <input type="text" id="player-name" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" placeholder="Ej: Equipo Verde">
+                    </div>
+                    <div>
+                        <label for="csv-file" class="block text-sm font-medium text-gray-700 mb-1">Importar Preguntas (CSV):</label>
+                        <input type="file" id="csv-file" accept=".csv" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-100 file:text-green-700 hover:file:bg-green-200">
+                    </div>
+                </div>
+
+                <div id="modal-final-stats" class="text-xl font-bold mb-6 hidden leading-relaxed"></div>
+                
+                <button id="start-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full text-xl transition duration-300 transform hover:scale-105">
+                    Empezar Juego
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="notification" class="fixed top-5 right-5 bg-green-500 text-white py-2 px-4 rounded-lg shadow-md transition-transform transform translate-x-full hidden z-50">
+        Notificación
+    </div>
+
+    <script>
+        // --- CONFIGURACIÓN DEL JUEGO ---
+        const defaultQuestions = [
+            { question: "¿Cuál es la capital de Colombia?", answers: ["Bogotá", "Medellín", "Cali"], correct: 0 },
+            { question: "¿Qué río es el más largo del mundo?", answers: ["Nilo", "Amazonas", "Yangtsé"], correct: 1 },
+            { question: "¿En qué año llegó el hombre a la luna?", answers: ["1965", "1972", "1969"], correct: 2 },
+            { question: "¿Quién escribió 'Cien años de soledad'?", answers: ["Julio Cortázar", "Gabriel García Márquez", "Mario Vargas Llosa"], correct: 1 },
+            { question: "¿Cuál es el océano más grande?", answers: ["Atlántico", "Índico", "Pacífico"], correct: 2 },
+            { question: "¿Qué elemento tiene el símbolo 'O' en la tabla periódica?", answers: ["Oro", "Oxígeno", "Osmio"], correct: 1 },
+            { question: "¿Cuál de estos animales es un mamífero?", answers: ["Pingüino", "Ballena", "Tiburón"], correct: 1 },
+            { question: "¿Cuántos lados tiene un hexágono?", answers: ["5", "6", "7"], correct: 1 },
+            { question: "¿Qué planeta es conocido como el 'Planeta Rojo'?", answers: ["Júpiter", "Saturno", "Marte"], correct: 2 },
+            { question: "¿Quién pintó la Mona Lisa?", answers: ["Vincent van Gogh", "Leonardo da Vinci", "Pablo Picasso"], correct: 1 }
+        ];
+        const DEFAULT_TIME_PER_QUESTION = 15;
+        const INITIAL_LIVES = 5;
+
+        // --- ELEMENTOS DEL DOM ---
+        const livesCountEl = document.getElementById('lives-count');
+        const scoreEl = document.getElementById('score');
+        const questionNumberEl = document.getElementById('question-number');
+        const questionTextEl = document.getElementById('question-text');
+        const timerBarEl = document.getElementById('timer-bar');
+        const lilyPads = [
+            document.getElementById('lily-pad-A'),
+            document.getElementById('lily-pad-B'),
+            document.getElementById('lily-pad-C')
+        ];
+        const frogEl = document.getElementById('frog');
+        const gameModal = document.getElementById('game-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalText = document.getElementById('modal-text');
+        const modalFinalStats = document.getElementById('modal-final-stats');
+        const startButton = document.getElementById('start-button');
+        const startFrogPad = document.getElementById('start-frog-pad');
+        const pond = document.getElementById('pond');
+        const pathPads = Array.from({length: 10}, (_, i) => document.getElementById(`path-pad-${i}`));
+        const playerNameInput = document.getElementById('player-name');
+        const csvFileInput = document.getElementById('csv-file');
+        const decreaseTimeBtn = document.getElementById('decrease-time');
+        const increaseTimeBtn = document.getElementById('increase-time');
+        const timeConfigDisplay = document.getElementById('time-config-display');
+        const notificationEl = document.getElementById('notification');
+        
+        // --- VARIABLES DE ESTADO DEL JUEGO ---
+        let score = 0, lives = INITIAL_LIVES, currentQuestionIndex = 0;
+        let timer, timeLeft;
+        let questionsOrder, playerName = '', correctAnswersCount = 0;
+        let customQuestions = [];
+        let timePerQuestion = DEFAULT_TIME_PER_QUESTION;
+
+        // --- FUNCIONES DEL JUEGO ---
+        function initGame() {
+            playerName = playerNameInput.value.trim() || 'Jugador 1';
+            gameModal.classList.add('hidden');
+            document.querySelector('.space-y-4').classList.add('hidden'); // Oculta inputs
+            modalText.classList.remove('hidden');
+            modalFinalStats.classList.add('hidden');
+            
+            score = 0;
+            lives = INITIAL_LIVES;
+            currentQuestionIndex = 0;
+            correctAnswersCount = 0;
+            const questionsToUse = customQuestions.length > 0 ? customQuestions : defaultQuestions;
+            questionsOrder = shuffleArray([...Array(questionsToUse.length).keys()]);
+            
+            pathPads.forEach((pad, i) => {
+                pad.classList.remove('correct-answer', 'incorrect-answer', 'next-stop');
+                pad.style.display = i < questionsToUse.length ? 'flex' : 'none';
+            });
+
+            updateScore();
+            updateLives();
+            moveFrogTo(startFrogPad);
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const questionsToUse = customQuestions.length > 0 ? customQuestions : defaultQuestions;
+            if (currentQuestionIndex >= questionsToUse.length) {
+                gameOver(true);
+                return;
+            }
+            lilyPads.forEach(pad => {
+                pad.classList.remove('correct', 'incorrect');
+                pad.style.pointerEvents = 'auto';
+            });
+            const questionIndex = questionsOrder[currentQuestionIndex];
+            const q = questionsToUse[questionIndex];
+            questionNumberEl.textContent = `${currentQuestionIndex + 1} / ${questionsToUse.length}`;
+            questionTextEl.textContent = q.question;
+            const shuffledAnswers = shuffleArray([...q.answers.entries()]);
+            lilyPads.forEach((pad, i) => {
+                const [originalIndex, answerText] = shuffledAnswers[i];
+                pad.querySelector('p').textContent = answerText;
+                pad.dataset.correct = (originalIndex === q.correct);
+            });
+            if (pathPads[currentQuestionIndex]) {
+                pathPads[currentQuestionIndex].classList.add('next-stop');
+            }
+            resetTimer();
+        }
+        
+        function handleAnswer(e) {
+            const selectedPad = e.currentTarget;
+            const isCorrect = selectedPad.dataset.correct === 'true';
+            lilyPads.forEach(pad => pad.style.pointerEvents = 'none');
+            clearInterval(timer);
+            
+            const currentPathPad = pathPads[currentQuestionIndex];
+            if (currentPathPad) {
+                currentPathPad.classList.remove('next-stop');
+            }
+
+            if (isCorrect) {
+                correctAnswersCount++;
+                score += 10;
+                updateScore();
+                selectedPad.classList.add('correct');
+                if (currentPathPad) currentPathPad.classList.add('correct-answer');
+                moveFrogTo(selectedPad);
+                
+                setTimeout(() => {
+                    moveFrogTo(startFrogPad);
+                    setTimeout(() => {
+                        currentQuestionIndex++;
+                        loadQuestion();
+                    }, 500);
+                }, 1500);
+            } else {
+                lives--;
+                updateLives();
+                selectedPad.classList.add('incorrect');
+                if (currentPathPad) currentPathPad.classList.add('incorrect-answer');
+
+                if (lives <= 0) {
+                    setTimeout(() => gameOver(false), 1000);
+                } else {
+                     setTimeout(() => {
+                        currentQuestionIndex++;
+                        loadQuestion();
+                    }, 1500);
+                }
+            }
+        }
+        
+        function updateScore() { scoreEl.textContent = score; }
+        function updateLives() { livesCountEl.textContent = lives < 0 ? 0 : lives; }
+
+        function moveFrogTo(targetPad) {
+            const targetRect = targetPad.getBoundingClientRect();
+            const containerRect = pond.getBoundingClientRect();
+            const frogSize = frogEl.offsetWidth;
+            const top = targetRect.top - containerRect.top + (targetRect.height / 2) - (frogSize / 2);
+            const left = targetRect.left - containerRect.left + (targetRect.width / 2) - (frogSize / 2);
+            frogEl.style.top = `${top}px`;
+            frogEl.style.left = `${left}px`;
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            timeLeft = timePerQuestion;
+            timerBarEl.style.transition = 'none';
+            timerBarEl.style.width = '100%';
+            void timerBarEl.offsetWidth; 
+            timerBarEl.style.transition = `width ${timePerQuestion}s linear`;
+            timerBarEl.style.width = '0%';
+            timer = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timeUp();
+                }
+            }, 1000);
+        }
+
+        function timeUp() {
+            const currentPathPad = pathPads[currentQuestionIndex];
+            if (currentPathPad) {
+                currentPathPad.classList.remove('next-stop');
+                currentPathPad.classList.add('incorrect-answer');
+            }
+            lives--;
+            updateLives();
+            if (lives <= 0) {
+                 setTimeout(() => gameOver(false), 500);
+            }
+            else {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+        }
+
+        function gameOver(isWinner) {
+            clearInterval(timer);
+            gameModal.classList.remove('hidden');
+            modalText.classList.add('hidden');
+            modalFinalStats.classList.remove('hidden');
+            document.querySelector('.space-y-4').classList.remove('hidden'); // Muestra inputs de nuevo
+
+            const questionsAttempted = currentQuestionIndex > 0 ? currentQuestionIndex : 1;
+            const accuracy = Math.round((correctAnswersCount / questionsAttempted) * 100);
+            
+            if (isWinner) {
+                modalTitle.textContent = `¡Felicidades, ${playerName}!`;
+            } else {
+                modalTitle.textContent = `¡Juego Terminado, ${playerName}!`;
+            }
+            modalFinalStats.innerHTML = `Puntuación: <span class="text-green-600">${score}</span> <br> Aciertos: <span class="text-blue-600">${accuracy}%</span> (${correctAnswersCount}/${questionsAttempted})`;
+            startButton.textContent = 'Jugar de Nuevo';
+        }
+        
+        function adjustTime(seconds) {
+            const newTime = timePerQuestion + seconds;
+            if (newTime >= 5 && newTime <= 60) {
+                timePerQuestion = newTime;
+                timeConfigDisplay.textContent = `${timePerQuestion}s`;
+                showNotification(`Tiempo ajustado a ${timePerQuestion}s`);
+            }
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const text = e.target.result;
+                    const lines = text.split('\n').filter(line => line.trim() !== '');
+                    const parsedQuestions = lines.map((line, index) => {
+                        const parts = line.split(',');
+                        if (parts.length !== 5) throw new Error(`Línea ${index + 1}: formato incorrecto. Se esperan 5 columnas.`);
+                        
+                        const question = parts[0].trim();
+                        const answers = [parts[1].trim(), parts[2].trim(), parts[3].trim()];
+                        const correct = parseInt(parts[4].trim(), 10);
+                        
+                        if (isNaN(correct) || correct < 0 || correct > 2) throw new Error(`Línea ${index + 1}: el índice de la respuesta correcta debe ser 0, 1, o 2.`);
+                        if (!question || answers.some(a => !a)) throw new Error(`Línea ${index + 1}: la pregunta y las respuestas no pueden estar vacías.`);
+                        return { question, answers, correct };
+                    });
+                    customQuestions = parsedQuestions;
+                    showNotification(`Se cargaron ${customQuestions.length} preguntas.`);
+                } catch (error) {
+                    showNotification(`Error en CSV: ${error.message}`, true);
+                    csvFileInput.value = '';
+                    customQuestions = [];
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        function showNotification(message, isError = false) {
+            notificationEl.textContent = message;
+            notificationEl.classList.remove('hidden');
+            notificationEl.classList.toggle('error', isError);
+            
+            notificationEl.classList.remove('show');
+            void notificationEl.offsetWidth;
+            notificationEl.classList.add('show');
+
+            setTimeout(() => {
+                notificationEl.classList.remove('show');
+            }, 3000);
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // --- INICIALIZACIÓN ---
+        startButton.addEventListener('click', initGame);
+        lilyPads.forEach(pad => pad.addEventListener('click', handleAnswer));
+        window.addEventListener('load', () => moveFrogTo(startFrogPad));
+        decreaseTimeBtn.addEventListener('click', () => adjustTime(-5));
+        increaseTimeBtn.addEventListener('click', () => adjustTime(5));
+        csvFileInput.addEventListener('change', handleFileUpload);
+    </script>
+
+</body>
+</html>
+

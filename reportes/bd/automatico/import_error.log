@@ -65,3 +65,33 @@
 [13/02/2026 17:14:11] No se pudo crear la base de datos 'guagua'.
 [13/02/2026 17:14:13] No se pudo crear la base de datos 'moodle'.
 [13/02/2026 17:14:15] No se pudo crear la base de datos 'prompt'.
+[24/02/2026 15:09:23] ERROR: No se pudo crear la base de datos 'guagua'.
+[24/02/2026 15:09:35] No se pudo crear la base de datos 'cronos'.
+[24/02/2026 15:09:37] No se pudo crear la base de datos 'guagua'.
+[24/02/2026 15:09:39] No se pudo crear la base de datos 'moodle'.
+[24/02/2026 15:09:41] No se pudo crear la base de datos 'prompt'.
+[16/03/2026 11:26:32] ERROR: No se pudo crear la base de datos 'guagua'.
+[22/04/2026 20:09:43] No se pudo crear la base de datos 'cronos'.
+[22/04/2026 20:09:45] No se pudo crear la base de datos 'guagua'.
+[22/04/2026 20:09:53] No se pudo crear la base de datos 'cronos'.
+[22/04/2026 20:09:56] No se pudo crear la base de datos 'guagua'.
+[22/04/2026 20:09:58] No se pudo crear la base de datos 'moodle'.
+[22/04/2026 20:10:00] No se pudo crear la base de datos 'prompt'.
+[22/04/2026 20:11:58] No se pudo crear la base de datos 'cronos'.
+[22/04/2026 20:12:00] No se pudo crear la base de datos 'guagua'.
+[22/04/2026 20:12:02] No se pudo crear la base de datos 'moodle'.
+[22/04/2026 20:12:04] No se pudo crear la base de datos 'prompt'.
+[22/04/2026 20:14:24] No se pudo crear la base de datos 'cronos'.
+[22/04/2026 20:14:27] No se pudo crear la base de datos 'guagua'.
+[22/04/2026 20:14:29] No se pudo crear la base de datos 'moodle'.
+[22/04/2026 20:14:31] No se pudo crear la base de datos 'prompt'.
+[22/04/2026 20:25:42] ERROR: No se pudo renombrar la carpeta 'D:\xampp\mysql\data'. Error: El proceso no puede obtener acceso al archivo porque est· siendo utilizado en otro proceso.
+[09/05/2026 12:17:40] ERROR: No se pudo crear la base de datos 'guagua'.
+[11/05/2026 17:19:54] ERROR: No se pudo crear la base de datos 'guagua'.
+[11/05/2026 17:20:22] ERROR: No se pudo crear la base de datos 'guagua'.
+[19/05/2026 09:36:42] ERROR: No se pudo renombrar la carpeta 'D:\xampp\mysql\data'. Error: El proceso no puede obtener acceso al archivo porque est· siendo utilizado en otro proceso.
+[22/05/2026 18:14:22] La ruta de respaldo 'D:\xampp\htdocs\guagua\reportes\bd\automatico\edutask' para la base de datos 'edutask' no existe.
+[19/06/2026 09:51:12] ERROR: No se pudo crear la base de datos 'guagua'.
+[19/06/2026 09:51:54] ERROR: No se pudo crear la base de datos 'guagua'.
+[19/06/2026 09:52:06] ERROR: No se pudo crear la base de datos 'guagua'.
+[19/06/2026 09:55:17] No se encontr√≥ un archivo de respaldo v√°lido (.sql) para 'edutask' en 'D:\xampp\htdocs\guagua\reportes\bd\automatico\edutask'.

@@ -1,5 +1,5 @@
 <?php
-require($_SERVER['DOCUMENT_ROOT']."/comun/autoload.php");
+require(dirname(__DIR__)."/autoload.php");
 #require_once(dirname(__FILE__)."/comun/funciones.php");
 ?>
 <!DOCTYPE html>

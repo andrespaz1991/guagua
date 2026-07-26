@@ -1,7 +1,7 @@
 <?php 
 
 error_reporting(E_ALL);
-$rutaPrincipal = $_SERVER['DOCUMENT_ROOT'].'/guagua/comun/';
+$rutaPrincipal = __DIR__ . '/../comun/';
 require_once ($rutaPrincipal."/funciones.php");
 require_once ($rutaPrincipal."/config.php");
 $mysqli = new mysqli (SERVIDORBD, USUARIOBD, CLAVEBD, BASEDEDATOS);

@@ -15,7 +15,7 @@ if (isset($_GET['up'])){
 <?php
 $script_url = explode("/",$_SERVER['SCRIPT_FILENAME']);
 $url_carpeta = str_replace(end($script_url),"",$_SERVER['SCRIPT_FILENAME']);
-$url = $_SERVER['DOCUMENT_ROOT'].$url_carpeta;
+$url = dirname(__DIR__, 5) . $url_carpeta;
 
 if(isset($_POST['MAX_FILE_SIZE'])){
 // En versiones de PHP anteriores a la 4.1.0, deber�a utilizarse $HTTP_POST_FILES en lugar

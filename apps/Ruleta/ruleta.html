@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta Científica - Vallesol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .rosco-container { position: relative; width: 100%; max-width: 480px; aspect-ratio: 1; margin: auto; }
+        .letter-node {
+            position: absolute;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 800;
+            font-size: 0.85rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+            border: 2px solid white;
+            box-shadow: 0 4px 10px -2px rgba(0,0,0,0.1);
+        }
+        @media (min-width: 768px) {
+            .letter-node { width: 46px; height: 46px; font-size: 1rem; }
+        }
+        .pending { background-color: #f1f5f9; color: #64748b; }
+        .correct { background-color: #22c55e; color: white; border-color: #86efac; }
+        .wrong { background-color: #ef4444; color: white; border-color: #fca5a5; }
+        .active-node { 
+            background-color: #3b82f6; 
+            color: white; 
+            box-shadow: 0 0 0 4px #bfdbfe; 
+            animation: pulse 2s infinite; 
+            z-index: 20; 
+            scale: 1.15;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center p-4 md:p-8 text-slate-900">
+
+    <!-- CABECERA -->
+    <header class="w-full max-w-6xl flex flex-col md:flex-row justify-between items-center mb-8 gap-4 border-b border-gray-200 pb-4">
+        <div class="flex flex-col text-center md:text-left">
+            <h1 class="text-3xl font-extrabold tracking-tight text-indigo-900">Ruleta de Tertulias Científicas</h1>
+            <p class="text-indigo-600 font-semibold tracking-wide">IER Josefina - Sede Vallesol | Grado 11°</p>
+        </div>
+        
+        <div class="flex gap-4">
+            <button id="config-toggle-btn" class="bg-white p-2 rounded-2xl shadow-sm border border-gray-200 text-gray-500 hover:text-indigo-600 transition-colors" title="Configurar Preguntas">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+            </button>
+            <div class="bg-white px-5 py-2 rounded-2xl shadow-sm border border-gray-200 flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="text-blue-500 w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span id="timer-display" class="font-mono text-2xl font-bold text-gray-700">00:00</span>
+                <div class="flex border-l border-gray-200 pl-3 ml-1 gap-2">
+                    <button id="pause-btn" class="text-gray-400 hover:text-indigo-600 transition-colors" title="Pausar/Reanudar">
+                        <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </button>
+                    <button id="restart-time-btn" class="text-gray-400 hover:text-amber-500 transition-colors" title="Reiniciar tiempo">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="bg-white px-5 py-2 rounded-2xl shadow-sm border border-gray-200 flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="text-yellow-500 w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z" /></svg>
+                <span id="score-display" class="font-bold text-gray-700 text-xl">0 / 26</span>
+            </div>
+        </div>
+    </header>
+
+    <main id="game-view" class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <div id="rosco-section" class="rosco-container">
+            <div id="rosco-nodes"></div>
+            <div id="rosco-inner" class="absolute inset-0 flex flex-col items-center justify-center p-10 text-center pointer-events-none">
+                <button id="start-btn" class="pointer-events-auto bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-5 rounded-3xl shadow-xl transition-all transform hover:scale-105 active:scale-95 font-bold text-2xl">
+                    INICIAR DESAFÍO
+                </button>
+            </div>
+        </div>
+
+        <div id="interaction-panel" class="w-full flex flex-col gap-6">
+            <div id="instructions" class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
+                <h2 class="text-xl font-bold text-indigo-900 mb-4 border-l-4 border-indigo-600 pl-3">Instrucciones</h2>
+                <p class="text-gray-500 text-sm mb-4">Evaluación basada en las tertulias científicas.</p>
+                <ul class="space-y-3 text-gray-600 text-sm">
+                    <li>✓ Responde términos clave basados en la letra indicada.</li>
+                    <li>✓ Usa el botón de bombilla para pistas limitadas.</li>
+                    <li>✓ Presta atención al temporizador en la parte superior.</li>
+                </ul>
+            </div>
+
+            <div id="play-panel" class="hidden bg-white p-10 rounded-[2.5rem] shadow-xl border border-gray-100 flex flex-col gap-8 relative overflow-hidden">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span id="letter-indicator" class="text-6xl font-black text-indigo-600">A</span>
+                        <p id="mode-indicator" class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-2">Empieza por</p>
+                    </div>
+                    <button id="hint-btn" class="p-3 rounded-2xl bg-gray-50 text-gray-400 hover:text-amber-500 transition-colors border border-gray-100" title="Pista de 3 letras">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.674a1 1 0 00.908-.6l3.303-8.258m-1.883.556L18 9m-1.243-3.534A6.701 6.701 0 0011 3a6.701 6.701 0 00-5.757 3.466m10.514 0A6.701 6.701 0 0011 21a6.701 6.701 0 00-5.757-3.466m10.514 0l-1.243 3.534" /></svg>
+                    </button>
+                </div>
+
+                <p id="question-text" class="text-lg font-medium text-gray-700 leading-relaxed min-h-[80px]">Cargando pregunta...</p>
+
+                <div id="hint-reveal" class="hidden bg-amber-50 p-3 rounded-xl border border-amber-200 text-amber-700 font-bold text-center tracking-[0.5em] animate-bounce">---</div>
+
+                <div class="flex flex-col gap-4">
+                    <input id="answer-input" type="text" autocomplete="off" class="w-full text-3xl font-bold p-5 bg-gray-50 border-4 border-gray-100 rounded-3xl focus:border-indigo-500 focus:bg-white outline-none transition-all uppercase text-indigo-900" placeholder="...">
+                    <div class="grid grid-cols-2 gap-4">
+                        <button id="pasapalabra-btn" class="py-4 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl shadow-lg transition-transform active:scale-95">PASAPALABRA</button>
+                        <button id="check-btn" class="py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg transition-transform active:scale-95">COMPROBAR</button>
+                    </div>
+                    <button id="reveal-btn" class="py-3 text-gray-400 hover:text-red-500 font-semibold text-sm flex items-center justify-center gap-2 transition-colors">No la sé, ver respuesta</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- CONFIGURACIÓN -->
+    <div id="config-view" class="hidden w-full max-w-5xl bg-white rounded-[2.5rem] shadow-2xl border border-gray-200 overflow-hidden flex flex-col mt-4">
+        <div class="bg-indigo-900 p-6 text-white flex justify-between items-center">
+            <h2 class="text-xl font-bold flex items-center gap-2">Editor de Preguntas y Tiempo</h2>
+            <div class="flex gap-2">
+                <button id="import-btn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-xl text-xs font-bold transition-colors">Importar JSON</button>
+                <button id="export-btn" class="bg-indigo-700 hover:bg-indigo-600 px-4 py-2 rounded-xl text-xs font-bold transition-colors">Exportar JSON</button>
+                <button id="config-close-btn" class="bg-indigo-800 p-2 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+            </div>
+        </div>
+        <input type="file" id="import-file-input" class="hidden" accept=".json">
+        
+        <!-- AJUSTES DE TIEMPO -->
+        <div class="p-6 bg-indigo-50 border-b border-indigo-100 flex flex-col md:flex-row gap-8">
+            <div class="flex-1 space-y-4">
+                <label class="flex items-center gap-3 font-bold text-indigo-900 cursor-pointer">
+                    <input type="radio" name="timeMode" value="GLOBAL" id="mode-global" class="w-5 h-5 text-indigo-600"> 
+                    Tiempo fijo para todas
+                </label>
+                <div class="pl-8 flex items-center gap-3">
+                    <span class="text-sm text-gray-600">Segundos por pregunta:</span>
+                    <input type="number" id="global-time-input" class="w-24 p-2 border border-gray-300 rounded-lg text-center font-bold outline-none focus:border-indigo-500" placeholder="30">
+                </div>
+            </div>
+            <div class="w-px bg-indigo-200 hidden md:block"></div>
+            <div class="flex-1 space-y-4">
+                <label class="flex items-center gap-3 font-bold text-indigo-900 cursor-pointer">
+                    <input type="radio" name="timeMode" value="PER_QUESTION" id="mode-perq" class="w-5 h-5 text-indigo-600"> 
+                    Tiempo personalizado
+                </label>
+                <div class="pl-8 flex items-center gap-3">
+                    <span class="text-sm text-gray-600">Usa los campos de la lista inferior para ajustar el tiempo letra por letra.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-8 flex-1 overflow-y-auto max-h-[50vh] custom-scrollbar">
+            <div id="config-list" class="space-y-4"></div>
+        </div>
+        <div class="p-6 bg-gray-50 border-t border-gray-200 flex justify-between gap-4">
+            <span class="text-xs text-gray-500 italic flex items-center">Recuerda presionar "Guardar y Aplicar" para conservar cambios.</span>
+            <div class="flex gap-4">
+                <button id="config-reset-default" class="px-6 py-2 text-red-600 font-bold hover:bg-red-50 rounded-xl">Restaurar Originales</button>
+                <button id="config-save-btn" class="px-10 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-transform active:scale-95">Guardar y Aplicar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div id="finish-view" class="hidden w-full max-w-6xl">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-center">
+            <div class="bg-white p-8 rounded-[2rem] shadow-sm border-b-4 border-green-500">
+                <div id="final-correct" class="text-6xl font-black text-green-600">0</div>
+                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-2">Aciertos</div>
+            </div>
+            <div class="bg-white p-8 rounded-[2rem] shadow-sm border-b-4 border-red-500">
+                <div id="final-wrong" class="text-6xl font-black text-red-600">0</div>
+                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-2">Errores</div>
+            </div>
+            <div class="bg-indigo-900 p-8 rounded-[2rem] shadow-xl text-white flex flex-col items-center justify-center">
+                <div id="final-percent" class="text-5xl font-black">0%</div>
+                <div class="text-[10px] font-bold text-indigo-300 uppercase mt-2">Efectividad</div>
+            </div>
+        </div>
+        <div class="bg-white rounded-[2.5rem] shadow-xl border border-gray-200 overflow-hidden">
+            <div class="bg-gray-50 p-6 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-indigo-900">Reporte Final</h3>
+                <button onclick="location.reload()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl font-bold">Reiniciar</button>
+            </div>
+            <div class="max-h-[500px] overflow-y-auto custom-scrollbar">
+                <table class="w-full text-left">
+                    <thead class="sticky top-0 bg-white border-b border-gray-100 z-10">
+                        <tr><th class="p-5 text-xs font-black text-gray-400 uppercase">Letra</th><th class="p-5 text-xs font-black text-gray-400 uppercase">Respuesta Correcta</th><th class="p-5 text-xs font-black text-gray-400 uppercase text-center">Estado</th></tr>
+                    </thead>
+                    <tbody id="results-body" class="divide-y divide-gray-50"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE RESPUESTA -->
+    <div id="reveal-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] shadow-2xl max-w-md w-full overflow-hidden">
+            <div class="bg-red-600 p-6 text-white flex justify-between items-center">
+                <h3 class="font-bold">Respuesta Correcta</h3>
+                <button id="close-modal" class="hover:bg-red-700 p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+            </div>
+            <div class="p-10 text-center">
+                <span class="text-xs font-bold text-gray-400 uppercase">La palabra era:</span>
+                <div id="modal-word" class="text-4xl font-black text-indigo-900 my-4 uppercase">...</div>
+                <p id="modal-context" class="text-gray-500 italic text-sm leading-relaxed"></p>
+            </div>
+            <div class="p-6 bg-gray-50 flex justify-center"><button id="modal-confirm" class="bg-indigo-900 text-white px-10 py-3 rounded-xl font-bold">Entendido y Continuar</button></div>
+        </div>
+    </div>
+
+    <footer class="mt-auto py-8 text-gray-400 text-[10px] font-black uppercase tracking-[0.5em] flex flex-col items-center gap-2">
+        IER Josefina - Sede Vallesol - 2026
+    </footer>
+
+    <script>
+        const INITIAL_DATA = [
+            { letter: 'A', word: 'ARTEMIS', hint: 'Misión de la NASA que sobrevoló la Luna recientemente enviando a su tripulación de regreso.', startWith: true, time: 20 },
+            { letter: 'B', word: 'BARBACID', hint: 'Apellido del oncólogo que lideró el descubrimiento para eliminar tumores de páncreas.', startWith: true, time: 20 },
+            { letter: 'C', word: 'CANCER', hint: 'Enfermedad que el CNIO logró eliminar en ratones mediante una terapia combinada.', startWith: true, time: 20 },
+            { letter: 'D', word: 'DIAGNOSTICO', hint: 'Es el proceso de identificar una enfermedad; en el cáncer de páncreas es vital hacerlo a tiempo.', startWith: true, time: 20 },
+            { letter: 'E', word: 'ESPAÑA', hint: 'País donde se diagnostican cada año más de 10.300 casos de cáncer de páncreas, según el texto.', startWith: true, time: 20 },
+            { letter: 'F', word: 'FUSION', hint: 'Proceso de energía nuclear que algunas empresas planean usar para crear oro artificial.', startWith: true, time: 20 },
+            { letter: 'G', word: 'GRAVEDAD', hint: 'Fuerza que los astronautas vuelven a sentir al regresar de la misión Artemis 2.', startWith: true, time: 20 },
+            { letter: 'H', word: 'HUMANA', hint: 'Tipo de intervención que NO existe en la red social Moltbook, poblada solo por robots.', startWith: true, time: 20 },
+            { letter: 'I', word: 'INTELIGENCIA', hint: 'Capacidad "artificial" que tienen los agentes de Moltbook para hablar entre ellos.', startWith: true, time: 20 },
+            { letter: 'J', word: 'JENSEN', hint: 'Nombre del dueño de Nvidia que hizo un trato gigante con Mark Zuckerberg.', startWith: true, time: 20 },
+            { letter: 'K', word: 'KRAS', hint: 'Vía molecular que se bloquea en la terapia para frenar el crecimiento de tumores.', startWith: true, time: 20 },
+            { letter: 'L', word: 'LUNA', hint: 'Cuerpo celeste que los astronautas de Artemis 2 rodearon antes de volver a la Tierra.', startWith: true, time: 20 },
+            { letter: 'M', word: 'MOLTBOOK', hint: 'Red social comprada por Meta donde solo interactúan inteligencias artificiales.', startWith: true, time: 20 },
+            { letter: 'N', word: 'NASA', hint: 'Agencia espacial de EE.UU. que dirige la misión de regreso a la Luna.', startWith: true, time: 20 },
+            { letter: 'O', word: 'ORO', hint: 'Metal precioso que la empresa Marathon Fusion asegura producir en reactores nucleares.', startWith: true, time: 20 },
+            { letter: 'P', word: 'PANCREAS', hint: 'Órgano del cuerpo donde se localiza el tipo de cáncer investigado por Barbacid.', startWith: true, time: 20 },
+            { letter: 'Q', word: 'ALQUIMIA', hint: 'Contiene la Q. Nombre que se daba antiguamente a la idea de convertir metales en oro.', startWith: false, time: 20 },
+            { letter: 'R', word: 'RATONES', hint: 'Animales de laboratorio donde se probó con éxito la cura del cáncer de páncreas.', startWith: true, time: 20 },
+            { letter: 'S', word: 'SPACEX', hint: 'Empresa espacial de Elon Musk de donde proviene el creador del proyecto de crear oro.', startWith: true, time: 20 },
+            { letter: 'T', word: 'TIERRA', hint: 'Planeta hacia el cual la nave Orión guió a la tripulación para volver tras sobrevolar la Luna.', startWith: true, time: 20 },
+            { letter: 'U', word: 'UNIVERSO', hint: 'Vasto sistema donde la naturaleza tarda millones de años en crear oro.', startWith: true, time: 20 },
+            { letter: 'V', word: 'VELOCIDAD', hint: 'Magnitud que tuvo un cambio de 1,6 pies por segundo cuando la nave Orion encendió sus propulsores.', startWith: true, time: 20 },
+            { letter: 'W', word: 'WILLIAM', hint: 'Contiene la W. Primer nombre de Bill Gates, quien apoya financieramente proyectos de energía nuclear.', startWith: false, time: 20 },
+            { letter: 'X', word: 'EXITO', hint: 'Contiene la X. Lo que se alcanzó tras completar la órbita lunar en la misión Artemis 2.', startWith: false, time: 20 },
+            { letter: 'Y', word: 'ENSAYOS', hint: 'Contiene la Y. Pruebas clínicas que, según Barbacid, todavía no están en condiciones de llevar a cabo con la triple terapia.', startWith: false, time: 20 },
+            { letter: 'Z', word: 'ONZA', hint: 'Contiene la Z. Medida troy de oro que, al ritmo del CERN, tomaría cientos de veces la vida del universo en hacerse.', startWith: false, time: 20 },
+        ];
+
+        // Estado y Configuración
+        let DATA = JSON.parse(localStorage.getItem('ruleta_vallesol_data')) || INITIAL_DATA;
+        let SETTINGS = JSON.parse(localStorage.getItem('ruleta_vallesol_settings')) || { timeMode: 'GLOBAL', globalTime: 30 };
+        
+        // Migración para datos guardados anteriormente que no tenían la propiedad time
+        DATA = DATA.map(item => ({ ...item, time: item.time || 20 }));
+
+        let currentIndex = 0;
+        let gameState = 'IDLE';
+        let answers = Array(DATA.length).fill('PENDING');
+        
+        // Variables del temporizador
+        let timerId = null;
+        let activeTime = 30;
+        let isPaused = false;
+
+        // Referencias al DOM
+        const nodesContainer = document.getElementById('rosco-nodes');
+        const startBtn = document.getElementById('start-btn');
+        const timerDisplay = document.getElementById('timer-display');
+        const scoreDisplay = document.getElementById('score-display');
+        const playPanel = document.getElementById('play-panel');
+        const instrPanel = document.getElementById('instructions');
+        const qText = document.getElementById('question-text');
+        const letterInd = document.getElementById('letter-indicator');
+        const modeInd = document.getElementById('mode-indicator');
+        const ansInput = document.getElementById('answer-input');
+        const hintBtn = document.getElementById('hint-btn');
+        const hintReveal = document.getElementById('hint-reveal');
+        const checkBtn = document.getElementById('check-btn');
+        const pBtn = document.getElementById('pasapalabra-btn');
+        const rBtn = document.getElementById('reveal-btn');
+        const finishView = document.getElementById('finish-view');
+        const gameView = document.getElementById('game-view');
+        const resultsBody = document.getElementById('results-body');
+        const configToggleBtn = document.getElementById('config-toggle-btn');
+        const configView = document.getElementById('config-view');
+        const configCloseBtn = document.getElementById('config-close-btn');
+        const configSaveBtn = document.getElementById('config-save-btn');
+        const configResetBtn = document.getElementById('config-reset-default');
+        const configList = document.getElementById('config-list');
+        const exportBtn = document.getElementById('export-btn');
+        const importBtn = document.getElementById('import-btn');
+        const importFileInput = document.getElementById('import-file-input');
+        const revealModal = document.getElementById('reveal-modal');
+        const modalWord = document.getElementById('modal-word');
+        const modalContext = document.getElementById('modal-context');
+        
+        // Settings UI
+        const modeGlobalRadio = document.getElementById('mode-global');
+        const modePerQRadio = document.getElementById('mode-perq');
+        const globalTimeInput = document.getElementById('global-time-input');
+
+        // Controles de tiempo manuales
+        const pauseBtn = document.getElementById('pause-btn');
+        const pauseIcon = document.getElementById('pause-icon');
+        const playIcon = document.getElementById('play-icon');
+        const restartTimeBtn = document.getElementById('restart-time-btn');
+
+        function init() { 
+            renderRosco(); 
+            setupEventListeners(); 
+            updateInitialTimerDisplay();
+        }
+
+        function updateInitialTimerDisplay() {
+            if (SETTINGS.timeMode === 'GLOBAL') {
+                updateTimerDisplay(SETTINGS.globalTime);
+            } else {
+                updateTimerDisplay(DATA[0].time);
+            }
+        }
+
+        function setupEventListeners() {
+            startBtn.onclick = startGame;
+            checkBtn.onclick = validate;
+            pBtn.onclick = pasapalabra;
+            rBtn.onclick = showFullAnswer;
+            hintBtn.onclick = showBriefHint;
+            ansInput.onkeydown = (e) => { if(e.key === 'Enter') validate(); };
+            document.getElementById('modal-confirm').onclick = closeModal;
+            document.getElementById('close-modal').onclick = closeModal;
+            
+            configToggleBtn.onclick = openConfig;
+            configCloseBtn.onclick = closeConfig;
+            configSaveBtn.onclick = saveConfig;
+            configResetBtn.onclick = resetToDefault;
+            exportBtn.onclick = exportData;
+            importBtn.onclick = () => importFileInput.click();
+            importFileInput.onchange = importData;
+
+            pauseBtn.onclick = togglePause;
+            restartTimeBtn.onclick = resetCurrentTime;
+
+            // Sincronización en tiempo real del tiempo global con los inputs individuales
+            globalTimeInput.addEventListener('input', (e) => {
+                const val = e.target.value;
+                if (val && parseInt(val) > 0) {
+                    document.querySelectorAll('input[data-field="time"]').forEach(inp => inp.value = val);
+                }
+            });
+
+            // Si se selecciona el modo global, fuerza la actualización con el valor actual
+            modeGlobalRadio.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    const val = globalTimeInput.value;
+                    if (val && parseInt(val) > 0) {
+                        document.querySelectorAll('input[data-field="time"]').forEach(inp => inp.value = val);
+                    }
+                }
+            });
+        }
+
+        function renderRosco() {
+            nodesContainer.innerHTML = '';
+            DATA.forEach((item, i) => {
+                const angle = (i * 360) / DATA.length - 90;
+                const radius = 42; 
+                const x = 50 + radius * Math.cos((angle * Math.PI) / 180);
+                const y = 50 + radius * Math.sin((angle * Math.PI) / 180);
+                const node = document.createElement('div');
+                node.className = `letter-node ${getLetterClass(i)}`;
+                node.style.left = `${x}%`; node.style.top = `${y}%`;
+                node.innerText = item.letter;
+                nodesContainer.appendChild(node);
+            });
+        }
+
+        function getLetterClass(i) {
+            if (gameState === 'PLAYING' && i === currentIndex) return 'active-node';
+            if (answers[i] === 'CORRECT') return 'correct';
+            if (answers[i] === 'WRONG') return 'wrong';
+            return 'pending';
+        }
+
+        function startGame() {
+            gameState = 'PLAYING'; 
+            startBtn.classList.add('hidden');
+            instrPanel.classList.add('hidden'); 
+            playPanel.classList.remove('hidden');
+            configToggleBtn.classList.add('hidden'); 
+            
+            isPaused = false;
+            
+            updateUI(); 
+            startTimer(); 
+            ansInput.focus();
+        }
+
+        function startTimer() {
+            if(timerId) clearInterval(timerId);
+            timerId = setInterval(() => {
+                if(isPaused) return;
+
+                activeTime--;
+                updateTimerDisplay(activeTime);
+                if (activeTime <= 0) {
+                    answers[currentIndex] = 'WRONG';
+                    moveToNext();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay(totalSeconds) {
+            totalSeconds = Math.max(0, totalSeconds);
+            const m = Math.floor(totalSeconds / 60), s = totalSeconds % 60;
+            timerDisplay.innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            
+            // Cambiar color a rojo si quedan menos de 10 segundos
+            if(totalSeconds <= 10 && totalSeconds > 0) {
+                timerDisplay.classList.add('text-red-500');
+                timerDisplay.classList.remove('text-gray-700');
+            } else {
+                timerDisplay.classList.remove('text-red-500');
+                timerDisplay.classList.add('text-gray-700');
+            }
+        }
+
+        function togglePause() {
+            if (gameState !== 'PLAYING') return;
+            isPaused = !isPaused;
+            if (isPaused) {
+                pauseIcon.classList.add('hidden');
+                playIcon.classList.remove('hidden');
+            } else {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            }
+        }
+
+        function resetCurrentTime() {
+            if (gameState !== 'PLAYING') return;
+            const current = DATA[currentIndex];
+            activeTime = (SETTINGS.timeMode === 'GLOBAL') ? SETTINGS.globalTime : (current.time || 20);
+            updateTimerDisplay(activeTime);
+        }
+
+        function updateUI() {
+            const current = DATA[currentIndex];
+            letterInd.innerText = current.letter;
+            modeInd.innerText = current.startWith ? 'Empieza por' : 'Contiene la';
+            qText.innerText = current.hint; 
+            ansInput.value = ''; 
+            hintReveal.classList.add('hidden');
+            scoreDisplay.innerText = `${answers.filter(a => a === 'CORRECT').length} / 26`;
+            
+            // Reiniciar estado de pausa al cambiar de pregunta
+            isPaused = false;
+            if (pauseIcon && playIcon) {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            }
+
+            // Reiniciar el temporizador para la pregunta actual
+            activeTime = (SETTINGS.timeMode === 'GLOBAL') ? SETTINGS.globalTime : (current.time || 20);
+            updateTimerDisplay(activeTime);
+            
+            renderRosco();
+        }
+
+        function validate() {
+            const val = ansInput.value.trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const word = DATA[currentIndex].word.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            answers[currentIndex] = (val === word) ? 'CORRECT' : 'WRONG';
+            moveToNext();
+        }
+
+        function pasapalabra() { 
+            findNextPending(); 
+            updateUI(); 
+            ansInput.focus(); 
+        }
+
+        function moveToNext() { 
+            if (answers.every(a => a !== 'PENDING')) endGame(); 
+            else pasapalabra(); 
+        }
+
+        function findNextPending() {
+            for (let i = 1; i <= DATA.length; i++) {
+                let next = (currentIndex + i) % DATA.length;
+                if (answers[next] === 'PENDING') { currentIndex = next; return; }
+            }
+        }
+
+        function showBriefHint() {
+            hintReveal.innerText = DATA[currentIndex].word.substring(0, 3) + "...";
+            hintReveal.classList.remove('hidden');
+        }
+
+        function showFullAnswer() {
+            isPaused = true; // Pausar temporizador mientras se ve la respuesta
+            answers[currentIndex] = 'WRONG';
+            modalWord.innerText = DATA[currentIndex].word; 
+            modalContext.innerText = DATA[currentIndex].hint;
+            revealModal.classList.remove('hidden');
+        }
+
+        function closeModal() { 
+            revealModal.classList.add('hidden'); 
+            isPaused = false; // Reanudar
+            moveToNext(); 
+        }
+
+        // --- SISTEMA DE CONFIGURACIÓN ---
+        function openConfig() { 
+            gameView.classList.add('hidden'); 
+            configView.classList.remove('hidden');
+            
+            // Cargar settings actuales en UI
+            modeGlobalRadio.checked = (SETTINGS.timeMode === 'GLOBAL');
+            modePerQRadio.checked = (SETTINGS.timeMode === 'PER_QUESTION');
+            globalTimeInput.value = SETTINGS.globalTime;
+
+            renderConfigList(); 
+        }
+        
+        function closeConfig() { 
+            configView.classList.add('hidden'); 
+            gameView.classList.remove('hidden'); 
+        }
+
+        function renderConfigList() {
+            configList.innerHTML = '';
+            DATA.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = "p-4 bg-gray-50 rounded-2xl border border-gray-100 flex flex-col gap-3";
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center font-black">${item.letter}</span>
+                        <div class="flex-1"><input type="text" data-index="${index}" data-field="word" value="${item.word}" class="w-full font-bold uppercase p-2 border border-gray-200 rounded-lg outline-none focus:border-indigo-500 text-sm"></div>
+                        <div class="flex items-center gap-2 border-l border-gray-200 pl-3">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Tiempo (s):</span>
+                            <input type="number" data-index="${index}" data-field="time" value="${item.time || 20}" class="w-16 p-1 border border-gray-200 rounded-lg text-center font-mono outline-none focus:border-indigo-500" title="Segundos para esta pregunta">
+                        </div>
+                        <label class="flex items-center gap-2 text-[10px] font-bold text-gray-400 border-l border-gray-200 pl-3"><input type="checkbox" data-index="${index}" data-field="startWith" ${item.startWith ? 'checked' : ''} class="w-4 h-4 text-indigo-600 rounded"> Inicia con</label>
+                    </div>
+                    <textarea data-index="${index}" data-field="hint" rows="2" class="w-full text-sm p-3 border border-gray-200 rounded-lg outline-none focus:border-indigo-500">${item.hint}</textarea>
+                `;
+                configList.appendChild(div);
+            });
+        }
+
+        function saveConfig() {
+            // Guardar settings generales
+            SETTINGS.timeMode = modeGlobalRadio.checked ? 'GLOBAL' : 'PER_QUESTION';
+            SETTINGS.globalTime = parseInt(globalTimeInput.value) || 30;
+            localStorage.setItem('ruleta_vallesol_settings', JSON.stringify(SETTINGS));
+
+            // Guardar configuración de cada ítem
+            configList.querySelectorAll('input[data-field], textarea[data-field]').forEach(input => {
+                const idx = input.dataset.index, field = input.dataset.field;
+                if(field === 'startWith') {
+                    DATA[idx][field] = input.checked;
+                } else if(field === 'time') {
+                    DATA[idx][field] = parseInt(input.value) || 20;
+                } else {
+                    DATA[idx][field] = input.value.trim();
+                }
+            });
+            
+            localStorage.setItem('ruleta_vallesol_data', JSON.stringify(DATA)); 
+            closeConfig(); 
+            updateInitialTimerDisplay(); // Refrescar timer display con nueva config
+            
+            // Notificación visual de guardado (opcional)
+            const origColor = startBtn.style.backgroundColor;
+            startBtn.innerText = "¡CONFIGURACIÓN GUARDADA!";
+            setTimeout(() => { startBtn.innerText = "INICIAR DESAFÍO"; }, 2000);
+        }
+
+        function resetToDefault() { 
+            if(confirm("¿Restaurar las preguntas y tiempos originales?")) { 
+                DATA = JSON.parse(JSON.stringify(INITIAL_DATA)); // Clon profundo
+                SETTINGS = { timeMode: 'GLOBAL', globalTime: 30 };
+                
+                localStorage.removeItem('ruleta_vallesol_data'); 
+                localStorage.removeItem('ruleta_vallesol_settings');
+                
+                modeGlobalRadio.checked = true;
+                globalTimeInput.value = 30;
+                renderConfigList(); 
+            } 
+        }
+
+        function exportData() {
+            const blob = new Blob([JSON.stringify(DATA, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob), a = document.createElement('a');
+            a.href = url; a.download = 'ruleta_vallesol.json'; a.click(); URL.revokeObjectURL(url);
+        }
+
+        function importData(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const imported = JSON.parse(ev.target.result);
+                    if (Array.isArray(imported) && imported.length === 26) { 
+                        DATA = imported; 
+                        // Asegurar que exista la propiedad time al importar
+                        DATA = DATA.map(item => ({ ...item, time: item.time || 20 }));
+                        localStorage.setItem('ruleta_vallesol_data', JSON.stringify(DATA)); 
+                        renderConfigList(); 
+                        alert("¡Importación exitosa!"); 
+                    } else {
+                        throw new Error("Formato inválido");
+                    }
+                } catch (err) { alert("Archivo inválido o incompatible."); }
+            };
+            reader.readAsText(file);
+        }
+
+        function endGame() {
+            gameState = 'FINISHED'; 
+            clearInterval(timerId); 
+            gameView.classList.add('hidden'); 
+            finishView.classList.remove('hidden');
+            
+            const c = answers.filter(a => a === 'CORRECT').length;
+            const w = answers.filter(a => a === 'WRONG').length;
+            
+            document.getElementById('final-correct').innerText = c; 
+            document.getElementById('final-wrong').innerText = w;
+            document.getElementById('final-percent').innerText = `${Math.round((c/26)*100)}%`; 
+            renderResultsTable();
+        }
+
+        function renderResultsTable() {
+            resultsBody.innerHTML = '';
+            DATA.forEach((item, i) => {
+                const tr = document.createElement('tr');
+                const isCorrect = answers[i] === 'CORRECT';
+                const isWrong = answers[i] === 'WRONG';
+                const s = isCorrect ? 'ACIERTO' : (isWrong ? 'ERROR/TIEMPO' : 'PENDIENTE');
+                const col = isCorrect ? 'bg-green-100 text-green-700' : (isWrong ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-400');
+                
+                tr.innerHTML = `
+                    <td class="p-5"><div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-900 flex items-center justify-center font-black">${item.letter}</div></td>
+                    <td class="p-5">
+                        <div class="font-bold uppercase">${item.word}</div>
+                        <div class="text-[10px] text-gray-400">${item.hint.substring(0, 60)}...</div>
+                    </td>
+                    <td class="p-5 text-center">
+                        <div class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black ${col}">${s}</div>
+                    </td>`;
+                resultsBody.appendChild(tr);
+            });
+        }
+        
+        window.onload = init;
+    </script>
+</body>
+</html>

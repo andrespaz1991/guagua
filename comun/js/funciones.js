@@ -18,45 +18,61 @@ function capitalizarPalabras(texto) {
     .join(" ");
 }
 
-function listarEstudiantes(){   
-    //  alert('Hola Mundo');
-    document.getElementById("contenedor").innerHTML="";
-    var nombre = document.getElementById("filtro_grados").value;
-   var asignacion = document.getElementById("asignaciones").value;
-//var asignacion=''
-   // alert(asignacion);
+function listarEstudiantes() {
+    document.getElementById("contenedor").innerHTML = "";
+    
+    // Variables de filtro renombradas para evitar colisiones
+    var filtroNombre = document.getElementById("filtro_grados").value;
+    var filtroAsignacion = document.getElementById("asignaciones").value;
+    var filtroname = document.getElementById("nombrees").value;
 
-    //Función para crear el objeto XMLHpptRequest.
-                  // var formData = $("#ano_lectivo").val();
-     ajax =new XMLHttpRequest(); //instanciamos el objeto
-    console.log("estudianteshome.php?nid="+asignacion+"&nombre="+nombre);
-     //  ajax.open("GET","estudianteshome.php?nid="+asignacion+"&nombre="+nombre,true); //preparamos envio
-     ajax.open("GET","estudianteshome.php?nid="+asignacion+"&nombre="+nombre,true); //preparamos envi
+    var ajax = new XMLHttpRequest();
+    var url = "estudianteshome.php?nid=" + encodeURIComponent(filtroAsignacion) + "&nombre=" + encodeURIComponent(filtroNombre)+ "&name=" + encodeURIComponent(filtroname);
+    console.log("Consultando:", url);
+    
+    ajax.open("GET", url, true);
 
-//    ajax.open("GET","estudianteshome.php?nombre="+nombre,true); //preparamos envio
-    //devolver texto al cargarse el archivo
-      
-      ajax.onreadystatechange=function() {  
-         if (ajax.readyState==4 && ajax.status==200) {
-            console.log(ajax.responseText);
-            texto=ajax.responseText;
-           // console.log(texto);  
-            var resp_json = JSON.parse(texto);
-              
-        
-            for(var i in resp_json){
-              if(i<=5){
-                var nombre=resp_json[i].nombre+' '+resp_json[i].apellido;
-                var nombre= capitalizarPalabras(nombre);
-                //console.log(resp_json[i]);
-                $("#contenedor").append( "<a target='_blank'  style='color:black;' href=ia/reporte.php?id_estudiante="+resp_json[i].id_usuario+"><img width='50px' src="+"sga-data/foto/"+resp_json[i].foto+"> <span title="+resp_json[i].nombre+resp_json[i].apellido+">"+puntosuspensivos(nombre)+"</span></a><form style='display:inline' action='seguimiento/citas.php' method='POST'><input type='hidden' name='submit' value='Nuevo'></input><input type='hidden' name='estudiante' value="+resp_json[i].id_usuario+"></input><input type='hidden' name='nombreestudiante' value="+resp_json[i].nombre+' '+resp_json[i].apellido+"></input><input type='hidden' name='asignacion' value="+resp_json[i].id_asignacion+"></input><input type='image' src='comun/img/png/compose.png' alt='Submit' width='24' height='24'></form><br>");
-              }
-  }         
-            // document.getElementById("cont").innerHTML=texto;
-            } 
-         }
-      ajax.send(); //enviar.
-  }                        
+    ajax.onreadystatechange = function() {
+        if (ajax.readyState == 4 && ajax.status == 200) {
+            try {
+                var texto = ajax.responseText;
+                var resp_json = JSON.parse(texto);
+                
+                console.log("Total de registros recibidos:", resp_json.length);
+
+                // Iteración correcta sobre el array
+                for (let i = 0; i < resp_json.length; i++) {
+                    if (i <= 500) {
+                        let estudiante = resp_json[i];
+                        let nombreCompleto = estudiante.nombre + ' ' + estudiante.apellido;
+                        let nombreCapitalizado = capitalizarPalabras(nombreCompleto);
+                        
+                        // Controlar valores undefined (como id_asignacion que no está en tu JSON)
+                        let idAsig = estudiante.id_asignacion ? estudiante.id_asignacion : '';
+
+                        // Construcción limpia del HTML usando comillas simples para los atributos
+                        let html = "<a target='_blank' style='color:black;' href='usuario/hdv.php?id=" + estudiante.id_usuario + "'>" + 
+                                       "<img width='50px' src='sga-data/foto/" + estudiante.foto + "'> " +
+                                       "<span title='" + nombreCompleto + "'>" + puntosuspensivos(nombreCapitalizado) + "</span>" +
+                                   "</a>" +
+                                   "<form style='display:inline' action='seguimiento/citas.php' method='POST'>" +
+                                       "<input type='hidden' name='submit' value='Nuevo'>" +
+                                       "<input type='hidden' name='estudiante' value='" + estudiante.id_usuario + "'>" +
+                                       "<input type='hidden' name='nombreestudiante' value='" + nombreCompleto + "'>" +
+                                       "<input type='hidden' name='asignacion' value='" + idAsig + "'>" +
+                                       "<input type='image' src='comun/img/png/compose.png' alt='Submit' width='24' height='24'>" +
+                                   "</form><br>";
+
+                        $("#contenedor").append(html);
+                    }
+                }
+            } catch (error) {
+                console.error("Error al procesar el JSON o renderizar HTML:", error);
+            }
+        }
+    };
+    ajax.send();
+}                  
 
 
 

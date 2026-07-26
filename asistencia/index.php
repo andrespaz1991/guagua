@@ -144,6 +144,337 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit;
 }
 
+// Endpoint para SINCRONIZAR DIRECTAMENTE DESDE RUTA
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] == 'sincronizar_excel') {
+    header('Content-Type: application/json');
+    $id_asignacion = $_POST['asignacion'] ?? 0;
+    
+    $file_path = defined('RUTA_EXCEL_SINCRONIZACION') ? RUTA_EXCEL_SINCRONIZACION : 'd:/xampp/htdocs/guagua/Asistencia Vallesol 2026.xlsx';
+    
+    if (file_exists($file_path)) {
+        try {
+            set_time_limit(0);
+            ini_set('memory_limit', '1024M');
+            require_once __DIR__ . '/vendor/autoload.php';
+            $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            $academico_temp = new Academico();
+            $info_asignatura_temp = $academico_temp->consultar_materia($id_asignacion);
+            $nombre_materia = !empty($info_asignatura_temp) ? $info_asignatura_temp[0]->nombre_materia : 'Materia Desconocida';
+
+            // Cargar estudiantes del curso para obtener su documento
+            $sql_students = "SELECT u.id_usuario FROM usuario u JOIN inscripcion i ON u.id_usuario = i.id_estudiante WHERE i.id_asignacion = :id_asignacion";
+            $stmt_students = $pdo->prepare($sql_students);
+            $stmt_students->execute([':id_asignacion' => $id_asignacion]);
+            $estudiantes_curso = [];
+            foreach ($stmt_students->fetchAll(PDO::FETCH_ASSOC) as $st) {
+                $persona = new Persona($st['id_usuario']);
+                $apellidos = $persona->apellidos ?? $persona->apellido ?? '';
+                $nombres = $persona->nombres ?? $persona->nombre ?? '';
+                $nombre_db = trim($apellidos . ' ' . $nombres);
+                $norm_db = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', iconv('UTF-8', 'ASCII//TRANSLIT', $nombre_db)));
+                $estudiantes_curso[$norm_db] = $st['id_usuario'];
+            }
+
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($file_path);
+            $reader->setReadDataOnly(true);
+            $spreadsheet = $reader->load($file_path);
+            
+            $meses_map = [
+                'Enero' => '01', 'Febrero' => '02', 'Marzo' => '03', 'Abril' => '04',
+                'Mayo' => '05', 'Junio' => '06', 'Julio' => '07', 'Agosto' => '08',
+                'Septiembre' => '09', 'Octubre' => '10', 'Noviembre' => '11', 'Diciembre' => '12'
+            ];
+            
+            $year = date('Y');
+            if (preg_match('/20\d{2}/', basename($file_path), $matches)) {
+                $year = $matches[0];
+            }
+
+            $rowCount = 0;
+            $pdo->beginTransaction();
+            foreach ($spreadsheet->getSheetNames() as $sheetName) {
+                if (!isset($meses_map[$sheetName])) {
+                    $matched_mes = null;
+                    foreach ($meses_map as $mes_nombre => $mes_num) {
+                        if (stripos($sheetName, $mes_nombre) !== false) {
+                            $matched_mes = $mes_num; break;
+                        }
+                    }
+                    if (!$matched_mes) continue;
+                    $mes = $matched_mes;
+                } else {
+                    $mes = $meses_map[$sheetName];
+                }
+                
+                $sheet = $spreadsheet->getSheetByName($sheetName);
+                
+                $headerRowIndex = -1;
+                $col_dias = []; 
+                $col_nombre = -1;
+                
+                $rowIterator = $sheet->getRowIterator(1, 20);
+                foreach ($rowIterator as $row) {
+                    $cellIterator = $row->getCellIterator();
+                    $cellIterator->setIterateOnlyExistingCells(false);
+                    
+                    $isHeader = false;
+                    foreach ($cellIterator as $col => $cell) {
+                        $val = trim((string)$cell->getCalculatedValue());
+                        if (stripos($val, 'NOMBRES Y APELLIDOS') !== false || stripos($val, 'NOMBRES') !== false) {
+                            $isHeader = true;
+                            $headerRowIndex = $row->getRowIndex();
+                            $col_nombre = $col;
+                        }
+                    }
+                    
+                    if ($isHeader) {
+                        $cellIterator->rewind();
+                        foreach ($cellIterator as $col => $cell) {
+                            $val = trim((string)$cell->getCalculatedValue());
+                            if (is_numeric($val) && $val > 0 && $val <= 31) {
+                                $col_dias[$col] = str_pad($val, 2, '0', STR_PAD_LEFT);
+                            }
+                        }
+                        break;
+                    }
+                }
+                
+                if ($headerRowIndex !== -1 && !empty($col_dias) && $col_nombre !== -1) {
+                    $rowIterator = $sheet->getRowIterator($headerRowIndex + 1);
+                    foreach ($rowIterator as $row) {
+                        $rowIndex = $row->getRowIndex();
+                        $nombre_estudiante = trim((string)$sheet->getCell($col_nombre . $rowIndex)->getCalculatedValue());
+                        if (empty($nombre_estudiante)) continue;
+                        
+                        $norm_excel = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', iconv('UTF-8', 'ASCII//TRANSLIT', $nombre_estudiante)));
+                        $doc = $estudiantes_curso[$norm_excel] ?? $norm_excel; 
+                        
+                        foreach ($col_dias as $col => $dia) {
+                            $val = trim((string)$sheet->getCell($col . $rowIndex)->getCalculatedValue());
+                            if ($val === '') continue;
+                            
+                            $fecha_db_formato = "$dia/$mes/$year";
+                            $estado_db = 'SI';
+                            $uniforme_db = 1;
+                            $justificacion_db = '';
+                            
+                            if ($val === '0' || stripos($val, 'NO') !== false) {
+                                $estado_db = 'NO';
+                            } elseif (stripos($val, 'J') !== false || stripos($val, 'P') !== false) {
+                                $estado_db = 'P';
+                                $justificacion_db = 'Justificado en Excel';
+                            } elseif (stripos($val, 'T') !== false || stripos($val, 'R') !== false) {
+                                $estado_db = 'R';
+                            } elseif (stripos($val, 'U') !== false) {
+                                $estado_db = 'SI';
+                                $uniforme_db = 0;
+                            }
+                            
+                            $check_sql = "SELECT id FROM asistencias WHERE documento = :documento AND materia = :materia AND fechas_clase = :fechas_clase";
+                            $check_stmt = $pdo->prepare($check_sql);
+                            $check_stmt->execute([':documento' => $doc, ':materia' => $nombre_materia, ':fechas_clase' => $fecha_db_formato]);
+                            $existing_record = $check_stmt->fetch(PDO::FETCH_ASSOC);
+
+                            if ($existing_record) {
+                                $update_sql = "UPDATE asistencias SET asistencias = :asistencias, uniforme = :uniforme, justificacion = :justificacion, estudiante = :estudiante WHERE id = :id";
+                                $update_stmt = $pdo->prepare($update_sql);
+                                $update_stmt->execute([':asistencias' => $estado_db, ':uniforme' => $uniforme_db, ':justificacion' => $justificacion_db, ':estudiante' => $nombre_estudiante, ':id' => $existing_record['id']]);
+                            } else {
+                                $insert_sql = "INSERT INTO asistencias (documento, estudiante, materia, fechas_clase, asistencias, uniforme, justificacion) VALUES (:documento, :estudiante, :materia, :fechas_clase, :asistencias, :uniforme, :justificacion)";
+                                $insert_stmt = $pdo->prepare($insert_sql);
+                                $insert_stmt->execute([':documento' => $doc, ':estudiante' => $nombre_estudiante, ':materia' => $nombre_materia, ':fechas_clase' => $fecha_db_formato, ':asistencias' => $estado_db, ':uniforme' => $uniforme_db, ':justificacion' => $justificacion_db]);
+                            }
+                            $rowCount++;
+                        }
+                    }
+                }
+            }
+            $pdo->commit();
+            echo json_encode(['success' => true, 'message' => "Se sincronizaron $rowCount registros exitosamente desde el archivo configurado."]);
+        } catch (Exception $e) {
+            if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
+            echo json_encode(['success' => false, 'message' => 'Error al procesar el archivo Excel: ' . $e->getMessage()]);
+        }
+    } else {
+        echo json_encode(['success' => false, 'message' => 'No se encontró el archivo de sincronización en la ruta configurada.']);
+    }
+    exit;
+}
+
+// Endpoint para IMPORTAR DESDE EXCEL
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] == 'import_excel') {
+    header('Content-Type: application/json');
+    if (isset($_FILES['excel_file']) && $_FILES['excel_file']['error'] == 0) {
+        $id_asignacion = $_POST['asignacion'] ?? 0;
+        
+        $target_dir = __DIR__ . '/documentos/';
+        if (!is_dir($target_dir)) {
+            mkdir($target_dir, 0755, true);
+        }
+        
+        $extension = pathinfo($_FILES['excel_file']['name'], PATHINFO_EXTENSION);
+        $new_filename = 'importacion_asistencia_' . date('Ymd_His') . '.' . $extension;
+        $file_path = $target_dir . $new_filename;
+        
+        if (move_uploaded_file($_FILES['excel_file']['tmp_name'], $file_path)) {
+            try {
+                set_time_limit(0);
+                ini_set('memory_limit', '1024M');
+                require_once __DIR__ . '/vendor/autoload.php';
+                $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                $academico_temp = new Academico();
+                $info_asignatura_temp = $academico_temp->consultar_materia($id_asignacion);
+                $nombre_materia = !empty($info_asignatura_temp) ? $info_asignatura_temp[0]->nombre_materia : 'Materia Desconocida';
+
+                // Cargar estudiantes del curso para obtener su documento
+                $sql_students = "SELECT u.id_usuario FROM usuario u JOIN inscripcion i ON u.id_usuario = i.id_estudiante WHERE i.id_asignacion = :id_asignacion";
+                $stmt_students = $pdo->prepare($sql_students);
+                $stmt_students->execute([':id_asignacion' => $id_asignacion]);
+                $estudiantes_curso = [];
+                foreach ($stmt_students->fetchAll(PDO::FETCH_ASSOC) as $st) {
+                    $persona = new Persona($st['id_usuario']);
+                    // Intentamos con varios campos posibles según Persona.Class
+                    $apellidos = $persona->apellidos ?? $persona->apellido ?? '';
+                    $nombres = $persona->nombres ?? $persona->nombre ?? '';
+                    $nombre_db = trim($apellidos . ' ' . $nombres);
+                    // Normalizar
+                    $norm_db = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', iconv('UTF-8', 'ASCII//TRANSLIT', $nombre_db)));
+                    $estudiantes_curso[$norm_db] = $st['id_usuario'];
+                }
+
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($file_path);
+                $reader->setReadDataOnly(true);
+                $spreadsheet = $reader->load($file_path);
+                
+                $meses_map = [
+                    'Enero' => '01', 'Febrero' => '02', 'Marzo' => '03', 'Abril' => '04',
+                    'Mayo' => '05', 'Junio' => '06', 'Julio' => '07', 'Agosto' => '08',
+                    'Septiembre' => '09', 'Octubre' => '10', 'Noviembre' => '11', 'Diciembre' => '12'
+                ];
+                
+                $year = date('Y');
+                if (preg_match('/20\d{2}/', $_FILES['excel_file']['name'], $matches)) {
+                    $year = $matches[0];
+                }
+
+                $rowCount = 0;
+                $pdo->beginTransaction();
+                foreach ($spreadsheet->getSheetNames() as $sheetName) {
+                    if (!isset($meses_map[$sheetName])) {
+                        $matched_mes = null;
+                        foreach ($meses_map as $mes_nombre => $mes_num) {
+                            if (stripos($sheetName, $mes_nombre) !== false) {
+                                $matched_mes = $mes_num; break;
+                            }
+                        }
+                        if (!$matched_mes) continue;
+                        $mes = $matched_mes;
+                    } else {
+                        $mes = $meses_map[$sheetName];
+                    }
+                    
+                    $sheet = $spreadsheet->getSheetByName($sheetName);
+                    
+                    $headerRowIndex = -1;
+                    $col_dias = []; 
+                    $col_nombre = -1;
+                    
+                    $rowIterator = $sheet->getRowIterator(1, 20);
+                    foreach ($rowIterator as $row) {
+                        $cellIterator = $row->getCellIterator();
+                        $cellIterator->setIterateOnlyExistingCells(false);
+                        
+                        $isHeader = false;
+                        foreach ($cellIterator as $col => $cell) {
+                            $val = trim((string)$cell->getCalculatedValue());
+                            if (stripos($val, 'NOMBRES Y APELLIDOS') !== false || stripos($val, 'NOMBRES') !== false) {
+                                $isHeader = true;
+                                $headerRowIndex = $row->getRowIndex();
+                                $col_nombre = $col;
+                            }
+                        }
+                        
+                        if ($isHeader) {
+                            $cellIterator->rewind();
+                            foreach ($cellIterator as $col => $cell) {
+                                $val = trim((string)$cell->getCalculatedValue());
+                                if (is_numeric($val) && $val > 0 && $val <= 31) {
+                                    $col_dias[$col] = str_pad($val, 2, '0', STR_PAD_LEFT);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    
+                    if ($headerRowIndex !== -1 && !empty($col_dias) && $col_nombre !== -1) {
+                        $rowIterator = $sheet->getRowIterator($headerRowIndex + 1);
+                        foreach ($rowIterator as $row) {
+                            $rowIndex = $row->getRowIndex();
+                            $nombre_estudiante = trim((string)$sheet->getCell($col_nombre . $rowIndex)->getCalculatedValue());
+                            if (empty($nombre_estudiante)) continue;
+                            
+                            $norm_excel = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', iconv('UTF-8', 'ASCII//TRANSLIT', $nombre_estudiante)));
+                            $doc = $estudiantes_curso[$norm_excel] ?? $norm_excel; // fallback
+                            
+                            foreach ($col_dias as $col => $dia) {
+                                $val = trim((string)$sheet->getCell($col . $rowIndex)->getCalculatedValue());
+                                if ($val === '') continue;
+                                
+                                $fecha_db_formato = "$dia/$mes/$year";
+                                $estado_db = 'SI';
+                                $uniforme_db = 1;
+                                $justificacion_db = '';
+                                
+                                if ($val === '0' || stripos($val, 'NO') !== false) {
+                                    $estado_db = 'NO';
+                                } elseif (stripos($val, 'J') !== false || stripos($val, 'P') !== false) {
+                                    $estado_db = 'P';
+                                    $justificacion_db = 'Justificado en Excel';
+                                } elseif (stripos($val, 'T') !== false || stripos($val, 'R') !== false) {
+                                    $estado_db = 'R';
+                                } elseif (stripos($val, 'U') !== false) {
+                                    $estado_db = 'SI';
+                                    $uniforme_db = 0;
+                                }
+                                
+                                $check_sql = "SELECT id FROM asistencias WHERE documento = :documento AND materia = :materia AND fechas_clase = :fechas_clase";
+                                $check_stmt = $pdo->prepare($check_sql);
+                                $check_stmt->execute([':documento' => $doc, ':materia' => $nombre_materia, ':fechas_clase' => $fecha_db_formato]);
+                                $existing_record = $check_stmt->fetch(PDO::FETCH_ASSOC);
+
+                                if ($existing_record) {
+                                    $update_sql = "UPDATE asistencias SET asistencias = :asistencias, uniforme = :uniforme, justificacion = :justificacion, estudiante = :estudiante WHERE id = :id";
+                                    $update_stmt = $pdo->prepare($update_sql);
+                                    $update_stmt->execute([':asistencias' => $estado_db, ':uniforme' => $uniforme_db, ':justificacion' => $justificacion_db, ':estudiante' => $nombre_estudiante, ':id' => $existing_record['id']]);
+                                } else {
+                                    $insert_sql = "INSERT INTO asistencias (documento, estudiante, materia, fechas_clase, asistencias, uniforme, justificacion) VALUES (:documento, :estudiante, :materia, :fechas_clase, :asistencias, :uniforme, :justificacion)";
+                                    $insert_stmt = $pdo->prepare($insert_sql);
+                                    $insert_stmt->execute([':documento' => $doc, ':estudiante' => $nombre_estudiante, ':materia' => $nombre_materia, ':fechas_clase' => $fecha_db_formato, ':asistencias' => $estado_db, ':uniforme' => $uniforme_db, ':justificacion' => $justificacion_db]);
+                                }
+                                $rowCount++;
+                            }
+                        }
+                        }
+                    }
+                $pdo->commit();
+                echo json_encode(['success' => true, 'message' => "Se procesaron $rowCount registros exitosamente del archivo Excel (guardado como $new_filename)."]);
+            } catch (Exception $e) {
+                if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
+                echo json_encode(['success' => false, 'message' => 'Error al procesar el archivo Excel: ' . $e->getMessage()]);
+            }
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Error al guardar el archivo subido.']);
+        }
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Error al subir el archivo o no se seleccionó ninguno.']);
+    }
+    exit;
+}
+
 
 // Endpoint para EXPORTAR A CSV
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] == 'export_csv') {
@@ -381,6 +712,10 @@ if ($asignacion) {
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                         <span>Importar</span>
                     </button>
+                    <button id="sincronizarExcelBtn" class="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-green-700 transition duration-300 shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                        <span>Sincronizar</span>
+                    </button>
                     <button id="exportarCSV" class="w-full sm:w-auto flex items-center justify-center gap-2 bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-gray-700 transition duration-300 shadow-md">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                         <span>Exportar</span>
@@ -446,7 +781,6 @@ if ($asignacion) {
                                 <p class="student-name font-semibold text-gray-800">
                                     <a href="#" class="student-name-link"><?php echo htmlspecialchars($persona->apellido . ' ' . $persona->nombre, ENT_QUOTES, 'UTF-8'); ?></a>
                                 </p>
-                                <!-- MODIFICADO: Se muestra el grado del estudiante desde la propiedad 'grado' -->
                                 <p class="text-sm text-gray-500">
                                     Grado: <?php echo htmlspecialchars($persona->grado ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?> - ID: <?php echo htmlspecialchars($persona->id_usuario, ENT_QUOTES, 'UTF-8'); ?>
                                 </p>
@@ -473,9 +807,9 @@ if ($asignacion) {
     <!-- Modal de Importación -->
     <div id="importarModal" class="modal-bg fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
         <div class="modal-box bg-white rounded-lg shadow-xl p-6 w-full max-w-md transform -translate-y-10">
-            <h3 class="text-lg font-medium leading-6 text-gray-900">Importar Asistencia desde CSV</h3>
+            <h3 class="text-lg font-medium leading-6 text-gray-900">Importar Asistencia</h3>
             <div class="mt-4">
-                <p class="text-sm text-gray-500">Seleccione o arrastre un archivo CSV con las columnas: <strong>ID Estudiante, Nombre Completo, Estado, Fecha, Materia</strong>.</p>
+                <p class="text-sm text-gray-500">Seleccione o arrastre un archivo CSV o Excel (.xlsx, .xls).</p>
                 <div id="drop-zone" class="mt-4 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md transition-colors">
                     <div class="space-y-1 text-center">
                         <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
@@ -543,6 +877,7 @@ if ($asignacion) {
         const searchInput = document.getElementById('search-student');
         const markAllBtns = document.querySelectorAll('.mark-all-btn');
         const exportarBtn = document.getElementById('exportarCSV');
+        const sincronizarBtn = document.getElementById('sincronizarExcelBtn');
         
         // --- Modal de importación ---
         const abrirModalBtn = document.getElementById('abrirModalImportar');
@@ -755,6 +1090,35 @@ if ($asignacion) {
             form.submit();
             document.body.removeChild(form);
         });
+
+        if(sincronizarBtn) {
+            sincronizarBtn.addEventListener('click', async function(e) {
+                e.preventDefault();
+                if (!confirm('¿Seguro que deseas sincronizar la asistencia con el archivo configurado? Este proceso puede tardar unos segundos.')) return;
+                
+                this.disabled = true;
+                const originalContent = this.innerHTML;
+                this.innerHTML = `<div class="loader ease-linear rounded-full border-4 border-t-4 border-white h-5 w-5 mx-auto"></div>`;
+                
+                const formData = new FormData();
+                formData.append('action', 'sincronizar_excel');
+                formData.append('asignacion', asignacion);
+                
+                try {
+                    const response = await fetch('', { method: 'POST', body: formData });
+                    const result = await response.json();
+                    showToast(result.message, result.success ? 'success' : 'error');
+                    if (result.success) {
+                        await cargarAsistencia(fechaInput.value);
+                    }
+                } catch (error) {
+                    showToast('Error de conexión al sincronizar.', 'error');
+                } finally {
+                    this.disabled = false;
+                    this.innerHTML = originalContent;
+                }
+            });
+        }
         
         abrirModalBtn.addEventListener('click', (e) => { e.preventDefault(); importarModal.classList.remove('hidden'); });
         function closeModal() {
@@ -774,14 +1138,25 @@ if ($asignacion) {
         });
         importarCSVBtnModal.addEventListener('click', async () => {
              if (csvFileInput.files.length === 0) {
-                showToast('Por favor, seleccione un archivo CSV.', 'error');
+                showToast('Por favor, seleccione un archivo.', 'error');
                 return;
             }
+            
+            const file = csvFileInput.files[0];
+            const isExcel = file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls');
+            
             const formData = new FormData();
-            formData.append('csv_file', csvFileInput.files[0]);
-            formData.append('action', 'import_csv');
+            if (isExcel) {
+                formData.append('excel_file', file);
+                formData.append('action', 'import_excel');
+            } else {
+                formData.append('csv_file', file);
+                formData.append('action', 'import_csv');
+            }
             formData.append('asignacion', asignacion);
+            
             importarCSVBtnModal.disabled = true;
+            const originalText = importarCSVBtnModal.textContent;
             importarCSVBtnModal.innerHTML = `<div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-6 w-6 mx-auto"></div>`;
             try {
                 const response = await fetch('', { method: 'POST', body: formData });
@@ -792,10 +1167,10 @@ if ($asignacion) {
                     await cargarAsistencia(fechaInput.value);
                 }
             } catch (error) {
-                showToast('Error de conexión al importar.', 'error');
+                showToast('Error al importar el archivo.', 'error');
             } finally {
                 importarCSVBtnModal.disabled = false;
-                importarCSVBtnModal.textContent = 'Importar';
+                importarCSVBtnModal.textContent = originalText;
             }
         });
 

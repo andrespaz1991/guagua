@@ -9,7 +9,7 @@
  */
 
 session_start();
-// require_once("../comun/conexion.php"); // Descomentar en producción
+require_once("../comun/conexion.php"); // Descomentar en producción
 
 // =================================================================
 // LÓGICA DE BACKEND (API INTERNA)
@@ -18,30 +18,61 @@ session_start();
 if (isset($_GET['action']) && $_GET['action'] === 'get_demographics') {
     header('Content-Type: application/json');
 
-    /* * EN PRODUCCIÓN: Aquí iría la consulta SQL real cruzando 'usuario' y 'matricula'.
-     * Ejemplo de SQL:
-     * SELECT m.grado, u.sexo, COUNT(DISTINCT u.id_usuario) as total 
-     * FROM usuario u INNER JOIN matricula m ON u.id_usuario = m.id_estudiante 
-     * WHERE m.anio = 2026 AND u.rol = 'estudiante' GROUP BY m.grado, u.sexo;
-     */
+    $anio = 2026;
+    
+    // SQL dinámico usando sexo y fecha_registro según el esquema real
+    $sql = "SELECT 
+                observaciones AS grado, 
+                COUNT(id_usuario) as total,
+                SUM(CASE WHEN UPPER(genero) = 'M' THEN 1 ELSE 0 END) as total_hombres,
+                SUM(CASE WHEN UPPER(genero) = 'F' THEN 1 ELSE 0 END) as total_mujeres
+            FROM usuario 
+            WHERE rol = 'estudiante' 
+              AND estado != 'inactivo' 
+              AND YEAR(fecha_creacion) = '$anio' 
+              AND observaciones IS NOT NULL 
+              AND observaciones != ''
+            GROUP BY observaciones 
+            ORDER BY (observaciones + 0) ASC"; // ASC para que ordene 6, 7, 8...
 
-    // DATOS AUDITADOS Y CONTRASTADOS CON ARCHIVO "data1.xlsx - Vallesol info_completa 2026.csv"
-    // Total verificado: 29 estudiantes.
+    $consulta = $mysqli->query($sql);
+
+    // Variables acumuladoras para los KPIs generales
+    $total_estudiantes_kpi = 0;
+    $total_hombres_kpi = 0;
+    $total_mujeres_kpi = 0;
+    $array_por_grado = [];
+
+    if ($consulta) {
+        while ($row = $consulta->fetch_assoc()) {
+            // Parsear a enteros para seguridad y cálculos precisos
+            $t = (int)$row['total'];
+            $h = (int)$row['total_hombres'];
+            $m = (int)$row['total_mujeres'];
+            
+            // Sumar a los KPIs globales
+            $total_estudiantes_kpi += $t;
+            $total_hombres_kpi += $h;
+            $total_mujeres_kpi += $m;
+            
+            // Llenar el array por grado
+            $array_por_grado[] = [
+                'grado'   => 'Grado ' . $row['grado'],
+                'total'   => $t,
+                'hombres' => $h,
+                'mujeres' => $m
+            ];
+        }
+    }
+
+    // Construcción final del objeto JSON a devolver
     $demographics = [
         'kpis' => [
-            'total_estudiantes' => 29,
-            'total_hombres' => 17,
-            'total_mujeres' => 12
+            'total_estudiantes' => $total_estudiantes_kpi,
+            'total_hombres'     => $total_hombres_kpi,
+            'total_mujeres'     => $total_mujeres_kpi
         ],
-        'por_grado' => [
-            // [Grado, Total, Hombres, Mujeres]
-            ['grado' => 'Grado 6', 'total' => 4, 'hombres' => 2, 'mujeres' => 2], // IDs 1-4
-            ['grado' => 'Grado 7', 'total' => 7, 'hombres' => 6, 'mujeres' => 1], // IDs 5-11
-            ['grado' => 'Grado 8', 'total' => 3, 'hombres' => 2, 'mujeres' => 1], // IDs 12-14
-            ['grado' => 'Grado 9', 'total' => 6, 'hombres' => 3, 'mujeres' => 3], // IDs 15-20
-            ['grado' => 'Grado 10', 'total' => 6, 'hombres' => 3, 'mujeres' => 3], // Ajuste auditado
-            ['grado' => 'Grado 11', 'total' => 3, 'hombres' => 1, 'mujeres' => 2], // Ajuste auditado
-        ]
+        'por_grado' => $array_por_grado
     ];
 
     echo json_encode($demographics);
@@ -56,9 +87,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_demographics') {
     <title>Informe Docente - Vallesol 2026</title>
     
     <!-- Fuentes y Estilos -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="../comun/css/fontsgoogle.css" rel="stylesheet">
+    <script src="../comun/css/tailwindcss.css"></script>
+    <script src="../comun/js/chart.js"></script>
     
     <!-- Tailwind Config Personalizada para UX -->
     <script>
@@ -75,7 +106,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_demographics') {
                             900: '#0c4a6e',
                         },
                         men: '#3b82f6',   // Azul profesional
-                        women: '#10b981'  // Esmeralda profesional
+                        women: '#ea77f2'  // Esmeralda profesional
                     }
                 }
             }
@@ -280,7 +311,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_demographics') {
                     labels: ['Hombres', 'Mujeres'],
                     datasets: [{
                         data: [hombres, mujeres],
-                        backgroundColor: ['#3b82f6', '#10b981'],
+                        backgroundColor: ['#3b82f6', '#f566f2'],
                         borderWidth: 0,
                         hoverOffset: 4
                     }]
@@ -312,7 +343,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_demographics') {
                         {
                             label: 'Mujeres',
                             data: dataMujeres,
-                            backgroundColor: '#10b981',
+                            backgroundColor: '#f772e1',
                             borderRadius: { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 },
                         }
                     ]

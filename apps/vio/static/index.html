@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VisoSearch – Búsqueda Visual con IA</title>
+  <meta name="description" content="Busca y filtra imágenes por descripción usando Inteligencia Artificial. VisoSearch analiza tu carpeta y encuentra exactamente las fotos que describes."/>
+  <link rel="icon" type="image/png" href="/logo.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+
+  <!-- Animated background -->
+  <div class="bg-scene" id="bgScene">
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+    <canvas id="bgCanvas"></canvas>
+  </div>
+
+  <!-- Header -->
+  <header class="header" id="appHeader">
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <circle cx="11" cy="11" r="3" fill="currentColor" opacity=".3"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">VisoSearch</span>
+          <span class="logo-badge">AI</span>
+        </div>
+        <span class="logo-sub">Búsqueda Visual Semántica</span>
+      </div>
+
+      <div class="header-center" id="searchHistoryBar">
+        <div class="history-scroll" id="historyScroll">
+          <!-- History chips inserted by JS -->
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="status-pill" id="statusPill">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusLabel">Verificando...</span>
+        </div>
+        <button class="header-btn" id="helpBtn" title="Ayuda">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main layout -->
+  <main class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-scroll">
+
+        <!-- Folder section -->
+        <div class="s-section">
+          <div class="s-section-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Carpeta de imágenes
+          </div>
+
+          <div class="folder-input-wrap">
+            <div class="path-input-group" id="pathInputGroup">
+              <svg class="path-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <input
+                type="text"
+                id="folderPath"
+                class="path-field"
+                placeholder="C:\Fotos\Vacaciones 2024"
+                spellcheck="false"
+                autocomplete="off"
+              />
+              <button class="path-clear hidden" id="clearPathBtn" title="Limpiar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <button class="load-btn" id="loadFolderBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              Cargar
+            </button>
+            <button class="load-btn browse-btn" id="browseFolderBtn" title="Seleccionar carpeta">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M8 13h8"/></svg>
+              Examinar
+            </button>
+          </div>
+
+          <!-- Folder preview strip -->
+          <div class="folder-preview hidden" id="folderPreview">
+            <div class="fp-header">
+              <span class="fp-count" id="previewCount">0 imágenes</span>
+              <button class="fp-reset" id="resetFolderBtn" title="Cambiar carpeta">✕</button>
+            </div>
+            <div class="fp-strip" id="previewStrip"></div>
+          </div>
+
+          <button class="duplicate-btn" id="duplicateBtn" disabled>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><rect x="4" y="4" width="12" height="12" rx="2"/></svg>
+            Buscar duplicados
+          </button>
+          <button class="duplicate-btn duplicate-delete-btn hidden" id="deleteDuplicatesBtn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+            <span id="deleteDuplicatesLabel">Eliminar duplicados</span>
+          </button>
+
+          <div class="folder-options">
+            <label class="mini-toggle-field">
+              <input type="checkbox" id="includeSubfoldersCheck" checked/>
+              <span class="mini-check"></span>
+              <span>Incluir subcarpetas</span>
+            </label>
+            <label class="mini-toggle-field">
+              <input type="checkbox" id="showPathsCheck"/>
+              <span class="mini-check"></span>
+              <span>Mostrar ruta en resultados</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="s-divider"></div>
+
+        <!-- Search query section -->
+        <div class="s-section">
+          <div class="s-section-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            ¿Qué buscas?
+          </div>
+
+          <div class="query-wrap">
+            <textarea
+              id="queryInput"
+              class="query-field"
+              placeholder="Describe en lenguaje natural…&#10;ej: persona con sudadera roja&#10;ej: perro corriendo en playa"
+              rows="3"
+            ></textarea>
+            <div class="query-meta">
+              <span class="query-hint">Ctrl+Enter para buscar</span>
+              <span class="char-count" id="charCount">0</span>
+            </div>
+          </div>
+
+          <!-- Suggestion chips -->
+          <div class="chips-label">Sugerencias rápidas</div>
+          <div class="chips-wrap" id="chipsWrap">
+            <button class="chip" data-query="persona con sudadera roja">🔴 sudadera roja</button>
+            <button class="chip" data-query="perro jugando en la hierba">🐕 perro</button>
+            <button class="chip" data-query="atardecer en la playa">🌅 atardecer</button>
+            <button class="chip" data-query="grupo de personas sonriendo">😊 sonrisas</button>
+            <button class="chip" data-query="plato de comida en mesa">🍽️ comida</button>
+            <button class="chip" data-query="ciudad de noche con luces">🌃 noche urbana</button>
+            <button class="chip" data-query="montañas con nieve">🏔️ montañas</button>
+            <button class="chip" data-query="niño jugando">👦 niños</button>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="s-divider"></div>
+
+        <!-- Settings -->
+        <div class="s-section">
+          <div class="s-section-label collapsible" id="settingsLabel">
+            <div class="s-label-left">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+              Ajustes de búsqueda
+            </div>
+            <svg class="collapse-icon" id="settingsCollapseIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+
+          <div class="settings-body" id="settingsBody">
+            <div class="setting-item">
+              <div class="setting-top">
+                <label class="setting-lbl">Umbral de similitud</label>
+                <span class="setting-val" id="thresholdVal">20%</span>
+              </div>
+              <div class="setting-desc">Más alto = más estricto · Recomendado: 18–30</div>
+              <div class="slider-track">
+                <input type="range" id="thresholdSlider" min="5" max="60" value="20" class="slider"/>
+                <div class="slider-fill" id="thresholdFill" style="width: 25%"></div>
+              </div>
+              <div class="slider-labels"><span>5%</span><span>60%</span></div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-top">
+                <label class="setting-lbl">Máx. resultados</label>
+                <span class="setting-val" id="maxResultsVal">Sin límite</span>
+              </div>
+              <div class="setting-desc">Limita cuántas imágenes se muestran</div>
+              <div class="slider-track">
+                <input type="range" id="maxResultsSlider" min="0" max="200" value="0" step="10" class="slider"/>
+                <div class="slider-fill" id="maxResultsFill" style="width: 0%"></div>
+              </div>
+              <div class="slider-labels"><span>Sin límite</span><span>200</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Spacer -->
+        <div style="flex: 1"></div>
+
+        <!-- Search CTA -->
+        <div class="search-cta">
+          <button class="search-btn" id="searchBtn" disabled>
+            <div class="search-btn-inner">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <span id="searchBtnLabel">Buscar con IA</span>
+            </div>
+            <div class="search-btn-glow"></div>
+          </button>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- Content area -->
+    <section class="content-area" id="contentArea">
+
+      <!-- === IDLE STATE === -->
+      <div class="state-idle" id="idleState">
+        <div class="idle-hero">
+          <div class="idle-icon-wrap">
+            <div class="idle-icon-ring"></div>
+            <div class="idle-icon-ring idle-icon-ring-2"></div>
+            <svg class="idle-main-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+          <h1 class="idle-title">Búsqueda semántica de imágenes</h1>
+          <p class="idle-sub">Describe con palabras lo que buscas y nuestra IA encontrará las fotos que coincidan, sin importar el nombre del archivo.</p>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-icon" style="--c: #7c5cfc">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+            </div>
+            <div class="feature-body">
+              <h3>IA Semántica</h3>
+              <p>Powered by OpenAI CLIP — entiende el contenido visual de cada imagen</p>
+            </div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="--c: #22d3ee">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            </div>
+            <div class="feature-body">
+              <h3>Lenguaje natural</h3>
+              <p>Escribe "persona con sudadera roja" o "perro en la playa" — sin tags ni metadatos</p>
+            </div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="--c: #34d399">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </div>
+            <div class="feature-body">
+              <h3>Exportación inteligente</h3>
+              <p>Copia las fotos encontradas a una carpeta nueva con un solo clic</p>
+            </div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="--c: #fb923c">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <div class="feature-body">
+              <h3>100% local</h3>
+              <p>Todo el procesamiento ocurre en tu máquina. Tus fotos nunca salen de tu equipo</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="idle-steps">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <span>Ingresa la ruta de tu carpeta de fotos</span>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <span>Describe lo que quieres encontrar</span>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <span>Exporta los resultados</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- === PROGRESS STATE === -->
+      <div class="state-progress hidden" id="progressState">
+        <div class="prog-container">
+          <div class="prog-visual">
+            <svg class="prog-ring" width="140" height="140" viewBox="0 0 140 140">
+              <defs>
+                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#7c5cfc"/>
+                  <stop offset="100%" stop-color="#22d3ee"/>
+                </linearGradient>
+              </defs>
+              <circle class="ring-track" cx="70" cy="70" r="60" fill="none" stroke-width="8"/>
+              <circle class="ring-progress" id="ringProgress" cx="70" cy="70" r="60" fill="none" stroke-width="8"
+                stroke="url(#ringGrad)"
+                stroke-dasharray="377"
+                stroke-dashoffset="377"
+                stroke-linecap="round"
+                transform="rotate(-90 70 70)"/>
+            </svg>
+            <div class="ring-center">
+              <span class="ring-pct" id="ringPct">0%</span>
+              <span class="ring-label-sm">completado</span>
+            </div>
+          </div>
+
+          <div class="prog-info">
+            <h2 class="prog-title" id="progressTitle">Iniciando búsqueda…</h2>
+            <p class="prog-subtitle" id="progressSubtitle">Preparando el modelo CLIP</p>
+            <div class="prog-file-wrap">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span class="prog-file" id="progressFile">—</span>
+            </div>
+
+            <div class="prog-bar-wrap">
+              <div class="prog-bar-track">
+                <div class="prog-bar-fill" id="progressBarFill"></div>
+              </div>
+              <span class="prog-bar-pct" id="progressBarPct">0%</span>
+            </div>
+
+            <div class="prog-stats">
+              <div class="prog-stat">
+                <span class="ps-val" id="psProcessed">0</span>
+                <span class="ps-lbl">analizadas</span>
+              </div>
+              <div class="prog-stat-sep">/</div>
+              <div class="prog-stat">
+                <span class="ps-val" id="psTotal">—</span>
+                <span class="ps-lbl">total</span>
+              </div>
+              <div class="prog-stat-sep">·</div>
+              <div class="prog-stat">
+                <span class="ps-val ps-green" id="psMatches">0</span>
+                <span class="ps-lbl">coincidencias</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="cancel-search-btn" id="cancelSearchBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Cancelar búsqueda
+        </button>
+      </div>
+
+      <!-- === RESULTS STATE === -->
+      <div class="state-results hidden" id="resultsState">
+
+        <!-- Results toolbar -->
+        <div class="results-bar" id="resultsBar">
+          <div class="rb-left">
+            <span class="rb-count" id="resultsCount">0 resultados</span>
+            <span class="rb-query" id="resultsQueryBadge"></span>
+          </div>
+          <div class="rb-center">
+            <div class="filter-controls">
+              <div class="filter-group">
+                <span class="fg-label">Ordenar:</span>
+                <select class="fg-select" id="sortSelect">
+                  <option value="score-desc">Mayor similitud</option>
+                  <option value="score-asc">Menor similitud</option>
+                  <option value="name-asc">Nombre A→Z</option>
+                  <option value="name-desc">Nombre Z→A</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <span class="fg-label">Filtrar:</span>
+                <select class="fg-select" id="filterSelect">
+                  <option value="all">Todos</option>
+                  <option value="high">Alta similitud (≥35%)</option>
+                  <option value="mid">Media (22–35%)</option>
+                  <option value="low">Baja (&lt;22%)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="rb-right">
+            <button class="rb-btn" id="selectAllBtn" title="Seleccionar todo">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Todos
+            </button>
+            <button class="rb-btn" id="deselectAllBtn" title="Deseleccionar todo">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              Ninguno
+            </button>
+            <div class="view-toggle-group">
+              <button class="view-toggle-btn active" id="gridViewBtn" title="Cuadrícula">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              </button>
+              <button class="view-toggle-btn" id="listViewBtn" title="Lista">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              </button>
+            </div>
+            <button class="export-fab" id="exportBtn" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span id="exportLabel">Exportar</span>
+            </button>
+            <button class="export-fab move-fab" id="moveBtn" disabled title="Mover seleccionadas">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+              <span id="moveLabel">Mover</span>
+            </button>
+            <button class="export-fab delete-fab" id="deleteBtn" disabled title="Eliminar seleccionadas">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+              <span id="deleteLabel">Eliminar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Gallery -->
+        <div class="gallery grid-view" id="gallery"></div>
+
+        <!-- No results -->
+        <div class="no-results hidden" id="noResults">
+          <div class="no-results-icon">🤔</div>
+          <h3>Sin resultados</h3>
+          <p>Prueba bajando el umbral de similitud o usa una descripción diferente.</p>
+          <button class="btn-try-again" id="tryAgainBtn">Intentar de nuevo</button>
+        </div>
+
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ========================== EXPORT MODAL ========================== -->
+  <div class="modal-backdrop hidden" id="exportModal">
+    <div class="modal modal-wide" id="exportModalBox">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-title-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <h2 class="modal-title">Gestionar selección</h2>
+        </div>
+        <button class="modal-close" id="closeExportModal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Summary banner -->
+      <div class="export-summary-card" id="exportSummaryCard" style="margin:16px 24px 0">
+        <div class="esc-icon">📸</div>
+        <div class="esc-text">
+          <span class="esc-count" id="exportCount">0</span>
+          <span class="esc-label">imágenes seleccionadas</span>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="modal-tabs" id="modalTabs">
+        <button class="modal-tab active" data-tab="copy" id="tabCopy">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copiar
+        </button>
+        <button class="modal-tab" data-tab="move" id="tabMove">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          Mover
+        </button>
+        <button class="modal-tab" data-tab="names" id="tabNames">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Exportar nombres
+        </button>
+      </div>
+
+      <!-- TAB: COPY -->
+      <div class="tab-panel" id="panelCopy">
+        <div class="modal-body">
+          <div class="form-field">
+            <label class="field-label">Carpeta destino</label>
+            <div class="field-input-group">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <input type="text" id="exportPath" class="field-input" placeholder="C:\Exportaciones\VisoSearch"/>
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="toggle-field">
+              <div class="toggle-wrap"><input type="checkbox" id="createSubfolderCheck" checked/><div class="toggle-track"><div class="toggle-thumb"></div></div></div>
+              <div class="toggle-label-text"><span>Crear subcarpeta</span><span class="toggle-hint">Organiza resultados en su propia carpeta</span></div>
+            </label>
+          </div>
+          <div class="form-field" id="subfolderNameWrap">
+            <label class="field-label">Nombre de subcarpeta</label>
+            <div class="field-input-group">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <input type="text" id="subfolderName" class="field-input" value="visosearch_resultados"/>
+            </div>
+          </div>
+          <div class="action-hint">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Las imágenes originales se mantienen en su ubicación.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn modal-btn-secondary" id="cancelExportBtn">Cancelar</button>
+          <button class="modal-btn modal-btn-primary" id="confirmExportBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copiar imágenes
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB: MOVE -->
+      <div class="tab-panel hidden" id="panelMove">
+        <div class="modal-body">
+          <div class="move-warning">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span>Las imágenes serán <strong>eliminadas</strong> de su ubicación original.</span>
+          </div>
+          <div class="form-field">
+            <label class="field-label">Carpeta destino</label>
+            <div class="field-input-group">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <input type="text" id="movePath" class="field-input" placeholder="C:\Fotos\Clasificadas"/>
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="toggle-field">
+              <div class="toggle-wrap"><input type="checkbox" id="createMoveSubfolderCheck" checked/><div class="toggle-track"><div class="toggle-thumb"></div></div></div>
+              <div class="toggle-label-text"><span>Crear subcarpeta</span><span class="toggle-hint">Mover a una subcarpeta nueva</span></div>
+            </label>
+          </div>
+          <div class="form-field" id="moveSubfolderNameWrap">
+            <label class="field-label">Nombre de subcarpeta</label>
+            <div class="field-input-group">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <input type="text" id="moveSubfolderName" class="field-input" value="visosearch_movidas"/>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn modal-btn-secondary" id="cancelMoveBtn">Cancelar</button>
+          <button class="modal-btn modal-btn-danger" id="confirmMoveBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+            Mover imágenes
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB: EXPORT NAMES -->
+      <div class="tab-panel hidden" id="panelNames">
+        <div class="modal-body">
+          <div class="form-field">
+            <label class="field-label">Formato de exportación</label>
+            <div class="format-selector" id="formatSelector">
+              <button class="format-btn active" data-fmt="txt">
+                <span class="fmt-icon">📄</span>
+                <span class="fmt-name">TXT</span>
+                <span class="fmt-desc">Una ruta por línea</span>
+              </button>
+              <button class="format-btn" data-fmt="csv">
+                <span class="fmt-icon">📊</span>
+                <span class="fmt-name">CSV</span>
+                <span class="fmt-desc">Nombre, ruta, tamaño</span>
+              </button>
+              <button class="format-btn" data-fmt="json">
+                <span class="fmt-icon">🔧</span>
+                <span class="fmt-name">JSON</span>
+                <span class="fmt-desc">Datos estructurados</span>
+              </button>
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="toggle-field">
+              <div class="toggle-wrap"><input type="checkbox" id="includePathsCheck" checked/><div class="toggle-track"><div class="toggle-thumb"></div></div></div>
+              <div class="toggle-label-text"><span>Incluir ruta completa</span><span class="toggle-hint">Solo para formato TXT</span></div>
+            </label>
+          </div>
+          <div class="names-preview" id="namesPreview">
+            <div class="np-label">Vista previa:</div>
+            <div class="np-content" id="npContent"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn modal-btn-secondary" id="cancelNamesBtn">Cancelar</button>
+          <button class="modal-btn modal-btn-primary" id="confirmNamesBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Descargar lista
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================== LIGHTBOX ========================== -->
+  <div class="lightbox hidden" id="lightbox">
+    <div class="lb-backdrop" id="lbBackdrop"></div>
+    <div class="lb-container" id="lbContainer">
+
+      <!-- Header -->
+      <div class="lb-header">
+        <div class="lb-title-wrap">
+          <span class="lb-filename" id="lbFilename"></span>
+          <span class="lb-score-badge" id="lbScore"></span>
+        </div>
+        <div class="lb-actions">
+          <!-- Rotate -->
+          <button class="lb-action-btn" id="lbRotateCCW" title="Rotar izquierda (90°CCW)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
+          </button>
+          <button class="lb-action-btn" id="lbRotateCW" title="Rotar derecha (90°CW)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-4.5"/></svg>
+          </button>
+          <div class="lb-sep"></div>
+          <!-- Download -->
+          <button class="lb-action-btn" id="lbDownload" title="Descargar imagen">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+          <!-- Select toggle -->
+          <button class="lb-action-btn" id="lbSelectBtn" title="Seleccionar / Deseleccionar">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+          <!-- Details toggle -->
+          <button class="lb-action-btn lb-details-toggle" id="lbDetailsToggle" title="Ver detalles">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </button>
+          <div class="lb-sep"></div>
+          <button class="lb-action-btn" id="lbClose" title="Cerrar (Esc)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Body: image + optional details panel -->
+      <div class="lb-body">
+        <div class="lb-img-wrap">
+          <button class="lb-nav lb-prev" id="lbPrev">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <img class="lb-img" id="lbImg" src="" alt=""/>
+          <div class="lb-rotate-indicator hidden" id="lbRotateIndicator">Guardando rotación…</div>
+          <button class="lb-nav lb-next" id="lbNext">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+
+        <!-- Details side panel -->
+        <div class="lb-details-panel hidden" id="lbDetailsPanel">
+          <div class="ldp-header">
+            <span>Detalles de imagen</span>
+            <button class="ldp-close" id="ldpClose">✕</button>
+          </div>
+          <div class="ldp-body" id="ldpBody">
+            <div class="ldp-loading" id="ldpLoading">
+              <div class="btn-spinner" style="border-color:rgba(255,255,255,.2);border-top-color:var(--violet)"></div>
+              Cargando metadatos…
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="lb-footer">
+        <span class="lb-counter" id="lbCounter"></span>
+        <span class="lb-path" id="lbPath"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================== HELP PANEL ========================== -->
+  <div class="help-panel hidden" id="helpPanel">
+    <div class="hp-backdrop" id="hpBackdrop"></div>
+    <div class="hp-content">
+      <div class="hp-header">
+        <h3>Cómo usar VisoSearch</h3>
+        <button class="hp-close" id="hpClose">✕</button>
+      </div>
+      <div class="hp-body">
+        <div class="hp-section">
+          <h4>🚀 Inicio rápido</h4>
+          <ol>
+            <li>Escribe la ruta completa de tu carpeta de fotos</li>
+            <li>Haz clic en <strong>Cargar</strong> para verificar</li>
+            <li>Describe lo que buscas en lenguaje natural</li>
+            <li>Presiona <strong>Buscar con IA</strong></li>
+            <li>Exporta los resultados a una nueva carpeta</li>
+          </ol>
+        </div>
+        <div class="hp-section">
+          <h4>💡 Consejos de búsqueda</h4>
+          <ul>
+            <li>Sé descriptivo: <code>persona corriendo con ropa deportiva azul</code></li>
+            <li>Incluye contexto: <code>familia en la playa durante el atardecer</code></li>
+            <li>Usa adjetivos: <code>perro grande de color negro</code></li>
+            <li>Si hay pocos resultados, baja el umbral de similitud</li>
+          </ul>
+        </div>
+        <div class="hp-section">
+          <h4>⌨️ Atajos de teclado</h4>
+          <div class="shortcuts">
+            <div class="shortcut"><kbd>Ctrl+Enter</kbd><span>Iniciar búsqueda</span></div>
+            <div class="shortcut"><kbd>Esc</kbd><span>Cerrar ventanas</span></div>
+            <div class="shortcut"><kbd>←</kbd> <kbd>→</kbd><span>Navegar lightbox</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================== DEPS BANNER ========================== -->
+  <div class="deps-banner hidden" id="depsBanner">
+    <div class="db-inner">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div class="db-text">
+        <strong>Dependencias faltantes.</strong>
+        Ejecuta en tu terminal:
+        <code id="depsCmd">pip install openai-clip torch torchvision pillow flask flask-cors</code>
+      </div>
+      <button class="db-copy" id="depsCopyBtn" title="Copiar">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      </button>
+      <button class="db-dismiss" id="depsDismissBtn">✕</button>
+    </div>
+  </div>
+
+  <!-- ========================== TOASTS ========================== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

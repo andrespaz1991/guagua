@@ -37,7 +37,7 @@ if (json_last_error() !== JSON_ERROR_NONE || !isset($data['id_asignacion']) || !
 
 
 // Incluir los archivos necesarios para la conexión a la base de datos
-require_once($_SERVER['DOCUMENT_ROOT'] . '/guagua/comun/conexion.php');
+require_once(dirname(__DIR__) . '/comun/conexion.php');
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

@@ -7,7 +7,7 @@ ob_start();
 if (isset($_GET['accion']) && $_GET['accion'] === 'obtener_planes') {
     
     // --- INCLUDES Y CONFIGURACIÓN ---
-    require_once($_SERVER['DOCUMENT_ROOT'] . '/guagua' . '/' . "/comun/autoload.php");
+    require_once(dirname(__DIR__) . '/comun/autoload.php');
     require(SGA_COMUN_SERVER . '/conexion.php');
 
     header('Content-Type: application/json');
@@ -72,7 +72,6 @@ if (isset($_GET['accion']) && $_GET['accion'] === 'obtener_planes') {
         'pagina_actual' => (int)$pagina_actual
     ]);
     
-    // Detenemos la ejecución para no renderizar el HTML
     exit();
 }
 
@@ -82,15 +81,15 @@ if (isset($_GET['accion']) && $_GET['accion'] === 'obtener_planes') {
 // ==============================================
 
 // --- INCLUDES Y CONFIGURACIÓN INICIAL ---
-require_once($_SERVER['DOCUMENT_ROOT'] . '/guagua' . '/' . "/comun/autoload.php");
+require_once(dirname(__DIR__) . '/comun/autoload.php');
 require(SGA_COMUN_SERVER . '/conexion.php');
 
 // --- DECLARACIÓN DE CLASES Y FUNCIONES ---
-if (!class_exists('Curso')) { class Curso { public function deadeline_curso($id) { /* Lógica simulada */ return 75; } } }
-if (!class_exists('Academico')) { class Academico { public function consultar_horario_simple($id) { return ['fecha_inicio' => '2025-01-01', 'fecha_fin' => '2025-11-30']; } public function misestudiantes(){} public function home_recursos(){} public function notasdeclase($id){ return []; }} }
-if (!class_exists('Planeacion')) { class Planeacion { public $id_plan, $orden, $contenido_plan, $objetivos_plan, $estrategias, $recursoa, $tiempo_plan; public function mostrar_todas_planeaciones($asig, $grado){ return []; } public function intensidad_horaria($id){ return 0; } } }
+if (!class_exists('Curso')) { class Curso { public function deadeline_curso($id) { return 75; } } }
+if (!class_exists('Academico')) { class Academico { public function consultar_horario_simple($id) { return ['fecha_inicio' => '2025-01-01', 'fecha_fin' => '2025-11-30']; } } }
+if (!class_exists('Planeacion')) { class Planeacion { } }
 if (!class_exists('Fecha')) { class Fecha { public static function formato_fecha($date) { if(empty($date) || $date == '0000-00-00') return 'N/A'; return date('d/m/Y', strtotime($date)); } } }
-if (!class_exists('Comun')) { class Comun { public static function puntos_suspensivos($str, $len){ return strlen($str) > $len ? substr($str, 0, $len-3) . '...' : $str; } public static function remover_ultimo_caracter($str) { return $str; } } }
+if (!class_exists('Comun')) { class Comun { public static function puntos_suspensivos($str, $len){ return strlen($str) > $len ? substr($str, 0, $len-3) . '...' : $str; } } }
 
 // --- LÓGICA PRINCIPAL Y OBTENCIÓN DE DATOS ---
 $id_asignacion = isset($_GET['asignacion']) ? (int)$_GET['asignacion'] : 0;
@@ -106,10 +105,9 @@ $estadisticas = [
     'promedio_general' => 0
 ];
 $horario = ['fecha_inicio' => null, 'fecha_fin' => null];
-// La variable $planes_clase ya no se llena aquí
 
 if ($id_asignacion > 0) {
-    // 1. Obtener información principal del curso (Refactorizado a una sola consulta)
+    // 1. Obtener información principal del curso
     $sql_curso = "SELECT 
                     a.descripcion, a.portada_asignacion,
                     mo.nombre_materia, a.id_asignatura as id_materia,
@@ -131,7 +129,6 @@ if ($id_asignacion > 0) {
 
     // 2. Obtener Estadísticas si el curso existe
     if ($curso_info) {
-        // ... (resto de la lógica para obtener estadísticas se mantiene igual) ...
         // Total estudiantes
         $stmt_total = $mysqli->prepare("SELECT COUNT(DISTINCT id_estudiante) as total FROM inscripcion WHERE id_asignacion = ?");
         $stmt_total->bind_param("i", $id_asignacion);
@@ -163,7 +160,7 @@ if ($id_asignacion > 0) {
         $estadisticas['total_notas'] = $stmt_notas->get_result()->fetch_assoc()['total'] ?? 0;
         $stmt_notas->close();
         
-        // Total Planes de Clase (solo el conteo)
+        // Total Planes de Clase
         $stmt_planes_count = $mysqli->prepare("SELECT COUNT(id_plan) as total FROM planeador_vallesol WHERE materia = ? AND grado = ?");
         if ($stmt_planes_count) {
             $stmt_planes_count->bind_param("is", $_GET['asignacion'], $curso_info['grado']);
@@ -215,8 +212,6 @@ if ($id_asignacion > 0) {
             }
             $stmt_promedio->close();
         }
-        
-        // YA NO SE OBTIENEN LOS PLANES DE CLASE AQUÍ
     }
 }
 ?>
@@ -226,254 +221,458 @@ if ($id_asignacion > 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Curso: <?php echo htmlspecialchars($curso_info['nombre_materia'] ?? 'Curso'); ?></title>
+    <!-- CSS Bootstrap y Fonts -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-        /* ... (tus estilos CSS se mantienen igual) ... */
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f0f2f5;
+        :root {
+            --bg-body: #f4f7fe;
+            --surface: #ffffff;
+            --primary: #4318FF;
+            --secondary: #A3AED0;
+            --text-main: #2B3674;
+            --text-light: #707EAE;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --shadow-soft: 0px 18px 40px rgba(112, 144, 176, 0.12);
+            --shadow-hover: 0px 20px 40px rgba(112, 144, 176, 0.22);
         }
-        .jumbotron-curso {
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding-bottom: 3rem;
+        }
+
+        /* Hero / Header Section */
+        .hero-course {
+            position: relative;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            padding: 4rem 3rem;
+            margin-bottom: 2.5rem;
             background-size: cover;
             background-position: center;
+            box-shadow: var(--shadow-soft);
             color: white;
-            padding: 4rem 2rem;
-            position: relative;
-            border-radius: 0.5rem;
-            margin-bottom: 2rem;
         }
-        .jumbotron-curso::before {
+        .hero-course::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgb(45 119 41 / 50%);
-            border-radius: 0.5rem;
-        }
-        .jumbotron-content {
-            position: relative;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(11, 20, 55, 0.85) 0%, rgba(43, 54, 116, 0.7) 100%);
             z-index: 1;
         }
-        .header-actions {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        .hero-content {
+            position: relative;
             z-index: 2;
         }
-        .stat-card {
-            background-color: #ffffff;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-bottom: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            height: 100%;
-        }
-        .stat-card .stat-icon {
+        .hero-title {
+            font-weight: 700;
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
-            color: #0d6efd;
+            letter-spacing: -0.5px;
         }
-        .stat-card .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #212529;
-        }
-        .stat-card .stat-label {
+        .badge-grado {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
             font-size: 0.9rem;
-            color: #6c757d;
+        }
+        .docente-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+            padding: 0.4rem 1rem 0.4rem 0.4rem;
+            border-radius: 50px;
+            margin-top: 1.5rem;
+        }
+        .docente-badge img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+            object-fit: cover;
+        }
+
+        /* Tarjetas de Estadísticas */
+        .stat-card {
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s ease;
+            height: 100%;
+            border: none;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 1.2rem;
+            flex-shrink: 0;
+        }
+        .icon-blue { background: #F4F7FE; color: var(--primary); }
+        .icon-green { background: #E6F8ED; color: #05CD99; }
+        .icon-orange { background: #FFF4E5; color: #FFB547; }
+        .icon-purple { background: #F3E8FF; color: #8B5CF6; }
+        
+        .stat-details h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-main);
+        }
+        .stat-details p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        /* Contenedores Gráficos y Barras */
+        .chart-card {
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-soft);
+            height: 100%;
+        }
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 1.2rem;
+        }
+        .progress {
+            height: 10px;
+            border-radius: 10px;
+            background-color: #E2E8F0;
+            margin-bottom: 0.5rem;
         }
         .progress-bar {
-            font-size: 1rem;
+            background-color: var(--primary);
+            border-radius: 10px;
         }
-        .accordion-button:focus {
-            box-shadow: none;
+
+        /* Acordeones Modernos */
+        .custom-accordion .accordion-item {
+            background: var(--surface);
+            border: none;
+            border-radius: var(--radius-md) !important;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 1rem;
+            overflow: hidden;
         }
-        .table-hover tbody tr:hover {
-            background-color: #f8f9fa;
+        .custom-accordion .accordion-button {
+            background: var(--surface);
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 1.2rem 1.5rem;
+            box-shadow: none !important;
         }
+        .custom-accordion .accordion-button:not(.collapsed) {
+            color: var(--primary);
+            background: #F8FAFC;
+        }
+        .custom-accordion .accordion-button::after {
+            background-size: 1rem;
+        }
+        
+        /* Tablas */
+        .table-custom {
+            margin-bottom: 0;
+        }
+        .table-custom thead th {
+            border-bottom: 1px solid #E2E8F0;
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            background: #F8FAFC;
+        }
+        .table-custom tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            color: var(--text-main);
+            border-bottom: 1px solid #F1F5F9;
+            font-size: 0.95rem;
+        }
+        .table-custom tbody tr:hover {
+            background-color: #F8FAFC;
+        }
+        .badge-tematico {
+            background-color: #EFF4FF;
+            color: var(--primary);
+            font-weight: 500;
+            padding: 0.4em 0.8em;
+        }
+        .btn-action {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        /* Skeleton Loader Personalizado */
+        .skeleton {
+            background: #eee;
+            background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+            border-radius: 5px;
+            background-size: 200% 100%;
+            animation: 1.5s shine linear infinite;
+        }
+        @keyframes shine {
+            to { background-position-x: -200%; }
+        }
+        .skeleton-row { height: 40px; margin-bottom: 10px; width: 100%; }
     </style>
 </head>
 <body>
 
 <div class="container mt-4">
     <?php if ($curso_info): ?>
-        <!-- ... (todo el HTML del encabezado y dashboard se mantiene igual) ... -->
-        <!-- ENCABEZADO DEL CURSO -->
-        <div class="jumbotron jumbotron-curso" style="background-image: url('<?php echo SGA_CURSOS_URL . '/' . htmlspecialchars($curso_info['portada_asignacion'] ?? ''); ?>');">
-            <div class="header-actions">
-                <button class="btn btn-warning">Opciones</button>
+        
+        <!-- ENCABEZADO DEL CURSO (HERO) -->
+        <div class="hero-course" style="background-image: url('<?php echo SGA_CURSOS_URL . '/' . htmlspecialchars($curso_info['portada_asignacion'] ?? ''); ?>');">
+            <div class="position-absolute top-0 end-0 p-4 z-3 dropdown">
+                <button class="btn btn-light rounded-pill px-4 fw-semibold shadow-sm text-primary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-gear-fill me-2"></i> Opciones
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" style="border-radius: 12px; overflow: hidden;">
+                    <li>
+                        <a class="dropdown-item py-2 fw-medium text-secondary" href="../asistencia/horario.php?asignacion=<?php echo $id_asignacion; ?>">
+                            <i class="bi bi-calendar-range me-2 text-primary"></i> Configurar Horario
+                        </a>
+                    </li>
+                </ul>
             </div>
-            <div class="jumbotron-content">
-                <h1 class="display-4"><?php echo htmlspecialchars($curso_info['nombre_materia']); ?></h1>
-                <p class="lead"><?php echo htmlspecialchars($curso_info['grado']); ?></p>
-                <hr class="my-4">
-                <p><?php echo htmlspecialchars($curso_info['descripcion']); ?></p>
-                <div class="d-flex align-items-center">
-                    <img src="<?php echo SGA_COMUN_SGA_DATA . '/' . htmlspecialchars($curso_info['foto_docente']); ?>" class="rounded-circle" width="50" height="50" alt="Docente">
-                    <span class="ms-3"><?php echo htmlspecialchars($curso_info['nombre_docente'] . ' ' . $curso_info['apellido_docente']); ?></span>
+            <div class="hero-content">
+                <span class="badge badge-grado mb-3 rounded-pill"><?php echo htmlspecialchars($curso_info['grado']); ?></span>
+                <h1 class="hero-title"><?php echo htmlspecialchars($curso_info['nombre_materia']); ?></h1>
+                <p class="text-light opacity-75 fs-5 max-w-75 mb-0" style="max-width: 700px;">
+                    <?php echo htmlspecialchars($curso_info['descripcion']); ?>
+                </p>
+                
+                <div class="docente-badge shadow-sm">
+                    <img src="<?php echo SGA_COMUN_SGA_DATA . '/' . htmlspecialchars($curso_info['foto_docente']); ?>" alt="Docente">
+                    <div class="ms-3 pe-3">
+                        <small class="d-block text-white-50 lh-1" style="font-size: 0.75rem;">Docente Encargado</small>
+                        <span class="fw-semibold text-white"><?php echo htmlspecialchars($curso_info['nombre_docente'] . ' ' . $curso_info['apellido_docente']); ?></span>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- DASHBOARD DE ESTADÍSTICAS -->
-        <div class="accordion" id="accordionEstadisticas">
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingOne">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEstadisticas" aria-expanded="true" aria-controls="collapseEstadisticas">
-                        <strong>Dashboard de Estadísticas del Curso</strong>
-                    </button>
-                </h2>
-                <div id="collapseEstadisticas" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionEstadisticas">
-                    <div class="accordion-body">
-                        <div class="row">
-                            <!-- Métricas Principales -->
-                            <div class="col-lg-3 col-md-6">
-                                <div class="stat-card text-center">
-                                    <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
-                                    <div class="stat-number"><?php echo $estadisticas['total_estudiantes']; ?></div>
-                                    <div class="stat-label">Estudiantes Inscritos</div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6">
-                                <div class="stat-card text-center">
-                                    <div class="stat-icon"><i class="bi bi-journal-check"></i></div>
-                                    <div class="stat-number"><?php echo $estadisticas['total_actividades']; ?></div>
-                                    <div class="stat-label">Actividades Publicadas</div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6">
-                                <div class="stat-card text-center">
-                                    <div class="stat-icon"><i class="bi bi-patch-check-fill text-success"></i></div>
-                                    <div class="stat-number"><?php echo $estadisticas['tasa_asistencia']; ?>%</div>
-                                    <div class="stat-label">Tasa de Asistencia</div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6">
-                                <div class="stat-card text-center">
-                                     <div class="stat-icon"><i class="bi bi-trophy-fill text-warning"></i></div>
-                                    <div class="stat-number"><?php echo number_format($estadisticas['promedio_general'], 2); ?></div>
-                                    <div class="stat-label">Promedio General</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <!-- Progreso del Curso y Gráfico -->
-                            <div class="col-lg-8">
-                                <div class="stat-card">
-                                     <div class="stat-label mb-2">Avance del Curso (Temporal)</div>
-                                     <div class="progress" style="height: 30px;">
-                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: <?php echo $estadisticas['progreso_curso']; ?>%;" aria-valuenow="<?php echo $estadisticas['progreso_curso']; ?>" aria-valuemin="0" aria-valuemax="100">
-                                            <strong><?php echo $estadisticas['progreso_curso']; ?>%</strong>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-between mt-1 text-muted small">
-                                        <span><?php echo Fecha::formato_fecha($horario['fecha_inicio'] ?? 'N/A'); ?></span>
-                                        <span><?php echo Fecha::formato_fecha($horario['fecha_fin'] ?? 'N/A'); ?></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="stat-card">
-                                     <div class="stat-label mb-2">Distribución de Estudiantes</div>
-                                     <canvas id="estadosChart" style="max-height: 180px;"></canvas>
-                                </div>
-                            </div>
-                        </div>
+        <div class="row g-4 mb-4">
+            <!-- KPIs -->
+            <div class="col-xl-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon icon-blue"><i class="bi bi-people-fill"></i></div>
+                    <div class="stat-details">
+                        <p>Estudiantes Inscritos</p>
+                        <h3><?php echo $estadisticas['total_estudiantes']; ?></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon icon-purple"><i class="bi bi-journal-check"></i></div>
+                    <div class="stat-details">
+                        <p>Actividades Públicas</p>
+                        <h3><?php echo $estadisticas['total_actividades']; ?></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon icon-green"><i class="bi bi-patch-check-fill"></i></div>
+                    <div class="stat-details">
+                        <p>Tasa Asistencia</p>
+                        <h3><?php echo $estadisticas['tasa_asistencia']; ?>%</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon icon-orange"><i class="bi bi-trophy-fill"></i></div>
+                    <div class="stat-details">
+                        <p>Promedio General</p>
+                        <h3><?php echo number_format($estadisticas['promedio_general'], 2); ?></h3>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- CONTENIDO DEL CURSO: ACTIVIDADES, PLANES, NOTAS (en acordeones) -->
-        <div class="accordion mt-4" id="accordionCurso">
+        <div class="row g-4 mb-5">
+            <!-- Progreso del Curso -->
+            <div class="col-lg-8">
+                <div class="chart-card">
+                    <h5 class="card-title">Avance Temporal del Curso</h5>
+                    <div class="d-flex justify-content-between align-items-end mb-2">
+                        <h2 class="text-primary fw-bold mb-0"><?php echo $estadisticas['progreso_curso']; ?>%</h2>
+                        <span class="text-muted small">Progreso actual</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: <?php echo $estadisticas['progreso_curso']; ?>%;" aria-valuenow="<?php echo $estadisticas['progreso_curso']; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2 text-muted small fw-medium">
+                        <span><i class="bi bi-play-circle me-1"></i> <?php echo Fecha::formato_fecha($horario['fecha_inicio'] ?? 'N/A'); ?></span>
+                        <span><i class="bi bi-flag me-1"></i> <?php echo Fecha::formato_fecha($horario['fecha_fin'] ?? 'N/A'); ?></span>
+                    </div>
+                </div>
+            </div>
+            <!-- Gráfico Donut -->
+            <div class="col-lg-4">
+                <div class="chart-card d-flex flex-column">
+                    <h5 class="card-title mb-0">Distribución de Estudiantes</h5>
+                    <div class="flex-grow-1 position-relative mt-3" style="min-height: 160px;">
+                        <canvas id="estadosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENIDO DEL CURSO (ACORDEONES MODERNIZADOS) -->
+        <h4 class="fw-bold mb-3 text-main">Gestión Académica</h4>
+        <div class="accordion custom-accordion" id="accordionCurso">
+            
+            <!-- Actividades -->
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseActividades" aria-expanded="false" aria-controls="collapseActividades">
-                        Actividades del Curso
+                        <i class="bi bi-list-task me-3 fs-5 text-primary"></i> Actividades del Curso
                     </button>
                 </h2>
                 <div id="collapseActividades" class="accordion-collapse collapse" data-bs-parent="#accordionCurso">
-                    <div class="accordion-body">
-                        <!-- Aquí iría la lógica PHP para mostrar las actividades -->
-                        <p>Contenido de actividades...</p>
+                    <div class="accordion-body p-4 text-muted">
+                        <!-- Lógica PHP Actividades -->
+                        <p class="mb-0"><i class="bi bi-info-circle me-2"></i> Módulo de actividades en desarrollo...</p>
                     </div>
                 </div>
             </div>
+
+            <!-- Planes de Clase (Modificado con JS) -->
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePlanes" aria-expanded="false" aria-controls="collapsePlanes">
-                        Planes de Clase (<?php echo $estadisticas['total_planes']; ?>)
+                        <i class="bi bi-file-earmark-text me-3 fs-5 text-success"></i> Planes de Clase 
+                        <span class="badge bg-success ms-3 rounded-pill"><?php echo $estadisticas['total_planes']; ?></span>
                     </button>
                 </h2>
-                <!-- ***** INICIO DE LA SECCIÓN MODIFICADA ***** -->
                 <div id="collapsePlanes" class="accordion-collapse collapse" data-bs-parent="#accordionCurso">
-                    <div class="accordion-body">
-                        <div id="planes-loader" class="text-center" style="display: none;">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Cargando...</span>
-                            </div>
+                    <div class="accordion-body p-0">
+                        
+                        <!-- Loader Skeleton -->
+                        <div id="planes-loader" class="p-4" style="display: none;">
+                            <div class="skeleton skeleton-row"></div>
+                            <div class="skeleton skeleton-row"></div>
+                            <div class="skeleton skeleton-row"></div>
+                            <div class="skeleton skeleton-row"></div>
                         </div>
+
+                        <!-- Contenido Tabla -->
                         <div id="planes-contenido" style="display: none;">
                             <div class="table-responsive">
-                                <table class="table table-hover table-striped align-middle">
-                                    <thead class="table-light">
+                                <table class="table table-custom align-middle">
+                                    <thead>
                                         <tr>
-                                            <th scope="col">Periodo</th>
-                                            <th scope="col">Semana</th>
-                                            <th scope="col">Objetivo de Aprendizaje</th>
-                                            <th scope="col">Eje Temático</th>
-                                            <th scope="col">Estrategia</th>
-                                            <th scope="col">Acciones</th>
+                                            <th>Periodo</th>
+                                            <th>Semana</th>
+                                            <th style="width: 25%">Objetivo</th>
+                                            <th>Eje Temático</th>
+                                            <th style="width: 25%">Estrategia</th>
+                                            <th class="text-end">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody id="planes-tbody">
-                                        <!-- Las filas se insertarán aquí dinámicamente -->
+                                        <!-- Inserción dinámica JS -->
                                     </tbody>
                                 </table>
                             </div>
-                            <nav id="planes-paginacion" aria-label="Paginación de planes de clase" class="d-flex justify-content-center mt-3">
-                                <!-- Los controles de paginación se insertarán aquí -->
-                            </nav>
+                            
+                            <!-- Paginación -->
+                            <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light">
+                                <span class="text-muted small">Mostrando resultados paginados</span>
+                                <nav id="planes-paginacion" aria-label="Paginación de planes"></nav>
+                            </div>
                         </div>
-                         <div id="planes-sin-resultados" class="alert alert-light text-center" role="alert" style="display: none;">
-                            <i class="bi bi-info-circle me-2"></i> No se han encontrado planes de clase registrados para este curso.
+
+                        <!-- Estado Vacío -->
+                        <div id="planes-sin-resultados" class="text-center py-5" style="display: none;">
+                            <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-3" style="width: 80px; height: 80px;">
+                                <i class="bi bi-folder-x fs-1 text-muted"></i>
+                            </div>
+                            <h5 class="fw-semibold text-main">No hay planes registrados</h5>
+                            <p class="text-muted">Aún no se han creado planes de clase para esta materia y grado.</p>
+                            <button class="btn btn-primary mt-2 rounded-pill px-4"><i class="bi bi-plus-lg me-1"></i> Crear Primer Plan</button>
                         </div>
+
                     </div>
                 </div>
-                <!-- ***** FIN DE LA SECCIÓN MODIFICADA ***** -->
             </div>
+
+            <!-- Notas de Clase -->
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNotas" aria-expanded="false" aria-controls="collapseNotas">
-                        Notas de Clase
+                        <i class="bi bi-journal-bookmark-fill me-3 fs-5 text-warning"></i> Notas de Clase
                     </button>
                 </h2>
                 <div id="collapseNotas" class="accordion-collapse collapse" data-bs-parent="#accordionCurso">
-                    <div class="accordion-body">
-                        <!-- Aquí iría la lógica PHP para mostrar las notas -->
-                        <p>Contenido de notas de clase...</p>
+                    <div class="accordion-body p-4 text-muted">
+                        <!-- Lógica PHP Notas -->
+                        <p class="mb-0"><i class="bi bi-info-circle me-2"></i> Módulo de notas en desarrollo...</p>
                     </div>
                 </div>
             </div>
+
         </div>
 
     <?php else: ?>
-        <div class="alert alert-danger">No se encontró la información del curso. Verifique el ID de la asignación.</div>
+        <div class="alert alert-danger shadow-sm border-0 d-flex align-items-center" role="alert">
+            <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+            <div>
+                <strong>Error de acceso:</strong> No se encontró la información del curso. Verifique el ID de la asignación.
+            </div>
+        </div>
     <?php endif; ?>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Script existente para el gráfico de estadísticas
+    // Configuración general Chart.js para aspecto moderno
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = '#8d99ae';
+
+    // Gráfico de estadísticas
     const chartElement = document.getElementById('estadosChart');
     if (chartElement) {
         const ctx = chartElement.getContext('2d');
@@ -484,19 +683,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 data: {
                     labels: Object.keys(estadosData),
                     datasets: [{
-                        label: 'N° de Estudiantes',
                         data: Object.values(estadosData),
-                        backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)', 'rgba(255, 99, 132, 0.7)', 'rgba(153, 102, 255, 0.7)'],
-                        borderColor: '#fff',
-                        borderWidth: 2
+                        backgroundColor: ['#4318FF', '#05CD99', '#FFB547', '#E31A1A', '#8B5CF6'],
+                        borderWidth: 0,
+                        hoverOffset: 4
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    cutout: '75%',
+                    plugins: { 
+                        legend: { 
+                            position: 'right',
+                            labels: { usePointStyle: true, padding: 15, font: { size: 11, weight: '500' } }
+                        } 
+                    } 
+                }
             });
+        } else {
+            chartElement.parentElement.innerHTML = '<div class="h-100 d-flex align-items-center justify-content-center text-muted small"><i class="bi bi-pie-chart text-light me-2 fs-4"></i> Sin datos para graficar</div>';
         }
     }
     
-    // ***** INICIO NUEVO SCRIPT PARA PAGINACIÓN DE PLANES *****
+    // Paginación de planes
     const collapsePlanes = document.getElementById('collapsePlanes');
     const loader = document.getElementById('planes-loader');
     const contenido = document.getElementById('planes-contenido');
@@ -518,9 +728,8 @@ document.addEventListener('DOMContentLoaded', () => {
         paginacionContainer.innerHTML = '';
 
         try {
-            // ***** CAMBIO IMPORTANTE: La URL ahora apunta a este mismo archivo con un parámetro 'accion' *****
             const response = await fetch(`curso.php?accion=obtener_planes&asignacion=${idAsignacion}&grado=${grado}&page=${page}`);
-            if (!response.ok) throw new Error('La respuesta del servidor no fue válida.');
+            if (!response.ok) throw new Error('Error de conexión al servidor.');
             
             const data = await response.json();
             if (data.error) throw new Error(data.error);
@@ -529,18 +738,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 data.registros.forEach(plan => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td class="text-nowrap">${plan.periodo || ''}</td>
-                        <td class="text-nowrap">
-                            <i class="bi bi-calendar-week me-2"></i>
-                            ${plan.fecha_inicio_f}<br>
-                            <small class="text-muted">a ${plan.fecha_fin_f}</small>
-                        </td>
-                        <td>${plan.objetivo_corto}</td>
-                        <td><span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill">${plan.eje_tematico}</span></td>
-                        <td>${plan.estrategias_cortas}</td>
+                        <td class="fw-semibold text-secondary">${plan.periodo || '-'}</td>
                         <td>
-                            <a target="_blank" href="../Planeador/planeador.php?pdf=1&idplan=${plan.id_plan}" class="btn btn-sm btn-outline-primary" title="Ver Detalles"><i class="bi bi-eye-fill"></i></a>
-                            <button class="btn btn-sm btn-outline-secondary" title="Editar"><i class="bi bi-pencil-fill"></i></button>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded p-2 me-2 text-primary"><i class="bi bi-calendar2-week"></i></div>
+                                <div>
+                                    <span class="d-block fw-medium text-dark">${plan.fecha_inicio_f}</span>
+                                    <small class="text-muted">al ${plan.fecha_fin_f}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="text-truncate d-inline-block" style="max-width: 250px;" title="${plan.objetivo_corto}">${plan.objetivo_corto}</span></td>
+                        <td><span class="badge badge-tematico rounded-pill">${plan.eje_tematico}</span></td>
+                        <td><span class="text-truncate d-inline-block text-muted" style="max-width: 200px;">${plan.estrategias_cortas}</span></td>
+                        <td class="text-end">
+                            <a target="_blank" href="../Planeador/planeador.php?pdf=1&idplan=${plan.id_plan}" class="btn btn-action btn-light text-primary me-1" title="Ver Detalles"><i class="bi bi-eye"></i></a>
+                            <button class="btn btn-action btn-light text-secondary" title="Editar"><i class="bi bi-pencil"></i></button>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -551,7 +764,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 sinResultados.style.display = 'block';
             }
         } catch (error) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error al cargar los planes: ${error.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger"><i class="bi bi-exclamation-circle me-2"></i>Error al cargar los planes: ${error.message}</td></tr>`;
              contenido.style.display = 'block';
         } finally {
             loader.style.display = 'none';
@@ -563,17 +776,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (totalPages <= 1) return;
 
         const ul = document.createElement('ul');
-        ul.className = 'pagination pagination-sm';
+        ul.className = 'pagination pagination-sm mb-0';
         
-        currentPage = parseInt(currentPage); // Asegurarse que es un número
+        currentPage = parseInt(currentPage);
         totalPages = parseInt(totalPages);
 
-        let liPrev = `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${currentPage - 1}">&laquo;</a></li>`;
-        let liNext = `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${currentPage + 1}">&raquo;</a></li>`;
+        let liPrev = `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}"><a class="page-link shadow-none" href="#" data-page="${currentPage - 1}">&laquo;</a></li>`;
+        let liNext = `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}"><a class="page-link shadow-none" href="#" data-page="${currentPage + 1}">&raquo;</a></li>`;
         
         let pageLinks = '';
         for (let i = 1; i <= totalPages; i++) {
-            pageLinks += `<li class="page-item ${i === currentPage ? 'active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+            pageLinks += `<li class="page-item ${i === currentPage ? 'active' : ''}"><a class="page-link shadow-none" href="#" data-page="${i}">${i}</a></li>`;
         }
         
         ul.innerHTML = liPrev + pageLinks + liNext;
@@ -605,4 +818,3 @@ document.addEventListener('DOMContentLoaded', () => {
 <?php
 ob_end_flush();
 ?>
-

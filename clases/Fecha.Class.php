@@ -44,13 +44,30 @@ function estado_dif_fecha_vencimiento($estado_dif_fecha){
     }
     return $estado_dif_fecha_s;
 }
-function calculaedad($fecha) {
-    $Y=$this->anio($fecha);
-    $m=$this->mes($fecha);
-    $d=$this->dia($fecha);
-    $edad = date("md") < $m.$d ? date("Y")-$Y-1 : date("Y")-$Y;
-    return($edad);
-}
+
+public static function calculaedad($fecha) {
+        try {
+            // Ko'ápe ojehecha mba'eichagua marandúpa oike
+            if ($fecha instanceof DateTime) {
+                $cumpleanos = $fecha;
+            } else {
+                // Ojejapóramo kuatiágui (string)
+                $cumpleanos = new DateTime((string)$fecha);
+            }
+
+            $hoy = new DateTime();
+            
+            // Ojehecha mboy áño ohasa hikuái
+            $diferencia = $hoy->diff($cumpleanos);
+            
+            return $diferencia->y;
+        } catch (Exception $e) {
+            // Javy oĩramo, ome'ẽ cero
+            return 0;
+        }
+    }
+
+
 public function dia($fecha,$letras=false){
 $salida = date("d",strtotime($fecha));
 if ($letras){
