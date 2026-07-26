@@ -415,7 +415,7 @@
                               <input type="text" class="form-control form-control-sm"
                                   name="ruta_grupo_<?php echo $gid; ?>_web"
                                   value="<?php echo htmlspecialchars($config['grupos'][$gid]['ruta_excel_web'] ?? ''); ?>"
-                                  placeholder="Ej: /home/u578593511/domains/handres.io/public_html/ia/excel/resumen.xlsx">
+                                  placeholder="Ej: /home1/u578593511/domains/handres.io/public_html/ia/excel/resumen.xlsx">
                           </div>
                       </div>
                   </div>
