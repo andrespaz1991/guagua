@@ -207,7 +207,7 @@
             $notasPorEstudiante = [];
 
             for ($row = 2; $row <= $ultimaFila; $row++) {
-                $documento = trim($worksheet->getCell('B' . $row)->getValue());
+                $documento = trim((string)$worksheet->getCell('B' . $row)->getValue());
 
                 if (empty($documento)) continue;
 
@@ -237,8 +237,8 @@
                 }
 
                 $notasPorEstudiante[$documento] = [
-                    'nombre' => $worksheet->getCell('A' . $row)->getValue(),
-                    'grado'  => $worksheet->getCell('C' . $row)->getValue(),
+                    'nombre' => trim((string)$worksheet->getCell('A' . $row)->getValue()),
+                    'grado'  => trim((string)$worksheet->getCell('C' . $row)->getValue()),
                     'notas'  => $notas
                 ];
             }

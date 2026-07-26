@@ -6,17 +6,30 @@ ini_set('display_errors', '1');
 require_once 'config.php';
 require_once 'funciones.php';
 
-// Autoload dinámico para clases
+// Autoload dinámico para clases — compatible con Linux (case-sensitive) y Windows
 spl_autoload_register(function ($clase) {
-    // Detectar la ubicación del autoload.php y subir un nivel para buscar Clases/
-    $basePath = dirname(__DIR__) . '/clases/'; // dirname(__DIR__) sube un nivel desde comun/
+    $basePath = dirname(__DIR__) . '/clases/';
 
-    $file = $basePath . ucwords($clase) . '.Class.php';
+    // Intentar varias combinaciones de capitalización para compatibilidad Linux/Windows:
+    // 1. Como viene (ej: COMUN, Academico)
+    // 2. ucwords → primera letra de cada palabra en mayúscula (ej: Comun)
+    // 3. ucfirst → solo primera letra mayúscula, resto minúsculas (ej: Comun)
+    $intentos = [
+        $clase,
+        ucwords(strtolower($clase)),
+        ucfirst(strtolower($clase)),
+        strtolower($clase),
+        strtoupper($clase),
+    ];
 
-    if (file_exists($file)) {
-        include $file;
-    } else {
-        die("❌ Error: No se encontró la clase $clase en $file");
+    foreach ($intentos as $nombre) {
+        $file = $basePath . $nombre . '.Class.php';
+        if (file_exists($file)) {
+            include $file;
+            return;
+        }
     }
+
+    die("❌ Error: No se encontró la clase $clase en $basePath");
 });
 ?>
