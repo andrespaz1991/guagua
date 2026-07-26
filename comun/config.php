@@ -14,10 +14,10 @@ if (in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1', '::1'])) {
     define('BASEDEDATOS', 'guagua');
 } else {
     // Configuración para el entorno de producción
-    define('SERVIDORBD', 'srv765.hstgr.io');
-    define('USUARIOBD', 'u417538463_root');
-    define('CLAVEBD', 'Handres2025..');
-    define('BASEDEDATOS', 'u417538463_guagua');
+    define('SERVIDORBD', 'srv691.hstgr.io');
+    define('USUARIOBD', 'u578593511_root');
+    define('CLAVEBD', 'Handres2026.');
+    define('BASEDEDATOS', 'u578593511_guagua');
 }
 
 /*
