@@ -1,6 +1,7 @@
 const STORAGE_KEY = 'davinci-notebooks-v1';
-const PAGE_WIDTH = 1240;
-const PAGE_HEIGHT = 1754;
+const PORTRAIT_WIDTH = 1240;
+const PORTRAIT_HEIGHT = 1754;
+const DEFAULT_BOOK_COLOR = '#4F46E5';
 
 const paperCanvas = document.getElementById('paperCanvas');
 const drawingCanvas = document.getElementById('drawingCanvas');
@@ -10,7 +11,8 @@ const drawingContext = drawingCanvas.getContext('2d');
 let state = { books: [], activeBookId: null, activePageId: null };
 let tool = 'pencil';
 let brushColor = '#1B1F35';
-let brushSize = 4;
+let pencilSize = 4;
+let eraserSize = 22;
 let isDrawing = false;
 let lastPoint = null;
 let histories = new Map();
@@ -21,12 +23,12 @@ function uid(prefix) {
     return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function createPage(title = 'Página 1', template = 'blank') {
-    return { id: uid('page'), title, template, drawing: '' };
+function createPage(title = 'Página 1', template = 'blank', orientation = 'portrait') {
+    return { id: uid('page'), title, template, orientation, drawing: '' };
 }
 
-function createBook(name = 'Mi primer cuaderno') {
-    return { id: uid('book'), name, createdAt: Date.now(), pages: [createPage('Página 1', 'blank')] };
+function createBook(name = 'Mi primer cuaderno', color = DEFAULT_BOOK_COLOR) {
+    return { id: uid('book'), name, color, createdAt: Date.now(), pages: [createPage('Página 1', 'blank')] };
 }
 
 function getActiveBook() {
@@ -44,9 +46,17 @@ function normalizeState() {
         state = { books: [initialBook], activeBookId: initialBook.id, activePageId: initialBook.pages[0].id };
         return;
     }
+    state.books.forEach(book => {
+        if (!/^#[0-9a-f]{6}$/i.test(book.color || '')) book.color = DEFAULT_BOOK_COLOR;
+        if (!Array.isArray(book.pages) || !book.pages.length) book.pages = [createPage('Página 1', 'blank')];
+        book.pages.forEach(page => {
+            page.template = page.template === 'grid' ? 'grid' : 'blank';
+            page.orientation = page.orientation === 'landscape' ? 'landscape' : 'portrait';
+            page.drawing = page.drawing || '';
+        });
+    });
     if (!getActiveBook()) state.activeBookId = state.books[0].id;
     const book = getActiveBook();
-    if (!Array.isArray(book.pages) || !book.pages.length) book.pages = [createPage('Página 1', 'blank')];
     if (!getActivePage()) state.activePageId = book.pages[0].id;
 }
 
@@ -68,29 +78,49 @@ function persist() {
             books: state.books.map(book => ({
                 id: book.id,
                 name: book.name,
+                color: book.color,
                 createdAt: book.createdAt,
-                pages: book.pages.map(page => ({ id: page.id, title: page.title, template: page.template, drawing: page.drawing || '' }))
+                pages: book.pages.map(page => ({ id: page.id, title: page.title, template: page.template, orientation: page.orientation, drawing: page.drawing || '' }))
             }))
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(cleanState));
+        updateSaveStatus();
     } catch (error) {
         console.warn('No fue posible guardar los cuadernos', error);
+        updateSaveStatus('No se pudo guardar');
         showToast('El espacio del navegador está lleno. Exporta tus cuadernos para conservarlos.');
     }
 }
 
-function drawPaper(context, template) {
+function getPageDimensions(page) {
+    return page?.orientation === 'landscape'
+        ? { width: PORTRAIT_HEIGHT, height: PORTRAIT_WIDTH }
+        : { width: PORTRAIT_WIDTH, height: PORTRAIT_HEIGHT };
+}
+
+function resizeCanvases(page) {
+    const { width, height } = getPageDimensions(page);
+    if (paperCanvas.width !== width || paperCanvas.height !== height) {
+        paperCanvas.width = width;
+        paperCanvas.height = height;
+        drawingCanvas.width = width;
+        drawingCanvas.height = height;
+    }
+    document.getElementById('canvasStage').classList.toggle('is-landscape', page?.orientation === 'landscape');
+}
+
+function drawPaper(context, template, width, height) {
     context.save();
-    context.clearRect(0, 0, PAGE_WIDTH, PAGE_HEIGHT);
+    context.clearRect(0, 0, width, height);
     context.fillStyle = '#fffefd';
-    context.fillRect(0, 0, PAGE_WIDTH, PAGE_HEIGHT);
+    context.fillRect(0, 0, width, height);
     if (template === 'grid') {
         const size = 34;
         context.strokeStyle = '#dce3f0';
         context.lineWidth = 1;
         context.beginPath();
-        for (let x = 0; x <= PAGE_WIDTH; x += size) { context.moveTo(x, 0); context.lineTo(x, PAGE_HEIGHT); }
-        for (let y = 0; y <= PAGE_HEIGHT; y += size) { context.moveTo(0, y); context.lineTo(PAGE_WIDTH, y); }
+        for (let x = 0; x <= width; x += size) { context.moveTo(x, 0); context.lineTo(x, height); }
+        for (let y = 0; y <= height; y += size) { context.moveTo(0, y); context.lineTo(width, y); }
         context.stroke();
     }
     context.restore();
@@ -110,11 +140,13 @@ async function renderActivePage() {
     const page = getActivePage();
     if (!page) return;
     const renderedPageId = page.id;
-    drawPaper(paperContext, page.template);
-    drawingContext.clearRect(0, 0, PAGE_WIDTH, PAGE_HEIGHT);
+    resizeCanvases(page);
+    const { width, height } = getPageDimensions(page);
+    drawPaper(paperContext, page.template, width, height);
+    drawingContext.clearRect(0, 0, width, height);
     try {
         const image = await imageFromData(page.drawing);
-        if (image && getActivePage()?.id === renderedPageId) drawingContext.drawImage(image, 0, 0, PAGE_WIDTH, PAGE_HEIGHT);
+        if (image && getActivePage()?.id === renderedPageId) drawingContext.drawImage(image, 0, 0, width, height);
     } catch (error) {
         console.warn('No fue posible cargar el dibujo de la página', error);
     }
@@ -171,6 +203,7 @@ function renderBooks() {
         const item = document.createElement('button');
         item.type = 'button';
         item.className = `book-item ${book.id === state.activeBookId ? 'is-active' : ''}`;
+        item.style.setProperty('--book-color', book.color || DEFAULT_BOOK_COLOR);
         item.innerHTML = `<span class="book-item-icon"><i class="fa-solid fa-book"></i></span><span><strong>${escapeHtml(book.name)}</strong><small>${book.pages.length} página${book.pages.length === 1 ? '' : 's'}</small></span>`;
         item.addEventListener('click', () => activateBook(book.id));
         list.appendChild(item);
@@ -196,8 +229,11 @@ function renderPages() {
         item.type = 'button';
         item.className = `page-item ${page.id === state.activePageId ? 'is-active' : ''}`;
         const templateName = page.template === 'grid' ? 'Cuadriculada' : 'Blanca';
-        item.innerHTML = `<span class="page-thumbnail ${page.template === 'grid' ? 'grid' : ''}"></span><span><strong>${escapeHtml(page.title || `Página ${index + 1}`)}</strong><small>${templateName}</small></span>`;
-        item.querySelector('.page-thumbnail').style.backgroundImage = thumbnailBackground(page);
+        const orientationName = page.orientation === 'landscape' ? 'Horizontal' : 'Vertical';
+        item.innerHTML = `<span class="page-thumbnail ${page.template === 'grid' ? 'grid' : ''} ${page.orientation === 'landscape' ? 'landscape' : ''}"></span><span><strong>${escapeHtml(page.title || `Página ${index + 1}`)}</strong><small>${templateName} · ${orientationName}</small></span>`;
+        const thumbnail = item.querySelector('.page-thumbnail');
+        thumbnail.style.backgroundImage = thumbnailBackground(page);
+        thumbnail.style.backgroundSize = page.drawing ? (page.template === 'grid' ? 'cover, 7px 7px' : 'cover') : '';
         item.addEventListener('click', () => activatePage(page.id));
         list.appendChild(item);
     });
@@ -216,6 +252,7 @@ async function renderApp() {
     renderBooks();
     renderPages();
     renderHeader();
+    updateOrientationControls();
     await renderActivePage();
 }
 
@@ -238,13 +275,13 @@ async function activatePage(pageId) {
 
 function pointFromEvent(event) {
     const rect = drawingCanvas.getBoundingClientRect();
-    return { x: (event.clientX - rect.left) * (PAGE_WIDTH / rect.width), y: (event.clientY - rect.top) * (PAGE_HEIGHT / rect.height) };
+    return { x: (event.clientX - rect.left) * (drawingCanvas.width / rect.width), y: (event.clientY - rect.top) * (drawingCanvas.height / rect.height) };
 }
 
 function prepareStroke() {
     drawingContext.lineCap = 'round';
     drawingContext.lineJoin = 'round';
-    drawingContext.lineWidth = tool === 'eraser' ? brushSize * 2.4 : brushSize;
+    drawingContext.lineWidth = tool === 'eraser' ? eraserSize : pencilSize;
     drawingContext.strokeStyle = brushColor;
     drawingContext.globalCompositeOperation = tool === 'eraser' ? 'destination-out' : 'source-over';
 }
@@ -291,6 +328,7 @@ function setTool(nextTool) {
     pencil.setAttribute('aria-pressed', String(tool === 'pencil'));
     eraser.setAttribute('aria-pressed', String(tool === 'eraser'));
     drawingCanvas.style.cursor = tool === 'eraser' ? 'cell' : 'crosshair';
+    updateSizeControls();
 }
 
 function setColor(color) {
@@ -298,6 +336,76 @@ function setColor(color) {
     setTool('pencil');
     document.querySelectorAll('.color-swatch').forEach(swatch => swatch.classList.toggle('is-selected', swatch.dataset.color.toLowerCase() === color.toLowerCase()));
     document.getElementById('colorPicker').value = color;
+}
+
+function updateSizeControls() {
+    document.getElementById('pencilSizeControl').hidden = tool !== 'pencil';
+    document.getElementById('eraserSizeControl').hidden = tool !== 'eraser';
+}
+
+function updateOrientationControls() {
+    const isLandscape = getActivePage()?.orientation === 'landscape';
+    const portrait = document.getElementById('portraitOrientationButton');
+    const landscape = document.getElementById('landscapeOrientationButton');
+    portrait.classList.toggle('is-active', !isLandscape);
+    landscape.classList.toggle('is-active', isLandscape);
+    portrait.setAttribute('aria-pressed', String(!isLandscape));
+    landscape.setAttribute('aria-pressed', String(isLandscape));
+}
+
+async function setPageOrientation(orientation) {
+    const page = getActivePage();
+    if (!page || page.orientation === orientation) return;
+    page.drawing = drawingCanvas.toDataURL('image/png');
+    page.orientation = orientation;
+    histories.set(page.id, { items: [page.drawing], index: 0 });
+    persist();
+    await renderApp();
+    showToast(`Página en orientación ${orientation === 'landscape' ? 'horizontal' : 'vertical'}.`);
+}
+
+async function toggleCanvasFullscreen() {
+    const stage = document.getElementById('canvasStage');
+    try {
+        if (document.fullscreenElement) {
+            await document.exitFullscreen();
+        } else if (stage.classList.contains('is-pseudo-fullscreen')) {
+            stage.classList.remove('is-pseudo-fullscreen');
+            updateFullscreenButton();
+        } else if (stage.requestFullscreen) {
+            await stage.requestFullscreen();
+            window.setTimeout(() => {
+                if (!document.fullscreenElement) {
+                    stage.classList.add('is-pseudo-fullscreen');
+                    updateFullscreenButton();
+                }
+            }, 120);
+        } else {
+            stage.classList.add('is-pseudo-fullscreen');
+            updateFullscreenButton();
+        }
+    } catch (error) {
+        console.warn('No fue posible abrir la pantalla completa', error);
+        stage.classList.add('is-pseudo-fullscreen');
+        updateFullscreenButton();
+        showToast('Se activó el modo de presentación del lienzo.');
+    }
+}
+
+function updateFullscreenButton() {
+    const stage = document.getElementById('canvasStage');
+    const isFullscreen = Boolean(document.fullscreenElement) || stage.classList.contains('is-pseudo-fullscreen');
+    const button = document.getElementById('fullscreenCanvasButton');
+    button.setAttribute('aria-pressed', String(isFullscreen));
+    button.setAttribute('aria-label', isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa del lienzo');
+    button.title = isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa';
+    button.innerHTML = `<i class="fa-solid fa-${isFullscreen ? 'compress' : 'expand'}" aria-hidden="true"></i>`;
+}
+
+function updateSaveStatus(message = 'Guardado localmente') {
+    const status = document.getElementById('saveStatus');
+    if (!status) return;
+    status.innerHTML = `<i class="fa-solid fa-${message === 'Guardado localmente' ? 'check' : 'triangle-exclamation'}" aria-hidden="true"></i> ${message}`;
 }
 
 function openModal(id) {
@@ -321,13 +429,14 @@ function filename(value) {
 }
 
 async function composePage(page) {
+    const { width, height } = getPageDimensions(page);
     const output = document.createElement('canvas');
-    output.width = PAGE_WIDTH;
-    output.height = PAGE_HEIGHT;
+    output.width = width;
+    output.height = height;
     const context = output.getContext('2d');
-    drawPaper(context, page.template);
+    drawPaper(context, page.template, width, height);
     const image = await imageFromData(page.drawing);
-    if (image) context.drawImage(image, 0, 0, PAGE_WIDTH, PAGE_HEIGHT);
+    if (image) context.drawImage(image, 0, 0, width, height);
     return output;
 }
 
@@ -349,34 +458,40 @@ async function exportPageImage() {
     showToast('Imagen de la página guardada.');
 }
 
-function createPdf() {
+function createPdf(orientation = 'portrait') {
     if (!window.jspdf?.jsPDF) {
         showToast('No se pudo cargar el generador de PDF. Revisa tu conexión e inténtalo otra vez.');
         return null;
     }
-    return new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4', compress: true });
+    return new window.jspdf.jsPDF({ orientation, unit: 'pt', format: 'a4', compress: true });
+}
+
+function pdfDimensions(orientation) {
+    return orientation === 'landscape' ? { width: 841.89, height: 595.28 } : { width: 595.28, height: 841.89 };
 }
 
 async function exportPagePdf() {
     const page = getActivePage();
     const book = getActiveBook();
-    const pdf = createPdf();
+    const pdf = createPdf(page?.orientation || 'portrait');
     if (!page || !book || !pdf) return;
     const output = await composePage(page);
-    pdf.addImage(output.toDataURL('image/jpeg', .92), 'JPEG', 0, 0, 595.28, 841.89, undefined, 'FAST');
+    const size = pdfDimensions(page.orientation);
+    pdf.addImage(output.toDataURL('image/jpeg', .92), 'JPEG', 0, 0, size.width, size.height, undefined, 'FAST');
     pdf.save(`${filename(book.name)}-${filename(page.title)}.pdf`);
     showToast('PDF de la página guardado.');
 }
 
 async function exportBookPdf() {
     const book = getActiveBook();
-    const pdf = createPdf();
+    const pdf = createPdf(book?.pages[0]?.orientation || 'portrait');
     if (!book || !pdf) return;
     showToast(`Preparando ${book.pages.length} página${book.pages.length === 1 ? '' : 's'} para PDF...`);
     for (let index = 0; index < book.pages.length; index++) {
-        if (index > 0) pdf.addPage('a4', 'portrait');
+        if (index > 0) pdf.addPage('a4', book.pages[index].orientation || 'portrait');
         const output = await composePage(book.pages[index]);
-        pdf.addImage(output.toDataURL('image/jpeg', .9), 'JPEG', 0, 0, 595.28, 841.89, undefined, 'FAST');
+        const size = pdfDimensions(book.pages[index].orientation);
+        pdf.addImage(output.toDataURL('image/jpeg', .9), 'JPEG', 0, 0, size.width, size.height, undefined, 'FAST');
     }
     pdf.save(`${filename(book.name)}-cuaderno-completo.pdf`);
     showToast('PDF del cuaderno completo guardado.');
@@ -401,7 +516,18 @@ function bindEvents() {
     document.getElementById('eraserTool').addEventListener('click', () => setTool('eraser'));
     document.querySelectorAll('.color-swatch').forEach(swatch => swatch.addEventListener('click', () => setColor(swatch.dataset.color)));
     document.getElementById('colorPicker').addEventListener('input', event => setColor(event.target.value));
-    document.getElementById('brushSize').addEventListener('input', event => { brushSize = Number(event.target.value); document.getElementById('brushSizeValue').textContent = `${brushSize} px`; });
+    document.getElementById('brushSize').addEventListener('input', event => { pencilSize = Number(event.target.value); document.getElementById('brushSizeValue').textContent = `${pencilSize} px`; });
+    document.getElementById('eraserSize').addEventListener('input', event => { eraserSize = Number(event.target.value); document.getElementById('eraserSizeValue').textContent = `${eraserSize} px`; });
+    document.getElementById('portraitOrientationButton').addEventListener('click', () => setPageOrientation('portrait'));
+    document.getElementById('landscapeOrientationButton').addEventListener('click', () => setPageOrientation('landscape'));
+    document.getElementById('fullscreenCanvasButton').addEventListener('click', toggleCanvasFullscreen);
+    document.addEventListener('fullscreenchange', updateFullscreenButton);
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && document.getElementById('canvasStage').classList.contains('is-pseudo-fullscreen')) {
+            document.getElementById('canvasStage').classList.remove('is-pseudo-fullscreen');
+            updateFullscreenButton();
+        }
+    });
     document.getElementById('undoButton').addEventListener('click', () => restoreHistory(-1));
     document.getElementById('redoButton').addEventListener('click', () => restoreHistory(1));
 
@@ -409,24 +535,30 @@ function bindEvents() {
         bookModalMode = 'create';
         document.getElementById('bookModalTitle').textContent = 'Nuevo cuaderno';
         document.getElementById('bookNameInput').value = '';
+        document.getElementById('bookColorInput').value = DEFAULT_BOOK_COLOR;
+        document.querySelector('#bookForm button[type="submit"]').textContent = 'Crear cuaderno';
         openModal('bookModal');
     });
     document.getElementById('renameBookButton').addEventListener('click', () => {
         bookModalMode = 'rename';
         document.getElementById('bookModalTitle').textContent = 'Renombrar cuaderno';
         document.getElementById('bookNameInput').value = getActiveBook()?.name || '';
+        document.getElementById('bookColorInput').value = getActiveBook()?.color || DEFAULT_BOOK_COLOR;
+        document.querySelector('#bookForm button[type="submit"]').textContent = 'Guardar cambios';
         openModal('bookModal');
     });
     document.getElementById('bookForm').addEventListener('submit', async event => {
         event.preventDefault();
         const input = document.getElementById('bookNameInput');
         const name = input.value.trim();
+        const color = document.getElementById('bookColorInput').value;
         if (!name) return;
         if (bookModalMode === 'rename') {
             getActiveBook().name = name;
+            getActiveBook().color = color;
             showToast('Cuaderno renombrado.');
         } else {
-            const book = createBook(name);
+            const book = createBook(name, color);
             state.books.unshift(book);
             state.activeBookId = book.id;
             state.activePageId = book.pages[0].id;
@@ -442,7 +574,9 @@ function bindEvents() {
         const nextNumber = (getActiveBook()?.pages.length || 0) + 1;
         document.getElementById('pageNameInput').value = `Página ${nextNumber}`;
         document.querySelector('input[name="pageTemplate"][value="blank"]').checked = true;
+        document.querySelector('input[name="pageOrientation"][value="portrait"]').checked = true;
         updateTemplateSelection();
+        updatePageOrientationSelection();
         openModal('pageModal');
     });
     document.getElementById('pageForm').addEventListener('submit', async event => {
@@ -450,7 +584,8 @@ function bindEvents() {
         const book = getActiveBook();
         const title = document.getElementById('pageNameInput').value.trim() || `Página ${book.pages.length + 1}`;
         const template = document.querySelector('input[name="pageTemplate"]:checked').value;
-        const page = createPage(title, template);
+        const orientation = document.querySelector('input[name="pageOrientation"]:checked').value;
+        const page = createPage(title, template, orientation);
         book.pages.push(page);
         state.activePageId = page.id;
         persist();
@@ -459,6 +594,7 @@ function bindEvents() {
         showToast('Página añadida al cuaderno.');
     });
     document.querySelectorAll('input[name="pageTemplate"]').forEach(input => input.addEventListener('change', updateTemplateSelection));
+    document.querySelectorAll('input[name="pageOrientation"]').forEach(input => input.addEventListener('change', updatePageOrientationSelection));
 
     document.querySelectorAll('[data-close-modal]').forEach(button => button.addEventListener('click', () => closeModal(button.dataset.closeModal)));
     document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.addEventListener('click', event => { if (event.target === backdrop) backdrop.hidden = true; }));
@@ -466,7 +602,7 @@ function bindEvents() {
     document.getElementById('clearButton').addEventListener('click', () => document.getElementById('confirmModal').hidden = false);
     document.getElementById('cancelClearButton').addEventListener('click', () => closeModal('confirmModal'));
     document.getElementById('confirmClearButton').addEventListener('click', () => {
-        drawingContext.clearRect(0, 0, PAGE_WIDTH, PAGE_HEIGHT);
+        drawingContext.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
         snapshotPage();
         closeModal('confirmModal');
         showToast('Página limpiada.');
@@ -492,6 +628,16 @@ function bindEvents() {
 function updateTemplateSelection() {
     document.querySelectorAll('.template-option').forEach(option => option.classList.toggle('is-selected', option.querySelector('input').checked));
 }
+
+function updatePageOrientationSelection() {
+    document.querySelectorAll('.orientation-option').forEach(option => option.classList.toggle('is-selected', option.querySelector('input').checked));
+}
+
+window.addEventListener('beforeunload', () => {
+    const page = getActivePage();
+    if (page && isDrawing) page.drawing = drawingCanvas.toDataURL('image/png');
+    persist();
+});
 
 loadState();
 bindEvents();
