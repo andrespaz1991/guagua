@@ -10,7 +10,15 @@
     use PhpOffice\PhpSpreadsheet\IOFactory;
     use PhpOffice\PhpSpreadsheet\Reader\Exception as ReaderException;
 
+    // =================================================================================
+    // --- DETECCIÓN DE ENTORNO (local vs. web) — mismo patrón que Clase_mysqli.Class.php ---
+    // =================================================================================
+    $es_local = in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1', '::1']);
+
     // --- Configuración Centralizada ---
+    // Cada grupo tiene DOS rutas:
+    //   'ruta_excel'     → ruta absoluta en tu máquina local (Windows)
+    //   'ruta_excel_web' → ruta absoluta en el servidor de Hostinger
     $config = [
         'institucion' => "IER LA JOSEFINA",
         'docente' => [
@@ -23,7 +31,8 @@
                 "nombre" => "Grupo 1 (6° a 8°)",
                 "min_grado" => 6,
                 "max_grado" => 8,
-                "ruta_excel" => 'G:\Mi unidad\PC_HANDRES\SEDUCA\La Josefina\Vallesol\2026\Valoraciones\resumen_6-8.xlsx',
+                "ruta_excel"     => 'G:\Mi unidad\PC_HANDRES\SEDUCA\La Josefina\Vallesol\2026\Valoraciones\resumen_6-8.xlsx',
+                "ruta_excel_web" => 'https://docs.google.com/spreadsheets/d/1pDxqgaWRzAixxez1_NvYQIOEjg9wA3iV/edit?usp=sharing&ouid=101199890097368716674&rtpof=true&sd=true',
                 "ultimafila" => 17,
                 "materias" => [
                     "Geometría" => "D", "Ciencias Sociales" => "E", "Educación Física" => "F",
@@ -34,7 +43,8 @@
                 "nombre" => "Grupo 2 (9° a 11°)",
                 "min_grado" => 9,
                 "max_grado" => 11,
-                "ruta_excel" => 'G:\Mi unidad\PC_HANDRES\SEDUCA\La Josefina\Vallesol\2026\Valoraciones\resumen_9-11.xlsx',
+                "ruta_excel"     => 'G:\Mi unidad\PC_HANDRES\SEDUCA\La Josefina\Vallesol\2026\Valoraciones\resumen_9-11.xlsx',
+                "ruta_excel_web" => 'https://docs.google.com/spreadsheets/d/1PXQgT5PyJ376xjD4rUVtbhyScnGVRyAx/edit?usp=sharing&ouid=101199890097368716674&rtpof=true&sd=true',
                 "ultimafila" => 19,
                 "materias" => [
                     "Geometría" => "D", "Ciencias Sociales/Economia" => "E", "Educación Física" => "F",
@@ -44,30 +54,59 @@
         ]
     ];
 
-    // --- Carga y Guardado de Configuración de Rutas ---
+    // --- Carga y Guardado de Configuración de Rutas (local Y web) ---
     $configFile = __DIR__ . "/config_rutas.json";
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_rutas'])) {
         $nuevasRutas = [
-            1 => $_POST['ruta_grupo_1'] ?? '',
-            2 => $_POST['ruta_grupo_2'] ?? ''
+            1 => [
+                'local' => $_POST['ruta_grupo_1']     ?? '',
+                'web'   => $_POST['ruta_grupo_1_web'] ?? ''
+            ],
+            2 => [
+                'local' => $_POST['ruta_grupo_2']     ?? '',
+                'web'   => $_POST['ruta_grupo_2_web'] ?? ''
+            ]
         ];
-        file_put_contents($configFile, json_encode($nuevasRutas));
-        
+        file_put_contents($configFile, json_encode($nuevasRutas, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
         // Mantener parámetros GET actuales
         $queryParams = $_GET;
         unset($queryParams['guardar_rutas']);
         $queryString = http_build_query($queryParams);
-        
         header("Location: " . $_SERVER['PHP_SELF'] . ($queryString ? '?' . $queryString : ''));
         exit;
     }
 
+    // Sobrescribir rutas con las guardadas en config_rutas.json (compatible con formato antiguo y nuevo)
     if (file_exists($configFile)) {
         $rutasGuardadas = json_decode(file_get_contents($configFile), true);
-        if (!empty($rutasGuardadas[1])) $config['grupos'][1]['ruta_excel'] = $rutasGuardadas[1];
-        if (!empty($rutasGuardadas[2])) $config['grupos'][2]['ruta_excel'] = $rutasGuardadas[2];
+        foreach ([1, 2] as $id) {
+            if (!empty($rutasGuardadas[$id])) {
+                if (is_array($rutasGuardadas[$id])) {
+                    // Formato nuevo: {"local": "...", "web": "..."}
+                    if (!empty($rutasGuardadas[$id]['local'])) $config['grupos'][$id]['ruta_excel']     = $rutasGuardadas[$id]['local'];
+                    if (!empty($rutasGuardadas[$id]['web']))   $config['grupos'][$id]['ruta_excel_web'] = $rutasGuardadas[$id]['web'];
+                } else {
+                    // Formato antiguo (solo string): actualizar solo ruta local
+                    $config['grupos'][$id]['ruta_excel'] = $rutasGuardadas[$id];
+                }
+            }
+        }
     }
+
+    // =================================================================================
+    // --- SELECCIONAR RUTA ACTIVA SEGÚN ENTORNO (local o web) ---
+    // =================================================================================
+    foreach ($config['grupos'] as $id => &$grupo) {
+        if ($es_local) {
+            $grupo['ruta_activa'] = $grupo['ruta_excel'];     // Usar ruta local en XAMPP
+        } else {
+            // En producción: usar ruta_excel_web si está definida, sino fallback a ruta_excel
+            $grupo['ruta_activa'] = !empty($grupo['ruta_excel_web']) ? $grupo['ruta_excel_web'] : $grupo['ruta_excel'];
+        }
+    }
+    unset($grupo); // Liberar referencia
 
     // =================================================================================
     // --- FUNCIONES DE LÓGICA Y PRESENTACIÓN ---
@@ -288,8 +327,9 @@
                 
                 $filtroSoloPerdidas = isset($_GET['solo_perdidas']) && $_GET['solo_perdidas'] == '1';
 
+                // Usar 'ruta_activa': ya fue calculada arriba según el entorno (local o web)
                 $notasExcel = cargarNotasDesdeExcel(
-                    $grupoSeleccionado['ruta_excel'],
+                    $grupoSeleccionado['ruta_activa'],
                     $grupoSeleccionado['ultimafila'],
                     $grupoSeleccionado['materias']
                 );
@@ -352,15 +392,34 @@
                 </button>
               </div>
               <div class="modal-body">
-                  <p class="text-muted small">Actualice las rutas absolutas donde se encuentran los archivos de Excel con las notas.</p>
-                  <div class="form-group">
-                      <label for="ruta_grupo_1"><strong><?php echo htmlspecialchars($config['grupos'][1]['nombre']); ?>:</strong></label>
-                      <input type="text" class="form-control" id="ruta_grupo_1" name="ruta_grupo_1" value="<?php echo htmlspecialchars($config['grupos'][1]['ruta_excel']); ?>" required>
+                  <?php
+                  $entorno_badge = $es_local
+                      ? '<span class="badge badge-primary">&#128187; Entorno LOCAL activo</span>'
+                      : '<span class="badge badge-success">&#127760; Entorno WEB activo</span>';
+                  ?>
+                  <p class="text-muted small mb-1">Ingrese las rutas absolutas de los archivos Excel para cada entorno. <?php echo $entorno_badge; ?></p>
+                  <hr>
+                  <?php foreach ([1, 2] as $gid): ?>
+                  <div class="card mb-3 shadow-sm">
+                      <div class="card-header py-2"><strong><?php echo htmlspecialchars($config['grupos'][$gid]['nombre']); ?></strong></div>
+                      <div class="card-body py-2">
+                          <div class="form-group mb-2">
+                              <label class="small mb-1">&#128193; Ruta Local (XAMPP)</label>
+                              <input type="text" class="form-control form-control-sm"
+                                  name="ruta_grupo_<?php echo $gid; ?>"
+                                  value="<?php echo htmlspecialchars($config['grupos'][$gid]['ruta_excel']); ?>"
+                                  placeholder="Ej: G:\Mi unidad\...\resumen.xlsx">
+                          </div>
+                          <div class="form-group mb-0">
+                              <label class="small mb-1">&#127760; Ruta Web (Hostinger)</label>
+                              <input type="text" class="form-control form-control-sm"
+                                  name="ruta_grupo_<?php echo $gid; ?>_web"
+                                  value="<?php echo htmlspecialchars($config['grupos'][$gid]['ruta_excel_web'] ?? ''); ?>"
+                                  placeholder="Ej: /home/u578593511/domains/handres.io/public_html/ia/excel/resumen.xlsx">
+                          </div>
+                      </div>
                   </div>
-                  <div class="form-group">
-                      <label for="ruta_grupo_2"><strong><?php echo htmlspecialchars($config['grupos'][2]['nombre']); ?>:</strong></label>
-                      <input type="text" class="form-control" id="ruta_grupo_2" name="ruta_grupo_2" value="<?php echo htmlspecialchars($config['grupos'][2]['ruta_excel']); ?>" required>
-                  </div>
+                  <?php endforeach; ?>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>

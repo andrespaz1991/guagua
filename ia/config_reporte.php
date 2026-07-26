@@ -1,20 +1,24 @@
 <?php
 // --- INICIO DEL BACKEND PHP ---
 
-// Configuración y Conexión a la Base de Datos con MySQLi
-$servidor = "127.0.0.1:7000"; // O el host de tu base de datos
-$usuario = "root";             // Tu usuario de BD
-$contrasena = "";              // Tu contraseña de BD
-$base_de_datos = "guagua";
+// Conexión dinámica: usa config.php para detectar local vs producción (como Clase_mysqli.Class.php)
+require_once __DIR__ . '/../comun/config.php';
 
-// Crear conexión con MySQLi
-$conexion = new mysqli($servidor, $usuario, $contrasena, $base_de_datos);
+// Separar host y puerto si vienen juntos (ej: "localhost:7000")
+$hostParts = explode(':', SERVIDORBD);
+$db_host = $hostParts[0];
+$db_port = isset($hostParts[1]) ? (int)$hostParts[1] : 3306;
 
-// Verificar conexión
+$conexion = @new mysqli($db_host, USUARIOBD, CLAVEBD, BASEDEDATOS, $db_port);
+
 if ($conexion->connect_error) {
     die("Error de conexión: " . $conexion->connect_error);
 }
 $conexion->set_charset("utf8");
+
+// Detectar si estamos en local o en la web
+$es_local = in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1', '::1']);
+
 
 
 // Esta función se encarga de leer los datos de la base de datos
@@ -46,7 +50,8 @@ function obtenerConfiguracion($conexion) {
                 CONCAT('Grupo (', (CASE WHEN c.id_categoria_curso <= 8 THEN '6° a 8°' ELSE '9° a 11°' END), ')') as nombre,
                 MIN(c.nombre_categoria_curso) as min_grado,
                 MAX(c.nombre_categoria_curso) as max_grado,
-                'ruta/ejemplo.xlsx' as ruta_excel, -- Dato de ejemplo
+                'ruta/ejemplo.xlsx' as ruta_excel,
+                '' as ruta_excel_web, -- Enlace web del Excel
                 20 as ultimafila -- Dato de ejemplo
             FROM asignacion a
             JOIN categoria_curso c ON a.id_categoria_curso = c.id_categoria_curso
@@ -73,6 +78,8 @@ function obtenerConfiguracion($conexion) {
                     ["nombre" => "Tecnología", "columna" => "I"]
                 ];
             }
+            // Seleccionar la ruta correcta según el entorno
+            $grupo['ruta_excel_activa'] = $es_local ? $grupo['ruta_excel'] : ($grupo['ruta_excel_web'] ?: $grupo['ruta_excel']);
         }
         
         return [
@@ -81,7 +88,8 @@ function obtenerConfiguracion($conexion) {
                 "telefono" => $docente_data ? $docente_data['telefono'] : ''
             ],
             "sede" => $sede_data ? $sede_data['nombre_institucion'] : 'Sede no encontrada',
-            "grupos" => $grupos
+            "grupos" => $grupos,
+            "es_local" => $es_local
         ];
 
     } catch (Exception $e) {
@@ -242,8 +250,12 @@ $conexion->close();
                          <input type="text" id="group-nombre" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
                      </div>
                      <div>
-                         <label for="group-ruta" class="block text-sm font-medium text-gray-700">Ruta del Archivo Excel</label>
-                         <input type="text" id="group-ruta" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                         <label for="group-ruta" class="block text-sm font-medium text-gray-700">📁 Ruta Excel Local <span class="text-gray-400 font-normal">(ej: D:/xampp/.../archivo.xlsx)</span></label>
+                         <input type="text" id="group-ruta" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="D:/xampp/htdocs/guagua/archivo.xlsx">
+                     </div>
+                     <div>
+                         <label for="group-ruta-web" class="block text-sm font-medium text-gray-700">🌐 Enlace Excel Web <span class="text-gray-400 font-normal">(ej: /home/u578.../archivo.xlsx)</span></label>
+                         <input type="text" id="group-ruta-web" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500" placeholder="/home/u578593511/domains/handres.io/public_html/archivo.xlsx">
                      </div>
                      <div class="grid grid-cols-3 gap-2">
                          <div>
@@ -362,7 +374,9 @@ $conexion->close();
                         </div>
                     </div>
                     <div class="text-sm text-gray-600 space-y-2 mb-4">
-                        <p><strong class="font-medium">Ruta Excel:</strong> ${grupo.ruta_excel || 'No definida'}</p>
+                        <p><strong class="font-medium">📁 Ruta Local:</strong> ${grupo.ruta_excel || '<span class="text-red-400">No definida</span>'}</p>
+                        <p><strong class="font-medium">🌐 Enlace Web:</strong> ${grupo.ruta_excel_web || '<span class="text-red-400">No definido</span>'}</p>
+                        <p class="mt-1"><span class="inline-block px-2 py-0.5 rounded text-xs font-bold ${config.es_local ? 'bg-blue-100 text-blue-700' : 'bg-teal-100 text-teal-700'}">${config.es_local ? '🖥️ Usando ruta LOCAL' : '🌐 Usando ruta WEB'}</span></p>
                         <p><strong class="font-medium">Última Fila:</strong> ${grupo.ultimafila || 'No definida'}</p>
                     </div>
                     <h5 class="font-semibold mb-2">Materias:</h5>
@@ -477,6 +491,7 @@ $conexion->close();
                     document.getElementById('group-id').value = grupo.id;
                     document.getElementById('group-nombre').value = grupo.nombre;
                     document.getElementById('group-ruta').value = grupo.ruta_excel;
+                    document.getElementById('group-ruta-web').value = grupo.ruta_excel_web || '';
                     document.getElementById('group-min-grado').value = grupo.min_grado;
                     document.getElementById('group-max-grado').value = grupo.max_grado;
                     document.getElementById('group-ultimafila').value = grupo.ultimafila;
