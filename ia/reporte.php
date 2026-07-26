@@ -1,6 +1,8 @@
 <?php
     ini_set('display_startup_errors', 1);
     ini_set('display_errors', 1);
+    ini_set('default_charset', 'UTF-8');
+    header('Content-Type: text/html; charset=UTF-8');
     error_reporting(-1);
 
     // --- Dependencias y Autoloaders ---
@@ -166,7 +168,7 @@
     {
         $archivoTemporal = null;
 
-        // Detectar si la ruta es una URL (Google Sheets publicado, etc.)
+        // ── Detectar si la ruta es una URL (Google Sheets publicado, etc.) ──────────
         if (filter_var($ruta, FILTER_VALIDATE_URL)) {
             $contenido = @file_get_contents($ruta, false, stream_context_create([
                 'http' => [
@@ -181,7 +183,7 @@
             ]));
 
             if ($contenido === false || strlen($contenido) < 100) {
-                throw new Exception("No se pudo descargar el archivo desde la URL. Verifica que la hoja esté publicada en Google Sheets como .xlsx (Archivo → Compartir → Publicar en la web → xlsx).");
+                throw new Exception("No se pudo descargar el archivo desde la URL. Verifica que la hoja esté publicada en Google Sheets como .xlsx.");
             }
 
             $archivoTemporal = sys_get_temp_dir() . '/reporte_temp_' . uniqid() . '.xlsx';
@@ -196,13 +198,11 @@
         }
 
         try {
-            // Suprimir avisos de "Deprecated: Using ${var}" de PHPSpreadsheet en PHP 8.2+
-            $nivelAnterior = error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
-
-            $spreadsheet = IOFactory::load($rutaLectura);
-            $worksheet   = $spreadsheet->getActiveSheet();
-
-            error_reporting($nivelAnterior); // Restaurar nivel de errores
+            // Suprimir Deprecated de PHPSpreadsheet en PHP 8.2
+            $nivelAnterior = error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING);
+            $spreadsheet   = IOFactory::load($rutaLectura);
+            $worksheet     = $spreadsheet->getActiveSheet();
+            error_reporting($nivelAnterior);
 
             $notasPorEstudiante = [];
 
@@ -215,25 +215,29 @@
                 foreach ($materias as $nombreMateria => $columna) {
                     $celda = $worksheet->getCell($columna . $row);
 
-                    // Intentar getCalculatedValue(); si falla o devuelve fórmula (referencia externa),
-                    // usar getValue() directamente como fallback.
-                    try {
-                        $valor = @$celda->getCalculatedValue();
-                    } catch (\Throwable $e) {
+                    // ── Estrategia de lectura de valor ───────────────────────────────────────
+                    // Las celdas con referencias externas (='G:\...\[archivo.xlsx]'!$T12)
+                    // NO pueden resolverse por PHPSpreadsheet en tiempo de ejecución.
+                    // Excel guarda el último valor calculado en la propiedad "cached value".
+                    // Usamos esa caché primero; solo si está vacía intentamos calcular.
+
+                    $valor = $celda->getOldCalculatedValue(); // Valor en caché guardado por Excel
+
+                    if (!is_numeric($valor)) {
+                        // Segundo intento: valor crudo (puede ser número directo, no fórmula)
                         $valor = $celda->getValue();
                     }
 
-                    // Si el valor sigue siendo una fórmula o texto no numérico, intentar getOldCalculatedValue()
                     if (!is_numeric($valor)) {
-                        $valorOld = $celda->getOldCalculatedValue();
-                        if (is_numeric($valorOld)) {
-                            $valor = $valorOld;
-                        } else {
-                            $valor = 0; // No se pudo resolver la referencia externa → nota 0
+                        // Tercer intento: calcular (funciona para fórmulas simples sin refs externas)
+                        try {
+                            $valor = @$celda->getCalculatedValue();
+                        } catch (\Throwable $e) {
+                            $valor = 0;
                         }
                     }
 
-                    $notas[$nombreMateria] = round((float)$valor, 1);
+                    $notas[$nombreMateria] = round((float)(is_numeric($valor) ? $valor : 0), 1);
                 }
 
                 $notasPorEstudiante[$documento] = [
@@ -250,6 +254,8 @@
 
         return $notasPorEstudiante;
     }
+
+
 
 
 
@@ -373,7 +379,7 @@
 
     <div class="container-fluid" style="max-width: 1400px;">
         <div class="text-center mb-4 no-print">
-            <img src="..\comun\img\Banner_guias.jpg" width="400" alt="Banner Institucional">
+            <img src="../comun/img/Banner_guias.jpg" width="400" alt="Banner Institucional">
             <h2 class="mt-3">Plataforma de Seguimiento Académico</h2>
         </div>
         

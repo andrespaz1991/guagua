@@ -3,8 +3,8 @@ error_reporting(E_ALL);
 ini_set('display_errors', '1');
 @session_start();
 
-require_once 'config.php';
-require_once 'funciones.php';
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/funciones.php';
 
 // Autoload dinámico para clases — compatible con Linux (case-sensitive) y Windows
 spl_autoload_register(function ($clase) {
