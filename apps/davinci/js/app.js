@@ -18,6 +18,15 @@ let lastPoint = null;
 let histories = new Map();
 let bookModalMode = 'create';
 let toastTimer;
+let cloudReady = false;
+let cloudSaving = false;
+let cloudSavePending = false;
+let cloudSaveTimer;
+let canvasZoom = 1;
+let rulerVisible = false;
+let rulerPosition = { x: .5, y: .22 };
+let rulerAngle = 0;
+let rulerDragPointerId = null;
 
 function uid(prefix) {
     return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -70,25 +79,95 @@ function loadState() {
     normalizeState();
 }
 
-function persist() {
+function serializedState() {
+    return {
+        activeBookId: state.activeBookId,
+        activePageId: state.activePageId,
+        updatedAt: state.updatedAt || Date.now(),
+        books: state.books.map(book => ({
+            id: book.id,
+            name: book.name,
+            color: book.color,
+            createdAt: book.createdAt,
+            pages: book.pages.map(page => ({ id: page.id, title: page.title, template: page.template, orientation: page.orientation, drawing: page.drawing || '' }))
+        }))
+    };
+}
+
+function persist({ sync = true } = {}) {
     try {
-        const cleanState = {
-            activeBookId: state.activeBookId,
-            activePageId: state.activePageId,
-            books: state.books.map(book => ({
-                id: book.id,
-                name: book.name,
-                color: book.color,
-                createdAt: book.createdAt,
-                pages: book.pages.map(page => ({ id: page.id, title: page.title, template: page.template, orientation: page.orientation, drawing: page.drawing || '' }))
-            }))
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(cleanState));
-        updateSaveStatus();
+        if (sync) state.updatedAt = Date.now();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(serializedState()));
+        if (sync && cloudReady) {
+            cloudSavePending = true;
+            updateSaveStatus('Sincronizando…', 'sync');
+            scheduleCloudSave();
+        } else if (!cloudReady) {
+            updateSaveStatus('Guardado localmente');
+        }
     } catch (error) {
         console.warn('No fue posible guardar los cuadernos', error);
-        updateSaveStatus('No se pudo guardar');
+        updateSaveStatus('No se pudo guardar', 'error');
         showToast('El espacio del navegador está lleno. Exporta tus cuadernos para conservarlos.');
+    }
+}
+
+function scheduleCloudSave(immediate = false) {
+    if (!cloudReady) return;
+    clearTimeout(cloudSaveTimer);
+    cloudSaveTimer = setTimeout(syncToCloud, immediate ? 0 : 650);
+}
+
+async function syncToCloud() {
+    if (!cloudReady || cloudSaving || !cloudSavePending) return;
+    cloudSaving = true;
+    cloudSavePending = false;
+    try {
+        const response = await fetch('api.php?action=save', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ state: serializedState() })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || 'Error de sincronización');
+        updateSaveStatus('Sincronizado en todos tus dispositivos');
+    } catch (error) {
+        console.warn('No fue posible sincronizar DaVinci', error);
+        updateSaveStatus('Sin conexión · guardado local', 'warning');
+    } finally {
+        cloudSaving = false;
+        if (cloudSavePending) scheduleCloudSave();
+    }
+}
+
+async function restoreCloudState() {
+    const localUpdatedAt = Number(state.updatedAt || 0);
+    updateSaveStatus('Recuperando tus cuadernos…', 'sync');
+    try {
+        const response = await fetch('api.php?action=load', { credentials: 'same-origin' });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || 'No fue posible recuperar tus datos');
+        cloudReady = true;
+        const remoteState = result.data?.state;
+        const remoteUpdatedAt = Number(remoteState?.updatedAt || 0);
+        if (remoteState && Array.isArray(remoteState.books) && remoteUpdatedAt >= localUpdatedAt) {
+            state = remoteState;
+            histories = new Map();
+            normalizeState();
+            persist({ sync: false });
+            await renderApp();
+            updateSaveStatus('Sincronizado en todos tus dispositivos');
+        } else if (remoteState && Array.isArray(remoteState.books)) {
+            cloudSavePending = true;
+            scheduleCloudSave(true);
+        } else {
+            cloudSavePending = true;
+            scheduleCloudSave(true);
+        }
+    } catch (error) {
+        console.warn('No fue posible recuperar DaVinci desde el servidor', error);
+        updateSaveStatus('Sin conexión · guardado local', 'warning');
     }
 }
 
@@ -107,6 +186,31 @@ function resizeCanvases(page) {
         drawingCanvas.height = height;
     }
     document.getElementById('canvasStage').classList.toggle('is-landscape', page?.orientation === 'landscape');
+    requestAnimationFrame(applyZoom);
+}
+
+function setZoom(value) {
+    canvasZoom = Math.max(.5, Math.min(2, value));
+    const percentage = Math.round(canvasZoom * 100);
+    document.getElementById('zoomRange').value = percentage;
+    document.getElementById('zoomValue').textContent = `${percentage}%`;
+    applyZoom();
+}
+
+function applyZoom() {
+    const viewport = document.getElementById('canvasViewport');
+    const page = getActivePage();
+    const wrap = document.getElementById('paperWrap');
+    if (!viewport || !page || !wrap) return;
+    const stage = document.getElementById('canvasStage');
+    const isPresentation = Boolean(document.fullscreenElement) || stage.classList.contains('is-pseudo-fullscreen');
+    const defaultWidth = page.orientation === 'landscape' ? 780 : 590;
+    const presentationWidth = page.orientation === 'landscape' ? viewport.clientHeight * 1.36 : viewport.clientHeight * .68;
+    const naturalWidth = isPresentation ? Math.max(defaultWidth, presentationWidth) : defaultWidth;
+    const availableWidth = Math.max(220, viewport.clientWidth - 10);
+    const baseWidth = Math.min(naturalWidth, availableWidth);
+    wrap.style.width = `${Math.round(baseWidth * canvasZoom)}px`;
+    renderRuler();
 }
 
 function drawPaper(context, template, width, height) {
@@ -153,6 +257,7 @@ async function renderActivePage() {
     const existing = histories.get(page.id);
     if (!existing) histories.set(page.id, { items: [page.drawing || ''], index: 0 });
     updateHistoryButtons();
+    applyZoom();
 }
 
 function getHistory(page) {
@@ -390,6 +495,7 @@ async function toggleCanvasFullscreen() {
         updateFullscreenButton();
         showToast('Se activó el modo de presentación del lienzo.');
     }
+    window.setTimeout(applyZoom, 160);
 }
 
 function updateFullscreenButton() {
@@ -400,12 +506,47 @@ function updateFullscreenButton() {
     button.setAttribute('aria-label', isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa del lienzo');
     button.title = isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa';
     button.innerHTML = `<i class="fa-solid fa-${isFullscreen ? 'compress' : 'expand'}" aria-hidden="true"></i>`;
+    const stageButton = document.getElementById('stageFullscreenButton');
+    stageButton.setAttribute('aria-label', isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa del lienzo');
+    stageButton.innerHTML = `<i class="fa-solid fa-${isFullscreen ? 'compress' : 'expand'}" aria-hidden="true"></i><span>${isFullscreen ? 'Salir' : 'Pantalla completa'}</span>`;
+    requestAnimationFrame(applyZoom);
 }
 
-function updateSaveStatus(message = 'Guardado localmente') {
+function updateSaveStatus(message = 'Sincronizado en todos tus dispositivos', mode = 'ok') {
     const status = document.getElementById('saveStatus');
     if (!status) return;
-    status.innerHTML = `<i class="fa-solid fa-${message === 'Guardado localmente' ? 'check' : 'triangle-exclamation'}" aria-hidden="true"></i> ${message}`;
+    const icon = mode === 'error' ? 'triangle-exclamation' : mode === 'sync' ? 'arrows-rotate' : mode === 'warning' ? 'cloud' : 'cloud-check';
+    status.dataset.mode = mode;
+    status.innerHTML = `<i class="fa-solid fa-${icon}" aria-hidden="true"></i> ${message}`;
+}
+
+function updateRuler() {
+    const ruler = document.getElementById('ruler');
+    const button = document.getElementById('rulerToggleButton');
+    ruler.hidden = !rulerVisible;
+    button.classList.toggle('is-active', rulerVisible);
+    button.setAttribute('aria-pressed', String(rulerVisible));
+    button.title = rulerVisible ? 'Ocultar regla' : 'Mostrar regla';
+    renderRuler();
+}
+
+function renderRuler() {
+    const ruler = document.getElementById('ruler');
+    if (!ruler || !rulerVisible) return;
+    ruler.style.left = `${rulerPosition.x * 100}%`;
+    ruler.style.top = `${rulerPosition.y * 100}%`;
+    ruler.style.transform = `translate(-50%, -50%) rotate(${rulerAngle}deg)`;
+}
+
+function moveRuler(event) {
+    if (rulerDragPointerId !== event.pointerId) return;
+    const wrapRect = document.getElementById('paperWrap').getBoundingClientRect();
+    rulerPosition = {
+        x: Math.max(.06, Math.min(.94, (event.clientX - wrapRect.left) / wrapRect.width)),
+        y: Math.max(.04, Math.min(.96, (event.clientY - wrapRect.top) / wrapRect.height))
+    };
+    renderRuler();
+    event.preventDefault();
 }
 
 function openModal(id) {
@@ -521,7 +662,32 @@ function bindEvents() {
     document.getElementById('portraitOrientationButton').addEventListener('click', () => setPageOrientation('portrait'));
     document.getElementById('landscapeOrientationButton').addEventListener('click', () => setPageOrientation('landscape'));
     document.getElementById('fullscreenCanvasButton').addEventListener('click', toggleCanvasFullscreen);
+    document.getElementById('stageFullscreenButton').addEventListener('click', toggleCanvasFullscreen);
     document.addEventListener('fullscreenchange', updateFullscreenButton);
+    document.getElementById('zoomRange').addEventListener('input', event => setZoom(Number(event.target.value) / 100));
+    document.getElementById('zoomOutButton').addEventListener('click', () => setZoom(canvasZoom - .1));
+    document.getElementById('zoomInButton').addEventListener('click', () => setZoom(canvasZoom + .1));
+    document.getElementById('rulerToggleButton').addEventListener('click', () => { rulerVisible = !rulerVisible; updateRuler(); });
+    const ruler = document.getElementById('ruler');
+    ruler.addEventListener('pointerdown', event => {
+        rulerDragPointerId = event.pointerId;
+        ruler.setPointerCapture(event.pointerId);
+        event.preventDefault();
+        event.stopPropagation();
+    });
+    ruler.addEventListener('pointermove', moveRuler);
+    ruler.addEventListener('pointerup', event => {
+        if (rulerDragPointerId !== event.pointerId) return;
+        rulerDragPointerId = null;
+        if (ruler.hasPointerCapture(event.pointerId)) ruler.releasePointerCapture(event.pointerId);
+    });
+    ruler.addEventListener('pointercancel', () => { rulerDragPointerId = null; });
+    ruler.addEventListener('dblclick', event => {
+        rulerAngle = rulerAngle === 0 ? 90 : 0;
+        renderRuler();
+        event.preventDefault();
+    });
+    window.addEventListener('resize', applyZoom);
     document.addEventListener('keydown', event => {
         if (event.key === 'Escape' && document.getElementById('canvasStage').classList.contains('is-pseudo-fullscreen')) {
             document.getElementById('canvasStage').classList.remove('is-pseudo-fullscreen');
@@ -637,9 +803,28 @@ window.addEventListener('beforeunload', () => {
     const page = getActivePage();
     if (page && isDrawing) page.drawing = drawingCanvas.toDataURL('image/png');
     persist();
+    if (cloudReady && navigator.sendBeacon) {
+        const payload = JSON.stringify({ state: serializedState() });
+        if (payload.length < 60000) navigator.sendBeacon('api.php?action=save', new Blob([payload], { type: 'application/json' }));
+    }
 });
 
-loadState();
-bindEvents();
-setTool('pencil');
-renderApp();
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'hidden') return;
+    const page = getActivePage();
+    if (page && isDrawing) page.drawing = drawingCanvas.toDataURL('image/png');
+    persist();
+    if (cloudReady) syncToCloud();
+});
+
+async function initializeApp() {
+    loadState();
+    bindEvents();
+    setTool('pencil');
+    setZoom(1);
+    updateRuler();
+    await renderApp();
+    await restoreCloudState();
+}
+
+initializeApp();

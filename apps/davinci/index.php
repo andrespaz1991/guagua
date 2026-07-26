@@ -1,3 +1,10 @@
+<?php
+@session_start();
+if (!isset($_SESSION['id_usuario'])) {
+    header('Location: ../../usuario/login.php');
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=<?php echo filemtime(__DIR__ . '/css/styles.css'); ?>">
 </head>
 <body>
     <div class="app-shell">
@@ -26,7 +33,7 @@
 
             <div class="library-footer">
                 <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>
-                <span>Tu trabajo se guarda en este dispositivo.</span>
+                <span>Sincronizado con tu cuenta.</span>
             </div>
         </aside>
 
@@ -83,6 +90,14 @@
                     <button id="portraitOrientationButton" class="tool-button is-active" type="button" aria-pressed="true" title="Orientación vertical"><i class="fa-regular fa-rectangle-portrait" aria-hidden="true"></i><span>Vertical</span></button>
                     <button id="landscapeOrientationButton" class="tool-button" type="button" aria-pressed="false" title="Orientación horizontal"><i class="fa-regular fa-rectangle-wide" aria-hidden="true"></i><span>Horizontal</span></button>
                 </div>
+                <span class="toolbar-divider"></span>
+                <div class="zoom-control" aria-label="Zoom del lienzo">
+                    <button id="zoomOutButton" class="icon-button" type="button" aria-label="Reducir zoom" title="Reducir zoom"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>
+                    <input id="zoomRange" type="range" min="50" max="200" value="100" step="10" aria-label="Zoom del lienzo">
+                    <button id="zoomInButton" class="icon-button" type="button" aria-label="Aumentar zoom" title="Aumentar zoom"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+                    <output id="zoomValue" for="zoomRange">100%</output>
+                </div>
+                <button id="rulerToggleButton" class="tool-button" type="button" aria-pressed="false"><i class="fa-solid fa-ruler" aria-hidden="true"></i><span>Regla</span></button>
                 <div class="toolbar-spacer"></div>
                 <div class="tool-group">
                     <button id="fullscreenCanvasButton" class="icon-button" type="button" aria-pressed="false" aria-label="Pantalla completa del lienzo" title="Pantalla completa"><i class="fa-solid fa-expand" aria-hidden="true"></i></button>
@@ -99,9 +114,15 @@
                 </aside>
 
                 <section id="canvasStage" class="canvas-stage" aria-label="Lienzo de dibujo">
-                    <div class="paper-wrap">
-                        <canvas id="paperCanvas" width="1240" height="1754" aria-hidden="true"></canvas>
-                        <canvas id="drawingCanvas" width="1240" height="1754" aria-label="Página para dibujar. Usa el ratón, el lápiz óptico o el dedo."></canvas>
+                    <button id="stageFullscreenButton" class="stage-fullscreen-button" type="button" aria-label="Salir de pantalla completa"><i class="fa-solid fa-compress" aria-hidden="true"></i><span>Salir</span></button>
+                    <div id="canvasViewport" class="canvas-viewport">
+                        <div id="paperWrap" class="paper-wrap">
+                            <canvas id="paperCanvas" width="1240" height="1754" aria-hidden="true"></canvas>
+                            <canvas id="drawingCanvas" width="1240" height="1754" aria-label="Página para dibujar. Usa el ratón, el lápiz óptico o el dedo."></canvas>
+                            <div id="ruler" class="ruler" hidden aria-label="Regla movible">
+                                <span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span>
+                            </div>
+                        </div>
                     </div>
                     <p id="canvasHint" class="canvas-hint"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Tu trazo se guarda automáticamente.</p>
                 </section>
@@ -160,6 +181,6 @@
     <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/app.js?v=<?php echo filemtime(__DIR__ . '/js/app.js'); ?>"></script>
 </body>
 </html>
