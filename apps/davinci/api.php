@@ -45,15 +45,24 @@ if (!$mysqli->query($tabla)) {
 
 $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
+if ($action === 'status') {
+    $stmt = $mysqli->prepare('SELECT updated_at, SHA2(state_json, 256) AS version FROM davinci_cuadernos WHERE id_usuario = ? LIMIT 1');
+    $stmt->bind_param('s', $idUsuario);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    respondDavinci(true, $row ? ['updatedAt' => $row['updated_at'], 'version' => $row['version']] : ['updatedAt' => null, 'version' => null]);
+}
+
 if ($action === 'load') {
-    $stmt = $mysqli->prepare('SELECT state_json, updated_at FROM davinci_cuadernos WHERE id_usuario = ? LIMIT 1');
+    $stmt = $mysqli->prepare('SELECT state_json, updated_at, SHA2(state_json, 256) AS version FROM davinci_cuadernos WHERE id_usuario = ? LIMIT 1');
     $stmt->bind_param('s', $idUsuario);
     $stmt->execute();
     $row = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 
     if (!$row) {
-        respondDavinci(true, ['state' => null, 'updatedAt' => null]);
+        respondDavinci(true, ['state' => null, 'updatedAt' => null, 'version' => null]);
     }
 
     $state = json_decode($row['state_json'], true);
@@ -61,7 +70,7 @@ if ($action === 'load') {
         respondDavinci(false, null, 'No fue posible leer tus cuadernos sincronizados.', 500);
     }
 
-    respondDavinci(true, ['state' => $state, 'updatedAt' => $row['updated_at']]);
+    respondDavinci(true, ['state' => $state, 'updatedAt' => $row['updated_at'], 'version' => $row['version']]);
 }
 
 if ($action === 'save' && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -94,7 +103,13 @@ if ($action === 'save' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         respondDavinci(false, null, 'No fue posible sincronizar los cuadernos. Se conservaron en este dispositivo.', 500);
     }
 
-    respondDavinci(true, ['updatedAt' => gmdate('c')], 'Cambios sincronizados.');
+    $versionStmt = $mysqli->prepare('SELECT updated_at, SHA2(state_json, 256) AS version FROM davinci_cuadernos WHERE id_usuario = ? LIMIT 1');
+    $versionStmt->bind_param('s', $idUsuario);
+    $versionStmt->execute();
+    $synced = $versionStmt->get_result()->fetch_assoc();
+    $versionStmt->close();
+
+    respondDavinci(true, ['updatedAt' => $synced['updated_at'] ?? gmdate('c'), 'version' => $synced['version'] ?? null], 'Cambios sincronizados.');
 }
 
 respondDavinci(false, null, 'Acción no válida.', 400);

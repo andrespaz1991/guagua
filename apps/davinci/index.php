@@ -46,6 +46,7 @@ if (!isset($_SESSION['id_usuario'])) {
                     <small id="saveStatus" class="save-status"><i class="fa-solid fa-check" aria-hidden="true"></i> Guardado localmente</small>
                 </div>
                 <div class="header-actions">
+                    <button id="saveNowButton" class="btn btn-primary save-now-button" type="button"><i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i><span>Guardar</span></button>
                     <button id="renameBookButton" class="text-button" type="button"><i class="fa-solid fa-pen" aria-hidden="true"></i> Renombrar</button>
                     <div class="export-menu-wrap">
                         <button id="exportMenuButton" class="btn btn-dark" type="button" aria-expanded="false"><i class="fa-solid fa-download" aria-hidden="true"></i> Exportar <i class="fa-solid fa-chevron-down tiny-icon" aria-hidden="true"></i></button>
@@ -98,6 +99,13 @@ if (!isset($_SESSION['id_usuario'])) {
                     <output id="zoomValue" for="zoomRange">100%</output>
                 </div>
                 <button id="rulerToggleButton" class="tool-button" type="button" aria-pressed="false"><i class="fa-solid fa-ruler" aria-hidden="true"></i><span>Regla</span></button>
+                <div id="rulerControls" class="ruler-controls" hidden aria-label="Ajustes de la regla">
+                    <i class="fa-solid fa-down-left-and-up-right-to-center" aria-hidden="true"></i>
+                    <input id="rulerSize" type="range" min="30" max="100" value="72" aria-label="Tamaño de la regla">
+                    <output id="rulerSizeValue" for="rulerSize">72%</output>
+                    <button id="rulerRotateButton" class="icon-button" type="button" aria-label="Girar regla 15 grados" title="Girar regla"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i></button>
+                    <output id="rulerAngleValue">0°</output>
+                </div>
                 <div class="toolbar-spacer"></div>
                 <div class="tool-group">
                     <button id="fullscreenCanvasButton" class="icon-button" type="button" aria-pressed="false" aria-label="Pantalla completa del lienzo" title="Pantalla completa"><i class="fa-solid fa-expand" aria-hidden="true"></i></button>

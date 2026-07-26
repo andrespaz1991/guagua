@@ -22,10 +22,15 @@ let cloudReady = false;
 let cloudSaving = false;
 let cloudSavePending = false;
 let cloudSaveTimer;
+let cloudPollingTimer;
+let cloudPolling = false;
+let lastCloudVersion = null;
+let hasLocalChanges = false;
 let canvasZoom = 1;
 let rulerVisible = false;
 let rulerPosition = { x: .5, y: .22 };
 let rulerAngle = 0;
+let rulerSize = 72;
 let rulerDragPointerId = null;
 
 function uid(prefix) {
@@ -99,6 +104,7 @@ function persist({ sync = true } = {}) {
         if (sync) state.updatedAt = Date.now();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(serializedState()));
         if (sync && cloudReady) {
+            hasLocalChanges = true;
             cloudSavePending = true;
             updateSaveStatus('Sincronizando…', 'sync');
             scheduleCloudSave();
@@ -122,6 +128,7 @@ async function syncToCloud() {
     if (!cloudReady || cloudSaving || !cloudSavePending) return;
     cloudSaving = true;
     cloudSavePending = false;
+    const savedUpdatedAt = state.updatedAt;
     try {
         const response = await fetch('api.php?action=save', {
             method: 'POST',
@@ -131,6 +138,8 @@ async function syncToCloud() {
         });
         const result = await response.json();
         if (!response.ok || !result.success) throw new Error(result.message || 'Error de sincronización');
+        lastCloudVersion = result.data?.version || lastCloudVersion;
+        if (!cloudSavePending && state.updatedAt === savedUpdatedAt) hasLocalChanges = false;
         updateSaveStatus('Sincronizado en todos tus dispositivos');
     } catch (error) {
         console.warn('No fue posible sincronizar DaVinci', error);
@@ -139,6 +148,12 @@ async function syncToCloud() {
         cloudSaving = false;
         if (cloudSavePending) scheduleCloudSave();
     }
+}
+
+function saveNow() {
+    persist();
+    scheduleCloudSave(true);
+    showToast(cloudReady ? 'Guardando y sincronizando tus cambios…' : 'Guardado localmente. Se sincronizará cuando haya conexión.');
 }
 
 async function restoreCloudState() {
@@ -157,6 +172,8 @@ async function restoreCloudState() {
             normalizeState();
             persist({ sync: false });
             await renderApp();
+            lastCloudVersion = result.data?.version || null;
+            hasLocalChanges = false;
             updateSaveStatus('Sincronizado en todos tus dispositivos');
         } else if (remoteState && Array.isArray(remoteState.books)) {
             cloudSavePending = true;
@@ -165,10 +182,53 @@ async function restoreCloudState() {
             cloudSavePending = true;
             scheduleCloudSave(true);
         }
+        startCloudPolling();
     } catch (error) {
         console.warn('No fue posible recuperar DaVinci desde el servidor', error);
         updateSaveStatus('Sin conexión · guardado local', 'warning');
     }
+}
+
+function startCloudPolling() {
+    clearInterval(cloudPollingTimer);
+    if (!cloudReady) return;
+    cloudPollingTimer = setInterval(checkRemoteChanges, 2000);
+}
+
+async function checkRemoteChanges() {
+    if (!cloudReady || cloudPolling || document.visibilityState === 'hidden') return;
+    cloudPolling = true;
+    try {
+        const response = await fetch('api.php?action=status', { credentials: 'same-origin', cache: 'no-store' });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || 'No fue posible revisar la sincronización');
+        const remoteVersion = result.data?.version || null;
+        if (!remoteVersion || remoteVersion === lastCloudVersion) return;
+        if (hasLocalChanges || cloudSavePending || cloudSaving) {
+            updateSaveStatus('Cambios en otro dispositivo · guarda para conservar los tuyos', 'warning');
+            return;
+        }
+        await receiveRemoteChanges();
+    } catch (error) {
+        console.warn('No fue posible comprobar cambios remotos', error);
+    } finally {
+        cloudPolling = false;
+    }
+}
+
+async function receiveRemoteChanges() {
+    const response = await fetch('api.php?action=load', { credentials: 'same-origin', cache: 'no-store' });
+    const result = await response.json();
+    if (!response.ok || !result.success || !result.data?.state) throw new Error(result.message || 'No fue posible recibir los cambios');
+    state = result.data.state;
+    histories = new Map();
+    normalizeState();
+    persist({ sync: false });
+    lastCloudVersion = result.data.version || null;
+    hasLocalChanges = false;
+    await renderApp();
+    updateSaveStatus('Cambios recibidos de otro dispositivo');
+    showToast('Se actualizaron los cambios realizados en otro dispositivo.');
 }
 
 function getPageDimensions(page) {
@@ -523,7 +583,9 @@ function updateSaveStatus(message = 'Sincronizado en todos tus dispositivos', mo
 function updateRuler() {
     const ruler = document.getElementById('ruler');
     const button = document.getElementById('rulerToggleButton');
+    const controls = document.getElementById('rulerControls');
     ruler.hidden = !rulerVisible;
+    controls.hidden = !rulerVisible;
     button.classList.toggle('is-active', rulerVisible);
     button.setAttribute('aria-pressed', String(rulerVisible));
     button.title = rulerVisible ? 'Ocultar regla' : 'Mostrar regla';
@@ -535,7 +597,21 @@ function renderRuler() {
     if (!ruler || !rulerVisible) return;
     ruler.style.left = `${rulerPosition.x * 100}%`;
     ruler.style.top = `${rulerPosition.y * 100}%`;
+    ruler.style.setProperty('--ruler-size', `${rulerSize}%`);
     ruler.style.transform = `translate(-50%, -50%) rotate(${rulerAngle}deg)`;
+    document.getElementById('rulerSizeValue').textContent = `${rulerSize}%`;
+    document.getElementById('rulerAngleValue').textContent = `${rulerAngle}°`;
+}
+
+function setRulerSize(size) {
+    rulerSize = Math.max(30, Math.min(100, Number(size)));
+    document.getElementById('rulerSize').value = rulerSize;
+    renderRuler();
+}
+
+function rotateRuler(degrees = 15) {
+    rulerAngle = (rulerAngle + degrees) % 360;
+    renderRuler();
 }
 
 function moveRuler(event) {
@@ -655,6 +731,7 @@ function bindEvents() {
 
     document.getElementById('pencilTool').addEventListener('click', () => setTool('pencil'));
     document.getElementById('eraserTool').addEventListener('click', () => setTool('eraser'));
+    document.getElementById('saveNowButton').addEventListener('click', saveNow);
     document.querySelectorAll('.color-swatch').forEach(swatch => swatch.addEventListener('click', () => setColor(swatch.dataset.color)));
     document.getElementById('colorPicker').addEventListener('input', event => setColor(event.target.value));
     document.getElementById('brushSize').addEventListener('input', event => { pencilSize = Number(event.target.value); document.getElementById('brushSizeValue').textContent = `${pencilSize} px`; });
@@ -668,6 +745,8 @@ function bindEvents() {
     document.getElementById('zoomOutButton').addEventListener('click', () => setZoom(canvasZoom - .1));
     document.getElementById('zoomInButton').addEventListener('click', () => setZoom(canvasZoom + .1));
     document.getElementById('rulerToggleButton').addEventListener('click', () => { rulerVisible = !rulerVisible; updateRuler(); });
+    document.getElementById('rulerSize').addEventListener('input', event => setRulerSize(event.target.value));
+    document.getElementById('rulerRotateButton').addEventListener('click', () => rotateRuler());
     const ruler = document.getElementById('ruler');
     ruler.addEventListener('pointerdown', event => {
         rulerDragPointerId = event.pointerId;
@@ -683,8 +762,7 @@ function bindEvents() {
     });
     ruler.addEventListener('pointercancel', () => { rulerDragPointerId = null; });
     ruler.addEventListener('dblclick', event => {
-        rulerAngle = rulerAngle === 0 ? 90 : 0;
-        renderRuler();
+        rotateRuler();
         event.preventDefault();
     });
     window.addEventListener('resize', applyZoom);
@@ -810,11 +888,14 @@ window.addEventListener('beforeunload', () => {
 });
 
 document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState !== 'hidden') return;
-    const page = getActivePage();
-    if (page && isDrawing) page.drawing = drawingCanvas.toDataURL('image/png');
-    persist();
-    if (cloudReady) syncToCloud();
+    if (document.visibilityState === 'hidden') {
+        const page = getActivePage();
+        if (page && isDrawing) page.drawing = drawingCanvas.toDataURL('image/png');
+        persist();
+        if (cloudReady) syncToCloud();
+    } else {
+        checkRemoteChanges();
+    }
 });
 
 async function initializeApp() {
