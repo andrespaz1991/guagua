@@ -53,11 +53,6 @@ $(document).ready(function() {
   </script>
   
 <?php
-###############################
-$_SESSION['rol']="docente";
-$_SESSION['id_usuario']="1085290375";
-$_SESSION['id_institucion']="7";
-##################################
 require_once("comun/autoload.php");
 #unset($_SESSION['barra_busqueda']);
 $academico=new Academico();
