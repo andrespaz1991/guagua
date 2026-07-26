@@ -32,7 +32,7 @@
                 "min_grado" => 6,
                 "max_grado" => 8,
                 "ruta_excel"     => 'G:\Mi unidad\PC_HANDRES\SEDUCA\La Josefina\Vallesol\2026\Valoraciones\resumen_6-8.xlsx',
-                "ruta_excel_web" => 'https://docs.google.com/spreadsheets/d/1pDxqgaWRzAixxez1_NvYQIOEjg9wA3iV/edit?usp=sharing&ouid=101199890097368716674&rtpof=true&sd=true',
+                "ruta_excel_web" => 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTMJd1B4kIFXs3I9cFLOWfiOl4LP4RCW1CHNq47P4D2eFlrow3DzGI8lPZENChYpw/pub?output=xlsx',
                 "ultimafila" => 17,
                 "materias" => [
                     "Geometría" => "D", "Ciencias Sociales" => "E", "Educación Física" => "F",
@@ -44,7 +44,7 @@
                 "min_grado" => 9,
                 "max_grado" => 11,
                 "ruta_excel"     => 'G:\Mi unidad\PC_HANDRES\SEDUCA\La Josefina\Vallesol\2026\Valoraciones\resumen_9-11.xlsx',
-                "ruta_excel_web" => 'https://docs.google.com/spreadsheets/d/1PXQgT5PyJ376xjD4rUVtbhyScnGVRyAx/edit?usp=sharing&ouid=101199890097368716674&rtpof=true&sd=true',
+                "ruta_excel_web" => '', // Agrega aquí la URL publicada del segundo grupo cuando la tengas
                 "ultimafila" => 19,
                 "materias" => [
                     "Geometría" => "D", "Ciencias Sociales/Economia" => "E", "Educación Física" => "F",
@@ -164,31 +164,71 @@
 
     function cargarNotasDesdeExcel($ruta, $ultimaFila, $materias)
     {
-        if (!file_exists($ruta)) {
-            throw new Exception("El archivo Excel no se encontró en: {$ruta}");
-        }
-        $spreadsheet = IOFactory::load($ruta);
-        $worksheet = $spreadsheet->getActiveSheet();
-        $notasPorEstudiante = [];
-        
-        for ($row = 2; $row <= $ultimaFila; $row++) {
-            $documento = trim($worksheet->getCell('B' . $row)->getValue());
-           
-            if (empty($documento)) continue;
-            
-            $notas = [];
-            foreach ($materias as $nombreMateria => $columna) {
-                $notas[$nombreMateria] = round($worksheet->getCell($columna . $row)->getCalculatedValue(), 1);
+        $archivoTemporal = null;
+
+        // Detectar si la ruta es una URL (Google Sheets publicado, etc.)
+        if (filter_var($ruta, FILTER_VALIDATE_URL)) {
+            // Descargar el archivo a una ruta temporal en el servidor
+            $contenido = @file_get_contents($ruta, false, stream_context_create([
+                'http' => [
+                    'timeout'         => 30,
+                    'follow_location' => true,
+                    'user_agent'      => 'Mozilla/5.0 (compatible; PHP)'
+                ],
+                'ssl' => [
+                    'verify_peer'      => false,
+                    'verify_peer_name' => false
+                ]
+            ]));
+
+            if ($contenido === false || strlen($contenido) < 100) {
+                throw new Exception("No se pudo descargar el archivo desde la URL: {$ruta}. Verifica que la hoja esté publicada correctamente en Google Sheets (Archivo → Compartir → Publicar en la web → .xlsx).");
             }
-            
-            $notasPorEstudiante[$documento] = [
-                'nombre' => $worksheet->getCell('A' . $row)->getValue(),
-                'grado' => $worksheet->getCell('C' . $row)->getValue(),
-                'notas' => $notas
-            ];
+
+            // Guardar en un archivo temporal con extensión .xlsx
+            $archivoTemporal = sys_get_temp_dir() . '/reporte_temp_' . uniqid() . '.xlsx';
+            file_put_contents($archivoTemporal, $contenido);
+            $rutaLectura = $archivoTemporal;
+
+        } else {
+            // Es una ruta de archivo local
+            if (!file_exists($ruta)) {
+                throw new Exception("El archivo Excel no se encontró en: {$ruta}");
+            }
+            $rutaLectura = $ruta;
         }
+
+        try {
+            $spreadsheet = IOFactory::load($rutaLectura);
+            $worksheet = $spreadsheet->getActiveSheet();
+            $notasPorEstudiante = [];
+
+            for ($row = 2; $row <= $ultimaFila; $row++) {
+                $documento = trim($worksheet->getCell('B' . $row)->getValue());
+               
+                if (empty($documento)) continue;
+                
+                $notas = [];
+                foreach ($materias as $nombreMateria => $columna) {
+                    $notas[$nombreMateria] = round($worksheet->getCell($columna . $row)->getCalculatedValue(), 1);
+                }
+                
+                $notasPorEstudiante[$documento] = [
+                    'nombre' => $worksheet->getCell('A' . $row)->getValue(),
+                    'grado'  => $worksheet->getCell('C' . $row)->getValue(),
+                    'notas'  => $notas
+                ];
+            }
+        } finally {
+            // Limpiar el archivo temporal si se creó
+            if ($archivoTemporal && file_exists($archivoTemporal)) {
+                @unlink($archivoTemporal);
+            }
+        }
+
         return $notasPorEstudiante;
     }
+
 
     function obtenerDesempeno($nota)
     {
@@ -414,8 +454,7 @@
                               <label class="small mb-1">&#127760; Ruta Web (Hostinger)</label>
                               <input type="text" class="form-control form-control-sm"
                                   name="ruta_grupo_<?php echo $gid; ?>_web"
-                                  value="<?php echo htmlspecialchars($config['grupos'][$gid]['ruta_excel_web'] ?? ''); ?>"
-                                  placeholder="Ej: /home1/u578593511/domains/handres.io/public_html/ia/excel/resumen.xlsx">
+                                  value="https://docs.google.com/spreadsheets/d/e/2PACX-1vTMJd1B4kIFXs3I9cFLOWfiOl4LP4RCW1CHNq47P4D2eFlrow3DzGI8lPZENChYpw/pub?output=xlsx">
                           </div>
                       </div>
                   </div>
