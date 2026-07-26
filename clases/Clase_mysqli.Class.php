@@ -16,32 +16,37 @@ class Clase_mysqli extends Comun {
     }
 
     public function conectar() {
-        // Check if a connection instance already exists. If not, create it.
-        if (self::$connectionInstance === null) {
-            @session_start();
-            $server = $_SERVER['SERVER_NAME'];
-            
-            // Set connection details based on the server
-            if ($server == "handres.io") {
-                $conexion_mysqli = new mysqli("srv691.hstgr.io","u578593511_root","Handres2026.","u578593511_guagua");
-
-            } else {
-                // Default to localhost
-                $conexion_mysqli = new mysqli("127.0.0.1", "root", "", "guagua", 7000);
-            }
-
-            // Handle connection errors
-            if ($conexion_mysqli->connect_error) {
-                die("Error de conexión: " . $conexion_mysqli->connect_error);
-            } else {
-                mysqli_set_charset($conexion_mysqli, 'utf8');
-            }
-            
-            // Store the connection instance for future use
-            self::$connectionInstance = $conexion_mysqli;
+        // 1. Si ya existe una instancia estática previa en esta clase, la devolvemos
+        if (self::$connectionInstance !== null && !self::$connectionInstance->connect_error) {
+            return self::$connectionInstance;
         }
 
-        // Return the existing connection instance
+        // 2. Si comun/conexion.php ya abrió una conexión $mysqli global, la reutilizamos
+        if (isset($GLOBALS['mysqli']) && $GLOBALS['mysqli'] instanceof mysqli && !$GLOBALS['mysqli']->connect_error) {
+            self::$connectionInstance = $GLOBALS['mysqli'];
+            return self::$connectionInstance;
+        }
+
+        // 3. De lo contrario, nos conectamos usando las constantes globales de config.php
+        if (defined('SERVIDORBD') && defined('USUARIOBD') && defined('CLAVEBD') && defined('BASEDEDATOS')) {
+            $hostParts = explode(':', SERVIDORBD);
+            $host = $hostParts[0];
+            $port = isset($hostParts[1]) ? (int)$hostParts[1] : 3306;
+            
+            $conexion_mysqli = @new mysqli($host, USUARIOBD, CLAVEBD, BASEDEDATOS, $port);
+        } else {
+            // Fallback por defecto si no se ha cargado config.php
+            $conexion_mysqli = @new mysqli("127.0.0.1", "root", "", "guagua", 7000);
+        }
+
+        // Manejo de errores de conexión
+        if ($conexion_mysqli->connect_error) {
+            die("Error de conexión: " . $conexion_mysqli->connect_error);
+        } else {
+            mysqli_set_charset($conexion_mysqli, 'utf8');
+        }
+        
+        self::$connectionInstance = $conexion_mysqli;
         return self::$connectionInstance;
     }
 
