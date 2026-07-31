@@ -58,17 +58,14 @@ require_once (dirname(__FILE__)."/../funciones.php");
 <command label="Mensajes" onclick="document.location.href='<?php echo SGA_URL?>/mensajes'">
 <command label="Red" onclick="document.location.href='<?php echo SGA_URL?>/red'">
 </menu>
-<?php if (!isset($_GET['embebido'])) echo '<br><br>'; ?>
-    <div class="container">
-         <div class="page-header">
-            <?php if (!isset($_GET['embebido'])) 
-                require(SGA_COMUN_SERVER."/menu.php"); ?>
-           	<main style="padding-top: 30px;">
-           	    <section>
-                <?php if (isset($contenido)) echo $contenido; ?>
-                </section>
-            </main>
-        </div>
+<?php if (!isset($_GET['embebido'])) 
+    require(SGA_COMUN_SERVER."/menu.php"); ?>
+    <div class="container" style="padding-top: 0; margin-top: 0;">
+       	<main style="padding-top: 15px;">
+       	    <section>
+            <?php if (isset($contenido)) echo $contenido; ?>
+            </section>
+        </main>
     </div>
     <span id="txt_alertas"></span>
     <br><br>

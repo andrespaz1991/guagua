@@ -5,8 +5,10 @@ const DEFAULT_BOOK_COLOR = '#4F46E5';
 
 const paperCanvas = document.getElementById('paperCanvas');
 const drawingCanvas = document.getElementById('drawingCanvas');
+const imageCanvas = document.getElementById('imageCanvas');
 const paperContext = paperCanvas.getContext('2d');
 const drawingContext = drawingCanvas.getContext('2d');
+const imageContext = imageCanvas.getContext('2d');
 
 let state = { books: [], activeBookId: null, activePageId: null };
 let tool = 'pencil';
@@ -34,13 +36,16 @@ let rulerPosition = { x: .5, y: .22 };
 let rulerAngle = 0;
 let rulerSize = 72;
 let rulerDragPointerId = null;
+let selectedImageId = null;
+let imageTransform = null;
+const imageAssetCache = new Map();
 
 function uid(prefix) {
     return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 function createPage(title = 'Página 1', template = 'blank', orientation = 'portrait') {
-    return { id: uid('page'), title, template, orientation, drawing: '' };
+    return { id: uid('page'), title, template, orientation, drawing: '', images: [] };
 }
 
 function createBook(name = 'Mi primer cuaderno', color = DEFAULT_BOOK_COLOR) {
@@ -69,6 +74,7 @@ function normalizeState() {
             page.template = ['grid', 'lined', 'dotted'].includes(page.template) ? page.template : 'blank';
             page.orientation = page.orientation === 'landscape' ? 'landscape' : 'portrait';
             page.drawing = page.drawing || '';
+            page.images = Array.isArray(page.images) ? page.images.filter(image => image?.data && Number.isFinite(Number(image.x)) && Number.isFinite(Number(image.y))) : [];
         });
     });
     if (!getActiveBook()) state.activeBookId = state.books[0].id;
@@ -96,7 +102,7 @@ function serializedState() {
             name: book.name,
             color: book.color,
             createdAt: book.createdAt,
-            pages: book.pages.map(page => ({ id: page.id, title: page.title, template: page.template, orientation: page.orientation, drawing: page.drawing || '' }))
+            pages: book.pages.map(page => ({ id: page.id, title: page.title, template: page.template, orientation: page.orientation, drawing: page.drawing || '', images: page.images || [] }))
         }))
     };
 }
@@ -260,6 +266,8 @@ function resizeCanvases(page) {
         paperCanvas.height = height;
         drawingCanvas.width = width;
         drawingCanvas.height = height;
+        imageCanvas.width = width;
+        imageCanvas.height = height;
     }
     document.getElementById('canvasStage').classList.toggle('is-landscape', page?.orientation === 'landscape');
     requestAnimationFrame(applyZoom);
@@ -338,6 +346,162 @@ function imageFromData(dataUrl) {
     });
 }
 
+function imageAssetFromData(dataUrl) {
+    if (!dataUrl) return Promise.resolve(null);
+    if (!imageAssetCache.has(dataUrl)) imageAssetCache.set(dataUrl, imageFromData(dataUrl));
+    return imageAssetCache.get(dataUrl);
+}
+
+async function drawPageImages(context, page, drawSelection = false) {
+    const images = page?.images || [];
+    const loaded = await Promise.all(images.map(async image => ({ image, asset: await imageAssetFromData(image.data) })));
+    loaded.forEach(({ image, asset }) => {
+        if (!asset) return;
+        const width = Number(image.width) || 280;
+        const height = Number(image.height) || 180;
+        const rotation = (Number(image.rotation) || 0) * Math.PI / 180;
+        context.save();
+        context.translate(Number(image.x), Number(image.y));
+        context.rotate(rotation);
+        context.drawImage(asset, -width / 2, -height / 2, width, height);
+        if (drawSelection && image.id === selectedImageId) drawImageSelection(context, width, height);
+        context.restore();
+    });
+}
+
+function drawImageSelection(context, width, height) {
+    const handle = 20;
+    context.save();
+    context.strokeStyle = '#4f46e5';
+    context.fillStyle = '#fff';
+    context.lineWidth = 5;
+    context.setLineDash([12, 9]);
+    context.strokeRect(-width / 2, -height / 2, width, height);
+    context.setLineDash([]);
+    context.beginPath();
+    context.moveTo(0, -height / 2);
+    context.lineTo(0, -height / 2 - 50);
+    context.stroke();
+    [[-width / 2, -height / 2], [width / 2, -height / 2], [width / 2, height / 2], [-width / 2, height / 2]].forEach(([x, y]) => {
+        context.fillRect(x - handle / 2, y - handle / 2, handle, handle);
+        context.strokeRect(x - handle / 2, y - handle / 2, handle, handle);
+    });
+    context.beginPath();
+    context.arc(0, -height / 2 - 50, 13, 0, Math.PI * 2);
+    context.fill();
+    context.stroke();
+    context.restore();
+}
+
+async function renderImages() {
+    const page = getActivePage();
+    if (!page) return;
+    const renderedPageId = page.id;
+    imageContext.clearRect(0, 0, imageCanvas.width, imageCanvas.height);
+    await drawPageImages(imageContext, page, true);
+    if (getActivePage()?.id !== renderedPageId) return;
+}
+
+function localImagePoint(point, image) {
+    const radians = -(Number(image.rotation) || 0) * Math.PI / 180;
+    const dx = point.x - Number(image.x);
+    const dy = point.y - Number(image.y);
+    return { x: dx * Math.cos(radians) - dy * Math.sin(radians), y: dx * Math.sin(radians) + dy * Math.cos(radians) };
+}
+
+function imageHandleAtPoint(point, image) {
+    const local = localImagePoint(point, image);
+    const width = Number(image.width) || 280;
+    const height = Number(image.height) || 180;
+    const hit = 34;
+    const corners = [
+        { x: -width / 2, y: -height / 2, sx: -1, sy: -1 },
+        { x: width / 2, y: -height / 2, sx: 1, sy: -1 },
+        { x: width / 2, y: height / 2, sx: 1, sy: 1 },
+        { x: -width / 2, y: height / 2, sx: -1, sy: 1 }
+    ];
+    const resize = corners.find(corner => Math.hypot(local.x - corner.x, local.y - corner.y) <= hit);
+    if (resize) return { type: 'resize', ...resize };
+    if (Math.hypot(local.x, local.y + height / 2 + 50) <= hit) return { type: 'rotate' };
+    if (Math.abs(local.x) <= width / 2 && Math.abs(local.y) <= height / 2) return { type: 'move' };
+    return null;
+}
+
+function imageFromPoint(point) {
+    const page = getActivePage();
+    if (!page) return null;
+    for (let index = page.images.length - 1; index >= 0; index--) {
+        const image = page.images[index];
+        const handle = imageHandleAtPoint(point, image);
+        if (handle) return { image, handle };
+    }
+    return null;
+}
+
+function pointFromImageEvent(event) {
+    const rect = imageCanvas.getBoundingClientRect();
+    return { x: (event.clientX - rect.left) * (imageCanvas.width / rect.width), y: (event.clientY - rect.top) * (imageCanvas.height / rect.height) };
+}
+
+function startImageTransform(event) {
+    if (tool !== 'image') return;
+    const point = pointFromImageEvent(event);
+    const hit = imageFromPoint(point);
+    if (!hit) {
+        selectedImageId = null;
+        renderImages();
+        return;
+    }
+    selectedImageId = hit.image.id;
+    imageTransform = {
+        pointerId: event.pointerId,
+        type: hit.handle.type,
+        handle: hit.handle,
+        startPoint: point,
+        startImage: { ...hit.image }
+    };
+    imageCanvas.setPointerCapture(event.pointerId);
+    renderImages();
+    event.preventDefault();
+}
+
+function moveImageTransform(event) {
+    if (!imageTransform || imageTransform.pointerId !== event.pointerId) return;
+    const page = getActivePage();
+    const image = page?.images.find(item => item.id === selectedImageId);
+    if (!image) return;
+    const point = pointFromImageEvent(event);
+    const start = imageTransform.startImage;
+    if (imageTransform.type === 'move') {
+        image.x = start.x + point.x - imageTransform.startPoint.x;
+        image.y = start.y + point.y - imageTransform.startPoint.y;
+    } else if (imageTransform.type === 'rotate') {
+        image.rotation = ((Math.atan2(point.y - start.y, point.x - start.x) * 180 / Math.PI) + 90 + 360) % 360;
+    } else if (imageTransform.type === 'resize') {
+        const local = localImagePoint(point, start);
+        const { sx, sy } = imageTransform.handle;
+        const anchor = { x: -sx * start.width / 2, y: -sy * start.height / 2 };
+        const nextWidth = Math.max(60, Math.abs(local.x - anchor.x));
+        const nextHeight = Math.max(60, Math.abs(local.y - anchor.y));
+        const centerOffset = { x: (anchor.x + local.x) / 2, y: (anchor.y + local.y) / 2 };
+        const rotation = (Number(start.rotation) || 0) * Math.PI / 180;
+        image.width = nextWidth;
+        image.height = nextHeight;
+        image.x = start.x + centerOffset.x * Math.cos(rotation) - centerOffset.y * Math.sin(rotation);
+        image.y = start.y + centerOffset.x * Math.sin(rotation) + centerOffset.y * Math.cos(rotation);
+    }
+    renderImages();
+    event.preventDefault();
+}
+
+function endImageTransform(event) {
+    if (!imageTransform || imageTransform.pointerId !== event.pointerId) return;
+    if (imageCanvas.hasPointerCapture(event.pointerId)) imageCanvas.releasePointerCapture(event.pointerId);
+    imageTransform = null;
+    persist();
+    renderPages();
+}
+
 async function renderActivePage() {
     const page = getActivePage();
     if (!page) return;
@@ -346,12 +510,14 @@ async function renderActivePage() {
     const { width, height } = getPageDimensions(page);
     drawPaper(paperContext, page.template, width, height);
     drawingContext.clearRect(0, 0, width, height);
+    imageContext.clearRect(0, 0, width, height);
     try {
         const image = await imageFromData(page.drawing);
         if (image && getActivePage()?.id === renderedPageId) drawingContext.drawImage(image, 0, 0, width, height);
     } catch (error) {
         console.warn('No fue posible cargar el dibujo de la página', error);
     }
+    await renderImages();
     const existing = histories.get(page.id);
     if (!existing) histories.set(page.id, { items: [page.drawing || ''], index: 0 });
     updateHistoryButtons();

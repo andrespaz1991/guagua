@@ -90,7 +90,6 @@ body{
     background-color:#31708f!important;
 }
 </style>
-<br>
 <?php
 // WIDGET DE EVOLUCIÓN DEL PERIODO
 require_once(dirname(__FILE__)."/comun/conexion.php");

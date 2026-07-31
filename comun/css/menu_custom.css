@@ -1,0 +1,85 @@
+
+/* =========================================================
+   ESTILOS DINÁMICOS COMPLETOS DEL MENÚ GUAGUA
+   ========================================================= */
+
+/* 1. REDUCCIÓN REAL Y ALTURA DE LA BARRA BLANCA SUPERIOR */
+.navbar.navbar-default,
+.navbar.navbar-default .navbar-collapse.navbar-ex1-collapse {
+    height: 145px !important;
+    min-height: 145px !important;
+    max-height: 145px !important;
+    background-color: #ffffff !important;
+    border-bottom: 2px solid #e8edf3 !important;
+}
+
+/* 2. ZONA SLIDER DE ÍCONOS (INCLUYE ÍCONO CONFIG DESLIZABLE) */
+.nav-slider-container {
+    height: 100% !important;
+    max-height: 100% !important;
+}
+
+.nav.navbar-nav > li > a,
+.slider-track > li > a {
+    min-height: calc(145px - 10px) !important;
+    padding: 2px 6px !important;
+    min-width: 115px !important;
+}
+
+.nav.navbar-nav > li > a > span[class*="icon-sga"],
+.slider-track > li > a > span[class*="icon-sga"] {
+    width: calc(76px + 4px) !important;
+    min-height: 80px !important;
+    padding-top: 80px !important;
+    background-size: 76px 76px !important;
+}
+
+.nav.navbar-nav > li > a > span[class*="icon-sga"]::after,
+.slider-track > li > a > span[class*="icon-sga"]::after {
+    font-size: 16px !important;
+}
+
+/* 3. ZONA DERECHA COMPLETA (FOTO DE USUARIO Y ROL A ESCALA EQUIVALENTE) */
+.nav.navbar-nav.navbar-right,
+.nav.navbar-nav.navbar-right > li {
+    height: 100% !important;
+    align-items: center !important;
+    padding: 0 6px !important;
+}
+
+#estilo_foto_usuario_menu {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 115px !important;
+    height: 100% !important;
+}
+
+#foto_usuario, #foto_usuario_hijo {
+    width: 76px !important;
+    height: 76px !important;
+    max-width: 76px !important;
+    border: 3px solid #38bdf8 !important;
+    border-radius: 50% !important;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15) !important;
+}
+
+#area_rol {
+    font-family: "Soft_Marshmallow", sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    color: #38bdf8 !important;
+    margin-top: 6px !important;
+    display: block !important;
+    visibility: visible !important;
+}
+
+/* 4. DESPLAZAMIENTO Y SUBIDA DEL CONTENIDO RESTANTE DE LA PLANTILLA */
+body > .container, 
+body > .container-fluid,
+.main-content,
+#contenido {
+    margin-top: 0px !important;
+}

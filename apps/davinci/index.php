@@ -50,12 +50,16 @@ if (!isset($_SESSION['id_usuario'])) {
                     <button id="pagesPanelButton" class="icon-button panel-toggle-button" type="button" aria-pressed="false" aria-label="Ocultar páginas" title="Ocultar páginas"><i class="fa-solid fa-table-columns" aria-hidden="true"></i></button>
                     <button id="saveNowButton" class="btn btn-primary save-now-button" type="button"><i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i><span>Guardar</span></button>
                     <button id="renameBookButton" class="text-button" type="button"><i class="fa-solid fa-pen" aria-hidden="true"></i> Renombrar</button>
+                    <button id="importProjectButton" class="text-button" type="button"><i class="fa-solid fa-file-import" aria-hidden="true"></i> Importar</button>
+                    <input id="importProjectInput" type="file" accept="application/json,.json,.davinci" hidden>
                     <div class="export-menu-wrap">
                         <button id="exportMenuButton" class="btn btn-dark" type="button" aria-expanded="false"><i class="fa-solid fa-download" aria-hidden="true"></i> Exportar <i class="fa-solid fa-chevron-down tiny-icon" aria-hidden="true"></i></button>
                         <div id="exportMenu" class="export-menu" hidden>
                             <button type="button" data-export="image"><i class="fa-regular fa-image" aria-hidden="true"></i> Página como imagen</button>
                             <button type="button" data-export="page-pdf"><i class="fa-regular fa-file-pdf" aria-hidden="true"></i> Página como PDF</button>
+                            <button type="button" data-export="page-project"><i class="fa-regular fa-file-code" aria-hidden="true"></i> Exportar hoja editable</button>
                             <button type="button" data-export="book-pdf"><i class="fa-solid fa-book" aria-hidden="true"></i> Cuaderno completo en PDF</button>
+                            <button type="button" data-export="book-project"><i class="fa-solid fa-file-export" aria-hidden="true"></i> Exportar cuaderno editable</button>
                         </div>
                     </div>
                 </div>
@@ -65,6 +69,7 @@ if (!isset($_SESSION['id_usuario'])) {
                 <div class="tool-group">
                     <button id="pencilTool" class="tool-button is-active" type="button" aria-pressed="true"><i class="fa-solid fa-pencil" aria-hidden="true"></i><span>Lápiz</span></button>
                     <button id="eraserTool" class="tool-button" type="button" aria-pressed="false"><i class="fa-solid fa-eraser" aria-hidden="true"></i><span>Borrador</span></button>
+                    <button id="imageEditTool" class="tool-button" type="button" aria-pressed="false"><i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i><span>Editar imagen</span></button>
                 </div>
                 <span class="toolbar-divider"></span>
                 <div class="tool-group color-tools" aria-label="Color del lápiz">
@@ -133,6 +138,8 @@ if (!isset($_SESSION['id_usuario'])) {
                         <div id="paperWrap" class="paper-wrap">
                             <canvas id="paperCanvas" width="1240" height="1754" aria-hidden="true"></canvas>
                             <canvas id="drawingCanvas" width="1240" height="1754" aria-label="Página para dibujar. Usa el ratón, el lápiz óptico o el dedo."></canvas>
+                            <canvas id="imageCanvas" width="1240" height="1754" aria-label="Imágenes editables del lienzo"></canvas>
+                            <span id="eraserCursor" class="eraser-cursor" hidden aria-hidden="true"></span>
                             <div id="ruler" class="ruler" hidden aria-label="Regla movible">
                                 <span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span>
                             </div>

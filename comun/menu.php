@@ -33,70 +33,188 @@ $rol_actual = isset($_SESSION['rol']) ? $_SESSION['rol'] : '';
 $barra_busqueda = isset($_SESSION['barra_busqueda']) ? $_SESSION['barra_busqueda'] : '';
 $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
 ?>
+<link rel="stylesheet" href="<?php echo SGA_COMUN_URL; ?>/css/menu_custom.css?v=<?php echo file_exists(dirname(__FILE__).'/css/menu_custom.css') ? filemtime(dirname(__FILE__).'/css/menu_custom.css') : time(); ?>">
 <style>
-/* Estilos para el slider del menú */
+/* =========================================================
+   BARRA PRINCIPAL - 100% ANCHO - 90px ALTO - SIN OVERFLOW
+   ========================================================= */
+.navbar.navbar-default {
+    background-color: #ffffff !important;
+    border: none !important;
+    border-bottom: 2px solid #e8edf3 !important;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 90px;
+    margin: 0 !important;
+    padding: 0 12px 0 4px !important;
+    box-sizing: border-box !important;
+    border-radius: 0 !important;
+    /* LAYOUT: flexbox de una sola fila */
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    z-index: 1000 !important;
+    position: relative !important;
+}
+
+/* Ocultar el header clásico de Bootstrap (logo "Guagua") - los iconos van a la izquierda */
+.navbar.navbar-default .navbar-header {
+    display: none !important;
+}
+
+/* El collapse ocupa todo el espacio disponible y organiza todo en una fila */
+.navbar.navbar-default .navbar-collapse.navbar-ex1-collapse {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+}
+
+/* CONTENEDOR DEL SLIDER - OCUPA TODO EL ESPACIO CENTRAL DESDE LA IZQUIERDA */
 .nav-slider-container {
-    display: inline-flex;
-    align-items: center;
-    width: 85%; /* <--- Define el ancho base en porcentaje */
-    max-width: 85%; /* <--- Define el ancho máximo permitido en porcentaje */
-    float: left;
-    position: relative;
-    height: 50px; 
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    float: none !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
 }
 
 .nav-slider-wrapper {
-    overflow-x: auto;
-    overflow-y: hidden;
-    white-space: nowrap;
-    width: 100%;
-    scroll-behavior: smooth;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    margin-top:3%;
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    scroll-behavior: smooth !important;
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-.nav-slider-wrapper::-webkit-scrollbar {
-    display: none;
-}
+.nav-slider-wrapper::-webkit-scrollbar { display: none !important; }
 
 .slider-track {
-    display: inline-flex;
-    flex-wrap: nowrap;
-    margin: 0;
-    padding: 0;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
     float: none !important;
+    list-style: none !important;
 }
 
 .slider-track > li {
+    display: inline-flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 100% !important;
     float: none !important;
-    display: inline-block;
+    flex-shrink: 0 !important;
 }
 
+/* Botones de desplazamiento del slider */
 .nav-slider-btn {
-    margin-top:3%;
-    background: transparent;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    padding: 0 10px;
-    color: #777;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    transition: color 0.3s, background-color 0.3s;
+    background: rgba(241,245,249,0.95) !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 50% !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    color: #64748b !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+    margin: 0 4px !important;
+    flex-shrink: 0 !important;
 }
-
 .nav-slider-btn:hover {
-    color: #333;
-    background-color: rgba(0,0,0,0.05);
+    color: #0f172a !important;
+    background: #fff !important;
+    border-color: #94a3b8 !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12) !important;
 }
 
+/* ZONA DERECHA: dropdown engranaje + foto perfil */
+.navbar-right-zone {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+    height: 100% !important;
+    padding: 0 4px !important;
+}
+
+/* BootStrap .navbar-right heredado */
+.nav.navbar-nav.navbar-right {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    float: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100% !important;
+    flex-shrink: 0 !important;
+}
+
+.nav.navbar-nav.navbar-right > li {
+    display: inline-flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    float: none !important;
+}
+
+/* RESPONSIVO MOVIL */
 @media (max-width: 768px) {
+    .navbar.navbar-default {
+        height: auto !important;
+        min-height: 60px !important;
+        max-height: none !important;
+        flex-wrap: wrap !important;
+        overflow: visible !important;
+        padding: 6px 8px !important;
+    }
+    .navbar.navbar-default .navbar-collapse.navbar-ex1-collapse {
+        flex-wrap: wrap !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+    }
     .nav-slider-container {
-        max-width: 100%;
-        float: none;
-        display: flex;
+        width: 100% !important;
+        height: 80px !important;
+        flex: none !important;
+    }
+    .nav.navbar-nav.navbar-right {
+        width: 100% !important;
+        justify-content: center !important;
     }
 }
 </style>
@@ -104,6 +222,7 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
 <audio id="player" src="<?php echo SGA_COMUN_URL . '/audio/fondo.mp3'; ?>"></audio>
 
 <nav class='navbar navbar-default' role='navigation'>
+    <!-- .navbar-header oculto por CSS; el toggle móvil sigue funcionando -->
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
             <span class="sr-only">Desplegar navegación</span>
@@ -111,9 +230,6 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="<?php echo SGA_URL; ?>/index.php" id="titulo">
-            <?php echo deletrear("Guagua"); ?>
-        </a>
     </div>
 
     <div class="collapse navbar-collapse navbar-ex1-collapse">
@@ -143,6 +259,22 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
                         
                         <li data-id="datos"><a href="<?php echo SGA_REPORTES_URL; ?>/informe_docente.php"><span data-text="Datos" class="icon-sga-time"></span></a></li>
                     <?php endif; ?>
+
+                    <!-- Icono Configuración dentro del slider -->
+                    <li data-id="config" class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Configuración">
+                            <span data-text="CONFIG" class="icon-sga-settings-4"></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <?php if ($rol_actual == "docente" || $rol_actual == "admin" || empty($rol_actual)): ?>
+                                <li><a target='_blank' href="<?php echo SGA_URL; ?>/apps/customizador_menu/index.php"><i class="fa-solid fa-palette"></i> Personalizar Menú (Live)</a></li>
+                                <li><a target='_blank' href="<?php echo SGA_URL; ?>/comun/gestor_menu.php">Menú</a></li>
+                                <li><a href="<?php echo SGA_URL; ?>/comun/dir_menu.php">Dir Menú</a></li>
+                            <?php endif; ?>
+                            <li><a href="#" id="btn-restaurar-menu"><i class="fa-solid fa-rotate-left"></i> Restaurar Menú</a></li>
+                            <li><a href="<?php echo SGA_USUARIO_URL; ?>/login.php?logout">Salir</a></li>
+                        </ul>
+                    </li>
 
                     <?php
                     // Obtener ítems de cabecera dinámicamente
@@ -206,31 +338,46 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
             </buscar>
         <?php endif; ?>
 
-        <ul class="nav navbar-nav navbar-right" style="margin-bottom: 1%;">
+        <!-- ZONA DERECHA: engranaje config + foto usuario -->
+        <ul class="nav navbar-nav navbar-right">
             <?php if (isset($_SESSION['id_usuario'])): ?>
                 <script>
                     if (typeof notificar_mensajes === 'function') {
                         notificar_mensajes();
                     }
                 </script>
-                <li class="dropdown" style="margin-right:130px">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="<?php echo $persona->nombre . " " . $persona->apellido; ?>">
-                        <span id="icon-miperfil" class="icon-miperfil icon-sga-settings-4"></span>
-                    </a>
-                    <script>
-                        $('#icon-miperfil').tooltip();
-                    </script>
-                    <ul class="dropdown-menu">
-                        <?php if ($rol_actual == "docente"): ?>
-                            <li><a target='_blank' href="<?php echo SGA_URL; ?>/comun/gestor_menu.php">Menu</a></li>
-                            <li><a href="<?php echo SGA_URL; ?>/comun/dir_menu.php">Dir Menú</a></li>
-                        <?php endif; ?>
-                        <li><a href="#" id="btn-restaurar-menu"><i class="fa-solid fa-rotate-left"></i> Restaurar Menú</a></li>
-                        <li><a href="<?php echo SGA_USUARIO_URL; ?>/login.php?logout">Salir</a></li>
-                    </ul>
+                <!-- Foto de usuario circular -->
+                <?php if ($persona): ?>
+                <li style="display:flex;align-items:center;justify-content:center;height:100%;padding:0 8px;">
+                    <div id="estilo_foto_usuario_menu" class="estilos_fotos"
+                         <?php if (isset($_SESSION['hijo']) && $rol_actual == "acudiente") { echo "style='text-align:center'"; } ?>>
+                        <?php
+                        if (isset($_SESSION['hijo']) && $rol_actual == "acudiente") {
+                            $sql = 'SELECT * FROM `usuario` WHERE `id_usuario` = "' . $_SESSION["hijo"] . '"';
+                            $consulta = $mysqli->query($sql);
+                            if ($row = $consulta->fetch_assoc()) { ?>
+                                <img onclick="document.location.href='<?php echo SGA_USUARIO_URL; ?>/perfil.php'"
+                                     title="<?php echo $persona->nombre . " " . $persona->apellido; ?>"
+                                     id="foto_usuario_hijo" src="<?php echo READFILE_URL . "/foto/" . ($row['foto']); ?>" width="50%">
+                            <?php }
+                        }
+                        ?>
+                        <img onclick="document.location.href='<?php echo SGA_USUARIO_URL; ?>/perfil.php'"
+                             title="<?php echo $persona->nombre . " " . $persona->apellido; ?>"
+                             id="foto_usuario" src="<?php echo READFILE_URL . "/foto/" . ($persona->foto); ?>"
+                             width="<?php echo (isset($_SESSION['hijo']) && $rol_actual == "acudiente") ? '50%' : '100%'; ?>">
+                        <span <?php if (isset($persona->rol) && $persona->rol == "acudiente") { echo 'style="margin-left:-65px!important;"'; } ?>
+                              <?php if (count(explode(",", $persona->rol)) > 1): ?> data-toggle="modal" data-target="#myModal_roles" <?php endif; ?>
+                              id="area_rol"><?php echo $rol_actual; ?></span>
+                    </div>
                 </li>
+                <?php endif; ?>
             <?php else: ?>
-                <li><a href="<?php echo SGA_USUARIO_URL; ?>/login.php"><span class="glyphicon glyphicon-log-in"></span> Iniciar Sesión</a></li>
+                <li style="display:flex;align-items:center;">
+                    <a href="<?php echo SGA_USUARIO_URL; ?>/login.php" style="display:flex;align-items:center;gap:6px;">
+                        <span class="glyphicon glyphicon-log-in"></span> Iniciar Sesión
+                    </a>
+                </li>
             <?php endif; ?>
         </ul>
 
@@ -405,26 +552,6 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
 </script>
 
 <?php if (isset($_SESSION['id_usuario']) && $persona): ?>
-    <div <?php if (isset($_SESSION['hijo']) && $rol_actual == "acudiente") { echo "style='text-align:center'"; } ?> id="estilo_foto_usuario_menu" class="estilos_fotos">
-        <?php 
-        if (isset($_SESSION['hijo']) && $rol_actual == "acudiente") {
-            $sql = 'SELECT * FROM `usuario` WHERE `id_usuario` = "' . $_SESSION["hijo"] . '"';
-            $consulta = $mysqli->query($sql);
-            if ($row = $consulta->fetch_assoc()) {
-                ?>
-                <img onclick="document.location.href='<?php echo SGA_USUARIO_URL; ?>/perfil.php'" title="<?php echo $persona->nombre . " " . $persona->apellido; ?>" id="foto_usuario" src="<?php echo READFILE_URL . "/foto/" . ($row['foto']); ?>" width="50%">
-                <?php
-            }
-        }
-        ?>
-        
-        <img onclick="document.location.href='<?php echo SGA_USUARIO_URL; ?>/perfil.php'" title="<?php echo $persona->nombre . " " . $persona->apellido; ?>" id="foto_usuario" src="<?php echo READFILE_URL . "/foto/" . ($persona->foto); ?>" width="<?php echo (isset($_SESSION['hijo']) && $rol_actual == "acudiente") ? '50%' : '100%'; ?>">
-        <span <?php if (isset($persona->rol) && $persona->rol == "acudiente") { echo 'style="margin-left:-65px!important;"'; } ?> <?php if (count(explode(",", $persona->rol)) > 1): ?> data-toggle="modal" data-target="#myModal_roles" <?php endif; ?> id="area_rol"><?php echo $rol_actual; ?></span>
-    </div>
-    <script>
-        $('#estilo_foto_usuario_menu').tooltip();
-    </script>
-
     <?php if (count(explode(",", $persona->rol)) > 1): ?>
         <div id="myModal_roles" class="modal fade" role="dialog">
             <div class="modal-dialog">
@@ -434,9 +561,9 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
                         <h4 class="modal-title"><label for="roles">Roles:</label></h4>
                     </div>
                     <div style="height:30%!important;" class="modal-body modal-lg">
-                        <?php 
+                        <?php
                         $roles = explode(",", $persona->rol);
-                        foreach ($roles as $rol): 
+                        foreach ($roles as $rol):
                         ?>
                             <span>
                                 <?php if ($rol == $rol_actual): ?>
