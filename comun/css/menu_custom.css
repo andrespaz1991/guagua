@@ -1,6 +1,7 @@
-
 /* =========================================================
    ESTILOS DINÁMICOS COMPLETOS DEL MENÚ GUAGUA
+   Versión proporcional con clamp() para mantener proporción
+   en cualquier resolución (localhost, Hostinger, etc.)
    ========================================================= */
 
 /* 1. REDUCCIÓN REAL Y ALTURA DE LA BARRA BLANCA SUPERIOR */
@@ -19,27 +20,36 @@
     max-height: 100% !important;
 }
 
+/* Los tamaños base se respetan pero el sistema clamp() de 
+   estilos_guagua.css garantiza proporcionalidad en pantallas pequeñas */
 .nav.navbar-nav > li > a,
 .slider-track > li > a {
     min-height: calc(145px - 10px) !important;
     padding: 2px 6px !important;
-    min-width: 115px !important;
+    min-width: clamp(70px, 8vw, 115px) !important;
 }
 
 .nav.navbar-nav > li > a > span[class*="icon-sga"],
 .slider-track > li > a > span[class*="icon-sga"] {
-    width: calc(76px + 4px) !important;
-    min-height: 80px !important;
-    padding-top: 80px !important;
-    background-size: 76px 76px !important;
+    /* Resetear cualquier legacy position:absolute del icon-sga.php */
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    margin-left: 0 !important;
+    /* Tamaños proporcionales */
+    width: clamp(60px, 7vw, 80px) !important;
+    min-height: clamp(60px, 7vw, 80px) !important;
+    padding-top: clamp(60px, 7vw, 80px) !important;
+    background-size: clamp(56px, 6.5vw, 76px) clamp(56px, 6.5vw, 76px) !important;
 }
 
 .nav.navbar-nav > li > a > span[class*="icon-sga"]::after,
 .slider-track > li > a > span[class*="icon-sga"]::after {
-    font-size: 16px !important;
+    font-size: clamp(10px, 1.3vw, 16px) !important;
+    margin-left: 0 !important;
 }
 
-/* 3. ZONA DERECHA COMPLETA (FOTO DE USUARIO Y ROL A ESCALA EQUIVALENTE) */
+/* 3. ZONA DERECHA COMPLETA (FOTO DE USUARIO Y ROL) */
 .nav.navbar-nav.navbar-right,
 .nav.navbar-nav.navbar-right > li {
     height: 100% !important;
@@ -52,14 +62,14 @@
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    min-width: 115px !important;
+    min-width: clamp(70px, 8vw, 115px) !important;
     height: 100% !important;
 }
 
 #foto_usuario, #foto_usuario_hijo {
-    width: 76px !important;
-    height: 76px !important;
-    max-width: 76px !important;
+    width: clamp(48px, 5vw, 76px) !important;
+    height: clamp(48px, 5vw, 76px) !important;
+    max-width: clamp(48px, 5vw, 76px) !important;
     border: 3px solid #38bdf8 !important;
     border-radius: 50% !important;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15) !important;
@@ -67,11 +77,11 @@
 
 #area_rol {
     font-family: "Soft_Marshmallow", sans-serif !important;
-    font-size: 16px !important;
+    font-size: clamp(10px, 1.2vw, 16px) !important;
     font-weight: 700 !important;
     text-align: center !important;
     color: #38bdf8 !important;
-    margin-top: 6px !important;
+    margin-top: 4px !important;
     display: block !important;
     visibility: visible !important;
 }
