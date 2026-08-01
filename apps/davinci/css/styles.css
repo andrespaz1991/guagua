@@ -22,6 +22,10 @@ button:focus-visible, input:focus-visible { outline: 3px solid rgba(79, 70, 229,
 
 .app-shell { display: grid; grid-template-columns: 272px minmax(0, 1fr); min-height: 100vh; }
 .app-shell.is-library-collapsed { grid-template-columns: 0 minmax(0, 1fr); }.app-shell.is-library-collapsed .library-panel { overflow: hidden; padding-right: 0; padding-left: 0; opacity: 0; pointer-events: none; }
+.app-shell:fullscreen,.app-shell.is-workspace-pseudo-fullscreen { position: fixed; z-index: 60; inset: 0; width: 100vw; height: 100dvh; min-height: 100dvh; overflow: hidden; background: var(--paper); }
+.app-shell:fullscreen .workspace,.app-shell.is-workspace-pseudo-fullscreen .workspace { display: flex; min-height: 0; flex-direction: column; overflow: hidden; }
+.app-shell:fullscreen .studio-layout,.app-shell.is-workspace-pseudo-fullscreen .studio-layout { min-height: 0; flex: 1; overflow: hidden; }
+.app-shell:fullscreen .library-panel,.app-shell.is-workspace-pseudo-fullscreen .library-panel { height: 100dvh; }
 .library-panel { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; padding: 25px 16px 18px; color: #f7f7ff; background: radial-gradient(circle at 20% 0%, #4f46e5 0, #29235b 38%, #171a33 100%); }
 .brand { display: flex; align-items: center; gap: 11px; padding: 0 9px 28px; }
 .brand-mark { display: inline-flex; width: 39px; height: 39px; align-items: center; justify-content: center; border-radius: 13px; color: #27215a; background: #f4d99e; font-size: 18px; transform: rotate(-8deg); }

@@ -39,13 +39,16 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
    BARRA PRINCIPAL - 100% ANCHO - 90px ALTO - SIN OVERFLOW
    ========================================================= */
 .navbar.navbar-default {
+    --guagua-menu-height: 145px;
     background-color: #ffffff !important;
     border: none !important;
     border-bottom: 2px solid #e8edf3 !important;
     box-shadow: 0 3px 12px rgba(0,0,0,0.08) !important;
     width: 100% !important;
     max-width: 100% !important;
-    min-height: 90px;
+    height: var(--guagua-menu-height) !important;
+    min-height: var(--guagua-menu-height) !important;
+    max-height: var(--guagua-menu-height) !important;
     margin: 0 !important;
     padding: 0 12px 0 4px !important;
     box-sizing: border-box !important;
@@ -55,8 +58,7 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
     flex-direction: row !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    overflow-x: hidden !important;
-    overflow-y: visible !important;
+    overflow: hidden !important;
     z-index: 1000 !important;
     position: relative !important;
 }
@@ -73,13 +75,13 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
     align-items: center !important;
     justify-content: space-between !important;
     width: 100% !important;
+    min-width: 0 !important;
     height: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
     border: none !important;
     box-shadow: none !important;
-    overflow-x: hidden !important;
-    overflow-y: visible !important;
+    overflow: hidden !important;
 }
 
 /* CONTENEDOR DEL SLIDER - OCUPA TODO EL ESPACIO CENTRAL DESDE LA IZQUIERDA */
@@ -98,8 +100,9 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
 }
 
 .nav-slider-wrapper {
+    min-width: 0 !important;
     overflow-x: auto !important;
-    overflow-y: visible !important;
+    overflow-y: hidden !important;
     width: 100% !important;
     height: 100% !important;
     max-height: 100% !important;
@@ -124,6 +127,7 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
     padding: 0 !important;
     float: none !important;
     list-style: none !important;
+    width: max-content !important;
 }
 
 .slider-track > li {
@@ -134,6 +138,15 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
     height: 100% !important;
     float: none !important;
     flex-shrink: 0 !important;
+}
+
+.slider-track > li > a {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
 }
 
 /* Botones de desplazamiento del slider */
@@ -195,26 +208,43 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
 /* RESPONSIVO MOVIL */
 @media (max-width: 768px) {
     .navbar.navbar-default {
-        height: auto !important;
-        min-height: 60px !important;
-        max-height: none !important;
-        flex-wrap: wrap !important;
-        overflow: visible !important;
-        padding: 6px 8px !important;
+        --guagua-menu-height: clamp(62px, 16vh, 92px);
+        height: var(--guagua-menu-height) !important;
+        min-height: var(--guagua-menu-height) !important;
+        max-height: var(--guagua-menu-height) !important;
+        flex-wrap: nowrap !important;
+        overflow: hidden !important;
+        padding: 3px 4px !important;
     }
     .navbar.navbar-default .navbar-collapse.navbar-ex1-collapse {
-        flex-wrap: wrap !important;
-        max-height: none !important;
-        overflow-y: auto !important;
+        flex-wrap: nowrap !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        max-height: 100% !important;
+        overflow: hidden !important;
     }
     .nav-slider-container {
-        width: 100% !important;
-        height: 80px !important;
-        flex: none !important;
+        width: auto !important;
+        min-width: 0 !important;
+        height: 100% !important;
+        flex: 1 1 auto !important;
     }
     .nav.navbar-nav.navbar-right {
-        width: 100% !important;
-        justify-content: center !important;
+        width: auto !important;
+        min-width: 0 !important;
+        justify-content: flex-end !important;
+    }
+    .nav-slider-btn {
+        width: 30px !important;
+        height: 30px !important;
+        min-width: 30px !important;
+        margin: 0 1px !important;
+    }
+    .nav-slider-wrapper {
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x !important;
     }
 }
 </style>

@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const periodsContainer = document.getElementById('periods-container');
     const viewTitle = document.getElementById('view-title');
     const viewSubtitle = document.getElementById('view-subtitle');
+    const operationStatus = document.getElementById('operation-status');
 
     // Init
     fetchData();
@@ -47,16 +48,16 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch('api/get_data.php');
             const result = await res.json();
-            if (result.status === 'success') {
-                dbData = result.data;
-                initSelects();
-                renderPeriods();
-            } else {
-                alert('Error cargando datos: ' + result.message);
-            }
+            if (!res.ok || result.status !== 'success') throw new Error(result.message || 'No fue posible cargar los datos.');
+
+            dbData = result.data;
+            initSelects();
+            renderPeriods();
+            return true;
         } catch (e) {
             console.error(e);
-            alert('Error de conexión al cargar datos.');
+            showOperation(`Error al cargar los datos: ${e.message}`, 'error');
+            return false;
         }
     }
 
@@ -95,8 +96,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper to safely escape HTML attributes
     function escapeHtml(text) {
-        if (!text) return '';
-        return text.replace(/"/g, '&quot;').replace(/'/g, '&#039;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return String(text || '')
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function renderDescription(text) {
+        const description = String(text || '').trim();
+        return description ? `<div class="item-description">${escapeHtml(description)}</div>` : '';
+    }
+
+    function findRecord(type, id) {
+        const collections = {
+            estandar: dbData.estandares,
+            dba: dbData.dbas,
+            eje: dbData.ejes_tematicos
+        };
+        const idFields = {
+            estandar: 'id_estandar',
+            dba: 'id_dba',
+            eje: 'id_eje_tematico'
+        };
+        return (collections[type] || []).find(item => String(item[idFields[type]]) === String(id)) || null;
+    }
+
+    function showOperation(message, type = '') {
+        if (!operationStatus) return;
+        operationStatus.textContent = message;
+        operationStatus.className = `operation-status ${type}`.trim();
     }
 
     function renderPeriods() {
@@ -144,8 +174,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             } else {
                                 ejesList.forEach(eje => {
                                     ejesHtml += `
-                                        <div class="eje-item">
-                                            <div class="eje-title">${eje.nombre_eje_tematico}</div>
+                                    <div class="eje-item">
+                                            <div class="eje-title">${escapeHtml(eje.nombre_eje_tematico)}${renderDescription(eje.descripcion_eje_tematico)}</div>
                                             <div class="actions-group">
                                                 <button class="btn-icon btn-edit-eje" data-id="${eje.id_eje_tematico}" data-name="${escapeHtml(eje.nombre_eje_tematico)}" title="Editar Eje"><i class="fa-solid fa-pen"></i></button>
                                                 <button class="btn-icon delete btn-del-eje" data-id="${eje.id_eje_tematico}" title="Borrar Eje"><i class="fa-solid fa-trash-can"></i></button>
@@ -158,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             dbasHtml += `
                                 <div class="dba-card">
                                     <div class="dba-header">
-                                        <div class="dba-title">${dba.nombre_dba}</div>
+                                        <div class="dba-title">${escapeHtml(dba.nombre_dba)}${renderDescription(dba.descripcion_dba)}</div>
                                         <div class="actions-group">
                                             <button class="btn-icon btn-edit-dba" data-id="${dba.id_dba}" data-name="${escapeHtml(dba.nombre_dba)}" title="Editar DBA"><i class="fa-solid fa-pen"></i></button>
                                             <button class="btn-icon btn-add-eje" data-dba="${dba.id_dba}" title="Añadir Eje Temático"><i class="fa-solid fa-plus"></i></button>
@@ -176,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     estandaresHtml += `
                         <div class="estandar-card">
                             <div class="estandar-header">
-                                <div class="estandar-title">${est.nombre_estandar}</div>
+                                <div class="estandar-title">${escapeHtml(est.nombre_estandar)}${renderDescription(est.descripcion_estandar)}</div>
                                 <div class="actions-group">
                                     <button class="btn-icon btn-edit-est" data-id="${est.id_estandar}" data-name="${escapeHtml(est.nombre_estandar)}" title="Editar Estándar"><i class="fa-solid fa-pen"></i></button>
                                     <button class="btn-icon btn-add-dba" data-est="${est.id_estandar}" title="Añadir DBA"><i class="fa-solid fa-plus"></i></button>
@@ -221,13 +251,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Edit listeners
         document.querySelectorAll('.btn-edit-est').forEach(btn => {
-            btn.addEventListener('click', (e) => openModal('estandar', 'edit', { id: e.currentTarget.dataset.id, name: e.currentTarget.dataset.name }));
+            btn.addEventListener('click', (e) => openModal('estandar', 'edit', { id: e.currentTarget.dataset.id }));
         });
         document.querySelectorAll('.btn-edit-dba').forEach(btn => {
-            btn.addEventListener('click', (e) => openModal('dba', 'edit', { id: e.currentTarget.dataset.id, name: e.currentTarget.dataset.name }));
+            btn.addEventListener('click', (e) => openModal('dba', 'edit', { id: e.currentTarget.dataset.id }));
         });
         document.querySelectorAll('.btn-edit-eje').forEach(btn => {
-            btn.addEventListener('click', (e) => openModal('eje', 'edit', { id: e.currentTarget.dataset.id, name: e.currentTarget.dataset.name }));
+            btn.addEventListener('click', (e) => openModal('eje', 'edit', { id: e.currentTarget.dataset.id }));
         });
 
         // Delete listeners
@@ -252,28 +282,37 @@ document.addEventListener('DOMContentLoaded', () => {
     function openModal(type, action, params) {
         activeModalParams = { ...params, action, type };
         const prefix = action === 'create' ? 'Añadir' : 'Editar';
+        const record = action === 'edit' ? findRecord(type, params.id) : null;
+        if (action === 'edit' && !record) {
+            showOperation('No fue posible encontrar el registro para editar. Actualice la página e inténtelo de nuevo.', 'error');
+            return;
+        }
         
         if(type === 'estandar') {
             document.getElementById('title-modal-estandar').textContent = `${prefix} Estándar`;
-            document.getElementById('input-nombre-estandar').value = action === 'edit' ? params.name : '';
+            document.getElementById('input-nombre-estandar').value = record?.nombre_estandar || '';
+            document.getElementById('input-descripcion-estandar').value = record?.descripcion_estandar || '';
             document.getElementById('modal-estandar').classList.remove('hidden');
         } else if(type === 'dba') {
             document.getElementById('title-modal-dba').textContent = `${prefix} DBA`;
-            document.getElementById('input-nombre-dba').value = action === 'edit' ? params.name : '';
+            document.getElementById('input-nombre-dba').value = record?.nombre_dba || '';
+            document.getElementById('input-descripcion-dba').value = record?.descripcion_dba || '';
             document.getElementById('modal-dba').classList.remove('hidden');
         } else if(type === 'eje') {
             document.getElementById('title-modal-eje').textContent = `${prefix} Eje Temático`;
-            document.getElementById('input-nombre-eje').value = action === 'edit' ? params.name : '';
+            document.getElementById('input-nombre-eje').value = record?.nombre_eje_tematico || '';
+            document.getElementById('input-descripcion-eje').value = record?.descripcion_eje_tematico || '';
             document.getElementById('modal-eje').classList.remove('hidden');
         }
     }
 
     // Guardar (Create or Edit)
     document.getElementById('btn-save-estandar').addEventListener('click', async () => {
-        const val = document.getElementById('input-nombre-estandar').value;
-        if(!val) return;
+        const val = document.getElementById('input-nombre-estandar').value.trim();
+        const descripcion = document.getElementById('input-descripcion-estandar').value.trim();
+        if(!val) return showOperation('Escriba el nombre del estándar antes de guardar.', 'error');
         
-        const payload = { action: activeModalParams.action, type: 'estandar', nombre_estandar: val };
+        const payload = { action: activeModalParams.action, type: 'estandar', nombre_estandar: val, descripcion_estandar: descripcion };
         if (activeModalParams.action === 'create') {
             payload.grado = currentState.gradoId;
             payload.id_materia_oficial = currentState.materiaId;
@@ -282,38 +321,37 @@ document.addEventListener('DOMContentLoaded', () => {
             payload.id_estandar = activeModalParams.id;
         }
 
-        await doCrud(payload);
-        document.getElementById('modal-estandar').classList.add('hidden');
+        if (await doCrud(payload)) document.getElementById('modal-estandar').classList.add('hidden');
     });
 
     document.getElementById('btn-save-dba').addEventListener('click', async () => {
-        const val = document.getElementById('input-nombre-dba').value;
-        if(!val) return;
+        const val = document.getElementById('input-nombre-dba').value.trim();
+        const descripcion = document.getElementById('input-descripcion-dba').value.trim();
+        if(!val) return showOperation('Escriba el nombre del DBA antes de guardar.', 'error');
         
-        const payload = { action: activeModalParams.action, type: 'dba', nombre_dba: val };
+        const payload = { action: activeModalParams.action, type: 'dba', nombre_dba: val, descripcion_dba: descripcion };
         if (activeModalParams.action === 'create') {
             payload.id_estandar = activeModalParams.estandarId;
         } else {
             payload.id_dba = activeModalParams.id;
         }
 
-        await doCrud(payload);
-        document.getElementById('modal-dba').classList.add('hidden');
+        if (await doCrud(payload)) document.getElementById('modal-dba').classList.add('hidden');
     });
 
     document.getElementById('btn-save-eje').addEventListener('click', async () => {
-        const val = document.getElementById('input-nombre-eje').value;
-        if(!val) return;
+        const val = document.getElementById('input-nombre-eje').value.trim();
+        const descripcion = document.getElementById('input-descripcion-eje').value.trim();
+        if(!val) return showOperation('Escriba el nombre del eje temático antes de guardar.', 'error');
         
-        const payload = { action: activeModalParams.action, type: 'eje_tematico', nombre_eje_tematico: val };
+        const payload = { action: activeModalParams.action, type: 'eje_tematico', nombre_eje_tematico: val, descripcion_eje_tematico: descripcion };
         if (activeModalParams.action === 'create') {
             payload.id_dba = activeModalParams.dbaId;
         } else {
             payload.id_eje_tematico = activeModalParams.id;
         }
 
-        await doCrud(payload);
-        document.getElementById('modal-eje').classList.add('hidden');
+        if (await doCrud(payload)) document.getElementById('modal-eje').classList.add('hidden');
     });
 
     async function deleteItem(type, id) {
@@ -338,16 +376,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            const result = await res.json();
-            if (result.status === 'success') {
-                // Fetch fresh data after any CRUD
-                await fetchData();
-            } else {
-                alert("Error: " + result.message);
+            const result = await res.json().catch(() => null);
+            if (!res.ok || !result || result.status !== 'success') {
+                throw new Error(result?.message || 'No fue posible guardar los cambios.');
             }
+            if (!await fetchData()) throw new Error('El cambio se guardó, pero no se pudo actualizar la vista.');
+            showOperation(result.message || 'Cambios guardados correctamente.', 'success');
+            return true;
         } catch(e) {
             console.error(e);
-            alert("Error en la operación.");
+            showOperation(`Error en la operación: ${e.message}`, 'error');
+            return false;
         }
     }
 });

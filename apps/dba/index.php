@@ -42,7 +42,7 @@
             </div>
             
             <div class="nav-actions">
-                 <p class="help-text"><i class="fa-solid fa-info-circle"></i> Los cambios se guardan directamente en la base de datos.</p>
+                 <p class="help-text"><i class="fa-solid fa-info-circle"></i> Use <i class="fa-solid fa-plus"></i> para crear, <i class="fa-solid fa-pen"></i> para modificar y <i class="fa-solid fa-trash-can"></i> para eliminar. Los cambios se guardan directamente.</p>
             </div>
         </aside>
 
@@ -66,6 +66,7 @@
                     <p>No hay datos seleccionados</p>
                 </div>
             </div>
+            <p id="operation-status" class="operation-status" role="status" aria-live="polite"></p>
         </main>
     </div>
 
@@ -82,6 +83,10 @@
                 <div class="form-group">
                     <label>Nombre del Estándar</label>
                     <textarea id="input-nombre-estandar" class="modern-input" rows="3" placeholder="Ej: Comprendo la importancia de..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="input-descripcion-estandar">Descripción (opcional)</label>
+                    <textarea id="input-descripcion-estandar" class="modern-input" rows="2" placeholder="Detalle o aclaración del estándar"></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -103,6 +108,10 @@
                     <label>Nombre del DBA</label>
                     <textarea id="input-nombre-dba" class="modern-input" rows="3" placeholder="Ej: DBA 1: ..."></textarea>
                 </div>
+                <div class="form-group">
+                    <label for="input-descripcion-dba">Descripción (opcional)</label>
+                    <textarea id="input-descripcion-dba" class="modern-input" rows="2" placeholder="Detalle o aclaración del DBA"></textarea>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary close-modal">Cancelar</button>
@@ -122,6 +131,10 @@
                 <div class="form-group">
                     <label>Nombre del Eje Temático</label>
                     <textarea id="input-nombre-eje" class="modern-input" rows="2" placeholder="Ej: La democracia..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="input-descripcion-eje">Descripción (opcional)</label>
+                    <textarea id="input-descripcion-eje" class="modern-input" rows="2" placeholder="Detalle o aclaración del eje temático"></textarea>
                 </div>
             </div>
             <div class="modal-footer">

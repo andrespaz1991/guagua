@@ -7,9 +7,9 @@
 /* 1. REDUCCIÓN REAL Y ALTURA DE LA BARRA BLANCA SUPERIOR */
 .navbar.navbar-default,
 .navbar.navbar-default .navbar-collapse.navbar-ex1-collapse {
-    height: 145px !important;
-    min-height: 145px !important;
-    max-height: 145px !important;
+    height: var(--guagua-menu-height, 145px) !important;
+    min-height: var(--guagua-menu-height, 145px) !important;
+    max-height: var(--guagua-menu-height, 145px) !important;
     background-color: #ffffff !important;
     border-bottom: 2px solid #e8edf3 !important;
 }
@@ -24,7 +24,7 @@
    estilos_guagua.css garantiza proporcionalidad en pantallas pequeñas */
 .nav.navbar-nav > li > a,
 .slider-track > li > a {
-    min-height: calc(145px - 10px) !important;
+    min-height: calc(var(--guagua-menu-height, 145px) - 10px) !important;
     padding: 2px 6px !important;
     min-width: clamp(70px, 8vw, 115px) !important;
 }
@@ -92,4 +92,52 @@ body > .container-fluid,
 .main-content,
 #contenido {
     margin-top: 0px !important;
+}
+
+/* El menú siempre se muestra en una sola fila desplazable. Así se evita que
+   Bootstrap calcule un segundo renglón o que los iconos queden fuera de vista. */
+@media (max-width: 768px) {
+    .navbar.navbar-default {
+        --guagua-menu-height: clamp(62px, 16vh, 92px);
+    }
+
+    .navbar.navbar-default .navbar-collapse.navbar-ex1-collapse,
+    .nav-slider-container,
+    .nav-slider-wrapper,
+    .slider-track,
+    .slider-track > li,
+    .slider-track > li > a {
+        height: 100% !important;
+        min-height: 0 !important;
+        max-height: 100% !important;
+    }
+
+    .slider-track > li > a {
+        min-width: clamp(54px, 16vw, 76px) !important;
+        padding: 1px 3px !important;
+    }
+
+    .nav.navbar-nav > li > a > span[class*="icon-sga"],
+    .slider-track > li > a > span[class*="icon-sga"] {
+        width: clamp(40px, 12vw, 58px) !important;
+        min-height: clamp(40px, 12vw, 58px) !important;
+        padding-top: clamp(40px, 12vw, 58px) !important;
+        background-size: clamp(38px, 11vw, 54px) clamp(38px, 11vw, 54px) !important;
+    }
+
+    .nav.navbar-nav > li > a > span[class*="icon-sga"]::after,
+    .slider-track > li > a > span[class*="icon-sga"]::after {
+        font-size: clamp(9px, 2.6vw, 12px) !important;
+    }
+
+    #estilo_foto_usuario_menu {
+        min-width: 52px !important;
+    }
+
+    #foto_usuario, #foto_usuario_hijo {
+        width: clamp(34px, 10vw, 48px) !important;
+        height: clamp(34px, 10vw, 48px) !important;
+        max-width: clamp(34px, 10vw, 48px) !important;
+        border-width: 2px !important;
+    }
 }

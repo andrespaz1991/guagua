@@ -48,6 +48,7 @@ if (!isset($_SESSION['id_usuario'])) {
                 <div class="header-actions">
                     <button id="libraryPanelButton" class="icon-button panel-toggle-button" type="button" aria-pressed="false" aria-label="Ocultar cuadernos" title="Ocultar cuadernos"><i class="fa-solid fa-book" aria-hidden="true"></i></button>
                     <button id="pagesPanelButton" class="icon-button panel-toggle-button" type="button" aria-pressed="false" aria-label="Ocultar páginas" title="Ocultar páginas"><i class="fa-solid fa-table-columns" aria-hidden="true"></i></button>
+                    <button id="fullscreenWorkspaceButton" class="icon-button" type="button" aria-pressed="false" aria-label="Usar toda la pantalla con los menús" title="Pantalla completa con menús"><i class="fa-solid fa-up-right-and-down-left-from-center" aria-hidden="true"></i></button>
                     <button id="saveNowButton" class="btn btn-primary save-now-button" type="button"><i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i><span>Guardar</span></button>
                     <button id="renameBookButton" class="text-button" type="button"><i class="fa-solid fa-pen" aria-hidden="true"></i> Renombrar</button>
                     <button id="importProjectButton" class="text-button" type="button"><i class="fa-solid fa-file-import" aria-hidden="true"></i> Importar</button>

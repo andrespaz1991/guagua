@@ -287,7 +287,11 @@ function applyZoom() {
     const wrap = document.getElementById('paperWrap');
     if (!viewport || !page || !wrap) return;
     const stage = document.getElementById('canvasStage');
-    const isPresentation = Boolean(document.fullscreenElement) || stage.classList.contains('is-pseudo-fullscreen');
+    const workspace = document.querySelector('.app-shell');
+    const isPresentation = document.fullscreenElement === stage
+        || document.fullscreenElement === workspace
+        || stage.classList.contains('is-pseudo-fullscreen')
+        || workspace?.classList.contains('is-workspace-pseudo-fullscreen');
     const defaultWidth = page.orientation === 'landscape' ? 780 : 590;
     const presentationWidth = page.orientation === 'landscape' ? viewport.clientHeight * 1.36 : viewport.clientHeight * .68;
     const naturalWidth = isPresentation ? Math.max(defaultWidth, presentationWidth) : defaultWidth;
@@ -750,8 +754,13 @@ async function setPageOrientation(orientation) {
 
 async function toggleCanvasFullscreen() {
     const stage = document.getElementById('canvasStage');
+    const workspace = document.querySelector('.app-shell');
+    if (document.fullscreenElement === workspace || workspace.classList.contains('is-workspace-pseudo-fullscreen')) {
+        showToast('Ya estás usando toda la pantalla con los menús visibles.');
+        return;
+    }
     try {
-        if (document.fullscreenElement) {
+        if (document.fullscreenElement === stage) {
             await document.exitFullscreen();
         } else if (stage.classList.contains('is-pseudo-fullscreen')) {
             stage.classList.remove('is-pseudo-fullscreen');
@@ -779,7 +788,7 @@ async function toggleCanvasFullscreen() {
 
 function updateFullscreenButton() {
     const stage = document.getElementById('canvasStage');
-    const isFullscreen = Boolean(document.fullscreenElement) || stage.classList.contains('is-pseudo-fullscreen');
+    const isFullscreen = document.fullscreenElement === stage || stage.classList.contains('is-pseudo-fullscreen');
     const button = document.getElementById('fullscreenCanvasButton');
     button.setAttribute('aria-pressed', String(isFullscreen));
     button.setAttribute('aria-label', isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa del lienzo');
@@ -789,6 +798,57 @@ function updateFullscreenButton() {
     stageButton.setAttribute('aria-label', isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa del lienzo');
     stageButton.innerHTML = `<i class="fa-solid fa-${isFullscreen ? 'compress' : 'expand'}" aria-hidden="true"></i><span>${isFullscreen ? 'Salir' : 'Pantalla completa'}</span>`;
     requestAnimationFrame(applyZoom);
+}
+
+function isWorkspaceFullscreen() {
+    const workspace = document.querySelector('.app-shell');
+    return document.fullscreenElement === workspace || workspace.classList.contains('is-workspace-pseudo-fullscreen');
+}
+
+async function toggleWorkspaceFullscreen() {
+    const workspace = document.querySelector('.app-shell');
+    try {
+        if (document.fullscreenElement === workspace) {
+            await document.exitFullscreen();
+        } else if (workspace.classList.contains('is-workspace-pseudo-fullscreen')) {
+            workspace.classList.remove('is-workspace-pseudo-fullscreen');
+        } else {
+            if (document.fullscreenElement) await document.exitFullscreen();
+            if (workspace.requestFullscreen) {
+                await workspace.requestFullscreen();
+                window.setTimeout(() => {
+                    if (document.fullscreenElement !== workspace) {
+                        workspace.classList.add('is-workspace-pseudo-fullscreen');
+                        updateWorkspaceFullscreenButton();
+                    }
+                }, 120);
+            } else {
+                workspace.classList.add('is-workspace-pseudo-fullscreen');
+            }
+        }
+    } catch (error) {
+        console.warn('No fue posible abrir la pantalla completa del espacio de trabajo', error);
+        workspace.classList.add('is-workspace-pseudo-fullscreen');
+        showToast('Se activó el modo de pantalla completa con los menús visibles.');
+    }
+    updateWorkspaceFullscreenButton();
+    window.setTimeout(applyZoom, 160);
+}
+
+function updateWorkspaceFullscreenButton() {
+    const button = document.getElementById('fullscreenWorkspaceButton');
+    if (!button) return;
+    const isFullscreen = isWorkspaceFullscreen();
+    button.setAttribute('aria-pressed', String(isFullscreen));
+    button.setAttribute('aria-label', isFullscreen ? 'Salir de pantalla completa con menús' : 'Usar toda la pantalla con los menús');
+    button.title = isFullscreen ? 'Salir de pantalla completa con menús' : 'Pantalla completa con menús';
+    button.innerHTML = `<i class="fa-solid fa-${isFullscreen ? 'compress' : 'up-right-and-down-left-from-center'}" aria-hidden="true"></i>`;
+    requestAnimationFrame(applyZoom);
+}
+
+function updateFullscreenControls() {
+    updateFullscreenButton();
+    updateWorkspaceFullscreenButton();
 }
 
 function updateSaveStatus(message = 'Sincronizado en todos tus dispositivos', mode = 'ok') {
@@ -1030,7 +1090,8 @@ function bindEvents() {
     document.getElementById('landscapeOrientationButton').addEventListener('click', () => setPageOrientation('landscape'));
     document.getElementById('fullscreenCanvasButton').addEventListener('click', toggleCanvasFullscreen);
     document.getElementById('stageFullscreenButton').addEventListener('click', toggleCanvasFullscreen);
-    document.addEventListener('fullscreenchange', updateFullscreenButton);
+    document.getElementById('fullscreenWorkspaceButton').addEventListener('click', toggleWorkspaceFullscreen);
+    document.addEventListener('fullscreenchange', updateFullscreenControls);
     document.getElementById('zoomRange').addEventListener('input', event => setZoom(Number(event.target.value) / 100));
     document.getElementById('zoomOutButton').addEventListener('click', () => setZoom(canvasZoom - .1));
     document.getElementById('zoomInButton').addEventListener('click', () => setZoom(canvasZoom + .1));
@@ -1063,9 +1124,12 @@ function bindEvents() {
     });
     window.addEventListener('resize', applyZoom);
     document.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && document.getElementById('canvasStage').classList.contains('is-pseudo-fullscreen')) {
-            document.getElementById('canvasStage').classList.remove('is-pseudo-fullscreen');
-            updateFullscreenButton();
+        if (event.key === 'Escape') {
+            const stage = document.getElementById('canvasStage');
+            const workspace = document.querySelector('.app-shell');
+            if (stage.classList.contains('is-pseudo-fullscreen')) stage.classList.remove('is-pseudo-fullscreen');
+            if (workspace.classList.contains('is-workspace-pseudo-fullscreen')) workspace.classList.remove('is-workspace-pseudo-fullscreen');
+            updateFullscreenControls();
         }
     });
     document.getElementById('undoButton').addEventListener('click', () => restoreHistory(-1));
