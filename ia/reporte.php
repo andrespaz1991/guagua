@@ -277,7 +277,7 @@
     function renderizarFichaEstudiante( $grado, $documento, $estudianteDB, $infoExcel, $grupoSeleccionado, $config)
     {
         $nombreCompleto = htmlspecialchars($estudianteDB);
-        $docente = htmlspecialchars($config['docente']['nombre'] . " (teléfono:" . $config['docente']['telefono'] . ")");
+        $docenteEmisor = 'Andres Paz';
         $sede = htmlspecialchars($config['sede']);
         $institucion = htmlspecialchars($config['institucion']);
        
@@ -332,6 +332,22 @@
                         </tr>
                     </tbody>
                 </table>
+
+                <section class="report-signatures" aria-label="Confirmación de emisión y recibido del informe">
+                    <div class="signature-block signature-issuer">
+                        <span class="signature-label">Emite el informe</span>
+                        <div class="signature-line"></div>
+                        <strong class="signature-name"><?php echo $docenteEmisor; ?></strong>
+                        <span class="signature-helper">Docente emisor del informe</span>
+                    </div>
+
+                    <div class="signature-block signature-receipt">
+                        <span class="signature-label">Recibido por el acudiente</span>
+                        <div class="signature-line signature-line-receipt"></div>
+                        <strong class="signature-name signature-name-empty">Firma del acudiente</strong>
+                        <span class="signature-helper">Nombre completo y fecha de recibido</span>
+                    </div>
+                </section>
             </div>
         </div>
         <div class="cut-line"></div>
@@ -361,8 +377,65 @@
         .desempeno-texto { font-size: 0.8em; font-weight: bold; }
         .desempeno-icono { margin-right: 5px; }
 
+        .report-signatures {
+            background: #f8fafc;
+            border-top: 1px solid #dbe4ee;
+            display: flex;
+            gap: 2.5rem;
+            margin-top: 1.5rem;
+            padding: 1.25rem 1rem 0.5rem;
+            page-break-inside: avoid;
+        }
+
+        .signature-block {
+            flex: 1 1 0;
+            min-height: 105px;
+        }
+
+        .signature-label {
+            color: #52616f;
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            margin-bottom: 2.5rem;
+            text-transform: uppercase;
+        }
+
+        .signature-line {
+            border-bottom: 1px solid #475569;
+            height: 1px;
+            width: 100%;
+        }
+
+        .signature-name {
+            color: #1f2937;
+            display: block;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        .signature-name-empty {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .signature-helper {
+            color: #6b7280;
+            display: block;
+            font-size: 0.78rem;
+            margin-top: 0.15rem;
+        }
+
         .col-geometria { display: none; }
         body.mostrar-geometria .col-geometria { display: table-cell; }
+
+        @media (max-width: 575.98px) {
+            .report-signatures {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+        }
 
         @media print {
             body { background-color: #fff; font-size: 10pt; }
@@ -372,6 +445,7 @@
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .thead-dark th { background-color: #343a40 !important; color: #ffffff !important; }
             body.mostrar-geometria .col-geometria { display: table-cell !important; }
+            .report-signatures { background: #fff; border-top-color: #9ca3af; }
         }
     </style>
 </head>

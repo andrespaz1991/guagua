@@ -50,22 +50,18 @@ if (!isset($_SESSION['id_usuario'])) {
                     <button id="pagesPanelButton" class="icon-button panel-toggle-button" type="button" aria-pressed="false" aria-label="Ocultar páginas" title="Ocultar páginas"><i class="fa-solid fa-table-columns" aria-hidden="true"></i></button>
                     <button id="canvas100HeaderButton" class="icon-button" type="button" aria-pressed="false" aria-label="Lienzo al 100% de la pantalla" title="Lienzo al 100% de la pantalla"><i class="fa-solid fa-maximize" aria-hidden="true"></i></button>
                     <button id="fullscreenWorkspaceButton" class="icon-button" type="button" aria-pressed="false" aria-label="Usar toda la pantalla con los menús" title="Pantalla completa con menús"><i class="fa-solid fa-up-right-and-down-left-from-center" aria-hidden="true"></i></button>
-                    <button id="fullscreenCanvasButton" class="icon-button fullscreen-canvas-button" type="button" aria-pressed="false" aria-label="Pantalla completa del lienzo" title="Pantalla completa"><i class="fa-solid fa-expand" aria-hidden="true"></i></button>
                     <button id="saveNowButton" class="btn btn-primary save-now-button" type="button"><i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i><span>Guardar</span></button>
                     <button id="renameBookButton" class="text-button" type="button"><i class="fa-solid fa-pen" aria-hidden="true"></i> Renombrar</button>
-                    <button id="renamePageButton" class="text-button" type="button"><i class="fa-regular fa-note-sticky" aria-hidden="true"></i> Renombrar hoja</button>
-                    <button id="importProjectButton" class="text-button import-project-button" type="button" title="Importar hoja o cuaderno editable"><i class="fa-solid fa-file-import" aria-hidden="true"></i> Importar hoja o cuaderno</button>
+                    <button id="importProjectButton" class="text-button" type="button"><i class="fa-solid fa-file-import" aria-hidden="true"></i> Importar</button>
                     <input id="importProjectInput" type="file" accept="application/json,.json,.davinci" hidden>
                     <div class="export-menu-wrap">
                         <button id="exportMenuButton" class="btn btn-dark" type="button" aria-expanded="false"><i class="fa-solid fa-download" aria-hidden="true"></i> Exportar <i class="fa-solid fa-chevron-down tiny-icon" aria-hidden="true"></i></button>
                         <div id="exportMenu" class="export-menu" hidden>
                             <button type="button" data-export="image"><i class="fa-regular fa-image" aria-hidden="true"></i> Página como imagen</button>
                             <button type="button" data-export="page-pdf"><i class="fa-regular fa-file-pdf" aria-hidden="true"></i> Página como PDF</button>
-                            <button type="button" data-export="page-davinci"><i class="fa-regular fa-file-code" aria-hidden="true"></i> Hoja editable (.davinci)</button>
-                            <button type="button" data-export="page-json"><i class="fa-regular fa-file-code" aria-hidden="true"></i> Hoja editable (.json)</button>
+                            <button type="button" data-export="page-project"><i class="fa-regular fa-file-code" aria-hidden="true"></i> Exportar hoja editable</button>
                             <button type="button" data-export="book-pdf"><i class="fa-solid fa-book" aria-hidden="true"></i> Cuaderno completo en PDF</button>
-                            <button type="button" data-export="book-davinci"><i class="fa-solid fa-file-export" aria-hidden="true"></i> Cuaderno editable (.davinci)</button>
-                            <button type="button" data-export="book-json"><i class="fa-solid fa-file-export" aria-hidden="true"></i> Cuaderno editable (.json)</button>
+                            <button type="button" data-export="book-project"><i class="fa-solid fa-file-export" aria-hidden="true"></i> Exportar cuaderno editable</button>
                         </div>
                     </div>
                 </div>
@@ -76,7 +72,6 @@ if (!isset($_SESSION['id_usuario'])) {
                     <button id="pencilTool" class="tool-button is-active" type="button" aria-pressed="true"><i class="fa-solid fa-pencil" aria-hidden="true"></i><span>Lápiz</span></button>
                     <button id="eraserTool" class="tool-button" type="button" aria-pressed="false"><i class="fa-solid fa-eraser" aria-hidden="true"></i><span>Borrador</span></button>
                     <button id="imageEditTool" class="tool-button" type="button" aria-pressed="false"><i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i><span>Editar imagen</span></button>
-                    <button id="deleteImageButton" class="tool-button danger" type="button" disabled aria-label="Eliminar imagen seleccionada" title="Eliminar imagen seleccionada"><i class="fa-regular fa-trash-can" aria-hidden="true"></i><span>Eliminar imagen</span></button>
                 </div>
                 <span class="toolbar-divider"></span>
                 <div class="tool-group color-tools" aria-label="Color del lápiz">
@@ -127,6 +122,7 @@ if (!isset($_SESSION['id_usuario'])) {
                 <input id="imageInput" type="file" accept="image/*" hidden>
                 <div class="toolbar-spacer"></div>
                 <div class="tool-group">
+                    <button id="fullscreenCanvasButton" class="icon-button" type="button" aria-pressed="false" aria-label="Pantalla completa del lienzo" title="Pantalla completa"><i class="fa-solid fa-expand" aria-hidden="true"></i></button>
                     <button id="undoButton" class="icon-button" type="button" disabled aria-label="Deshacer"><i class="fa-solid fa-arrow-rotate-left"></i></button>
                     <button id="redoButton" class="icon-button" type="button" disabled aria-label="Rehacer"><i class="fa-solid fa-arrow-rotate-right"></i></button>
                     <button id="clearButton" class="tool-button danger clear-all-button" type="button" aria-label="Borrar todo el lienzo" title="Borrar todo el lienzo"><i class="fa-regular fa-trash-can" aria-hidden="true"></i><span>Borrar todo</span></button>
@@ -140,33 +136,7 @@ if (!isset($_SESSION['id_usuario'])) {
                 </aside>
 
                 <section id="canvasStage" class="canvas-stage" aria-label="Lienzo de dibujo">
-                    <div class="stage-floating-controls" aria-label="Controles de vista inmersiva">
-                        <button id="stageMenuButton" class="stage-menu-button" type="button" aria-expanded="false" aria-controls="stageMenu" aria-label="Mostrar opciones de dibujo" title="Opciones de dibujo"><i class="fa-solid fa-bars" aria-hidden="true"></i><span>Opciones</span></button>
-                        <button id="stageFullscreenButton" class="stage-fullscreen-button" type="button" aria-label="Salir de pantalla completa"><i class="fa-solid fa-compress" aria-hidden="true"></i><span>Salir</span></button>
-                    </div>
-                    <aside id="stageMenu" class="stage-menu" hidden aria-label="Opciones de dibujo">
-                        <div class="stage-menu-heading"><strong>Herramientas</strong><button id="stageMenuCloseButton" class="stage-menu-close" type="button" aria-label="Cerrar opciones"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div>
-                        <div class="stage-menu-tools" role="group" aria-label="Herramienta activa">
-                            <button class="stage-menu-action" type="button" data-stage-tool="pencil" aria-pressed="true"><i class="fa-solid fa-pencil" aria-hidden="true"></i>Lápiz</button>
-                            <button class="stage-menu-action" type="button" data-stage-tool="eraser" aria-pressed="false"><i class="fa-solid fa-eraser" aria-hidden="true"></i>Borrador</button>
-                        </div>
-                        <label class="stage-size-control" for="stageBrushSize"><span>Tamaño</span><input id="stageBrushSize" type="range" min="1" max="24" value="4" aria-label="Tamaño de la herramienta"><output id="stageBrushSizeValue" for="stageBrushSize">4 px</output></label>
-                        <div class="stage-menu-colors" role="group" aria-label="Color del lápiz">
-                            <span>Color</span>
-                            <div>
-                                <button class="stage-color-swatch is-selected" type="button" data-stage-color="#1B1F35" style="--swatch:#1B1F35" aria-label="Azul tinta"></button>
-                                <button class="stage-color-swatch" type="button" data-stage-color="#4F46E5" style="--swatch:#4F46E5" aria-label="Índigo"></button>
-                                <button class="stage-color-swatch" type="button" data-stage-color="#E45A86" style="--swatch:#E45A86" aria-label="Rosa"></button>
-                                <button class="stage-color-swatch" type="button" data-stage-color="#D97706" style="--swatch:#D97706" aria-label="Ámbar"></button>
-                                <button class="stage-color-swatch" type="button" data-stage-color="#168A72" style="--swatch:#168A72" aria-label="Verde"></button>
-                            </div>
-                        </div>
-                        <div class="stage-menu-history" role="group" aria-label="Historial de trazos">
-                            <button id="stageUndoButton" class="stage-menu-action" type="button" disabled><i class="fa-solid fa-arrow-rotate-left" aria-hidden="true"></i>Deshacer</button>
-                            <button id="stageRedoButton" class="stage-menu-action" type="button" disabled><i class="fa-solid fa-arrow-rotate-right" aria-hidden="true"></i>Rehacer</button>
-                        </div>
-                        <button id="stageStandardViewButton" class="stage-standard-view" type="button"><i class="fa-solid fa-table-columns" aria-hidden="true"></i>Abrir menú completo</button>
-                    </aside>
+                    <button id="stageFullscreenButton" class="stage-fullscreen-button" type="button" aria-label="Salir de pantalla completa"><i class="fa-solid fa-compress" aria-hidden="true"></i><span>Salir</span></button>
                     <div id="canvasViewport" class="canvas-viewport">
                         <div id="paperWrap" class="paper-wrap">
                             <canvas id="paperCanvas" width="1240" height="1754" aria-hidden="true"></canvas>
@@ -239,20 +209,6 @@ if (!isset($_SESSION['id_usuario'])) {
                     <label class="template-option"><input type="radio" name="currentPageTemplate" value="dotted"><span class="template-preview dotted-preview"></span><strong>Punteada</strong><small>Puntos guía</small></label>
                 </div>
                 <button class="btn btn-primary btn-block" type="submit">Aplicar tipo de papel</button>
-            </form>
-        </section>
-    </div>
-
-    <div id="renamePageModal" class="modal-backdrop" hidden>
-        <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="renamePageModalTitle">
-            <button class="modal-close" type="button" data-close-modal="renamePageModal" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
-            <span class="modal-icon"><i class="fa-regular fa-note-sticky" aria-hidden="true"></i></span>
-            <h2 id="renamePageModalTitle">Renombrar hoja</h2>
-            <p>Este nombre se mostrará en el cuaderno y en las exportaciones.</p>
-            <form id="renamePageForm">
-                <label for="renamePageInput">Nombre de la hoja</label>
-                <input id="renamePageInput" type="text" maxlength="60" required autocomplete="off">
-                <button class="btn btn-primary btn-block" type="submit">Guardar nombre</button>
             </form>
         </section>
     </div>

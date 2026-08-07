@@ -6,12 +6,9 @@ ob_start();
 @session_start();
 ?>
 <script>
-window.addEventListener('load', function() {
-    var nombreEstudiante = document.getElementById('nombrees');
-    if (nombreEstudiante) {
-        nombreEstudiante.focus();
-    }
-});
+window.onload = function() {
+    document.getElementById('nombrees').focus();
+};
 
 
 $(document).ready(function() {
@@ -295,7 +292,6 @@ if($query_periodo_widget && $query_periodo_widget->num_rows > 0) {
 }
 </style>
 
-<div id="home-dashboard-grid" class="row">
 <div class="col-xs-12 col-lg-4 widget-header-item period-widget-wrap">
     <div class="period-widget-container" id="periodWidget">
         <div class="pw-header">
@@ -481,293 +477,29 @@ $(function() {
 });
 </script>
 <?php 
-foreach($tarjetas as $clave => $row){
-    $id_tarjeta = (int) ($row['id_tarjeta'] ?? 0);
-    $es_tarjeta_pendientes = $id_tarjeta === 68;
-?>
- <div class="col-xs-12 col-lg-4 widget-header-item home-card-widget" data-card-id="<?php echo $id_tarjeta; ?>">
+foreach($tarjetas as $clave => $row){ ?>
+ <div class="col-xs-12 col-lg-4 widget-header-item">
  <div class="panel panel-<?php echo $row['class_color'] ?>">
                     <div class="panel-heading">
-                      <h4><span class="glyphicon glyphicon-move home-card-drag-handle" title="Arrastrar para reordenar" aria-hidden="true"></span><?php echo $row['titulo'] ?></h4>
+                      <h4><?php echo $row['titulo'] ?></h4>
                                 <a href="<?php echo $row['accion_rapida'] ?>"><img style='margin-top:-12%' align="right" id="icono_tarjeta_home" src="<?php echo SGA_COMUN_URL ?>/img/png/<?php echo $row['icono'] ?>"></a>
                     </div>
                     <div style="overflow: scroll;"  class="panel-body tarjeta">
-                              <?php if ($es_tarjeta_pendientes): ?>
-                                <div id="utel-pending-tasks" data-utel-url="<?php echo htmlspecialchars(SGA_URL . '/apps/utel/index.php', ENT_QUOTES, 'UTF-8'); ?>">
-                                  Cargando pendientes de UTEL...
-                                </div>
-                              <?php else: ?>
-                                <?php eval($row['funcion']); ?>
-                              <?php endif; ?>
+                              <p>
+                              <?php
+                            #  echo "<pre>";
+                            # print_R($row['funcion']);
+                            # print_R("</pre>");
+                             eval($row['funcion']) ?>
+                              </p>                 
                     </div>
                     <div class="panel-footer">
                                 <a href="<?php echo SGA_URL.$row['href'] ?>" class="btn btn-<?php echo $row['class_color'] ?>">Ver más</a>
                     </div>
                           
                           </div>
-   </div>
+  </div>                          
 <?php } ?>
-</div>
-
-<style>
-  .home-card-drag-handle {
-    cursor: grab;
-    margin-right: 8px;
-    opacity: 0.65;
-  }
-
-  .home-card-drag-handle:active {
-    cursor: grabbing;
-  }
-
-  .home-card-widget.ui-sortable-helper {
-    opacity: 0.85;
-  }
-
-  .home-card-placeholder {
-    min-height: 190px;
-    border: 2px dashed rgba(255, 255, 255, 0.75);
-    border-radius: 4px;
-    margin-bottom: 20px;
-  }
-
-  .utel-pending-summary {
-    color: #777;
-    font-size: 12px;
-    margin-bottom: 8px;
-  }
-
-  .utel-pending-list {
-    list-style: none;
-    margin: 0;
-    max-height: 230px;
-    overflow-y: auto;
-    padding: 0;
-  }
-
-  .utel-pending-task {
-    border-bottom: 1px solid #eee;
-    display: block;
-    padding: 8px 2px;
-  }
-
-  .utel-pending-task:last-child {
-    border-bottom: 0;
-  }
-
-  .utel-pending-task a {
-    color: inherit;
-    display: block;
-    text-decoration: none;
-  }
-
-  .utel-pending-task a:hover .utel-pending-title {
-    text-decoration: underline;
-  }
-
-  .utel-pending-title {
-    color: #333;
-    display: block;
-    font-weight: 600;
-  }
-
-  .utel-pending-meta {
-    color: #777;
-    display: block;
-    font-size: 12px;
-    margin-top: 2px;
-  }
-
-  .utel-pending-empty {
-    color: #777;
-    margin: 0;
-  }
-</style>
-
-<script>
-  (function () {
-    var orderStorageKey = <?php echo json_encode('guagua_home_cards_order_' . ($_SESSION['id_usuario'] ?? 'anonimo')); ?>;
-
-    function getLocalJson(key, fallback) {
-      try {
-        var value = window.localStorage.getItem(key);
-        return value ? JSON.parse(value) : fallback;
-      } catch (error) {
-        return fallback;
-      }
-    }
-
-    function setLocalJson(key, value) {
-      try {
-        window.localStorage.setItem(key, JSON.stringify(value));
-      } catch (error) {
-        // El inicio sigue funcionando aunque el navegador bloquee localStorage.
-      }
-    }
-
-    function restoreCardsOrder(grid) {
-      var savedOrder = getLocalJson(orderStorageKey, []);
-      if (!Array.isArray(savedOrder) || !savedOrder.length) {
-        return;
-      }
-
-      var cardsById = {};
-      Array.prototype.forEach.call(grid.querySelectorAll('.home-card-widget'), function (card) {
-        cardsById[card.getAttribute('data-card-id')] = card;
-      });
-
-      savedOrder.forEach(function (cardId) {
-        if (cardsById[cardId]) {
-          grid.appendChild(cardsById[cardId]);
-          delete cardsById[cardId];
-        }
-      });
-    }
-
-    function saveCardsOrder(grid) {
-      var order = Array.prototype.map.call(grid.querySelectorAll('.home-card-widget'), function (card) {
-        return card.getAttribute('data-card-id');
-      });
-      setLocalJson(orderStorageKey, order);
-    }
-
-    function formatUtelDate(value) {
-      if (!value) {
-        return 'Sin fecha';
-      }
-
-      var date = new Date(value);
-      if (isNaN(date.getTime())) {
-        return 'Sin fecha';
-      }
-
-      return date.toLocaleString('es-CO', {
-        day: '2-digit',
-        month: 'short',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-      });
-    }
-
-    function getUtelTimestamp(task) {
-      var timestamp = task && task.dueDate ? new Date(task.dueDate).getTime() : NaN;
-      return isNaN(timestamp) ? Number.MAX_SAFE_INTEGER : timestamp;
-    }
-
-    function renderUtelPendingTasks() {
-      var container = document.getElementById('utel-pending-tasks');
-      if (!container) {
-        return;
-      }
-
-      var tasks = getLocalJson('utel_tasks', []);
-      var subjects = getLocalJson('utel_subjects', []);
-      var subjectsById = {};
-
-      if (!Array.isArray(tasks)) {
-        tasks = [];
-      }
-      if (!Array.isArray(subjects)) {
-        subjects = [];
-      }
-
-      subjects.forEach(function (subject) {
-        if (subject && subject.id) {
-          subjectsById[subject.id] = subject.name || 'Sin materia';
-        }
-      });
-
-      var pendingTasks = tasks.filter(function (task) {
-        return task && String(task.status || '').toLowerCase() === 'pendiente';
-      }).sort(function (first, second) {
-        return getUtelTimestamp(first) - getUtelTimestamp(second);
-      });
-
-      container.textContent = '';
-
-      if (!pendingTasks.length) {
-        var empty = document.createElement('p');
-        empty.className = 'utel-pending-empty';
-        empty.textContent = 'No tienes tareas pendientes de UTEL.';
-        container.appendChild(empty);
-        return;
-      }
-
-      var summary = document.createElement('div');
-      summary.className = 'utel-pending-summary';
-      summary.textContent = pendingTasks.length + (pendingTasks.length === 1 ? ' pendiente de UTEL' : ' pendientes de UTEL');
-      container.appendChild(summary);
-
-      var list = document.createElement('ul');
-      list.className = 'utel-pending-list';
-
-      pendingTasks.forEach(function (task) {
-        var item = document.createElement('li');
-        item.className = 'utel-pending-task';
-
-        var link = document.createElement('a');
-        link.href = container.getAttribute('data-utel-url') || 'apps/utel/index.php';
-        link.title = 'Abrir UTEL';
-
-        var title = document.createElement('span');
-        title.className = 'utel-pending-title';
-        title.textContent = task.title || 'Tarea sin título';
-
-        var meta = document.createElement('span');
-        meta.className = 'utel-pending-meta';
-        meta.textContent = (subjectsById[task.subjectId] || 'Sin materia') + ' · ' + formatUtelDate(task.dueDate);
-
-        link.appendChild(title);
-        link.appendChild(meta);
-        item.appendChild(link);
-        list.appendChild(item);
-      });
-
-      container.appendChild(list);
-    }
-
-    function initializeHomeCards() {
-      var grid = document.getElementById('home-dashboard-grid');
-      if (grid) {
-        restoreCardsOrder(grid);
-
-        if (window.jQuery && typeof window.jQuery.fn.sortable === 'function') {
-          window.jQuery(grid).sortable({
-            items: '> .home-card-widget',
-            handle: '.home-card-drag-handle',
-            placeholder: 'home-card-placeholder col-xs-12 col-lg-4',
-            forcePlaceholderSize: true,
-            tolerance: 'pointer',
-            update: function () {
-              saveCardsOrder(grid);
-            }
-          });
-        }
-      }
-
-      renderUtelPendingTasks();
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initializeHomeCards);
-    } else {
-      initializeHomeCards();
-    }
-
-    window.addEventListener('storage', function (event) {
-      if (event.key === 'utel_tasks' || event.key === 'utel_subjects') {
-        renderUtelPendingTasks();
-      }
-    });
-
-    document.addEventListener('visibilitychange', function () {
-      if (!document.hidden) {
-        renderUtelPendingTasks();
-      }
-    });
-  }());
-</script>
 
 <?php $contenido = ob_get_contents();
 ob_clean();

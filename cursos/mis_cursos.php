@@ -15,7 +15,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $academico = new Academico();
 $persona = new Persona();
-$institucion = new Institucion(7);
+$institucion = new Institucion($_SESSION['id_institucion'] ?? 7);
 
 if (isset($_SESSION['rol'])) {
     $persona->validar_acudiente();
@@ -52,14 +52,23 @@ function mis_cursos_fetch_all(mysqli $mysqli, $sql, $types = '', array $params =
     }
 
     mis_cursos_bind_params($stmt, $types, $params);
-    $stmt->execute();
+    if (!$stmt->execute()) {
+        $error = $stmt->error;
+        $stmt->close();
+        return ['ok' => false, 'error' => $error, 'rows' => []];
+    }
+
     $result = $stmt->get_result();
+    if ($result === false) {
+        $error = $stmt->error;
+        $stmt->close();
+        return ['ok' => false, 'error' => $error, 'rows' => []];
+    }
+
     $rows = [];
 
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $rows[] = $row;
-        }
+    while ($row = $result->fetch_assoc()) {
+        $rows[] = $row;
     }
 
     $stmt->close();
@@ -73,14 +82,15 @@ function mis_cursos_placeholders(array $items)
 
 function mis_cursos_obtener_anos(mysqli $mysqli, Academico $academico)
 {
-    $consulta_anos = $mysqli->query($academico->ano_estudiante());
+    $sql = "SELECT id_ano_lectivo, nombre_ano_lectivo, estado FROM ano_lectivo ORDER BY id_ano_lectivo DESC";
+    $result = $mysqli->query($sql);
     $anos = [];
 
-    if (!$consulta_anos) {
+    if (!$result) {
         return ['ok' => false, 'error' => $mysqli->error, 'rows' => []];
     }
 
-    while ($row = $consulta_anos->fetch_assoc()) {
+    while ($row = $result->fetch_assoc()) {
         $anos[] = $row;
     }
 
@@ -150,16 +160,8 @@ function mis_cursos_obtener_cursos(mysqli $mysqli, array $anos, array $categoria
     $ano_ids = array_map('intval', array_column($anos, 'id_ano_lectivo'));
     $cat_ids = array_map('intval', array_keys($categorias));
 
-    $sql_periodo = "SELECT fecha_inicio, fecha_fin FROM periodo WHERE estado_periodo = '1' LIMIT 1";
-    $periodo_result = $mysqli->query($sql_periodo);
-    $periodo_inicio = null;
-    $periodo_fin = null;
-    if ($periodo_result && $periodo_result->num_rows > 0) {
-        $periodo_data = $periodo_result->fetch_assoc();
-        $periodo_inicio = $periodo_data['fecha_inicio'];
-        $periodo_fin = $periodo_data['fecha_fin'];
-    }
-
+    // Una asignación sigue siendo válida aunque todavía no tenga horario. Por eso la
+    // consulta no debe unir ni filtrar por la tabla horario.
     $sql = "SELECT DISTINCT
                 a.id_asignacion,
                 a.descripcion,
@@ -173,8 +175,7 @@ function mis_cursos_obtener_cursos(mysqli $mysqli, array $anos, array $categoria
                 u.foto
             FROM asignacion a
             INNER JOIN materia_oficial mo ON a.id_asignatura = mo.id_materia
-            INNER JOIN usuario u ON a.id_docente = u.id_usuario
-            INNER JOIN horario h ON a.id_asignacion = h.id_asignacion";
+            INNER JOIN usuario u ON a.id_docente = u.id_usuario";
 
     $types = '';
     $params = [];
@@ -187,13 +188,6 @@ function mis_cursos_obtener_cursos(mysqli $mysqli, array $anos, array $categoria
     $conditions[] = 'a.ano_lectivo IN (' . mis_cursos_placeholders($ano_ids) . ')';
     $types .= str_repeat('i', count($ano_ids));
     $params = array_merge($params, $ano_ids);
-
-    if ($periodo_inicio && $periodo_fin && $periodo_inicio != '0000-00-00' && $periodo_fin != '0000-00-00') {
-        $conditions[] = "(h.fecha_inicio <= ? OR h.fecha_inicio = '0000-00-00' OR h.fecha_inicio IS NULL) AND (h.fecha_fin >= ? OR h.fecha_fin = '0000-00-00' OR h.fecha_fin IS NULL)";
-        $types .= 'ss';
-        $params[] = $periodo_fin;
-        $params[] = $periodo_inicio;
-    }
 
     $conditions[] = 'a.id_categoria_curso IN (' . mis_cursos_placeholders($cat_ids) . ')';
     $types .= str_repeat('i', count($cat_ids));
@@ -213,12 +207,12 @@ function mis_cursos_obtener_cursos(mysqli $mysqli, array $anos, array $categoria
         $conditions[] = 'i.id_estudiante = ?';
         $types .= 's';
         $params[] = $id_usuario;
-        $conditions[] = "LOWER(a.visible) = 'si'";
+        $conditions[] = "LOWER(TRIM(a.visible)) = 'si'";
     } elseif ($rol === 'acudiente') {
         $conditions[] = 'i.id_estudiante = ?';
         $types .= 's';
         $params[] = $id_hijo;
-        $conditions[] = "LOWER(a.visible) = 'si'";
+        $conditions[] = "LOWER(TRIM(a.visible)) = 'si'";
     }
 
     $busqueda = trim((string) $busqueda);
@@ -382,7 +376,7 @@ function buscar_mis_cursos_html($mysqli_conn, $parametro_buqueda = '', $campo = 
 }
 
 if (isset($_GET['buscar_mis_cursos'])) {
-    $datos = $_POST['datos'] ?? '';
+    $datos = $_POST['datos'] ?? ($_GET['buscar_mis_cursos'] ?? '');
     $campo = $_POST['campo'] ?? 'nombre_materia';
 
     echo buscar_mis_cursos_html($mysqli, $datos, $campo);

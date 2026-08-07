@@ -95,3 +95,7 @@
 [19/06/2026 09:51:54] ERROR: No se pudo crear la base de datos 'guagua'.
 [19/06/2026 09:52:06] ERROR: No se pudo crear la base de datos 'guagua'.
 [19/06/2026 09:55:17] No se encontr√≥ un archivo de respaldo v√°lido (.sql) para 'edutask' en 'D:\xampp\htdocs\guagua\reportes\bd\automatico\edutask'.
+[03/08/2026 09:00:08] ERROR: No se pudo renombrar la carpeta 'D:\xampp\mysql\data'. Error: El proceso no puede obtener acceso al archivo porque est· siendo utilizado en otro proceso.
+[03/08/2026 09:00:24] ERROR: No se pudo renombrar la carpeta 'D:\xampp\mysql\data'. Error: El proceso no puede obtener acceso al archivo porque est· siendo utilizado en otro proceso.
+[03/08/2026 09:00:45] ERROR: No se pudo renombrar la carpeta 'D:\xampp\mysql\data'. Error: El proceso no puede obtener acceso al archivo porque est· siendo utilizado en otro proceso.
+[03/08/2026 09:16:15] No se encontr√≥ un archivo de respaldo v√°lido (.sql) para 'edutask' en 'D:\xampp\htdocs\guagua\reportes\bd\automatico\edutask'.

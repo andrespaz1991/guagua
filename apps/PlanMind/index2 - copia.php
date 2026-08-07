@@ -31,58 +31,6 @@ function planmind2_grado_numero(string $grado): string
     return $grado;
 }
 
-/**
- * Obtiene las horas semanales de la asignación directamente desde horario.
- * Cada registro representa el bloque de una jornada; por eso se suman los
- * intervalos de todos los días configurados para la asignación.
- */
-function planmind2_horas_asignacion(int $idAsignacion): ?array
-{
-    if ($idAsignacion <= 0) {
-        return null;
-    }
-
-    require_once __DIR__ . '/../../comun/config.php';
-    $mysqli = new mysqli(SERVIDORBD, USUARIOBD, CLAVEBD, BASEDEDATOS);
-    if ($mysqli->connect_errno) {
-        throw new RuntimeException('No fue posible conectar con la base de datos.');
-    }
-    $mysqli->set_charset('utf8mb4');
-
-    /*
-     * TIME_TO_SEC permite sumar también bloques que no duran un número entero
-     * de horas. El CASE contempla, además, horarios que terminan al día siguiente.
-     */
-    $sql = "SELECT COUNT(*) AS sesiones,
-                   ROUND(COALESCE(SUM(
-                       CASE
-                           WHEN hora_fin >= hora_inicio
-                               THEN TIME_TO_SEC(hora_fin) - TIME_TO_SEC(hora_inicio)
-                           ELSE 86400 + TIME_TO_SEC(hora_fin) - TIME_TO_SEC(hora_inicio)
-                       END
-                   ), 0) / 3600, 2) AS horas
-            FROM `horario`
-            WHERE `id_asignacion` = ?";
-    $statement = $mysqli->prepare($sql);
-    if (!$statement) {
-        $mysqli->close();
-        throw new RuntimeException('No fue posible consultar el horario de la asignación.');
-    }
-
-    $statement->bind_param('i', $idAsignacion);
-    $statement->execute();
-    $row = $statement->get_result()->fetch_assoc();
-    $statement->close();
-    $mysqli->close();
-
-    $horas = (float)($row['horas'] ?? 0);
-    return [
-        // Evita mostrar ceros decimales innecesarios: 4.00 se presenta como 4.
-        'horas' => fmod($horas, 1.0) === 0.0 ? (string)(int)$horas : rtrim(rtrim(number_format($horas, 2, '.', ''), '0'), '.'),
-        'sesiones' => (int)($row['sesiones'] ?? 0),
-    ];
-}
-
 function planmind2_referentes_curriculares(): void
 {
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
@@ -165,17 +113,6 @@ function planmind2_referentes_curriculares(): void
 
 if (($_GET['action'] ?? '') === 'referentes') {
     planmind2_referentes_curriculares();
-}
-
-$planmind2Horario = null;
-$planmind2Asignacion = max(0, (int)($_GET['asignacion'] ?? 0));
-if ($planmind2Asignacion > 0) {
-    try {
-        $planmind2Horario = planmind2_horas_asignacion($planmind2Asignacion);
-    } catch (Throwable $error) {
-        // El formulario principal debe seguir disponible aunque el horario no se pueda consultar.
-        $planmind2Horario = null;
-    }
 }
 
 /*
@@ -275,31 +212,5 @@ $scriptReferentes = <<<'HTML'
 </script>
 HTML;
 
-$scriptHorasHorario = <<<'HTML'
-<script>
-(() => {
-    const horario = __PLANMIND2_HORARIO__;
-    const tiempoInput = document.getElementById('tiempo');
-    if (!horario || !tiempoInput) return;
-
-    // El valor viene calculado en SQL a partir de todos los días de horario.
-    tiempoInput.step = '0.01';
-    tiempoInput.value = horario.horas;
-    tiempoInput.dispatchEvent(new Event('input', { bubbles: true }));
-    tiempoInput.dispatchEvent(new Event('change', { bubbles: true }));
-
-    const aviso = document.createElement('p');
-    aviso.className = 'mt-1 text-[11px] text-slate-500';
-    aviso.textContent = `Horas semanales calculadas desde horario: ${horario.horas} (${horario.sesiones} bloque(s) programado(s)).`;
-    tiempoInput.parentElement.appendChild(aviso);
-})();
-</script>
-HTML;
-$scriptHorasHorario = str_replace(
-    '__PLANMIND2_HORARIO__',
-    json_encode($planmind2Horario, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
-    $scriptHorasHorario
-);
-
-$contenido = str_replace('</body>', $scriptReferentes . "\n" . $scriptHorasHorario . "\n</body>", $contenido);
+$contenido = str_replace('</body>', $scriptReferentes . "\n</body>", $contenido);
 echo $contenido;

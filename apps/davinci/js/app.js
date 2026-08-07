@@ -2,6 +2,9 @@ const STORAGE_KEY = 'davinci-notebooks-v1';
 const PORTRAIT_WIDTH = 1240;
 const PORTRAIT_HEIGHT = 1754;
 const DEFAULT_BOOK_COLOR = '#4F46E5';
+const PROJECT_FORMAT = 'davinci-project';
+const PROJECT_VERSION = 1;
+const MAX_PROJECT_SIZE = 32 * 1024 * 1024;
 
 const paperCanvas = document.getElementById('paperCanvas');
 const drawingCanvas = document.getElementById('drawingCanvas');
@@ -31,6 +34,7 @@ let cloudReconnectTimer;
 let lastCloudVersion = null;
 let hasLocalChanges = false;
 let canvasZoom = 1;
+let isCanvas100 = false;
 let rulerVisible = false;
 let rulerPosition = { x: .5, y: .22 };
 let rulerAngle = 0;
@@ -274,11 +278,46 @@ function resizeCanvases(page) {
 }
 
 function setZoom(value) {
+    if (isCanvas100) {
+        isCanvas100 = false;
+        updateCanvas100Controls();
+    }
     canvasZoom = Math.max(.5, Math.min(2, value));
     const percentage = Math.round(canvasZoom * 100);
     document.getElementById('zoomRange').value = percentage;
     document.getElementById('zoomValue').textContent = `${percentage}%`;
     applyZoom();
+}
+
+function toggleCanvas100() {
+    isCanvas100 = !isCanvas100;
+    updateCanvas100Controls();
+    applyZoom();
+    showToast(isCanvas100 ? 'Lienzo ajustado al 100% de la pantalla.' : 'Restablecido el zoom habitual del lienzo.');
+}
+
+function updateCanvas100Controls() {
+    const fitBtn = document.getElementById('fit100Button');
+    const headerBtn = document.getElementById('canvas100HeaderButton');
+    if (fitBtn) {
+        fitBtn.classList.toggle('is-active', isCanvas100);
+        fitBtn.setAttribute('aria-pressed', String(isCanvas100));
+        fitBtn.setAttribute('aria-label', isCanvas100 ? 'Salir de 100% pantalla' : 'Ajustar lienzo al 100% de la pantalla');
+    }
+    if (headerBtn) {
+        headerBtn.classList.toggle('is-active', isCanvas100);
+        headerBtn.setAttribute('aria-pressed', String(isCanvas100));
+        headerBtn.setAttribute('aria-label', isCanvas100 ? 'Restablecer vista del lienzo' : 'Lienzo al 100% de la pantalla');
+        headerBtn.title = isCanvas100 ? 'Restablecer vista' : 'Lienzo al 100% de la pantalla';
+    }
+    const zoomValue = document.getElementById('zoomValue');
+    if (zoomValue) {
+        if (isCanvas100) {
+            zoomValue.textContent = '100% Ancho';
+        } else {
+            zoomValue.textContent = `${Math.round(canvasZoom * 100)}%`;
+        }
+    }
 }
 
 function applyZoom() {
@@ -292,6 +331,14 @@ function applyZoom() {
         || document.fullscreenElement === workspace
         || stage.classList.contains('is-pseudo-fullscreen')
         || workspace?.classList.contains('is-workspace-pseudo-fullscreen');
+
+    if (isCanvas100) {
+        const availableWidth = Math.max(220, viewport.clientWidth - 16);
+        wrap.style.width = `${Math.round(availableWidth)}px`;
+        renderRuler();
+        return;
+    }
+
     const defaultWidth = page.orientation === 'landscape' ? 780 : 590;
     const presentationWidth = page.orientation === 'landscape' ? viewport.clientHeight * 1.36 : viewport.clientHeight * .68;
     const naturalWidth = isPresentation ? Math.max(defaultWidth, presentationWidth) : defaultWidth;
@@ -402,8 +449,9 @@ async function renderImages() {
     if (!page) return;
     const renderedPageId = page.id;
     imageContext.clearRect(0, 0, imageCanvas.width, imageCanvas.height);
-    await drawPageImages(imageContext, page, true);
+    await drawPageImages(imageContext, page, tool === 'image');
     if (getActivePage()?.id !== renderedPageId) return;
+    updateImageControls();
 }
 
 function localImagePoint(point, image) {
@@ -449,11 +497,13 @@ function pointFromImageEvent(event) {
 
 function startImageTransform(event) {
     if (tool !== 'image') return;
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
     const point = pointFromImageEvent(event);
     const hit = imageFromPoint(point);
     if (!hit) {
         selectedImageId = null;
         renderImages();
+        updateImageControls();
         return;
     }
     selectedImageId = hit.image.id;
@@ -504,6 +554,7 @@ function endImageTransform(event) {
     imageTransform = null;
     persist();
     renderPages();
+    updateImageControls();
 }
 
 async function renderActivePage() {
@@ -565,8 +616,14 @@ async function restoreHistory(direction) {
 function updateHistoryButtons() {
     const page = getActivePage();
     const history = page ? getHistory(page) : { items: [], index: 0 };
-    document.getElementById('undoButton').disabled = history.index <= 0;
-    document.getElementById('redoButton').disabled = history.index >= history.items.length - 1;
+    const canUndo = history.index > 0;
+    const canRedo = history.index < history.items.length - 1;
+    document.getElementById('undoButton').disabled = !canUndo;
+    document.getElementById('redoButton').disabled = !canRedo;
+    const stageUndoButton = document.getElementById('stageUndoButton');
+    const stageRedoButton = document.getElementById('stageRedoButton');
+    if (stageUndoButton) stageUndoButton.disabled = !canUndo;
+    if (stageRedoButton) stageRedoButton.disabled = !canRedo;
 }
 
 function renderBooks() {
@@ -702,12 +759,19 @@ function setTool(nextTool) {
     tool = nextTool;
     const pencil = document.getElementById('pencilTool');
     const eraser = document.getElementById('eraserTool');
+    const imageEdit = document.getElementById('imageEditTool');
     pencil.classList.toggle('is-active', tool === 'pencil');
     eraser.classList.toggle('is-active', tool === 'eraser');
+    imageEdit.classList.toggle('is-active', tool === 'image');
     pencil.setAttribute('aria-pressed', String(tool === 'pencil'));
     eraser.setAttribute('aria-pressed', String(tool === 'eraser'));
-    drawingCanvas.style.cursor = tool === 'eraser' ? 'cell' : 'crosshair';
+    imageEdit.setAttribute('aria-pressed', String(tool === 'image'));
+    drawingCanvas.style.cursor = tool === 'eraser' ? 'cell' : tool === 'image' ? 'default' : 'crosshair';
+    if (tool !== 'image') imageTransform = null;
     updateSizeControls();
+    updateStageMenuControls();
+    updateImageControls();
+    renderImages();
 }
 
 function setColor(color) {
@@ -715,12 +779,70 @@ function setColor(color) {
     setTool('pencil');
     document.querySelectorAll('.color-swatch').forEach(swatch => swatch.classList.toggle('is-selected', swatch.dataset.color.toLowerCase() === color.toLowerCase()));
     document.getElementById('colorPicker').value = color;
+    updateStageMenuControls();
 }
 
 function updateSizeControls() {
     document.getElementById('pencilSizeControl').hidden = tool !== 'pencil';
     document.getElementById('eraserSizeControl').hidden = tool !== 'eraser';
     updateEraserPreview();
+}
+
+function updateImageControls() {
+    const imageEdit = document.getElementById('imageEditTool');
+    const deleteButton = document.getElementById('deleteImageButton');
+    const page = getActivePage();
+    const hasSelection = Boolean(page?.images?.some(image => image.id === selectedImageId));
+    const isEditing = tool === 'image';
+    imageCanvas.style.pointerEvents = isEditing ? 'auto' : 'none';
+    imageCanvas.style.cursor = isEditing ? 'move' : 'default';
+    if (imageEdit) {
+        imageEdit.classList.toggle('is-active', isEditing);
+        imageEdit.setAttribute('aria-pressed', String(isEditing));
+    }
+    if (deleteButton) deleteButton.disabled = !isEditing || !hasSelection;
+}
+
+function deleteSelectedImage() {
+    const page = getActivePage();
+    if (!page || !selectedImageId) return;
+    const imageIndex = page.images.findIndex(image => image.id === selectedImageId);
+    if (imageIndex < 0) return;
+    page.images.splice(imageIndex, 1);
+    selectedImageId = null;
+    imageTransform = null;
+    persist();
+    renderImages();
+    renderPages();
+    showToast('Imagen eliminada. Tus trazos se conservaron.');
+}
+
+function updateStageMenuControls() {
+    const sizeInput = document.getElementById('stageBrushSize');
+    const sizeValue = document.getElementById('stageBrushSizeValue');
+    document.querySelectorAll('[data-stage-tool]').forEach(button => {
+        const isActive = button.dataset.stageTool === tool;
+        button.classList.toggle('is-active', isActive);
+        button.setAttribute('aria-pressed', String(isActive));
+    });
+    document.querySelectorAll('[data-stage-color]').forEach(swatch => {
+        swatch.classList.toggle('is-selected', swatch.dataset.stageColor.toLowerCase() === brushColor.toLowerCase());
+    });
+    if (!sizeInput || !sizeValue) return;
+    const isEraser = tool === 'eraser';
+    sizeInput.min = isEraser ? '6' : '1';
+    sizeInput.max = isEraser ? '80' : '24';
+    sizeInput.value = String(isEraser ? eraserSize : pencilSize);
+    sizeValue.textContent = `${sizeInput.value} px`;
+}
+
+function setStageMenuOpen(shouldOpen) {
+    const menu = document.getElementById('stageMenu');
+    const button = document.getElementById('stageMenuButton');
+    if (!menu || !button) return;
+    menu.hidden = !shouldOpen;
+    button.setAttribute('aria-expanded', String(shouldOpen));
+    if (shouldOpen) updateStageMenuControls();
 }
 
 function updateEraserPreview() {
@@ -797,6 +919,7 @@ function updateFullscreenButton() {
     const stageButton = document.getElementById('stageFullscreenButton');
     stageButton.setAttribute('aria-label', isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa del lienzo');
     stageButton.innerHTML = `<i class="fa-solid fa-${isFullscreen ? 'compress' : 'expand'}" aria-hidden="true"></i><span>${isFullscreen ? 'Salir' : 'Pantalla completa'}</span>`;
+    if (!isFullscreen) setStageMenuOpen(false);
     requestAnimationFrame(applyZoom);
 }
 
@@ -911,6 +1034,13 @@ function openPaperModal() {
     openModal('paperModal');
 }
 
+function openRenamePageModal() {
+    const page = getActivePage();
+    if (!page) return;
+    document.getElementById('renamePageInput').value = page.title || 'Página';
+    openModal('renamePageModal');
+}
+
 function insertImage(file) {
     if (!file || !file.type.startsWith('image/')) {
         showToast('Selecciona una imagen válida.');
@@ -920,17 +1050,29 @@ function insertImage(file) {
     reader.onload = () => {
         const image = new Image();
         image.onload = () => {
-            const maxWidth = drawingCanvas.width * .72;
-            const maxHeight = drawingCanvas.height * .72;
+            const page = getActivePage();
+            if (!page) return;
+            const maxWidth = imageCanvas.width * .72;
+            const maxHeight = imageCanvas.height * .72;
             const scale = Math.min(maxWidth / image.width, maxHeight / image.height, 1);
             const width = image.width * scale;
             const height = image.height * scale;
-            drawingContext.save();
-            drawingContext.globalCompositeOperation = 'source-over';
-            drawingContext.drawImage(image, (drawingCanvas.width - width) / 2, (drawingCanvas.height - height) / 2, width, height);
-            drawingContext.restore();
-            snapshotPage();
-            showToast('Imagen añadida al lienzo y sincronizada.');
+            const newImage = {
+                id: uid('image'),
+                data: reader.result,
+                x: imageCanvas.width / 2,
+                y: imageCanvas.height / 2,
+                width,
+                height,
+                rotation: 0
+            };
+            page.images.push(newImage);
+            selectedImageId = newImage.id;
+            setTool('image');
+            persist();
+            renderImages();
+            renderPages();
+            showToast('Imagen añadida delante de tus trazos. Arrástrala para moverla o usa las esquinas para cambiar su tamaño.');
         };
         image.onerror = () => showToast('No fue posible abrir la imagen seleccionada.');
         image.src = reader.result;
@@ -1002,6 +1144,7 @@ async function composePage(page) {
     drawPaper(context, page.template, width, height);
     const image = await imageFromData(page.drawing);
     if (image) context.drawImage(image, 0, 0, width, height);
+    await drawPageImages(context, page);
     return output;
 }
 
@@ -1012,6 +1155,200 @@ function downloadData(dataUrl, name) {
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
+}
+
+function downloadProject(project, name) {
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = name;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function projectPage(page) {
+    const { width, height } = getPageDimensions(page);
+    return {
+        title: page.title || 'Página',
+        template: page.template || 'blank',
+        orientation: page.orientation || 'portrait',
+        canvas: { width, height },
+        drawing: page.drawing || '',
+        images: (page.images || []).map(image => ({
+            data: image.data,
+            x: Number(image.x),
+            y: Number(image.y),
+            width: Number(image.width) || 280,
+            height: Number(image.height) || 180,
+            rotation: Number(image.rotation) || 0
+        }))
+    };
+}
+
+function projectBook(book) {
+    return {
+        name: book.name || 'Cuaderno',
+        color: book.color || DEFAULT_BOOK_COLOR,
+        createdAt: Number(book.createdAt) || Date.now(),
+        pages: (book.pages || []).map(projectPage)
+    };
+}
+
+function exportPageProject(extension = 'davinci') {
+    const page = getActivePage();
+    const book = getActiveBook();
+    if (!page || !book) return;
+    downloadProject({
+        format: PROJECT_FORMAT,
+        version: PROJECT_VERSION,
+        type: 'page',
+        exportedAt: new Date().toISOString(),
+        bookName: book.name,
+        page: projectPage(page)
+    }, `${filename(book.name)}-${filename(page.title)}.${extension}`);
+    showToast(`Hoja editable exportada como .${extension}. Conserva su orientación, trazos e imágenes.`);
+}
+
+function exportBookProject(extension = 'davinci') {
+    const book = getActiveBook();
+    if (!book) return;
+    downloadProject({
+        format: PROJECT_FORMAT,
+        version: PROJECT_VERSION,
+        type: 'book',
+        exportedAt: new Date().toISOString(),
+        book: projectBook(book)
+    }, `${filename(book.name)}-cuaderno-editable.${extension}`);
+    showToast(`Cuaderno editable exportado como .${extension}.`);
+}
+
+function isObject(value) {
+    return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function importName(value, fallback) {
+    const name = String(value || '').trim();
+    return name.slice(0, 60) || fallback;
+}
+
+function importedPage(source, fallbackTitle = 'Página importada') {
+    if (!isObject(source)) throw new Error('La hoja del proyecto no es válida.');
+    const orientation = source.orientation === 'landscape' ? 'landscape' : 'portrait';
+    const expected = getPageDimensions({ orientation });
+    let scaleX = 1;
+    let scaleY = 1;
+
+    if (source.canvas !== undefined) {
+        if (!isObject(source.canvas)) throw new Error('Las dimensiones del lienzo no son válidas.');
+        const sourceWidth = Number(source.canvas.width);
+        const sourceHeight = Number(source.canvas.height);
+        if (!Number.isFinite(sourceWidth) || !Number.isFinite(sourceHeight) || sourceWidth <= 0 || sourceHeight <= 0) {
+            throw new Error('Las dimensiones del lienzo no son válidas.');
+        }
+        const sourceRatio = sourceWidth / sourceHeight;
+        const expectedRatio = expected.width / expected.height;
+        if (Math.abs(sourceRatio - expectedRatio) > .001) {
+            throw new Error('El archivo tiene una proporción de página incompatible y se rechazó para evitar descuadres.');
+        }
+        scaleX = expected.width / sourceWidth;
+        scaleY = expected.height / sourceHeight;
+    }
+
+    const drawing = typeof source.drawing === 'string' ? source.drawing : '';
+    if (drawing && !drawing.startsWith('data:image/')) throw new Error('El dibujo de la hoja no tiene un formato válido.');
+    const images = Array.isArray(source.images) ? source.images : [];
+    const normalizedImages = images.map(image => {
+        if (!isObject(image) || typeof image.data !== 'string' || !image.data.startsWith('data:image/')) {
+            throw new Error('Una imagen del proyecto no tiene un formato válido.');
+        }
+        const x = Number(image.x);
+        const y = Number(image.y);
+        const width = Number(image.width);
+        const height = Number(image.height);
+        if (![x, y, width, height].every(Number.isFinite) || width <= 0 || height <= 0) {
+            throw new Error('Una imagen del proyecto tiene dimensiones inválidas.');
+        }
+        return {
+            id: uid('image'),
+            data: image.data,
+            x: x * scaleX,
+            y: y * scaleY,
+            width: width * scaleX,
+            height: height * scaleY,
+            rotation: Number.isFinite(Number(image.rotation)) ? Number(image.rotation) : 0
+        };
+    });
+
+    return {
+        id: uid('page'),
+        title: importName(source.title, fallbackTitle),
+        template: ['grid', 'lined', 'dotted'].includes(source.template) ? source.template : 'blank',
+        orientation,
+        drawing,
+        images: normalizedImages
+    };
+}
+
+function importedBook(source, fallbackName = 'Cuaderno importado') {
+    if (!isObject(source) || !Array.isArray(source.pages) || !source.pages.length) {
+        throw new Error('El cuaderno del proyecto no contiene hojas válidas.');
+    }
+    return {
+        id: uid('book'),
+        name: importName(source.name, fallbackName),
+        color: /^#[0-9a-f]{6}$/i.test(source.color || '') ? source.color : DEFAULT_BOOK_COLOR,
+        createdAt: Number(source.createdAt) || Date.now(),
+        pages: source.pages.map((page, index) => importedPage(page, `Página ${index + 1}`))
+    };
+}
+
+async function importProject(file) {
+    if (!file) return;
+    if (file.size > MAX_PROJECT_SIZE) {
+        showToast('El archivo supera el tamaño máximo de 32 MB para un proyecto editable.');
+        return;
+    }
+    try {
+        const content = await file.text();
+        const project = JSON.parse(content);
+        let importedCount = 0;
+
+        if (project?.format === PROJECT_FORMAT && project.type === 'page') {
+            const book = getActiveBook();
+            if (!book) throw new Error('No hay un cuaderno disponible para recibir la hoja.');
+            const page = importedPage(project.page, 'Hoja importada');
+            book.pages.push(page);
+            state.activePageId = page.id;
+            importedCount = 1;
+        } else if (project?.format === PROJECT_FORMAT && project.type === 'book') {
+            const book = importedBook(project.book);
+            state.books.unshift(book);
+            state.activeBookId = book.id;
+            state.activePageId = book.pages[0].id;
+            importedCount = book.pages.length;
+        } else if (Array.isArray(project?.books)) {
+            const books = project.books.map((book, index) => importedBook(book, `Cuaderno importado ${index + 1}`));
+            if (!books.length) throw new Error('El archivo no contiene cuadernos válidos.');
+            state.books.unshift(...books);
+            state.activeBookId = books[0].id;
+            state.activePageId = books[0].pages[0].id;
+            importedCount = books.reduce((total, book) => total + book.pages.length, 0);
+        } else {
+            throw new Error('Selecciona un proyecto DaVinci (.davinci o .json) válido.');
+        }
+
+        selectedImageId = null;
+        imageTransform = null;
+        persist();
+        await renderApp();
+        showToast(`${importedCount} hoja${importedCount === 1 ? '' : 's'} importada${importedCount === 1 ? '' : 's'} sin cambiar su proporción.`);
+    } catch (error) {
+        console.warn('No fue posible importar el proyecto', error);
+        showToast(error.message || 'No fue posible importar el archivo seleccionado.');
+    }
 }
 
 async function exportPageImage() {
@@ -1076,14 +1413,43 @@ function bindEvents() {
     drawingCanvas.addEventListener('pointerup', stopDrawing);
     drawingCanvas.addEventListener('pointercancel', stopDrawing);
     drawingCanvas.addEventListener('pointerleave', event => { if (event.buttons === 0) stopDrawing(event); });
+    imageCanvas.addEventListener('pointerdown', startImageTransform);
+    imageCanvas.addEventListener('pointermove', moveImageTransform);
+    imageCanvas.addEventListener('pointerup', endImageTransform);
+    imageCanvas.addEventListener('pointercancel', endImageTransform);
 
     document.getElementById('pencilTool').addEventListener('click', () => setTool('pencil'));
     document.getElementById('eraserTool').addEventListener('click', () => setTool('eraser'));
+    document.getElementById('imageEditTool').addEventListener('click', () => setTool('image'));
+    document.getElementById('deleteImageButton').addEventListener('click', deleteSelectedImage);
     document.getElementById('saveNowButton').addEventListener('click', saveNow);
     document.querySelectorAll('.color-swatch').forEach(swatch => swatch.addEventListener('click', () => setColor(swatch.dataset.color)));
     document.getElementById('colorPicker').addEventListener('input', event => setColor(event.target.value));
-    document.getElementById('brushSize').addEventListener('input', event => { pencilSize = Number(event.target.value); document.getElementById('brushSizeValue').textContent = `${pencilSize} px`; });
-    document.getElementById('eraserSize').addEventListener('input', event => { eraserSize = Number(event.target.value); document.getElementById('eraserSizeValue').textContent = `${eraserSize} px`; updateEraserPreview(); });
+    document.getElementById('brushSize').addEventListener('input', event => { pencilSize = Number(event.target.value); document.getElementById('brushSizeValue').textContent = `${pencilSize} px`; updateStageMenuControls(); });
+    document.getElementById('eraserSize').addEventListener('input', event => { eraserSize = Number(event.target.value); document.getElementById('eraserSizeValue').textContent = `${eraserSize} px`; updateEraserPreview(); updateStageMenuControls(); });
+    document.getElementById('stageMenuButton').addEventListener('click', () => {
+        const menu = document.getElementById('stageMenu');
+        setStageMenuOpen(menu.hidden);
+    });
+    document.getElementById('stageMenuCloseButton').addEventListener('click', () => setStageMenuOpen(false));
+    document.querySelectorAll('[data-stage-tool]').forEach(button => button.addEventListener('click', () => setTool(button.dataset.stageTool)));
+    document.querySelectorAll('[data-stage-color]').forEach(button => button.addEventListener('click', () => setColor(button.dataset.stageColor)));
+    document.getElementById('stageBrushSize').addEventListener('input', event => {
+        if (tool === 'eraser') {
+            eraserSize = Number(event.target.value);
+            document.getElementById('eraserSize').value = eraserSize;
+            document.getElementById('eraserSizeValue').textContent = `${eraserSize} px`;
+            updateEraserPreview();
+        } else {
+            pencilSize = Number(event.target.value);
+            document.getElementById('brushSize').value = pencilSize;
+            document.getElementById('brushSizeValue').textContent = `${pencilSize} px`;
+        }
+        updateStageMenuControls();
+    });
+    document.getElementById('stageUndoButton').addEventListener('click', () => restoreHistory(-1));
+    document.getElementById('stageRedoButton').addEventListener('click', () => restoreHistory(1));
+    document.getElementById('stageStandardViewButton').addEventListener('click', toggleCanvasFullscreen);
     document.getElementById('libraryPanelButton').addEventListener('click', toggleLibraryPanel);
     document.getElementById('pagesPanelButton').addEventListener('click', togglePagesPanel);
     document.getElementById('portraitOrientationButton').addEventListener('click', () => setPageOrientation('portrait'));
@@ -1095,6 +1461,8 @@ function bindEvents() {
     document.getElementById('zoomRange').addEventListener('input', event => setZoom(Number(event.target.value) / 100));
     document.getElementById('zoomOutButton').addEventListener('click', () => setZoom(canvasZoom - .1));
     document.getElementById('zoomInButton').addEventListener('click', () => setZoom(canvasZoom + .1));
+    document.getElementById('fit100Button')?.addEventListener('click', toggleCanvas100);
+    document.getElementById('canvas100HeaderButton')?.addEventListener('click', toggleCanvas100);
     document.getElementById('rulerToggleButton').addEventListener('click', () => { rulerVisible = !rulerVisible; updateRuler(); });
     document.getElementById('rulerSize').addEventListener('input', event => setRulerSize(event.target.value));
     document.getElementById('rulerRotateButton').addEventListener('click', () => rotateRuler());
@@ -1103,6 +1471,13 @@ function bindEvents() {
     document.getElementById('imageInput').addEventListener('change', event => {
         insertImage(event.target.files?.[0]);
         event.target.value = '';
+    });
+    const importInput = document.getElementById('importProjectInput');
+    document.getElementById('importProjectButton').addEventListener('click', () => importInput.click());
+    importInput.addEventListener('change', async event => {
+        const file = event.target.files?.[0];
+        event.target.value = '';
+        await importProject(file);
     });
     const ruler = document.getElementById('ruler');
     ruler.addEventListener('pointerdown', event => {
@@ -1124,7 +1499,18 @@ function bindEvents() {
     });
     window.addEventListener('resize', applyZoom);
     document.addEventListener('keydown', event => {
+        const isTextField = event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement || event.target?.isContentEditable;
+        if (!isTextField && (event.key === 'Delete' || event.key === 'Backspace') && tool === 'image' && selectedImageId) {
+            event.preventDefault();
+            deleteSelectedImage();
+            return;
+        }
         if (event.key === 'Escape') {
+            const stageMenu = document.getElementById('stageMenu');
+            if (stageMenu && !stageMenu.hidden) {
+                setStageMenuOpen(false);
+                return;
+            }
             const stage = document.getElementById('canvasStage');
             const workspace = document.querySelector('.app-shell');
             if (stage.classList.contains('is-pseudo-fullscreen')) stage.classList.remove('is-pseudo-fullscreen');
@@ -1151,6 +1537,7 @@ function bindEvents() {
         document.querySelector('#bookForm button[type="submit"]').textContent = 'Guardar cambios';
         openModal('bookModal');
     });
+    document.getElementById('renamePageButton').addEventListener('click', openRenamePageModal);
     document.getElementById('bookForm').addEventListener('submit', async event => {
         event.preventDefault();
         const input = document.getElementById('bookNameInput');
@@ -1172,6 +1559,19 @@ function bindEvents() {
         persist();
         closeModal('bookModal');
         await renderApp();
+    });
+
+    document.getElementById('renamePageForm').addEventListener('submit', event => {
+        event.preventDefault();
+        const page = getActivePage();
+        const title = document.getElementById('renamePageInput').value.trim();
+        if (!page || !title) return;
+        page.title = title;
+        persist();
+        closeModal('renamePageModal');
+        renderPages();
+        renderHeader();
+        showToast('Hoja renombrada.');
     });
 
     document.getElementById('newPageButton').addEventListener('click', () => {
@@ -1229,7 +1629,11 @@ function bindEvents() {
         exportButton.setAttribute('aria-expanded', 'false');
         if (action === 'image') await exportPageImage();
         if (action === 'page-pdf') await exportPagePdf();
+        if (action === 'page-davinci') exportPageProject('davinci');
+        if (action === 'page-json') exportPageProject('json');
         if (action === 'book-pdf') await exportBookPdf();
+        if (action === 'book-davinci') exportBookProject('davinci');
+        if (action === 'book-json') exportBookProject('json');
     });
     document.addEventListener('click', event => { if (!event.target.closest('.export-menu-wrap')) { exportMenu.hidden = true; exportButton.setAttribute('aria-expanded', 'false'); } });
 
