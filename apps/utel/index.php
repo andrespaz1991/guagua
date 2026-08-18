@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctorado UTEL - Andrés Paz</title>
+    <title>Agenda académica - Andrés Paz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
@@ -29,7 +29,7 @@
         </div>
         <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
             <button onclick="changeView('dashboard')" id="nav-dashboard" class="w-full text-left px-4 py-2 rounded-lg bg-blue-600 font-medium transition-colors"><i class="fas fa-chart-pie w-6"></i> Dashboard</button>
-            <button onclick="changeView('tasks')" id="nav-tasks" class="w-full text-left px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 font-medium transition-colors"><i class="fas fa-tasks w-6"></i> Tareas & Clases</button>
+            <button onclick="changeView('tasks')" id="nav-tasks" class="w-full text-left px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 font-medium transition-colors"><i class="fas fa-tasks w-6"></i> Agenda</button>
             <button onclick="changeView('subjects')" id="nav-subjects" class="w-full text-left px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 font-medium transition-colors"><i class="fas fa-book w-6"></i> Materias</button>
         </nav>
         <div class="p-4 border-t border-slate-800 text-xs text-slate-400 text-center">
@@ -42,7 +42,7 @@
         <header class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center z-10">
             <div class="flex items-center">
                 <button onclick="toggleSidebar()" class="md:hidden text-slate-600 mr-4"><i class="fas fa-bars text-xl"></i></button>
-                <h2 id="view-title" class="text-2xl font-bold text-slate-800">Dashboard</h2>
+                <h2 id="view-title" class="text-2xl font-bold text-slate-800">Mi agenda académica</h2>
             </div>
             <div class="flex space-x-2">
                 <button onclick="openConfigModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center shadow-sm">
@@ -50,6 +50,9 @@
                 </button>
                 <button onclick="openImportModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center">
                     <i class="fas fa-file-import mr-2"></i> Importar
+                </button>
+                <button onclick="syncGuaguaSubjects()" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors hidden sm:flex">
+                    <i class="fas fa-rotate mr-2"></i> Guagua
                 </button>
                 <button onclick="openTaskModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center shadow-sm">
                     <i class="fas fa-plus mr-2"></i> Tarea
@@ -94,7 +97,7 @@
     <div id="task-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
             <div class="p-6 border-b flex justify-between items-center bg-slate-50">
-                <h3 id="t-modal-title" class="text-xl font-bold text-slate-800">Nueva Tarea/Clase</h3>
+                <h3 id="t-modal-title" class="text-xl font-bold text-slate-800">Nueva actividad</h3>
                 <button onclick="closeTaskModal()" class="text-slate-400 hover:text-slate-600 transition-colors"><i class="fas fa-times text-xl"></i></button>
             </div>
             <div class="p-6 overflow-y-auto flex-1 space-y-4">
@@ -115,6 +118,7 @@
                             <option value="clase">Clase (OpenClass)</option>
                             <option value="examen">Examen</option>
                             <option value="foro">Foro</option>
+                            <option value="actividad">Actividad de Guagua</option>
                         </select>
                     </div>
                 </div>
@@ -156,6 +160,13 @@
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-1">Nombre de la Materia</label>
                     <input type="text" id="s-name" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Área académica</label>
+                    <select id="s-source" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="doctorado">Doctorado / personal</option>
+                        <option value="guagua">Guagua</option>
+                    </select>
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-1">Color Identificador</label>
@@ -232,6 +243,7 @@
             updateSubjectDropdowns();
             renderView();
             initGoogleAPI(); // Inicializar GIS si existe Client ID
+            syncGuaguaSubjects(false);
         }
 
         // Data Persistence
@@ -249,7 +261,7 @@
             activeNav.classList.remove('text-slate-300', 'hover:bg-slate-800');
             activeNav.classList.add('bg-blue-600', 'text-white');
             
-            const titles = { 'dashboard': 'Dashboard', 'tasks': 'Tareas & Clases', 'subjects': 'Materias' };
+            const titles = { 'dashboard': 'Mi agenda académica', 'tasks': 'Agenda de tareas', 'subjects': 'Materias y asignaciones' };
             document.getElementById('view-title').innerText = titles[view];
             
             if(window.innerWidth < 768) toggleSidebar();
@@ -262,6 +274,46 @@
             if (state.view === 'dashboard') content.innerHTML = renderDashboard();
             else if (state.view === 'tasks') content.innerHTML = renderTasks();
             else if (state.view === 'subjects') content.innerHTML = renderSubjects();
+        }
+
+        function getSubjectSource(subject) {
+            return subject && subject.source === 'guagua' ? 'guagua' : 'doctorado';
+        }
+
+        function sourceLabel(source) {
+            return source === 'guagua' ? 'Guagua' : 'Doctorado';
+        }
+
+        function sourceBadge(source) {
+            return source === 'guagua'
+                ? '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-teal-100 text-teal-700">GUAGUA</span>'
+                : '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-violet-100 text-violet-700">DOCTORADO</span>';
+        }
+
+        async function syncGuaguaSubjects(showFeedback = true) {
+            try {
+                const response = await fetch('api.php?accion=asignaciones_activas', { credentials: 'same-origin' });
+                const data = await response.json();
+                if (!data.ok) throw new Error(data.mensaje || 'No fue posible sincronizar.');
+
+                if (data.sesion === false) {
+                    if (showFeedback) alert(data.mensaje || 'Inicia sesión en Guagua para sincronizar.');
+                    return;
+                }
+
+                const incoming = data.asignaciones || [];
+                const localSubjects = state.subjects.filter(s => getSubjectSource(s) !== 'guagua');
+                state.subjects = [...localSubjects, ...incoming];
+                saveSubjects();
+                updateSubjectDropdowns();
+                renderView();
+
+                if (showFeedback) alert(incoming.length
+                    ? `Se sincronizaron ${incoming.length} asignaciones activas de Guagua.`
+                    : (data.mensaje || 'No hay asignaciones activas para sincronizar.'));
+            } catch (error) {
+                if (showFeedback) alert(`No se pudo sincronizar Guagua: ${error.message}`);
+            }
         }
 
         // ------------------ Settings & Config ------------------ //
@@ -553,6 +605,8 @@
         function renderDashboard() {
             const pending = state.tasks.filter(t => t.status === 'pendiente');
             const completed = state.tasks.filter(t => t.status === 'completado');
+            const guaguaTasks = state.tasks.filter(t => getSubjectSource(state.subjects.find(s => s.id === t.subjectId)) === 'guagua');
+            const doctorateTasks = state.tasks.filter(t => getSubjectSource(state.subjects.find(s => s.id === t.subjectId)) === 'doctorado');
             
             const upcoming = [...pending]
                 .filter(t => t.dueDate)
@@ -560,7 +614,14 @@
                 .slice(0, 5);
 
             return `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="mb-6 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900 p-6 text-white shadow-lg">
+                    <p class="text-sm font-medium text-blue-200">Una vista para toda tu carga académica</p>
+                    <div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                        <div><h3 class="text-2xl font-bold">Doctorado y Guagua, en una sola agenda</h3><p class="mt-1 text-sm text-slate-300">Organiza vencimientos, clases y actividades sin mezclar los contextos.</p></div>
+                        <button onclick="changeView('tasks')" class="rounded-lg bg-white px-4 py-2 text-sm font-bold text-slate-800 hover:bg-blue-50">Ver agenda <i class="fas fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center">
                         <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl mr-4"><i class="fas fa-clock"></i></div>
                         <div><p class="text-slate-500 text-sm font-semibold">Pendientes</p><h3 class="text-3xl font-bold text-slate-800">${pending.length}</h3></div>
@@ -572,6 +633,12 @@
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center">
                         <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xl mr-4"><i class="fas fa-book-open"></i></div>
                         <div><p class="text-slate-500 text-sm font-semibold">Materias</p><h3 class="text-3xl font-bold text-slate-800">${state.subjects.length}</h3></div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                        <div class="flex justify-between text-sm font-bold"><span class="text-violet-700">Doctorado</span><span class="text-slate-800">${doctorateTasks.length}</span></div>
+                        <div class="my-3 h-px bg-slate-100"></div>
+                        <div class="flex justify-between text-sm font-bold"><span class="text-teal-700">Guagua</span><span class="text-slate-800">${guaguaTasks.length}</span></div>
+                        <p class="mt-3 text-xs text-slate-500">Actividades registradas por área</p>
                     </div>
                 </div>
                 <h3 class="text-lg font-bold text-slate-800 mb-4">Próximos Vencimientos / Clases</h3>
@@ -593,6 +660,11 @@
                         <option value="pendiente">Pendientes</option>
                         <option value="completado">Completados</option>
                     </select>
+                    <select id="f-source" onchange="filterTasks()" class="border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="all">Doctorado y Guagua</option>
+                        <option value="doctorado">Solo doctorado</option>
+                        <option value="guagua">Solo Guagua</option>
+                    </select>
                 </div>
                 <div id="tasks-container" class="space-y-3">
                     ${generateTasksList(state.tasks)}
@@ -609,11 +681,14 @@
         function filterTasks() {
             const sFilter = document.getElementById('f-subject').value;
             const stFilter = document.getElementById('f-status').value;
+            const srcFilter = document.getElementById('f-source').value;
             
             const filtered = state.tasks.filter(t => {
                 const matchS = sFilter === 'all' || t.subjectId === sFilter;
                 const matchSt = stFilter === 'all' || t.status === stFilter;
-                return matchS && matchSt;
+                const subject = state.subjects.find(s => s.id === t.subjectId);
+                const matchSource = srcFilter === 'all' || getSubjectSource(subject) === srcFilter;
+                return matchS && matchSt && matchSource;
             });
             
             document.getElementById('tasks-container').innerHTML = generateTasksList(filtered);
@@ -622,14 +697,17 @@
         function renderSubjects() {
             if(!state.subjects.length) return `<div class="p-8 text-center text-slate-500 bg-white rounded-xl border border-slate-200 shadow-sm">Aún no has registrado materias.</div>`;
             
-            return `<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            return `<div class="mb-5 flex items-center justify-between rounded-xl border border-teal-100 bg-teal-50 p-4 text-sm text-teal-900"><span><i class="fas fa-circle-info mr-2"></i>Las asignaciones de Guagua se sincronizan desde tu sesión activa.</span><button onclick="syncGuaguaSubjects()" class="font-bold hover:underline"><i class="fas fa-rotate mr-1"></i>Sincronizar</button></div><div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 ${state.subjects.map(s => {
                     const taskCount = state.tasks.filter(t => t.subjectId === s.id).length;
                     return `
                     <div class="subject-card bg-white rounded-xl border border-slate-200 shadow-sm p-5" style="border-left-color: ${s.color}">
+                        <div class="mb-2">${sourceBadge(getSubjectSource(s))}</div>
                         <h4 class="font-bold text-slate-800 text-lg mb-1">${s.name}</h4>
-                        <p class="text-sm text-slate-500 mb-4">${taskCount} registros asociados</p>
-                        <button onclick="deleteSubject('${s.id}')" class="text-red-500 hover:text-red-700 text-sm font-medium"><i class="fas fa-trash-alt mr-1"></i> Eliminar</button>
+                        <p class="text-sm text-slate-500 mb-4">${taskCount} actividades asociadas${s.group ? ` · ${s.group}` : ''}</p>
+                        ${getSubjectSource(s) === 'guagua'
+                            ? '<span class="text-teal-700 text-sm font-medium"><i class="fas fa-link mr-1"></i>Sincronizada</span>'
+                            : `<button onclick="deleteSubject('${s.id}')" class="text-red-500 hover:text-red-700 text-sm font-medium"><i class="fas fa-trash-alt mr-1"></i>Eliminar</button>`}
                     </div>`;
                 }).join('')}
             </div>`;
@@ -651,6 +729,7 @@
                     <div class="flex-1 min-w-0 mb-2 sm:mb-0">
                         <div class="flex items-center space-x-2 mb-1">
                             <span class="px-2 py-0.5 rounded text-xs font-semibold" style="background-color: ${subColor}20; color: ${subColor}">${subName}</span>
+                            ${sourceBadge(getSubjectSource(subject))}
                             <span class="text-xs text-slate-500 uppercase tracking-wider font-semibold"><i class="fas ${icon} mr-1"></i>${task.type}</span>
                         </div>
                         <h4 class="font-bold text-slate-800 truncate ${isCompleted ? 'line-through text-slate-500' : ''}">${task.title}</h4>
@@ -665,7 +744,7 @@
         // ------------------ Modal Controls ------------------ //
         function openTaskModal() {
             if(!state.subjects.length) return alert('Primero debes crear una materia.');
-            document.getElementById('t-modal-title').innerText = 'Nueva Tarea/Clase';
+            document.getElementById('t-modal-title').innerText = 'Nueva actividad';
             document.getElementById('t-id').value = '';
             document.getElementById('t-title').value = '';
             document.getElementById('t-date').value = '';
@@ -753,7 +832,8 @@
             const subData = {
                 id: 'sub_' + Date.now(),
                 name: name,
-                color: document.getElementById('s-color').value
+                color: document.getElementById('s-color').value,
+                source: document.getElementById('s-source').value
             };
             
             state.subjects.push(subData);
@@ -766,6 +846,11 @@
         }
 
         function deleteSubject(id) {
+            const subject = state.subjects.find(s => s.id === id);
+            if (getSubjectSource(subject) === 'guagua') {
+                alert('Las asignaciones de Guagua se administran desde Guagua. Puedes actualizar la sincronización.');
+                return;
+            }
             const taskCount = state.tasks.filter(t => t.subjectId === id).length;
             if(taskCount > 0) {
                 alert(`No puedes eliminar esta materia porque tiene ${taskCount} registros asociados. Elimina las tareas primero.`);

@@ -31,14 +31,24 @@ function planmind2_grado_numero(string $grado): string
     return $grado;
 }
 
-/**
- * Obtiene las horas semanales de la asignación directamente desde horario.
- * Cada registro representa el bloque de una jornada; por eso se suman los
- * intervalos de todos los días configurados para la asignación.
- */
-function planmind2_horas_asignacion(int $idAsignacion): ?array
+function planmind2_formatear_horas(float $horas): string
 {
-    if ($idAsignacion <= 0) {
+    // Evita mostrar ceros decimales innecesarios: 4.00 se presenta como 4.
+    if (fmod($horas, 1.0) === 0.0) {
+        return (string)(int)$horas;
+    }
+
+    return rtrim(rtrim(number_format($horas, 2, '.', ''), '0'), '.');
+}
+
+/**
+ * Busca la asignación del año lectivo activo que corresponde al grado y a la
+ * materia seleccionados, y suma los intervalos semanales de su horario.
+ */
+function planmind2_horas_asignacion_activa(string $grado, int $idMateria): ?array
+{
+    $gradoNumero = planmind2_grado_numero($grado);
+    if ($idMateria <= 0 || $gradoNumero === '') {
         return null;
     }
 
@@ -49,38 +59,82 @@ function planmind2_horas_asignacion(int $idAsignacion): ?array
     }
     $mysqli->set_charset('utf8mb4');
 
-    /*
-     * TIME_TO_SEC permite sumar también bloques que no duran un número entero
-     * de horas. El CASE contempla, además, horarios que terminan al día siguiente.
-     */
-    $sql = "SELECT COUNT(*) AS sesiones,
+    // Si hay sesión, se prioriza la asignación del docente y la institución actuales.
+    $idDocente = max(0, (int)($_SESSION['id_usuario'] ?? $_SESSION['identificacion_usu'] ?? 0));
+    $idInstitucion = max(0, (int)($_SESSION['id_institucion'] ?? $_SESSION['institucion'] ?? 0));
+
+    $sql = "SELECT a.id_asignacion,
+                   COUNT(h.id_horario) AS bloques,
                    ROUND(COALESCE(SUM(
                        CASE
-                           WHEN hora_fin >= hora_inicio
-                               THEN TIME_TO_SEC(hora_fin) - TIME_TO_SEC(hora_inicio)
-                           ELSE 86400 + TIME_TO_SEC(hora_fin) - TIME_TO_SEC(hora_inicio)
+                           WHEN h.hora_fin >= h.hora_inicio
+                               THEN TIME_TO_SEC(h.hora_fin) - TIME_TO_SEC(h.hora_inicio)
+                           ELSE 86400 + TIME_TO_SEC(h.hora_fin) - TIME_TO_SEC(h.hora_inicio)
                        END
                    ), 0) / 3600, 2) AS horas
-            FROM `horario`
-            WHERE `id_asignacion` = ?";
+            FROM `asignacion` a
+            INNER JOIN `ano_lectivo` al
+                ON al.id_ano_lectivo = a.ano_lectivo
+               AND al.estado = 'Activo'
+            INNER JOIN `categoria_curso` cc
+                ON cc.id_categoria_curso = a.id_categoria_curso
+            LEFT JOIN `horario` h ON h.id_asignacion = a.id_asignacion
+            WHERE a.id_asignatura = ?
+              AND CAST(cc.nombre_categoria_curso AS CHAR) = ?
+              AND (? = 0 OR a.id_docente = ?)
+              AND (? = 0 OR a.institucion_educativa = ?)
+            GROUP BY a.id_asignacion
+            ORDER BY MAX(h.fecha_fin) DESC, a.id_asignacion DESC
+            LIMIT 1";
     $statement = $mysqli->prepare($sql);
     if (!$statement) {
         $mysqli->close();
         throw new RuntimeException('No fue posible consultar el horario de la asignación.');
     }
 
-    $statement->bind_param('i', $idAsignacion);
+    $statement->bind_param('isiiii', $idMateria, $gradoNumero, $idDocente, $idDocente, $idInstitucion, $idInstitucion);
     $statement->execute();
     $row = $statement->get_result()->fetch_assoc();
     $statement->close();
     $mysqli->close();
 
-    $horas = (float)($row['horas'] ?? 0);
+    if (!$row) {
+        return null;
+    }
+
     return [
-        // Evita mostrar ceros decimales innecesarios: 4.00 se presenta como 4.
-        'horas' => fmod($horas, 1.0) === 0.0 ? (string)(int)$horas : rtrim(rtrim(number_format($horas, 2, '.', ''), '0'), '.'),
-        'sesiones' => (int)($row['sesiones'] ?? 0),
+        'id_asignacion' => (int)$row['id_asignacion'],
+        'horas' => planmind2_formatear_horas((float)($row['horas'] ?? 0)),
+        'bloques' => (int)($row['bloques'] ?? 0),
     ];
+}
+
+function planmind2_horas_horario(): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+        planmind2_send_json(['ok' => false, 'message' => 'Método no permitido.'], 405);
+    }
+
+    $grado = trim((string)($_GET['grado'] ?? ''));
+    $idMateria = max(0, (int)($_GET['materia'] ?? 0));
+    if ($grado === '' || $idMateria <= 0) {
+        planmind2_send_json(['ok' => false, 'message' => 'Grado y materia son obligatorios.'], 422);
+    }
+
+    try {
+        $asignacion = planmind2_horas_asignacion_activa($grado, $idMateria);
+        if (!$asignacion) {
+            planmind2_send_json(['ok' => true, 'encontrada' => false]);
+        }
+
+        planmind2_send_json([
+            'ok' => true,
+            'encontrada' => true,
+            'asignacion' => $asignacion,
+        ]);
+    } catch (Throwable $error) {
+        planmind2_send_json(['ok' => false, 'message' => $error->getMessage()], 500);
+    }
 }
 
 function planmind2_referentes_curriculares(): void
@@ -163,19 +217,12 @@ function planmind2_referentes_curriculares(): void
     }
 }
 
-if (($_GET['action'] ?? '') === 'referentes') {
+$planmind2Action = $_GET['action'] ?? '';
+if ($planmind2Action === 'referentes') {
     planmind2_referentes_curriculares();
 }
-
-$planmind2Horario = null;
-$planmind2Asignacion = max(0, (int)($_GET['asignacion'] ?? 0));
-if ($planmind2Asignacion > 0) {
-    try {
-        $planmind2Horario = planmind2_horas_asignacion($planmind2Asignacion);
-    } catch (Throwable $error) {
-        // El formulario principal debe seguir disponible aunque el horario no se pueda consultar.
-        $planmind2Horario = null;
-    }
+if ($planmind2Action === 'horas-horario') {
+    planmind2_horas_horario();
 }
 
 /*
@@ -185,7 +232,6 @@ if ($planmind2Asignacion > 0) {
 ob_start();
 require __DIR__ . '/index.php';
 $contenido = ob_get_clean();
-$contenido = str_replace('/\\/index\\.php$/i', '/\\/index2\\.php$/i', $contenido);
 
 $scriptReferentes = <<<'HTML'
 <script>
@@ -278,28 +324,84 @@ HTML;
 $scriptHorasHorario = <<<'HTML'
 <script>
 (() => {
-    const horario = __PLANMIND2_HORARIO__;
+    const gradoInput = document.getElementById('grado');
+    const materiaInput = document.getElementById('materia');
     const tiempoInput = document.getElementById('tiempo');
-    if (!horario || !tiempoInput) return;
-
-    // El valor viene calculado en SQL a partir de todos los días de horario.
-    tiempoInput.step = '0.01';
-    tiempoInput.value = horario.horas;
-    tiempoInput.dispatchEvent(new Event('input', { bubbles: true }));
-    tiempoInput.dispatchEvent(new Event('change', { bubbles: true }));
+    if (!gradoInput || !materiaInput || !tiempoInput) return;
 
     const aviso = document.createElement('p');
     aviso.className = 'mt-1 text-[11px] text-slate-500';
-    aviso.textContent = `Horas semanales calculadas desde horario: ${horario.horas} (${horario.sesiones} bloque(s) programado(s)).`;
+    aviso.setAttribute('aria-live', 'polite');
     tiempoInput.parentElement.appendChild(aviso);
+
+    tiempoInput.step = '0.01';
+    let controlador = null;
+    let consecutivo = 0;
+
+    function notificarCambio() {
+        tiempoInput.dispatchEvent(new Event('input', { bubbles: true }));
+        tiempoInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    async function cargarHoras() {
+        const grado = gradoInput.value.trim();
+        const materia = materiaInput.value.trim();
+        const solicitud = ++consecutivo;
+
+        if (!grado || !materia) {
+            if (controlador) controlador.abort();
+            tiempoInput.value = '';
+            notificarCambio();
+            aviso.textContent = 'Seleccione grado y materia para calcular las horas.';
+            return;
+        }
+
+        if (controlador) controlador.abort();
+        controlador = new AbortController();
+        tiempoInput.setAttribute('aria-busy', 'true');
+        aviso.textContent = 'Calculando horas desde el horario…';
+
+        const url = new URL(window.location.href);
+        url.search = '';
+        url.searchParams.set('action', 'horas-horario');
+        url.searchParams.set('grado', grado);
+        url.searchParams.set('materia', materia);
+
+        try {
+            const respuesta = await fetch(url, { signal: controlador.signal, cache: 'no-store' });
+            const datos = await respuesta.json();
+            if (solicitud !== consecutivo) return;
+            if (!respuesta.ok || !datos.ok) throw new Error(datos.message || 'No se pudieron calcular las horas.');
+
+            if (!datos.encontrada) {
+                tiempoInput.value = '';
+                notificarCambio();
+                aviso.textContent = 'No hay una asignación activa con horario para el grado y la materia seleccionados.';
+                return;
+            }
+
+            tiempoInput.value = datos.asignacion.horas;
+            notificarCambio();
+            aviso.textContent = `Horas semanales calculadas desde horario: ${datos.asignacion.horas} (${datos.asignacion.bloques} bloque(s) programado(s)).`;
+        } catch (error) {
+            if (error.name === 'AbortError') return;
+            if (solicitud !== consecutivo) return;
+            tiempoInput.value = '';
+            notificarCambio();
+            aviso.textContent = `No fue posible calcular las horas: ${error.message}`;
+            console.error('Error cargando horas del horario:', error);
+        } finally {
+            if (solicitud === consecutivo) {
+                tiempoInput.removeAttribute('aria-busy');
+            }
+        }
+    }
+
+    [gradoInput, materiaInput].forEach(campo => campo.addEventListener('change', cargarHoras));
+    cargarHoras();
 })();
 </script>
 HTML;
-$scriptHorasHorario = str_replace(
-    '__PLANMIND2_HORARIO__',
-    json_encode($planmind2Horario, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
-    $scriptHorasHorario
-);
 
 $contenido = str_replace('</body>', $scriptReferentes . "\n" . $scriptHorasHorario . "\n</body>", $contenido);
 echo $contenido;

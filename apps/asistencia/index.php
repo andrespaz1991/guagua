@@ -559,6 +559,10 @@ if (isset($_GET['sync_bd']) && $_GET['sync_bd'] === '1') {
                                 <p class="text-sm text-slate-500 mt-1">Directorio consolidado de inasistencias.</p>
                             </div>
                             <div class="flex gap-3">
+                                <a href="sincronizar.php" class="inline-flex items-center gap-2 px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-xl shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
+                                    <i class="fa-solid fa-file-excel"></i>
+                                    Sincronizar Excel
+                                </a>
                                 <button onclick="ejecutarSincronizacion()" class="inline-flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md transition-all active:scale-95 group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                     <i class="fa-solid fa-database group-hover:fa-bounce" id="sync-icon"></i>
                                     Sincronizar BD

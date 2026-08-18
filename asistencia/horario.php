@@ -6,20 +6,116 @@ require_once '../clases/Academico.Class.php';
 require_once '../clases/Curso.Class.php';
 $academico = new Academico();
 
-$asignacion_id = isset($_GET['asignacion']) ? str_replace('"', "", $_GET['asignacion']) : '';
+$asignacion_id = max(0, (int)($_GET['asignacion'] ?? $_POST['asignacion'] ?? 0));
+
+function horario_periodo_activo(): ?array
+{
+    require_once __DIR__ . '/../comun/config.php';
+    $mysqli = new mysqli(SERVIDORBD, USUARIOBD, CLAVEBD, BASEDEDATOS);
+    if ($mysqli->connect_errno) {
+        return null;
+    }
+
+    $resultado = $mysqli->query("SELECT fecha_inicio, fecha_fin, nombre_periodo FROM periodo WHERE estado_periodo = '1' ORDER BY fecha_inicio DESC LIMIT 1");
+    $periodo = $resultado ? $resultado->fetch_assoc() : null;
+    $mysqli->close();
+
+    if (!$periodo || !preg_match('/^\d{4}-\d{2}-\d{2}$/', (string)$periodo['fecha_inicio']) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', (string)$periodo['fecha_fin'])) {
+        return null;
+    }
+
+    return $periodo;
+}
+
+function horario_fecha_valida($fecha): bool
+{
+    return is_string($fecha) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha) === 1;
+}
+
+function horario_hora_valida($hora): bool
+{
+    return is_string($hora) && preg_match('/^\d{2}:\d{2}(?::\d{2})?$/', $hora) === 1;
+}
+
+function horario_datos_asignacion(int $idAsignacion): ?array
+{
+    if ($idAsignacion <= 0) {
+        return null;
+    }
+
+    require_once __DIR__ . '/../comun/config.php';
+    $mysqli = new mysqli(SERVIDORBD, USUARIOBD, CLAVEBD, BASEDEDATOS);
+    if ($mysqli->connect_errno) {
+        return null;
+    }
+
+    $sql = "SELECT mo.nombre_materia, cc.nombre_categoria_curso AS grado
+            FROM asignacion a
+            LEFT JOIN materia_oficial mo ON mo.id_materia = a.id_asignatura
+            LEFT JOIN categoria_curso cc ON cc.id_categoria_curso = a.id_categoria_curso
+            WHERE a.id_asignacion = ?
+            LIMIT 1";
+    $sentencia = $mysqli->prepare($sql);
+    if (!$sentencia) {
+        $mysqli->close();
+        return null;
+    }
+
+    $sentencia->bind_param('i', $idAsignacion);
+    $sentencia->execute();
+    $datos = $sentencia->get_result()->fetch_assoc() ?: null;
+    $sentencia->close();
+    $mysqli->close();
+
+    return $datos;
+}
+
+$periodo_activo = horario_periodo_activo();
+$datos_asignacion = horario_datos_asignacion($asignacion_id);
+$mensaje_error = '';
 
 // 1. Lógica de Guardado (POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_horario'])) {
-    if (isset($_POST['modificar_flag'])) {
-        $academico->eliminar_horario();
-    }
-    if (!empty($_POST['horario'])) {
-        foreach ($_POST['horario'] as $value) {
-            $academico->insertar_horario($value);
+    $fecha_inicio_post = trim((string)($_POST['fecha_inicio'] ?? ''));
+    $fecha_fin_post = trim((string)($_POST['fecha_fin'] ?? ''));
+    $dias_validos = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+    $dias_seleccionados = array_values(array_intersect($dias_validos, (array)($_POST['horario'] ?? [])));
+
+    if ($asignacion_id <= 0) {
+        $mensaje_error = 'La asignación no es válida.';
+    } elseif (!horario_fecha_valida($fecha_inicio_post) || !horario_fecha_valida($fecha_fin_post) || $fecha_inicio_post > $fecha_fin_post) {
+        $mensaje_error = 'Verifica el rango de fechas del horario.';
+    } elseif (empty($dias_seleccionados)) {
+        $mensaje_error = 'Selecciona al menos un día de clase.';
+    } else {
+        foreach ($dias_seleccionados as $dia) {
+            $hora_inicio = (string)($_POST['hora_inicio'][$dia] ?? '');
+            $hora_fin = (string)($_POST['hora_fin'][$dia] ?? '');
+            if (!horario_hora_valida($hora_inicio) || !horario_hora_valida($hora_fin) || $hora_inicio >= $hora_fin) {
+                $mensaje_error = 'Verifica las horas de inicio y fin para ' . $dia . '.';
+                break;
+            }
         }
     }
-    echo "<script>alert2('Registro guardado exitosamente'); window.location='horario.php?asignacion=" . $asignacion_id . "';</script>";
-    exit();
+
+    if ($mensaje_error === '') {
+        // El horario se guarda como un conjunto: al editar se reemplazan sus bloques.
+        // Así se pueden agregar, quitar o cambiar los días de una asignación existente.
+        if (!empty($academico->consultar_horario_simple($asignacion_id))) {
+            $_POST['asignacion'] = $asignacion_id;
+            $academico->eliminar_horario();
+        }
+
+        $_POST['asignacion'] = $asignacion_id;
+        $_POST['fecha_inicio'] = $fecha_inicio_post;
+        $_POST['fecha_fin'] = $fecha_fin_post;
+        foreach ($dias_seleccionados as $dia) {
+            $academico->insertar_horario($dia, $dia);
+        }
+
+        header('Location: horario.php?asignacion=' . $asignacion_id . '&guardado=1');
+        exit();
+    }
 }
 
 // 2. Consulta de Datos
@@ -106,11 +202,23 @@ $modo_edicion = isset($_GET['modificar']) || empty($horarios);
 
 <div class="horario-wrapper">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="modern-title">Configuración de Horario</h2>
+        <div>
+            <h2 class="modern-title mb-1">Configuración de Horario</h2>
+            <?php if ($datos_asignacion): ?>
+                <p class="text-muted mb-0"><strong><?php echo htmlspecialchars((string)($datos_asignacion['nombre_materia'] ?? 'Materia sin nombre'), ENT_QUOTES, 'UTF-8'); ?></strong> · Grado <strong><?php echo htmlspecialchars((string)($datos_asignacion['grado'] ?? 'Sin grado'), ENT_QUOTES, 'UTF-8'); ?></strong></p>
+            <?php endif; ?>
+        </div>
         <a href="../cursos/curso.php?asignacion=<?php echo $asignacion_id; ?>" class="btn btn-secondary shadow-sm" style="border-radius: 10px;">
             &larr; Volver al Curso
         </a>
     </div>
+
+    <?php if (isset($_GET['guardado'])): ?>
+        <div class="alert alert-success">El horario fue guardado correctamente.</div>
+    <?php endif; ?>
+    <?php if ($mensaje_error !== ''): ?>
+        <div class="alert alert-danger"><?php echo htmlspecialchars($mensaje_error, ENT_QUOTES, 'UTF-8'); ?></div>
+    <?php endif; ?>
 
     <?php if (!$modo_edicion) { 
         $nombremateria = $horarios[0]['nombre_materia'];
@@ -268,12 +376,15 @@ $modo_edicion = isset($_GET['modificar']) || empty($horarios);
 
     <?php } else { 
         // MODO EDICION 
-        $fecha_inicio = empty($horarios) ? date('Y-m-d') : $horarios[0]['fecha_inicio'];
-        $fecha_fin = empty($horarios) ? date('Y-m-d') : $horarios[0]['fecha_fin'];
+        $fecha_inicio = empty($horarios) ? ($periodo_activo['fecha_inicio'] ?? date('Y-m-d')) : $horarios[0]['fecha_inicio'];
+        $fecha_fin = empty($horarios) ? ($periodo_activo['fecha_fin'] ?? date('Y-m-d')) : $horarios[0]['fecha_fin'];
     ?>
     
     <div class="modern-card">
         <h3 class="modern-title mb-4 border-bottom pb-3">Configurar Horario</h3>
+        <?php if ($periodo_activo): ?>
+            <p class="text-muted">Se propone el rango del período activo <?php echo htmlspecialchars((string)$periodo_activo['nombre_periodo'], ENT_QUOTES, 'UTF-8'); ?>: <strong><?php echo Fecha::formato_fecha($periodo_activo['fecha_inicio']); ?></strong> a <strong><?php echo Fecha::formato_fecha($periodo_activo['fecha_fin']); ?></strong>.</p>
+        <?php endif; ?>
         <form action="" method="POST">
             <input type="hidden" name="guardar_horario" value="1">
             <?php if(isset($_GET['modificar'])) echo "<input type='hidden' name='modificar_flag' value='1'>"; ?>

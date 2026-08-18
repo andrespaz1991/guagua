@@ -175,6 +175,98 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
     box-shadow: 0 2px 6px rgba(0,0,0,0.12) !important;
 }
 
+/* Buscador del menú de inicio: se ubica fuera del carrusel para no cubrir los iconos. */
+.menu-icon-search {
+    display: flex !important;
+    align-items: center !important;
+    flex: 0 1 260px !important;
+    min-width: 190px !important;
+    margin: 0 8px 0 10px !important;
+    position: relative !important;
+    z-index: 4 !important;
+}
+
+.menu-icon-search-field {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    height: 42px !important;
+    padding: 0 8px 0 13px !important;
+    background: #f8fafc !important;
+    border: 1px solid #dbe3ee !important;
+    border-radius: 13px !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.8) !important;
+    transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease !important;
+}
+
+.menu-icon-search-field:focus-within {
+    background: #ffffff !important;
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 0 3px rgba(56,189,248,.18) !important;
+}
+
+.menu-icon-search-glyph {
+    color: #64748b !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+    pointer-events: none !important;
+}
+
+#menu-icon-filter {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 9px 6px 9px 9px !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    color: #1e293b !important;
+    font-size: 13px !important;
+    line-height: 1.25 !important;
+}
+
+#menu-icon-filter::placeholder { color: #94a3b8 !important; }
+
+.menu-icon-search-clear,
+.menu-icon-search-trigger {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    color: #64748b !important;
+    cursor: pointer !important;
+    font-size: 19px !important;
+    line-height: 1 !important;
+}
+
+.menu-icon-search-clear:hover,
+.menu-icon-search-trigger:hover { background: #e2e8f0 !important; color: #0f172a !important; }
+.menu-icon-search-trigger { display: none !important; }
+.menu-icon-search-clear[hidden] { display: none !important; }
+
+.nav-slider-wrapper { position: relative !important; }
+.menu-filter-empty {
+    display: none;
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 600;
+    pointer-events: none;
+}
+.menu-filter-empty.is-visible { display: flex; }
+.slider-track > li.menu-filter-hidden { display: none !important; }
+.nav-slider-btn:disabled { cursor: default !important; opacity: .38 !important; box-shadow: none !important; }
+
 /* ZONA DERECHA: dropdown engranaje + foto perfil */
 .navbar-right-zone {
     display: flex !important;
@@ -246,6 +338,46 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
         -webkit-overflow-scrolling: touch;
         touch-action: pan-x !important;
     }
+
+    /* En celular se muestra solo la lupa. Al tocarla, la caja se expande
+       momentáneamente sobre la barra, sin reducir el área de los iconos. */
+    .menu-icon-search {
+        flex: 0 0 34px !important;
+        min-width: 34px !important;
+        width: 34px !important;
+        height: 34px !important;
+        margin: 0 4px !important;
+    }
+    .menu-icon-search-field {
+        width: 34px !important;
+        height: 34px !important;
+        padding: 0 !important;
+        justify-content: center !important;
+        border-radius: 10px !important;
+        background: #f1f5f9 !important;
+    }
+    .menu-icon-search-glyph,
+    #menu-icon-filter,
+    .menu-icon-search-clear { display: none !important; }
+    .menu-icon-search-trigger { display: inline-flex !important; }
+    .menu-icon-search.is-expanded {
+        position: absolute !important;
+        left: 5px !important;
+        right: 5px !important;
+        width: auto !important;
+        z-index: 1010 !important;
+    }
+    .menu-icon-search.is-expanded .menu-icon-search-field {
+        width: 100% !important;
+        justify-content: flex-start !important;
+        padding: 0 8px 0 12px !important;
+        box-shadow: 0 5px 16px rgba(15,23,42,.18) !important;
+    }
+    .menu-icon-search.is-expanded .menu-icon-search-glyph,
+    .menu-icon-search.is-expanded #menu-icon-filter,
+    .menu-icon-search.is-expanded .menu-icon-search-clear { display: inline-block !important; }
+    .menu-icon-search.is-expanded #menu-icon-filter { flex: 1 !important; }
+    .menu-icon-search.is-expanded .menu-icon-search-trigger { display: none !important; }
 }
 </style>
 
@@ -324,11 +456,28 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
                         <li data-id="red_modulo"><a href="<?php echo SGA_URL; ?>/red/index.php"><span class="icon-sga-app" data-text="RED"></span></a></li>
                     <?php endif; ?>
                 </ul>
+                <div id="menu-filter-empty" class="menu-filter-empty" aria-hidden="true">
+                    <span aria-hidden="true">⌕</span><span>No hay iconos que coincidan</span>
+                </div>
             </div>
             
             <button class="nav-slider-btn" id="slider-next" title="Desplazar derecha">&#10095;</button>
         </div>
         <!-- Fin del Slider -->
+
+        <?php if ($archivo_actual === 'index.php'): ?>
+            <div class="menu-icon-search" id="menu-icon-search" role="search">
+                <div class="menu-icon-search-field">
+                    <span class="menu-icon-search-glyph" aria-hidden="true">⌕</span>
+                    <input id="menu-icon-filter" type="search" autocomplete="off" spellcheck="false"
+                           placeholder="Buscar módulo…" aria-label="Buscar iconos del menú"
+                           aria-controls="sortable-menu" aria-describedby="menu-icon-filter-status">
+                    <button id="menu-icon-filter-clear" class="menu-icon-search-clear" type="button" hidden aria-label="Limpiar búsqueda">×</button>
+                    <button id="menu-icon-filter-trigger" class="menu-icon-search-trigger" type="button" aria-label="Buscar iconos del menú" aria-expanded="false">⌕</button>
+                </div>
+                <span id="menu-icon-filter-status" class="sr-only" aria-live="polite"></span>
+            </div>
+        <?php endif; ?>
 
         <?php if ($barra_busqueda == "actividad_curso"): ?>
             <buscar class="navbar-form navbar-right" role="search" method="post">
@@ -550,6 +699,103 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
                 item.addEventListener('pointerup', clearTimer);
                 item.addEventListener('pointerleave', clearTimer);
                 item.addEventListener('pointermove', clearTimer); // Al arrastrar se cancela el long press
+            });
+
+            // Filtro instantáneo de iconos: funciona completamente en el cliente,
+            // conserva el orden personalizado y no hace recargas ni consultas extra.
+            const menuSearch = document.getElementById('menu-icon-search');
+            const menuSearchInput = document.getElementById('menu-icon-filter');
+            const menuSearchClear = document.getElementById('menu-icon-filter-clear');
+            const menuSearchTrigger = document.getElementById('menu-icon-filter-trigger');
+            const menuSearchStatus = document.getElementById('menu-icon-filter-status');
+            const menuFilterEmpty = document.getElementById('menu-filter-empty');
+            let filterFrame = null;
+
+            const normalizarTextoMenu = (valor) => String(valor || '')
+                .toLocaleLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '');
+
+            const buscarTextoDelIcono = (item) => {
+                const icono = item.querySelector('[data-text]');
+                const enlace = item.querySelector(':scope > a');
+                return normalizarTextoMenu([
+                    item.dataset.menuSearch,
+                    icono ? icono.dataset.text : '',
+                    enlace ? enlace.getAttribute('title') : '',
+                    item.dataset.id
+                ].filter(Boolean).join(' '));
+            };
+
+            const aplicarFiltroMenu = () => {
+                if (!menuSearchInput) return;
+                const consulta = normalizarTextoMenu(menuSearchInput.value.trim());
+                let coincidencias = 0;
+
+                Array.from(menuEl.children).forEach(item => {
+                    const coincide = !consulta || buscarTextoDelIcono(item).includes(consulta);
+                    item.classList.toggle('menu-filter-hidden', Boolean(consulta) && !coincide);
+                    if (coincide && item.style.display !== 'none') coincidencias++;
+                });
+
+                if (menuSearchClear) menuSearchClear.hidden = !consulta;
+                if (menuFilterEmpty) {
+                    menuFilterEmpty.classList.toggle('is-visible', Boolean(consulta) && coincidencias === 0);
+                    menuFilterEmpty.setAttribute('aria-hidden', String(!(consulta && coincidencias === 0)));
+                }
+                if (menuSearchStatus) {
+                    menuSearchStatus.textContent = consulta
+                        ? (coincidencias === 1 ? '1 icono encontrado.' : `${coincidencias} iconos encontrados.`)
+                        : '';
+                }
+                if (wrapper && consulta) wrapper.scrollTo({ left: 0, behavior: 'smooth' });
+            };
+
+            const programarFiltroMenu = () => {
+                if (filterFrame) cancelAnimationFrame(filterFrame);
+                filterFrame = requestAnimationFrame(aplicarFiltroMenu);
+            };
+
+            const contraerBusquedaMovil = () => {
+                if (window.matchMedia('(max-width: 768px)').matches && menuSearch && !menuSearchInput.value) {
+                    menuSearch.classList.remove('is-expanded');
+                    if (menuSearchTrigger) menuSearchTrigger.setAttribute('aria-expanded', 'false');
+                }
+            };
+
+            if (menuSearchInput) {
+                menuSearchInput.addEventListener('input', programarFiltroMenu);
+                menuSearchInput.addEventListener('keydown', event => {
+                    if (event.key === 'Escape') {
+                        menuSearchInput.value = '';
+                        programarFiltroMenu();
+                        contraerBusquedaMovil();
+                    }
+                });
+                menuSearchInput.addEventListener('blur', () => window.setTimeout(contraerBusquedaMovil, 120));
+            }
+            if (menuSearchClear) {
+                menuSearchClear.addEventListener('click', () => {
+                    menuSearchInput.value = '';
+                    programarFiltroMenu();
+                    menuSearchInput.focus();
+                });
+            }
+            if (menuSearchTrigger) {
+                menuSearchTrigger.addEventListener('click', () => {
+                    menuSearch.classList.add('is-expanded');
+                    menuSearchTrigger.setAttribute('aria-expanded', 'true');
+                    window.setTimeout(() => menuSearchInput.focus(), 20);
+                });
+            }
+            document.addEventListener('keydown', event => {
+                if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k' && menuSearchInput) {
+                    event.preventDefault();
+                    if (menuSearch) menuSearch.classList.add('is-expanded');
+                    if (menuSearchTrigger) menuSearchTrigger.setAttribute('aria-expanded', 'true');
+                    menuSearchInput.focus();
+                    menuSearchInput.select();
+                }
             });
 
             // 2. Inicializar Sortable

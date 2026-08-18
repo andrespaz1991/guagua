@@ -121,7 +121,7 @@ $categoria_curso=($mat[0]->nombre_categoria_curso);
   <command label="<?php echo $rowa['nombre_materia']; ?>" onclick="
   document.location='<?php echo SGA_CURSOS_URL ?>/curso.php?asignacion=<?php echo $rowa['id_asignacion'] ?>'">
   <command label="Nueva planeación" onclick="
-  document.location='<?php echo SGA_URL ?>/apps/PlanMind/index.php?asignacion=<?php echo $rowa['id_asignacion'] ?>'">
+  document.location='<?php echo SGA_URL ?>/apps/PlanMind/index2.php?asignacion=<?php echo $rowa['id_asignacion'] ?>'">
   <hr>
   <?php @session_start(); if ($_SESSION['rol']<>"estudiante" and $_SESSION['rol']<>"acudiente" ){ ?>
   
@@ -820,12 +820,13 @@ public function verificarAsistenciaYRedirigir() {
     $result_asistencia_json = $academico->consultar_datos($sql_asistencia, true);
     $registro_existente = json_decode($result_asistencia_json, true);
 
-    // 5. Devolver mensaje o redirigir
+    // 5. Informar el estado. Esta función se invoca desde index.php: redirigir
+    // al mismo index.php con la asignación vuelve a ejecutar esta validación y
+    // produce un ciclo de redirecciones si la asistencia sigue pendiente.
     if (!empty($registro_existente)) {
         return "La asistencia para la asignatura '{$nombre_materia}' de hoy ya ha sido registrada.";
     } else {
-        header("Location: index.php?asignacion={$id_asignacion}");
-        exit;
+        return "La asistencia para la asignatura '{$nombre_materia}' está pendiente.";
     }
 }
 
@@ -834,24 +835,15 @@ public function mis_cursos_otros() {
         // Obtener datos del usuario desde la sesión.
         $rol = $_SESSION['rol'] ?? 'invitado';
         $id_usuario = $_SESSION['id_usuario'] ?? null;
+        $id_institucion = $_SESSION['id_institucion'] ?? ($_SESSION['institucion'] ?? null);
 
-        if (!$id_usuario) {
+        if (!$id_usuario || !$id_institucion) {
             return []; // Si no hay usuario, no se pueden mostrar cursos.
         }
 
-        // Obtener fechas del periodo activo
-        $sql_periodo = "SELECT fecha_inicio, fecha_fin FROM periodo WHERE estado_periodo = '1' LIMIT 1";
-        $periodo_data = json_decode($this->consultar_datos($sql_periodo, true), true);
-        $periodo_inicio = null;
-        $periodo_fin = null;
-        if (!empty($periodo_data) && isset($periodo_data[0])) {
-            $periodo_inicio = $periodo_data[0]['fecha_inicio'];
-            $periodo_fin = $periodo_data[0]['fecha_fin'];
-        }
-        
-        // --- INICIO DE LA CONSULTA AJUSTADA ---
-        // Se utiliza la estructura de la consulta que proporcionaste como base.
-        // Se ha simplificado el JOIN, uniendo 'asignacion' directamente con 'materia_oficial'.
+        // La tarjeta debe mostrar las asignaciones del año lectivo activo. Las
+        // fechas de horario no se usan como filtro: pueden corresponder a un
+        // período anterior y seguir pendientes de actualización.
         $sql_base = "
             SELECT
                 a.id_asignacion,
@@ -865,25 +857,16 @@ public function mis_cursos_otros() {
                 materia_oficial mo ON a.id_asignatura = mo.id_materia
             INNER JOIN
                 ano_lectivo al ON a.ano_lectivo = al.id_ano_lectivo
-            INNER JOIN
-                horario h ON a.id_asignacion = h.id_asignacion
             LEFT JOIN
                 categoria_curso cg ON a.id_categoria_curso = cg.id_categoria_curso               
         ";
-        // Se mantiene la lógica PHP para añadir condiciones dinámicas.
-        // 1. Condición CRÍTICA para filtrar solo por el año lectivo activo.
+        // 1. Filtrar solo por el año lectivo activo y la institución actual.
      $sql_conditions = " WHERE al.estado = 'Activo' ";
-     $sql_conditions .= " and a.institucion_educativa = '".$_SESSION['id_institucion']."' ";
-
-        // Validar fechas del periodo contra el horario
-        if ($periodo_inicio && $periodo_fin && $periodo_inicio != '0000-00-00' && $periodo_fin != '0000-00-00') {
-            $sql_conditions .= " AND (h.fecha_inicio <= '" . $periodo_fin . "' OR h.fecha_inicio = '0000-00-00' OR h.fecha_inicio IS NULL) AND (h.fecha_fin >= '" . $periodo_inicio . "' OR h.fecha_fin = '0000-00-00' OR h.fecha_fin IS NULL) ";
-        }
+     $sql_conditions .= " and a.institucion_educativa = '".(int)$id_institucion."' ";
 
         // 2. Se construye el resto de condiciones según el ROL.
-        // ADVERTENCIA: Se recomienda usar sentencias preparadas para evitar inyección SQL.
         if (in_array($rol, ['admin', 'docente'])) {
-            $sql_conditions .= " AND a.id_docente = '" . $id_usuario . "'";
+            $sql_conditions .= " AND a.id_docente = '" . (int)$id_usuario . "'";
         } else {
             // Para estudiantes y acudientes, es necesario unir con la tabla de inscripciones.
             $sql_base .= " JOIN inscripcion i ON a.id_asignacion = i.id_asignacion ";

@@ -259,7 +259,7 @@ function mis_cursos_context_menu($id_asignacion, $nombre_materia, $rol)
     $nombre = mis_cursos_e($nombre_materia);
     $html = '<menu id="menu_curso' . $id . '" style="display:none" class="showcase">';
     $html .= '<command label="' . $nombre . '" onclick="document.location=\'' . SGA_CURSOS_URL . '/curso.php?asignacion=' . $id . '\'">';
-    $html .= '<command label="Nueva planeación" onclick="document.location=\'' . SGA_URL . '/apps/PlanMind/index.php?asignacion=' . $id . '\'">';
+    $html .= '<command label="Nueva planeación" onclick="document.location=\'' . SGA_URL . '/apps/PlanMind/index2.php?asignacion=' . $id . '\'">';
     $html .= '<hr>';
 
     if ($rol !== 'estudiante' && $rol !== 'acudiente') {

@@ -342,7 +342,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planeador DOCX IA - IER Josefina (Vallesol)</title>
     <script>
-        if (location.protocol !== 'file:' && !/\/index\.php$/i.test(location.pathname)) {
+        if (location.protocol !== 'file:' && !/\/index(?:2)?\.php$/i.test(location.pathname)) {
             location.replace('index.php' + location.search + location.hash);
         }
     </script>
@@ -545,6 +545,10 @@ try {
                 <a href="../../Planeador/img/TAXONOMiA.jpg" target="_blank" class="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-2 rounded-md transition-colors shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                     Taxonomía Bloom
+                </a>
+                             <a href="../../apps/dba/index.php" target="_blank" class="flex items-center gap-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3 py-2 rounded-md transition-colors shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                 DBA
                 </a>
             </div>
 

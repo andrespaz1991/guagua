@@ -7,6 +7,8 @@
 
     // --- Dependencias y Autoloaders ---
     require_once __DIR__ . "/../comun/autoload.php";
+    require_once __DIR__ . "/../comun/conexion.php";
+    require_once __DIR__ . "/../apps/notas/lib/NotasAuditoriaService.php";
     require_once __DIR__ . "/vendor/autoload.php";
 
     use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -237,7 +239,7 @@
                         }
                     }
 
-                    $notas[$nombreMateria] = round((float)(is_numeric($valor) ? $valor : 0), 1);
+                    $notas[$nombreMateria] = round((float)(is_numeric($valor) ? $valor : 0), 2);
                 }
 
                 $notasPorEstudiante[$documento] = [
@@ -477,6 +479,14 @@
                     $grupoSeleccionado['ultimafila'],
                     $grupoSeleccionado['materias']
                 );
+                // Cada ejecución del reporte deja una instantánea auditable de las
+                // valoraciones, únicamente si la fecha pertenece al período vigente.
+                $auditoriaLote = (new NotasAuditoriaService($mysqli))->guardarLote($notasExcel);
+                if ($auditoriaLote['ok']) {
+                    echo '<div class="alert alert-success no-print shadow-sm"><strong>Notas sincronizadas.</strong> ' . htmlspecialchars($auditoriaLote['mensaje']) . ' Período ' . htmlspecialchars($auditoriaLote['periodo']['nombre_periodo']) . ' (' . htmlspecialchars($auditoriaLote['periodo']['fecha_inicio']) . ' al ' . htmlspecialchars($auditoriaLote['periodo']['fecha_fin']) . '). <a href="../apps/notas/" class="alert-link">Abrir auditoría</a></div>';
+                } else {
+                    echo '<div class="alert alert-warning no-print shadow-sm"><strong>Notas no sincronizadas:</strong> ' . htmlspecialchars($auditoriaLote['mensaje']) . '</div>';
+                }
                 
                 $idEstudiante = $_GET['id_estudiante'] ?? '';
                

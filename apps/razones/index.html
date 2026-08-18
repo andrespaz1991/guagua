@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Generador interactivo de ejercicios de razones trigonométricas.">
+  <title>Triángulo en acción | Razones trigonométricas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">LABORATORIO MATEMÁTICO</p>
+        <h1>Triángulo en <span>acción</span></h1>
+        <p class="intro">Crea ejercicios visuales de razones trigonométricas y ajusta cada medida para explicarlos paso a paso.</p>
+      </div>
+      <div class="hero-badge" aria-label="Tema: razones trigonométricas">
+        <strong>sin · cos · tan · cot</strong>
+        <small>Explora, ajusta y comprende</small>
+      </div>
+    </header>
+
+    <section class="workspace" aria-label="Generador de ejercicios">
+      <aside class="control-panel">
+        <div class="panel-heading">
+          <span class="step-number">1</span>
+          <div><p>CONFIGURA</p><h2>Tu ejercicio</h2></div>
+        </div>
+
+        <fieldset id="ratioConfig">
+          <legend>Razón a practicar</legend>
+          <div class="ratio-grid" id="ratioButtons">
+            <button class="ratio-btn active" type="button" data-ratio="seno"><b>sen</b><small>O / H</small></button>
+            <button class="ratio-btn" type="button" data-ratio="coseno"><b>cos</b><small>A / H</small></button>
+            <button class="ratio-btn" type="button" data-ratio="tangente"><b>tan</b><small>O / A</small></button>
+            <button class="ratio-btn" type="button" data-ratio="cotangente"><b>cot</b><small>A / O</small></button>
+            <button class="ratio-btn" type="button" data-ratio="secante"><b>sec</b><small>H / A</small></button>
+            <button class="ratio-btn" type="button" data-ratio="cosecante"><b>csc</b><small>H / O</small></button>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Nivel de dificultad</legend>
+          <div class="level-switch" id="levelButtons">
+            <button class="level-btn active" type="button" data-level="facil">Fácil</button>
+            <button class="level-btn" type="button" data-level="medio">Medio</button>
+            <button class="level-btn" type="button" data-level="dificil">Difícil</button>
+          </div>
+          <p class="level-help" id="levelHelp">Medidas enteras y una razón sencilla.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Tipo de ejercicio</legend>
+          <div class="mode-switch" id="modeButtons">
+            <button class="mode-btn active" type="button" data-mode="razon">Calcular razón</button>
+            <button class="mode-btn" type="button" data-mode="lado">Encontrar lado</button>
+          </div>
+        </fieldset>
+
+        <label class="choice-toggle" for="multipleChoice">
+          <input id="multipleChoice" type="checkbox">
+          <span><b>Opciones de respuesta</b><small>Generar respuestas A, B, C y D.</small></span>
+        </label>
+        <label class="unit-control" for="unitInput">
+          <span><b>Unidad de medida</b><small>Ejemplos: m, cm, km, pasos.</small></span>
+          <input id="unitInput" type="text" maxlength="12" value="m" aria-label="Unidad de medida">
+        </label>
+        <label class="story-select" for="storyTemplate">
+          <span><b>Contexto del enunciado</b><small>Elige uno o déjalo al azar.</small></span>
+          <select id="storyTemplate">
+            <option value="aleatorio">Aleatorio</option>
+            <option value="campo">Cultivo y campo</option>
+            <option value="escalera">Escalera</option>
+            <option value="rampa">Rampa</option>
+            <option value="edificio">Edificio</option>
+            <option value="arbol">Árbol</option>
+            <option value="cometa">Cometa</option>
+            <option value="dron">Dron</option>
+            <option value="carretera">Carretera</option>
+            <option value="cancha">Cancha deportiva</option>
+            <option value="rescate">Rescate</option>
+            <option value="barco">Barco y faro</option>
+          </select>
+        </label>
+
+        <fieldset class="measurements" id="measurementsConfig">
+          <legend>Ajusta las medidas <span>(unidades)</span></legend>
+          <label for="opposite">Cateto opuesto <output id="oppositeOutput">3</output></label>
+          <input id="opposite" type="range" min="1" max="24" step="0.5" value="3">
+          <label for="adjacent">Cateto adyacente <output id="adjacentOutput">4</output></label>
+          <input id="adjacent" type="range" min="1" max="24" step="0.5" value="4">
+          <div class="manual-values">
+            <label>O<input id="oppositeNumber" type="number" min="0.5" max="24" step="0.5" value="3"></label>
+            <label>A<input id="adjacentNumber" type="number" min="0.5" max="24" step="0.5" value="4"></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="side-config" id="sideConfig" hidden>
+          <legend>Configura el problema</legend>
+          <p class="ratio-path" id="ratioPath">Con sen θ se usan el cateto opuesto y la hipotenusa.</p>
+          <div class="config-step angle-card">
+            <span class="config-number">1</span>
+            <div class="config-content">
+              <label for="angle">Ángulo del problema <output id="angleOutput">35°</output></label>
+              <input id="angle" type="range" min="5" max="85" step="0.5" value="35">
+              <div class="single-manual-value"><label>θ<input id="angleNumber" type="number" min="5" max="85" step="0.5" value="35">°</label></div>
+            </div>
+          </div>
+          <div class="config-step">
+            <span class="config-number">2</span>
+            <div class="config-content">
+              <label for="knownSide">Lado que entregarás</label>
+              <select id="knownSide">
+                <option value="hypotenuse">Hipotenusa</option>
+                <option value="adjacent">Cateto adyacente</option>
+                <option value="opposite">Cateto opuesto</option>
+              </select>
+              <label for="knownValue">Su medida <output id="knownValueOutput">10</output></label>
+              <input id="knownValue" type="range" min="1" max="24" step="0.5" value="10">
+              <div class="single-manual-value"><label>u<input id="knownValueNumber" type="number" min="1" max="24" step="0.5" value="10"></label></div>
+            </div>
+          </div>
+          <div class="config-step target-choice">
+            <span class="config-number">3</span>
+            <div class="config-content">
+              <label for="targetSide">¿Qué deben encontrar?</label>
+              <select id="targetSide"></select>
+              <p>Se mostrará como <b>?</b> en el triángulo.</p>
+            </div>
+          </div>
+        </fieldset>
+
+        <button class="new-exercise" id="newExercise" type="button"><span>↻</span> Generar nuevo ejercicio</button>
+      </aside>
+
+      <section class="visual-panel">
+        <div class="panel-heading visual-heading">
+          <span class="step-number">2</span>
+          <div><p>OBSERVA</p><h2>El triángulo rectángulo</h2></div>
+          <span class="angle-chip">θ = <strong id="angleValue">36.9°</strong></span>
+        </div>
+        <article class="story-card" id="storyCard" aria-live="polite">
+          <span class="story-icon">✦</span>
+          <p id="storyText">Lee el problema y usa el triángulo para encontrar la respuesta.</p>
+        </article>
+
+        <div class="triangle-stage" id="triangleStage">
+          <svg id="triangleSvg" viewBox="0 0 620 430" role="img" aria-labelledby="triangleTitle triangleDescription">
+            <title id="triangleTitle">Triángulo rectángulo ajustable</title>
+            <desc id="triangleDescription">Diagrama con cateto opuesto, cateto adyacente e hipotenusa.</desc>
+            <defs>
+              <linearGradient id="triangleFill" x1="0" x2="1" y1="1" y2="0"><stop stop-color="#f4fcff"/><stop offset="1" stop-color="#f7f8ff"/></linearGradient>
+            </defs>
+            <path id="triangleArea" fill="url(#triangleFill)" d="M 95 345 L 480 345 L 480 95 Z"></path>
+            <path id="oppositeLine" class="side-line opposite-line" d="M 480 345 L 480 95"></path>
+            <path id="adjacentLine" class="side-line adjacent-line" d="M 95 345 L 480 345"></path>
+            <path id="hypotenuseLine" class="side-line hypotenuse-line" d="M 95 345 L 480 95"></path>
+            <path class="right-angle" d="M 447 345 L 447 312 L 480 312"></path>
+            <path id="angleArc" class="angle-arc" d="M 140 345 A 45 45 0 0 1 131 318"></path>
+            <text id="thetaLabel" class="theta-label" x="143" y="315">θ</text>
+            <g id="angleBadge" class="angle-badge"><rect/><text></text></g>
+            <g id="adjacentLabel" class="side-label"><rect/><text></text></g>
+            <g id="oppositeLabel" class="side-label"><rect/><text></text></g>
+            <g id="hypotenuseLabel" class="side-label"><rect/><text></text></g>
+          </svg>
+          <div class="triangle-information">
+            <div class="legend" aria-label="Leyenda del triángulo">
+              <span data-side="opposite"><i class="dot opposite-dot"></i> Opuesto</span>
+              <span data-side="adjacent"><i class="dot adjacent-dot"></i> Adyacente</span>
+              <span data-side="hypotenuse"><i class="dot hypotenuse-dot"></i> Hipotenusa</span>
+            </div>
+            <div class="choice-options" id="choiceOptions" hidden aria-label="Opciones de respuesta">
+              <p>Selecciona una respuesta</p>
+              <div id="choiceList"></div>
+              <small id="choiceFeedback" aria-live="polite"></small>
+            </div>
+            <div class="measurements-summary" aria-label="Medidas del triángulo">
+              <span class="measure-chip opposite-measure" id="oppositeMeasure"></span>
+              <span class="measure-chip adjacent-measure" id="adjacentMeasure"></span>
+              <span class="measure-chip hypotenuse-measure" id="hypotenuseMeasure"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="formula-strip">
+          <div class="formula-title"><span id="formulaName">Seno</span><small id="formulaText">opuesto ÷ hipotenusa</small></div>
+          <div class="formula" id="formula"><span>sen θ</span><b>=</b><span class="fraction"><i id="fractionTop">3</i><i id="fractionBottom">5</i></span><b>=</b><strong id="ratioResult">0.60</strong></div>
+        </div>
+      </section>
+
+      <section class="exercise-panel">
+        <div class="panel-heading">
+          <span class="step-number">3</span>
+          <div><p>RESUELVE</p><h2>Reto para tus estudiantes</h2></div>
+        </div>
+        <div class="challenge-card">
+          <span class="challenge-tag" id="challengeTag">NIVEL FÁCIL</span>
+          <p id="challengeText">En el triángulo mostrado, calcula el seno del ángulo θ.</p>
+          <div class="answer-row">
+            <label for="studentAnswer">Tu respuesta</label>
+            <input id="studentAnswer" type="text" inputmode="decimal" placeholder="Ej. 0.60 o 3/5" autocomplete="off">
+            <button id="checkAnswer" type="button">Comprobar</button>
+          </div>
+          <p class="feedback" id="feedback" aria-live="polite"></p>
+          <button class="solution-toggle" id="solutionToggle" type="button">Ver explicación paso a paso <span>⌄</span></button>
+          <div class="solution" id="solution" hidden>
+            <p id="solutionIntro"></p>
+            <div class="solution-math" id="solutionMath"></div>
+            <p class="tip" id="solutionTip"></p>
+          </div>
+        </div>
+        <div class="teacher-note"><span>✦</span><p><b>Tip docente:</b> mueve los controles y pregunta qué lados cambian en cada razón. El ángulo θ permanece en la base izquierda.</p></div>
+      </section>
+    </section>
+
+    <section class="calculator-panel" aria-labelledby="calculatorTitle">
+      <div class="calculator-heading">
+        <div><p class="eyebrow">HERRAMIENTA RÁPIDA</p><h2 id="calculatorTitle">Calculadora de razones trigonométricas</h2></div>
+        <p>Escribe cualquier ángulo en grados para calcular sus razones.</p>
+      </div>
+      <div class="calculator-controls">
+        <label for="calculatorAngle">Ángulo</label>
+        <div class="angle-input"><input id="calculatorAngle" type="number" value="30" step="0.1" inputmode="decimal"><span>°</span></div>
+        <div class="angle-presets" aria-label="Ángulos frecuentes">
+          <button type="button" data-angle="0">0°</button><button type="button" data-angle="30">30°</button><button type="button" data-angle="45">45°</button><button type="button" data-angle="60">60°</button><button type="button" data-angle="90">90°</button>
+        </div>
+      </div>
+      <div class="calculator-results" aria-live="polite">
+        <article><span>sen θ</span><strong id="calcSin">0,5</strong></article>
+        <article><span>cos θ</span><strong id="calcCos">0,866</strong></article>
+        <article><span>tan θ</span><strong id="calcTan">0,5774</strong></article>
+        <article><span>cot θ</span><strong id="calcCot">1,7321</strong></article>
+        <article><span>csc θ</span><strong id="calcCsc">2</strong></article>
+      </div>
+      <p class="calculator-note" id="calculatorNote">Los resultados se aproximan a cuatro decimales.</p>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
