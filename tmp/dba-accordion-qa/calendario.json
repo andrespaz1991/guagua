@@ -1,0 +1,30 @@
+{
+    "periodos": [
+        {
+            "id_periodo": "1",
+            "numero_periodo": 1,
+            "fecha_inicio": "2026-01-13",
+            "fecha_fin": "2026-03-27"
+        },
+        {
+            "id_periodo": "2",
+            "numero_periodo": 2,
+            "fecha_inicio": "2026-03-27",
+            "fecha_fin": "2026-06-27"
+        },
+        {
+            "id_periodo": "3",
+            "numero_periodo": 3,
+            "fecha_inicio": "2026-07-05",
+            "fecha_fin": "2026-09-13"
+        },
+        {
+            "id_periodo": "4",
+            "numero_periodo": 4,
+            "fecha_inicio": "2026-09-14",
+            "fecha_fin": "2026-11-20"
+        }
+    ],
+    "periodo_actual": 4,
+    "fecha_actual": "2026-11-02"
+}

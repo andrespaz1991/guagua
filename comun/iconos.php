@@ -241,6 +241,17 @@ ob_start();
 </div>
 
 <script>
+// Las peticiones GET de la API deben llegar al módulo, sin el contenedor HTML.
+function iconosApiUrl(accion, parametros = {}) {
+    const url = new URL(window.location.href);
+    url.hash = '';
+    url.searchParams.set('guagua_embedded', '1');
+    url.searchParams.set('api', '1');
+    url.searchParams.set('accion', accion);
+    Object.entries(parametros).forEach(([nombre, valor]) => url.searchParams.set(nombre, valor));
+    return url.toString();
+}
+
 /** Funciones de UI comunes **/
 function mostrarAlerta(mensaje, tipo = 'success') {
     if (typeof alert2 === 'function') {
@@ -259,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function cargarIconos() {
     const busqueda = document.getElementById('buscador').value;
     try {
-        const respuesta = await fetch(`iconos.php?api=1&accion=leer&buscar=${encodeURIComponent(busqueda)}`);
+        const respuesta = await fetch(iconosApiUrl('leer', {buscar: busqueda}));
         const textRAW = await respuesta.text(); // Obtener el texto crudo para depuración
         
         let data;
@@ -325,7 +336,7 @@ async function guardarIcono(event) {
         document.getElementById('btn-guardar').disabled = true;
         document.getElementById('btn-guardar').innerText = 'Guardando...';
 
-        const respuesta = await fetch('iconos.php?api=1&accion=guardar', {
+        const respuesta = await fetch(iconosApiUrl('guardar'), {
             method: 'POST',
             body: formData
         });
@@ -361,7 +372,7 @@ async function eliminarIcono(id) {
     if (!confirm('¿Está seguro de eliminar este icono? Esta acción no se puede deshacer.')) return;
 
     try {
-        const respuesta = await fetch('iconos.php?api=1&accion=eliminar', {
+        const respuesta = await fetch(iconosApiUrl('eliminar'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id: id })

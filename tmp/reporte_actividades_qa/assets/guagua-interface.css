@@ -1,0 +1,41 @@
+/* Tema generado desde Configuración de interfaz. No editar manualmente. */
+:root {
+  --guagua-primary: #2563eb;
+  --guagua-secondary: #adc2c1;
+  --guagua-bg: #f4f7fb;
+  --guagua-home-bg: #1054c1;
+  --guagua-surface: #ffffff;
+  --guagua-text: #1e293b;
+  --guagua-radius: 12px;
+  --guagua-shadow: 0 8px 24px rgba(15, 23, 42, .08);
+}
+
+body, button, input, select, textarea { font-family: Inter, "Segoe UI", Arial, sans-serif !important; }
+body { background-color: var(--guagua-bg) !important; color: var(--guagua-text); font-size: 15px; }
+body.home-page { background-color: var(--guagua-home-bg) !important; }
+a { color: var(--guagua-primary); }
+.btn-primary, .bg-primary, .label-primary { background-color: var(--guagua-primary) !important; border-color: var(--guagua-primary) !important; }
+.btn-success, .label-success { background-color: var(--guagua-secondary) !important; border-color: var(--guagua-secondary) !important; }
+.panel, .well, .thumbnail, .card, .modal-content, .dropdown-menu { background-color: var(--guagua-surface); border-radius: var(--guagua-radius) !important; box-shadow: var(--guagua-shadow); }
+.btn, .form-control, select, input, textarea { border-radius: calc(var(--guagua-radius) * .65) !important; transition: all .18s ease; }
+.panel-body, .well, .card-body { padding: 11px 16px; }
+.navbar.navbar-default { background-color: var(--guagua-surface) !important; }
+.navbar.navbar-default .navbar-nav > li > a:hover, .navbar.navbar-default .navbar-nav > .active > a { color: var(--guagua-primary) !important; }
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover { color: var(--guagua-primary) !important; border-bottom-color: var(--guagua-primary) !important; }
+
+/* Módulo Cursos */
+#jumbotron.mis-cursos-hero { background-color: var(--guagua-primary) !important; }
+#jumbotron.mis-cursos-hero::before { background: linear-gradient(110deg, var(--guagua-primary), var(--guagua-secondary)) !important; opacity: .88; }
+.mis-cursos-hero__eyebrow { color: #fff !important; }
+.mis-cursos-hero__action .btn { color: var(--guagua-primary) !important; background: var(--guagua-surface) !important; border-radius: var(--guagua-radius) !important; }
+.mis-cursos-hero__action .btn:hover, .mis-cursos-hero__action .btn:focus, .curso-acciones .btn:hover, .curso-acciones .btn:focus { color: #fff !important; background: var(--guagua-secondary) !important; border-color: var(--guagua-secondary) !important; }
+.mis-cursos-library { border-color: var(--guagua-primary) !important; }
+.mis-cursos-library__icon { color: var(--guagua-primary) !important; background: var(--guagua-bg) !important; border-radius: var(--guagua-radius) !important; }
+.mis-cursos-library__heading h2, .curso-card h3, .curso-card__link:hover, .curso-card__link:focus { color: var(--guagua-text) !important; }
+.mis-cursos-summary, .curso-year, .curso-card { background: var(--guagua-surface) !important; border-color: color-mix(in srgb, var(--guagua-primary) 24%, #dfe9e3) !important; box-shadow: var(--guagua-shadow) !important; }
+.mis-cursos-summary strong, .curso-year__toggle::before, .curso-category__toggle::before, .curso-card__open { color: var(--guagua-primary) !important; }
+.curso-year__toggle { color: var(--guagua-text) !important; background: linear-gradient(90deg, var(--guagua-bg), var(--guagua-surface)) !important; }
+.curso-category__toggle { color: var(--guagua-secondary) !important; }
+.curso-card__icon { background: linear-gradient(145deg, var(--guagua-bg), var(--guagua-surface)) !important; border-color: color-mix(in srgb, var(--guagua-primary) 18%, #e1efe6) !important; border-radius: var(--guagua-radius) !important; }
+.curso-card:hover { border-color: var(--guagua-primary) !important; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }

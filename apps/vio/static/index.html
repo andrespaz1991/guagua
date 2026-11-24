@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VisoSearch – Búsqueda Visual con IA</title>
   <meta name="description" content="Busca y filtra imágenes por descripción usando Inteligencia Artificial. VisoSearch analiza tu carpeta y encuentra exactamente las fotos que describes."/>
-  <link rel="icon" type="image/png" href="/logo.png"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="/style.css"/>
+  <script>
+    try { document.documentElement.dataset.theme = localStorage.getItem('vs_theme') || 'dark'; } catch (_) {}
+  </script>
+  <link rel="icon" type="image/png" href="./logo.png"/>
+  <link rel="stylesheet" href="./style.css"/>
 </head>
 <body>
 
@@ -50,6 +50,10 @@
           <span class="status-dot" id="statusDot"></span>
           <span id="statusLabel">Verificando...</span>
         </div>
+        <button class="header-btn theme-toggle" id="themeBtn" title="Cambiar tema" aria-label="Cambiar tema" aria-pressed="false">
+          <svg class="theme-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+          <svg class="theme-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
         <button class="header-btn" id="helpBtn" title="Ayuda">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         </button>
@@ -154,6 +158,8 @@
           <!-- Suggestion chips -->
           <div class="chips-label">Sugerencias rápidas</div>
           <div class="chips-wrap" id="chipsWrap">
+            <button class="chip" data-query="estudiante con sudadera; alumno con hoodie; persona con buzo deportivo">🎓 sudaderas</button>
+            <button class="chip" data-query="estudiante con uniforme escolar; alumno con uniforme">🏫 uniformes</button>
             <button class="chip" data-query="persona con sudadera roja">🔴 sudadera roja</button>
             <button class="chip" data-query="perro jugando en la hierba">🐕 perro</button>
             <button class="chip" data-query="atardecer en la playa">🌅 atardecer</button>
@@ -191,6 +197,7 @@
               </div>
               <div class="slider-labels"><span>5%</span><span>60%</span></div>
             </div>
+            <p class="search-tip">Para una categoría amplia, separa sinónimos con <code>;</code>. Se conserva la mejor coincidencia de cada foto.</p>
 
             <div class="setting-item">
               <div class="setting-top">
@@ -218,6 +225,10 @@
               <span id="searchBtnLabel">Buscar con IA</span>
             </div>
             <div class="search-btn-glow"></div>
+          </button>
+          <button class="stop-search-btn hidden" id="stopSearchBtn" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+            <span id="stopSearchLabel">Detener búsqueda</span>
           </button>
         </div>
 
@@ -360,7 +371,7 @@
 
         <button class="cancel-search-btn" id="cancelSearchBtn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          Cancelar búsqueda
+          <span id="cancelSearchLabel">Detener búsqueda</span>
         </button>
       </div>
 
@@ -491,6 +502,7 @@
             <div class="field-input-group">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
               <input type="text" id="exportPath" class="field-input" placeholder="C:\Exportaciones\VisoSearch"/>
+              <button class="field-browse" id="browseExportPathBtn" type="button">Examinar</button>
             </div>
           </div>
           <div class="form-field">
@@ -508,7 +520,7 @@
           </div>
           <div class="action-hint">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Las imágenes originales se mantienen en su ubicación.
+            Recomendado para iCloud: copia a una carpeta local o sincronizada. Crear una carpeta no crea un álbum de Fotos de iCloud.
           </div>
         </div>
         <div class="modal-footer">
@@ -525,13 +537,14 @@
         <div class="modal-body">
           <div class="move-warning">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            <span>Las imágenes serán <strong>eliminadas</strong> de su ubicación original.</span>
+            <span>Las imágenes serán <strong>eliminadas</strong> de su ubicación original. En una carpeta sincronizada con iCloud, usa primero Copiar y verifica la sincronización.</span>
           </div>
           <div class="form-field">
             <label class="field-label">Carpeta destino</label>
             <div class="field-input-group">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
               <input type="text" id="movePath" class="field-input" placeholder="C:\Fotos\Clasificadas"/>
+              <button class="field-browse" id="browseMovePathBtn" type="button">Examinar</button>
             </div>
           </div>
           <div class="form-field">
@@ -725,7 +738,7 @@
       <div class="db-text">
         <strong>Dependencias faltantes.</strong>
         Ejecuta en tu terminal:
-        <code id="depsCmd">pip install openai-clip torch torchvision pillow flask flask-cors</code>
+        <code id="depsCmd">pip install openai-clip torch torchvision pillow pillow-heif flask flask-cors</code>
       </div>
       <button class="db-copy" id="depsCopyBtn" title="Copiar">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -737,6 +750,6 @@
   <!-- ========================== TOASTS ========================== -->
   <div class="toast-container" id="toastContainer"></div>
 
-  <script src="/app.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>

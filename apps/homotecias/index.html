@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Generador de homotecias · Grado 7°</title>
+  <style>
+    :root { --azul:#1769aa; --azul-claro:#eaf5ff; --rojo:#dd3c45; --tinta:#1c2937; --verde:#17805c; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:#f2f6fa; color:var(--tinta); font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+    main { width:min(1060px, calc(100% - 32px)); margin:28px auto; }
+    header { background:linear-gradient(125deg,#0f4f85,#1679ad); color:#fff; border-radius:18px; padding:26px 30px; box-shadow:0 10px 30px #12456724; }
+    h1 { margin:0 0 5px; font-size:clamp(1.55rem,3vw,2.25rem); }
+    header p { margin:0; opacity:.94; }
+    .controls { display:flex; gap:10px; flex-wrap:wrap; margin:18px 0; }
+    .settings { display:flex; gap:16px; flex-wrap:wrap; margin-top:18px; padding:16px; background:white; border:1px solid #d9e3eb; border-radius:12px; }
+    select { display:block; margin-top:6px; padding:10px; border:1px solid #b8cad7; border-radius:8px; font:inherit; max-width:100%; }
+    button { border:0; border-radius:10px; padding:11px 16px; font:inherit; font-weight:700; cursor:pointer; color:#fff; background:#146aa6; box-shadow:0 2px 0 #0d4d7c; }
+    button:hover { filter:brightness(1.08); } button.secondary { background:#526577; box-shadow:0 2px 0 #354553; }
+    button.solution { background:var(--verde); box-shadow:0 2px 0 #0d5a40; }
+    .layout { display:grid; grid-template-columns:1fr 1.08fr; gap:18px; }
+    .card { background:#fff; border:1px solid #d9e3eb; border-radius:15px; padding:22px; box-shadow:0 5px 16px #153f5c0c; }
+    h2 { font-size:1.12rem; margin:0 0 13px; color:#123f68; }
+    .factor { background:var(--azul-claro); color:#104f82; border-left:5px solid var(--azul); padding:13px 15px; border-radius:8px; margin:14px 0; font-size:1.05rem; }
+    .points { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin:15px 0; }
+    .point { border:1px solid #d6e1e9; background:#fbfdff; border-radius:9px; padding:10px; text-align:center; }
+    .hint { margin:14px 0 0; padding:10px 12px; background:#fff9e9; border-radius:8px; color:#755b15; font-size:.93rem; }
+    canvas { width:100%; aspect-ratio:1/1; display:block; border:1px solid #d7e1e9; border-radius:10px; background:#fff; }
+    .legend { display:flex; gap:18px; justify-content:center; margin-top:9px; font-size:.9rem; }
+    .dot { display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:5px; } .blue{background:var(--azul)} .red{background:var(--rojo)}
+    .answers { margin-top:18px; }
+    .answer-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:11px; }
+    label { font-weight:700; color:#315268; font-size:.93rem; }
+    input { width:100%; margin-top:5px; padding:10px; border:1px solid #b8cad7; border-radius:8px; font:inherit; }
+    .check { margin-top:14px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+    #feedback { font-weight:700; }
+    .ok { color:#08724d; }.bad { color:#b62d37; }
+    #solutionBox { display:none; margin-top:16px; padding:14px; border-radius:9px; background:#f0fbf6; border-left:5px solid var(--verde); }
+    .small { font-size:.9rem; color:#526b7d; }
+    @media(max-width:760px) { .layout{grid-template-columns:1fr}.points,.answer-grid{grid-template-columns:1fr 1fr 1fr} main{width:min(100% - 20px,1060px)} header,.card{padding:18px;} }
+    @media print { body{background:#fff;font-size:12pt} main{width:100%;margin:0} header{box-shadow:none;border-radius:0;padding:16px;background:#fff;color:#000;border:2px solid #000} .settings,.controls,.answers,.hint,#solutionBox{display:none!important}.layout{grid-template-columns:1fr 1fr}.card{box-shadow:none;border:1px solid #666;padding:12px} canvas{max-height:420px} }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Generador de ejercicios de homotecia</h1>
+      <p>Grado 7° · Centro de homotecia O(0, 0) · Figuras sencillas en el plano cartesiano</p>
+    </header>
+    <section class="settings" aria-label="Configuración del ejercicio">
+      <label>Figura
+        <select id="figure" onchange="newExercise()">
+          <option value="all">Todas al azar</option>
+          <option value="triangle">Triángulo</option>
+          <option value="rightTriangle">Triángulo rectángulo</option>
+          <option value="square">Cuadrado</option>
+          <option value="rectangle">Rectángulo</option>
+          <option value="rhombus">Rombo</option>
+          <option value="trapezoid">Trapecio</option>
+          <option value="parallelogram">Paralelogramo</option>
+          <option value="pentagon">Pentágono</option>
+          <option value="hexagon">Hexágono</option>
+          <option value="octagon">Octágono</option>
+          <option value="house">Casa</option>
+          <option value="arrow">Flecha</option>
+          <option value="letterL">Letra L</option>
+          <option value="cross">Cruz</option>
+          <option value="star">Estrella</option>
+        </select>
+      </label>
+      <label>Razón de homotecia
+        <select id="ratio" onchange="newExercise()">
+          <option value="0.5">0,5 · Reducción a la mitad</option>
+          <option value="0.25">0,25 · Reducción a la cuarta parte</option>
+          <option value="0.75">0,75 · Reducción a tres cuartas partes</option>
+          <option value="2">2 · Ampliación al doble</option>
+          <option value="3">3 · Ampliación al triple</option>
+          <option value="reductions">Reducciones al azar</option>
+          <option value="all">Todas al azar</option>
+        </select>
+      </label>
+      <label>Coordenadas de la solución
+        <select id="coordinateMode" onchange="newExercise()">
+          <option value="integers">Enteras · Para comenzar</option>
+          <option value="decimals">Pueden ser decimales · Para practicar</option>
+        </select>
+      </label>
+    </section>
+    <section class="controls" aria-label="Controles">
+      <button onclick="newExercise()">↻ Generar otro ejercicio</button>
+      <button class="solution" onclick="showSolution()">Ver solución</button>
+      <button class="secondary" onclick="window.print()">🖨 Imprimir ejercicio</button>
+    </section>
+    <section class="layout">
+      <article class="card">
+        <h2>Ejercicio</h2>
+        <p id="statement"></p>
+        <div class="factor">Factor de homotecia: <strong id="factor"></strong></div>
+        <p id="targetInstruction"></p>
+        <div class="points" id="points"></div>
+        <p class="hint"><strong>Recuerda:</strong> multiplica cada coordenada por k: (x′; y′) = (k × x; k × y). Si 0 &lt; k &lt; 1, la figura se reduce. Por ejemplo, A(4; −2) con k = 0,5 se transforma en A′(2; −1).</p>
+        <div class="answers">
+          <h2>Mis respuestas</h2>
+          <p class="small">Separa las coordenadas con punto y coma: <strong>1,5; −2,5</strong>. También puedes usar punto decimal: <strong>1.5; -2.5</strong>.</p>
+          <div class="answer-grid" id="answerGrid"></div>
+          <div class="check"><button onclick="checkAnswers()">Comprobar</button><span id="feedback" aria-live="polite"></span></div>
+        </div>
+        <div id="solutionBox"></div>
+      </article>
+      <article class="card">
+        <h2>Plano cartesiano</h2>
+        <canvas id="plane" width="620" height="620"></canvas>
+        <div class="legend"><span><i class="dot blue"></i>Figura original</span><span><i class="dot red"></i>Figura transformada</span></div>
+        <p class="small">Al principio aparece solo la figura azul. Al ver la solución aparecerá también la figura roja.</p>
+      </article>
+    </section>
+  </main>
+  <script>
+    const canvas = document.getElementById('plane'), ctx = canvas.getContext('2d');
+    let data, revealed = false;
+    const names='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const rnd=a=>Math.floor(Math.random()*(a+1));
+    const fmt=n=>Number(n.toFixed(6)).toLocaleString('es-CO',{maximumFractionDigits:6,useGrouping:false});
+    const figures=[
+      {id:'triangle',name:'Triángulo',points:[[-2,-2],[2,-1],[0,2]]},
+      {id:'rightTriangle',name:'Triángulo rectángulo',points:[[-2,-2],[2,-2],[-2,2]]},
+      {id:'square',name:'Cuadrado',points:[[-2,-2],[2,-2],[2,2],[-2,2]]},
+      {id:'rectangle',name:'Rectángulo',points:[[-3,-1],[3,-1],[3,1],[-3,1]]},
+      {id:'rhombus',name:'Rombo',points:[[0,-3],[2,0],[0,3],[-2,0]]},
+      {id:'trapezoid',name:'Trapecio',points:[[-3,-2],[3,-2],[1,2],[-1,2]]},
+      {id:'parallelogram',name:'Paralelogramo',points:[[-3,-2],[1,-2],[3,2],[-1,2]]},
+      {id:'pentagon',name:'Pentágono',points:[[-2,-2],[2,-2],[3,1],[0,3],[-3,1]]},
+      {id:'hexagon',name:'Hexágono',points:[[-2,-2],[2,-2],[3,0],[2,2],[-2,2],[-3,0]]},
+      {id:'octagon',name:'Octágono',points:[[-1,-3],[1,-3],[3,-1],[3,1],[1,3],[-1,3],[-3,1],[-3,-1]]},
+      {id:'house',name:'Casa',points:[[-2,-2],[2,-2],[2,1],[0,3],[-2,1]]},
+      {id:'arrow',name:'Flecha',points:[[-3,-1],[0,-1],[0,-2],[3,0],[0,2],[0,1],[-3,1]]},
+      {id:'letterL',name:'Letra L',points:[[-2,-2],[2,-2],[2,-1],[-1,-1],[-1,2],[-2,2]]},
+      {id:'cross',name:'Cruz',points:[[-1,-3],[1,-3],[1,-1],[3,-1],[3,1],[1,1],[1,3],[-1,3],[-1,1],[-3,1],[-3,-1],[-1,-1]]},
+      {id:'star',name:'Estrella',points:[[0,3],[1,1],[3,1],[2,-1],[2,-3],[0,-2],[-2,-3],[-2,-1],[-3,1],[-1,1]]}
+    ];
+    function newExercise(){
+      const selection=document.getElementById('ratio').value;
+      const factors=selection==='reductions'?[0.25,0.5,0.75]:[0.25,0.5,0.75,2,3];
+      const k=['all','reductions'].includes(selection)?factors[rnd(factors.length-1)]:Number(selection);
+      const figureId=document.getElementById('figure').value;
+      const figure=figures.find(f=>f.id===figureId)||figures[rnd(figures.length-1)];
+      // Giros de 90° y reflexiones conservan la forma y las coordenadas enteras.
+      const turns=rnd(3), reflection=rnd(1)?1:-1;
+      const oriented=figure.points.map(([x,y])=>{
+        x*=reflection;
+        for(let i=0;i<turns;i++)[x,y]=[-y,x];
+        return {x,y};
+      });
+      const offsets=[];
+      for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){
+        if(!oriented.some(p=>p.x+dx===0&&p.y+dy===0))offsets.push({dx,dy});
+      }
+      const {dx,dy}=offsets[rnd(offsets.length-1)];
+      let pts=oriented.map(p=>({x:p.x+dx,y:p.y+dy}));
+      if(k<1 && document.getElementById('coordinateMode').value==='integers'){
+        const multiple=k===0.5?2:4;
+        pts=pts.map(p=>({x:p.x*multiple,y:p.y*multiple}));
+      }
+      const situations=[
+        'En el plano de un afiche escolar se dibujó una <strong>figura decorativa</strong>. Para ampliarla, se aplica una homotecia con centro <strong>O(0, 0)</strong>.',
+        'Para diseñar una señal del huerto escolar, se trazó una <strong>figura geométrica</strong>. Se quiere elaborar una versión ampliada mediante una homotecia con centro <strong>O(0, 0)</strong>.',
+        'Un grupo dibujó una <strong>figura</strong> en una cuadrícula. Para construir un modelo más grande, aplica una homotecia con centro <strong>O(0, 0)</strong>.',
+        'En el mapa de una ruta, un <strong>símbolo geométrico</strong> debe ampliarse sin cambiar su forma. Usa una homotecia con centro <strong>O(0, 0)</strong>.',
+        'Para un mosaico del salón se creó una <strong>figura geométrica</strong>. Su nueva versión se obtiene mediante una homotecia con centro <strong>O(0, 0)</strong>.',
+        'En una cartelera se diseñó una <strong>figura</strong>. Para hacer una copia más grande y semejante, se aplica una homotecia con centro <strong>O(0, 0)</strong>.'
+      ];
+      const labels=names.slice(0,pts.length);
+      data={k,pts,labels,figure:figure.id,result:pts.map(p=>({x:p.x*k,y:p.y*k}))}; revealed=false;
+      document.getElementById('statement').innerHTML=(k<1?'Para elaborar una versión más pequeña de una figura de la cartelera, aplica una homotecia con centro <strong>O(0, 0)</strong>, conservando su forma.':situations[rnd(situations.length-1)])+' Los vértices son <strong>'+labels.join(', ')+'</strong>.';
+      document.getElementById('factor').textContent='k = '+fmt(k)+(k<1?' · Reducción':' · Ampliación');
+      document.getElementById('targetInstruction').innerHTML='<strong>Figura: '+figure.name+' · '+pts.length+' vértices.</strong> Calcula las coordenadas de la figura transformada: <strong>'+labels.map(n=>n+'′').join(', ')+'</strong>.';
+      document.getElementById('points').innerHTML=pts.map((p,i)=>`<div class="point"><strong>${labels[i]}(${fmt(p.x)}; ${fmt(p.y)})</strong></div>`).join('');
+      document.getElementById('answerGrid').innerHTML=labels.map((n,i)=>`<label>${n}′ <input class="answerInput" data-index="${i}" placeholder="x; y" autocomplete="off"></label>`).join('');
+      document.getElementById('feedback').textContent=''; document.getElementById('solutionBox').style.display='none';
+      draw();
+    }
+    function limit(){return Math.max(10,Math.ceil(Math.max(...data.pts.concat(data.result).flatMap(p=>[Math.abs(p.x),Math.abs(p.y)]))/2)*2+2);}
+    function toPixel(p){ const margin=42, size=canvas.width-margin*2, scale=size/(2*limit()); return {x:canvas.width/2+p.x*scale,y:canvas.height/2-p.y*scale}; }
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height); const M=42, L=limit(), S=(canvas.width-M*2)/(2*L);
+      ctx.lineWidth=1; ctx.font='13px system-ui';
+      for(let n=-L;n<=L;n++){
+        const x=canvas.width/2+n*S,y=canvas.height/2-n*S;
+        ctx.strokeStyle=n===0?'#5d7180':'#e4eaee';ctx.beginPath();ctx.moveTo(x,M);ctx.lineTo(x,canvas.height-M);ctx.stroke();ctx.beginPath();ctx.moveTo(M,y);ctx.lineTo(canvas.width-M,y);ctx.stroke();
+        if(n&&n%2===0){ctx.fillStyle='#70818d';ctx.fillText(n,x-4,canvas.height/2+17);ctx.fillText(n,canvas.width/2+6,y+4);}
+      }
+      ctx.fillStyle='#243b4a';ctx.fillText('x',canvas.width-M+7,canvas.height/2-7);ctx.fillText('y',canvas.width/2+8,M-8); ctx.fillText('O',canvas.width/2+7,canvas.height/2+16);
+      polygon(data.pts,'#1769aa',data.labels);
+      if(revealed) polygon(data.result,'#dd3c45',data.labels.map(n=>n+'′'));
+    }
+    function polygon(points,color,labels){
+      const q=points.map(toPixel);ctx.strokeStyle=color;ctx.fillStyle=color+'22';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(q[0].x,q[0].y);q.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));ctx.closePath();ctx.fill();ctx.stroke();
+      q.forEach((p,i)=>{ctx.beginPath();ctx.fillStyle=color;ctx.arc(p.x,p.y,5,0,Math.PI*2);ctx.fill();ctx.font='bold 16px system-ui';ctx.fillText(labels[i],p.x+8,p.y-8);});
+    }
+    function parsePoint(v){
+      const value=v.trim().replace(/[()]/g,'').replace(/[−–]/g,'-');
+      const parts=value.includes(';')?value.split(';'):value.split(/[,\s]+/);
+      if(parts.length!==2 || parts.some(p=>!p.trim()))return null;
+      const m=parts.map(p=>Number(p.trim().replace(',','.')));
+      return m.every(Number.isFinite)?{x:m[0],y:m[1]}:null;
+    }
+    function checkAnswers(){
+      const inputs=[...document.querySelectorAll('.answerInput')]; let good=0;
+      inputs.forEach((input,i)=>{const p=parsePoint(input.value),r=data.result[i];if(p&&p.x===r.x&&p.y===r.y)good++;});
+      const f=document.getElementById('feedback');
+      f.className=good===data.result.length?'ok':'bad'; f.textContent=good===data.result.length?'¡Excelente! Todas las coordenadas son correctas.':`Tienes ${good} de ${data.result.length} correctas. Revisa y vuelve a intentarlo.`;
+      if(good===data.result.length){revealed=true;draw();}
+    }
+    function showSolution(){
+      revealed=true; draw();
+      const steps=data.pts.map((p,i)=>`${data.labels[i]}′ = (${fmt(p.x)} × ${fmt(data.k)}; ${fmt(p.y)} × ${fmt(data.k)}) = <strong>(${fmt(data.result[i].x)}; ${fmt(data.result[i].y)})</strong>`).join('<br>');
+      const b=document.getElementById('solutionBox'); b.innerHTML='<strong>Solución paso a paso</strong><br>'+steps; b.style.display='block';
+    }
+    newExercise();
+  </script>
+</body>
+</html>
+

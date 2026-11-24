@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../comun/persona_imagen.php';
 ob_start();
 
 // ==================================================================
@@ -139,13 +140,7 @@ function curso_fecha_normalizada($fecha) {
 }
 
 function curso_foto_url($archivo, $genero = '') {
-    $archivo = basename((string)$archivo);
-    $esFemenino = in_array(strtolower(trim((string)$genero)), ['f', 'femenino', 'female'], true);
-    if ($archivo === '' || in_array(strtolower($archivo), ['user-icon.png', 'user-iconf.png', 'user-icon2.png', 'user-iconf2.png'], true)) {
-        $archivo = $esFemenino ? 'user-iconf.png' : 'user-icon.png';
-    }
-    // Las fotos se almacenan en /guagua/sga-data/foto, fuera de /comun.
-    return '../sga-data/foto/' . rawurlencode($archivo);
+    return '../sga-data/foto/' . rawurlencode(guagua_persona_foto($archivo, $genero));
 }
 
 function curso_clave_materia($materia) {
@@ -185,7 +180,8 @@ if ($id_asignacion > 0) {
     // 2. Obtener Estadísticas si el curso existe
     if ($curso_info) {
         // El promedio mostrado corresponde al período vigente configurado en Guagua.
-        $resultado_periodo = $mysqli->query("SELECT id_periodo, nombre_periodo FROM periodo WHERE estado_periodo = '1' AND CURDATE() BETWEEN fecha_inicio AND fecha_fin ORDER BY id_periodo DESC LIMIT 1");
+        require_once __DIR__ . '/../comun/academico.php';
+        $resultado_periodo = $mysqli->query(guagua_periodos_sql(true));
         if ($resultado_periodo && $resultado_periodo->num_rows > 0) {
             $fila_periodo = $resultado_periodo->fetch_assoc();
             $periodo_actual = ['numero' => (int)$fila_periodo['nombre_periodo'], 'nombre' => 'Período ' . $fila_periodo['nombre_periodo']];
@@ -458,11 +454,10 @@ if ($id_asignacion > 0) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Curso: <?php echo htmlspecialchars($curso_info['nombre_materia'] ?? 'Curso'); ?></title>
     <!-- CSS Bootstrap y Fonts -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="/guagua/comun/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/guagua/comun/vendor/bootstrap-icons/font/bootstrap-icons.min.css">
     <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/guagua/comun/js/chart.js"></script>
 
     <style>
         :root {
@@ -718,6 +713,11 @@ if ($id_asignacion > 0) {
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" style="border-radius: 12px; overflow: hidden;">
                     <li>
+                        <a class="dropdown-item py-2 fw-medium text-secondary" href="<?php echo SGA_URL; ?>/apps/PlanMind/index2.php?asignacion=<?php echo $id_asignacion; ?>">
+                            <i class="bi bi-journal-plus me-2 text-primary"></i> Configurar nueva planeación
+                        </a>
+                    </li>
+                    <li>
                         <a class="dropdown-item py-2 fw-medium text-secondary" href="../asistencia/horario.php?asignacion=<?php echo $id_asignacion; ?>">
                             <i class="bi bi-calendar-range me-2 text-primary"></i> Configurar Horario
                         </a>
@@ -866,7 +866,7 @@ if ($id_asignacion > 0) {
     <?php endif; ?>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/guagua/comun/vendor/bootstrap/bootstrap.bundle.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const buscadorEstudiantes = document.getElementById('buscador-estudiantes');

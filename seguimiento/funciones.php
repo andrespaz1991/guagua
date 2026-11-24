@@ -1,3 +1,8 @@
+<?php
+require_once __DIR__ . '/../comun/seguridad.php';
+guagua_exigir_rol(['admin','directivo','docente']);
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') guagua_exigir_origen_legado();
+?>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /> 
 
 <link rel="stylesheet" type="text/css" href="css/estilo.css" />

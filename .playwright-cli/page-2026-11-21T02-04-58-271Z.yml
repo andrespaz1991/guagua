@@ -1,0 +1,699 @@
+- generic [ref=e1]:
+  - link "Ir a las fichas anuales" [ref=e439] [cursor=pointer]:
+    - /url: "#reports-panel"
+  - main [ref=e3]:
+    - navigation "Ruta de navegación" [ref=e4]:
+      - link "Aplicaciones" [ref=e5] [cursor=pointer]:
+        - /url: ../../comun/dir_menu.php
+      - generic [ref=e8]: Seguimiento académico
+    - generic [ref=e9]:
+      - generic [ref=e14]:
+        - heading "Simulador de notas" [level=1] [ref=e15]
+        - paragraph [ref=e16]: Consulta el año académico y proyecta el resultado del cuarto periodo.
+      - button "Cómo usar el simulador" [ref=e18] [cursor=pointer]
+    - region "Notas de consulta" [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e30]:
+          - heading "Notas de consulta" [level=2] [ref=e31]
+          - paragraph [ref=e32]: PDF de SISGA y notas actualizadas · P4 editable para simular
+        - button "Restaurar P4 de consulta" [disabled] [ref=e34]
+      - paragraph [ref=e37]: ResumenEvaluacionAsignaturaDocente_20-11-2026 (ejemplo).pdf
+      - paragraph [ref=e38]: P4 inicia con la nota de consulta, incluidas las actualizaciones registradas. Puedes editarla para simular y restaurarla por materia o en toda la vista. Tus simulaciones se conservan en esta pestaña.
+    - generic [ref=e39]:
+      - complementary "Seleccionar estudiante" [ref=e40]:
+        - generic [ref=e41]:
+          - generic [ref=e42]:
+            - heading "Estudiantes" [level=2] [ref=e43]
+            - generic [ref=e44]: "15"
+          - generic [ref=e45]:
+            - generic [ref=e46]:
+              - text: Año académico
+              - combobox "Año académico" [ref=e47]:
+                - option "Todos los años"
+                - option "2026" [selected]
+            - generic [ref=e48]:
+              - text: Grupo
+              - combobox "Grupo" [ref=e49]:
+                - option "Todos" [selected]
+                - option "Grado 6"
+                - option "Grado 7"
+          - generic [ref=e50]:
+            - generic [ref=e51]: Buscar estudiante por nombre o código
+            - searchbox "Buscar estudiante por nombre o código" [ref=e52]
+          - button "Vista general Todos los estudiantes del año" [pressed] [ref=e53] [cursor=pointer]:
+            - generic [ref=e57]:
+              - strong [ref=e58]: Vista general
+              - generic [ref=e59]: Todos los estudiantes del año
+          - generic [ref=e62]: SELECCIONA UN ESTUDIANTE
+          - generic "Estudiantes disponibles" [ref=e64]:
+            - button "Alejandra Martínez González Grado 6 · Cód. DEMO001" [ref=e440] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e441]: AM
+              - generic [ref=e442]:
+                - strong [ref=e443]: Alejandra Martínez González
+                - generic [ref=e444]: Grado 6 · Cód. DEMO001
+            - button "Andrés Felipe Ramírez Torres Grado 6 · Cód. DEMO002" [ref=e445] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e446]: AF
+              - generic [ref=e447]:
+                - strong [ref=e448]: Andrés Felipe Ramírez Torres
+                - generic [ref=e449]: Grado 6 · Cód. DEMO002
+            - button "Camila Sofía Valencia Pérez Grado 6 · Cód. DEMO003" [ref=e450] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e451]: CS
+              - generic [ref=e452]:
+                - strong [ref=e453]: Camila Sofía Valencia Pérez
+                - generic [ref=e454]: Grado 6 · Cód. DEMO003
+            - button "Daniel Santiago Muñoz Díaz Grado 6 · Cód. DEMO004" [ref=e455] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e456]: DS
+              - generic [ref=e457]:
+                - strong [ref=e458]: Daniel Santiago Muñoz Díaz
+                - generic [ref=e459]: Grado 6 · Cód. DEMO004
+            - button "Emilia Rodríguez Salazar Grado 6 · Cód. DEMO005" [ref=e460] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e461]: ER
+              - generic [ref=e462]:
+                - strong [ref=e463]: Emilia Rodríguez Salazar
+                - generic [ref=e464]: Grado 6 · Cód. DEMO005
+            - button "Gabriel Esteban Castro López Grado 6 · Cód. DEMO006" [ref=e465] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e466]: GE
+              - generic [ref=e467]:
+                - strong [ref=e468]: Gabriel Esteban Castro López
+                - generic [ref=e469]: Grado 6 · Cód. DEMO006
+            - button "Isabella Juliana Moreno Ruiz Grado 6 · Cód. DEMO007" [ref=e470] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e471]: IJ
+              - generic [ref=e472]:
+                - strong [ref=e473]: Isabella Juliana Moreno Ruiz
+                - generic [ref=e474]: Grado 6 · Cód. DEMO007
+            - button "Juan Sebastián Méndez García Grado 6 · Cód. DEMO008" [ref=e475] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e476]: JS
+              - generic [ref=e477]:
+                - strong [ref=e478]: Juan Sebastián Méndez García
+                - generic [ref=e479]: Grado 6 · Cód. DEMO008
+            - button "Laura Valentina Herrera Álvarez Grado 7 · Cód. DEMO009" [ref=e480] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e481]: LV
+              - generic [ref=e482]:
+                - strong [ref=e483]: Laura Valentina Herrera Álvarez
+                - generic [ref=e484]: Grado 7 · Cód. DEMO009
+            - button "Mariana Isabel Cortés Ríos Grado 7 · Cód. DEMO010" [ref=e485] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e486]: MI
+              - generic [ref=e487]:
+                - strong [ref=e488]: Mariana Isabel Cortés Ríos
+                - generic [ref=e489]: Grado 7 · Cód. DEMO010
+            - button "Mateo Alejandro Gómez Silva Grado 7 · Cód. DEMO011" [ref=e490] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e491]: MA
+              - generic [ref=e492]:
+                - strong [ref=e493]: Mateo Alejandro Gómez Silva
+                - generic [ref=e494]: Grado 7 · Cód. DEMO011
+            - button "Nicolás Antonio Vargas Peña Grado 7 · Cód. DEMO012" [ref=e495] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e496]: NA
+              - generic [ref=e497]:
+                - strong [ref=e498]: Nicolás Antonio Vargas Peña
+                - generic [ref=e499]: Grado 7 · Cód. DEMO012
+            - button "Sara Lucía Mendoza Ospina Grado 7 · Cód. DEMO013" [ref=e500] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e501]: SL
+              - generic [ref=e502]:
+                - strong [ref=e503]: Sara Lucía Mendoza Ospina
+                - generic [ref=e504]: Grado 7 · Cód. DEMO013
+            - button "Sofía Gabriela Sánchez Mora Grado 7 · Cód. DEMO014" [ref=e505] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e506]: SG
+              - generic [ref=e507]:
+                - strong [ref=e508]: Sofía Gabriela Sánchez Mora
+                - generic [ref=e509]: Grado 7 · Cód. DEMO014
+            - button "Tomás Eduardo Jiménez Arias Grado 7 · Cód. DEMO015" [ref=e510] [cursor=pointer]:
+              - generic [aria-hidden] [ref=e511]: TE
+              - generic [ref=e512]:
+                - strong [ref=e513]: Tomás Eduardo Jiménez Arias
+                - generic [ref=e514]: Grado 7 · Cód. DEMO015
+          - generic [ref=e142]: Las notas de consulta provienen del PDF de referencia.
+      - generic [ref=e146]:
+        - tablist "Vistas del seguimiento académico" [ref=e147]:
+          - tab "Consulta y simulación" [ref=e148] [cursor=pointer]
+          - tab "Alertas del año 7" [ref=e151] [cursor=pointer]:
+            - text: Alertas del año
+            - generic "7 estudiantes con materias en riesgo en el año y grupo elegidos" [ref=e154]: "7"
+          - tab "Fichas anuales" [active] [selected] [ref=e155] [cursor=pointer]
+          - tab "Notas faltantes 23" [ref=e158] [cursor=pointer]:
+            - text: Notas faltantes
+            - generic "23 notas no registradas en las fuentes del año y grupo elegidos" [ref=e161]: "23"
+        - tabpanel "Fichas anuales" [ref=e515]:
+          - generic [ref=e516]:
+            - generic [ref=e517]:
+              - generic [ref=e518]:
+                - generic [ref=e519]: FICHA ACADÉMICA POR ESTUDIANTE
+                - heading "Notas y promedio del año" [level=2] [ref=e520]
+                - paragraph [ref=e521]: 15 fichas · Año 2026 · Todos los grupos
+              - button "Imprimir fichas" [ref=e522] [cursor=pointer]
+            - generic [ref=e526]:
+              - text: Buscar estudiante
+              - searchbox "Buscar estudiante" [ref=e527]
+            - paragraph [ref=e528]: La impresión incluye las 15 fichas filtradas, también las de otras páginas. Puedes guardar el resultado como PDF.
+          - generic [ref=e529]:
+            - article [ref=e530]:
+              - generic [ref=e531]:
+                - generic [ref=e532]: IER La Josefina · Seguimiento académico
+                - generic [ref=e533]: Año 2026
+              - generic [ref=e534]:
+                - generic [ref=e535]:
+                  - generic [ref=e536]: FICHA ACADÉMICA ANUAL
+                  - heading "Alejandra Martínez González" [level=3] [ref=e537]
+                  - paragraph [ref=e538]: Grado 6 · Código DEMO001
+                - generic [ref=e539]:
+                  - text: Promedio anual
+                  - strong [ref=e540]: 3,18
+                  - generic [ref=e541]: 9 de 9 materias completas
+              - generic [ref=e542]:
+                - generic [ref=e543]: 2 materias bajo la meta
+                - generic [ref=e544]:
+                  - button "Ver notas" [ref=e545] [cursor=pointer]
+                  - button "Imprimir ficha" [ref=e548] [cursor=pointer]
+              - table "Materias, periodos y promedio anual de Alejandra Martínez González" [ref=e550]:
+                - caption [ref=e551]: Materias, periodos y promedio anual de Alejandra Martínez González
+                - rowgroup [ref=e552]:
+                  - row [ref=e553]:
+                    - columnheader "Materia" [ref=e554]
+                    - columnheader "P1 25 %" [ref=e555]:
+                      - text: P1
+                      - generic [ref=e556]: 25 %
+                    - columnheader "P2 25 %" [ref=e557]:
+                      - text: P2
+                      - generic [ref=e558]: 25 %
+                    - columnheader "P3 25 %" [ref=e559]:
+                      - text: P3
+                      - generic [ref=e560]: 25 %
+                    - columnheader "P4 25 %" [ref=e561]:
+                      - text: P4
+                      - generic [ref=e562]: 25 %
+                    - columnheader "Anual" [ref=e563]
+                - rowgroup [ref=e564]:
+                  - row [ref=e565]:
+                    - rowheader "Ciencias Naturales y Educación Ambiental" [ref=e566]
+                    - cell "3,40" [ref=e567]
+                    - cell "3,80" [ref=e568]
+                    - cell "3,90" [ref=e569]
+                    - cell "3,10" [ref=e570]
+                    - cell "3,55 Alcanza meta" [ref=e571]:
+                      - strong [ref=e572]: 3,55
+                      - generic [ref=e573]: Alcanza meta
+                  - row [ref=e574]:
+                    - rowheader "Ciencias sociales, hist, Geo,Const.Pol y Demo" [ref=e575]
+                    - cell "2,50" [ref=e576]
+                    - cell "3,30" [ref=e577]
+                    - cell "3,90" [ref=e578]
+                    - cell "3,10" [ref=e579]
+                    - cell "3,20 Alcanza meta" [ref=e580]:
+                      - strong [ref=e581]: 3,20
+                      - generic [ref=e582]: Alcanza meta
+                  - row [ref=e583]:
+                    - rowheader "Educación Artística" [ref=e584]
+                    - cell "3,10" [ref=e585]
+                    - cell "3,80" [ref=e586]
+                    - cell "3,90" [ref=e587]
+                    - cell "3,40" [ref=e588]
+                    - cell "3,55 Alcanza meta" [ref=e589]:
+                      - strong [ref=e590]: 3,55
+                      - generic [ref=e591]: Alcanza meta
+                  - row [ref=e592]:
+                    - rowheader "Educación Ética y en Valores Humanos" [ref=e593]
+                    - cell "3,10" [ref=e594]
+                    - cell "3,50" [ref=e595]
+                    - cell "3,70" [ref=e596]
+                    - cell "3,50" [ref=e597]
+                    - cell "3,45 Alcanza meta" [ref=e598]:
+                      - strong [ref=e599]: 3,45
+                      - generic [ref=e600]: Alcanza meta
+                  - row [ref=e601]:
+                    - rowheader "Educación Física, Recreación y Deportes" [ref=e602]
+                    - cell "3,40" [ref=e603]
+                    - cell "3,50" [ref=e604]
+                    - cell "3,70" [ref=e605]
+                    - cell "3,20" [ref=e606]
+                    - cell "3,45 Alcanza meta" [ref=e607]:
+                      - strong [ref=e608]: 3,45
+                      - generic [ref=e609]: Alcanza meta
+                  - row [ref=e610]:
+                    - 'rowheader "Idioma Extranjero: Inglés" [ref=e611]'
+                    - cell "4,00" [ref=e612]
+                    - cell "3,50" [ref=e613]
+                    - cell "3,70" [ref=e614]
+                    - cell "3,30" [ref=e615]
+                    - cell "3,63 Alcanza meta" [ref=e616]:
+                      - strong [ref=e617]: 3,63
+                      - generic [ref=e618]: Alcanza meta
+                  - row [ref=e619]:
+                    - rowheader "Lengua Castellana" [ref=e620]
+                    - cell "1,00" [ref=e621]
+                    - cell "1,00" [ref=e622]
+                    - cell "1,00" [ref=e623]
+                    - cell "3,20" [ref=e624]
+                    - cell "1,55 Bajo la meta" [ref=e625]:
+                      - strong [ref=e626]: 1,55
+                      - generic [ref=e627]: Bajo la meta
+                  - row [ref=e628]:
+                    - rowheader "Matemáticas" [ref=e629]
+                    - cell "2,40" [ref=e630]
+                    - cell "2,70" [ref=e631]
+                    - cell "2,60" [ref=e632]
+                    - cell "3,30" [ref=e633]
+                    - cell "2,75 Bajo la meta" [ref=e634]:
+                      - strong [ref=e635]: 2,75
+                      - generic [ref=e636]: Bajo la meta
+                  - row [ref=e637]:
+                    - rowheader "Tecnología e Informática" [ref=e638]
+                    - cell "4,00" [ref=e639]
+                    - cell "3,20" [ref=e640]
+                    - cell "3,50" [ref=e641]
+                    - cell "3,40" [ref=e642]
+                    - cell "3,53 Alcanza meta" [ref=e643]:
+                      - strong [ref=e644]: 3,53
+                      - generic [ref=e645]: Alcanza meta
+                - rowgroup [ref=e646]:
+                  - row [ref=e647]:
+                    - rowheader "Promedio por período" [ref=e648]
+                    - cell "2,99" [ref=e649]
+                    - cell "3,14" [ref=e650]
+                    - cell "3,32" [ref=e651]
+                    - cell "3,28" [ref=e652]
+                    - cell "3,18" [ref=e653]
+              - generic [ref=e654]:
+                - paragraph [ref=e655]:
+                  - strong [ref=e656]: "Promedio general:"
+                  - text: "media de 9 materias con final completa. Las notas faltantes no se cuentan como cero. Meta por materia: 3,00."
+                - paragraph [ref=e657]: "Fuente: ResumenEvaluacionAsignaturaDocente_20-11-2026 (ejemplo).pdf · incluye actualizaciones registradas. «—» indica una nota pendiente."
+                - generic [ref=e658]:
+                  - generic [ref=e659]: Docente
+                  - generic [ref=e660]: Acudiente
+            - article [ref=e661]:
+              - generic [ref=e662]:
+                - generic [ref=e663]: IER La Josefina · Seguimiento académico
+                - generic [ref=e664]: Año 2026
+              - generic [ref=e665]:
+                - generic [ref=e666]:
+                  - generic [ref=e667]: FICHA ACADÉMICA ANUAL
+                  - heading "Andrés Felipe Ramírez Torres" [level=3] [ref=e668]
+                  - paragraph [ref=e669]: Grado 6 · Código DEMO002
+                - generic [ref=e670]:
+                  - text: Promedio parcial
+                  - strong [ref=e671]: —
+                  - generic [ref=e672]: 0 de 9 materias completas
+              - generic [ref=e673]:
+                - generic [ref=e674]: 9 materias pendientes
+                - generic [ref=e675]:
+                  - button "Ver notas" [ref=e676] [cursor=pointer]
+                  - button "Imprimir ficha" [ref=e679] [cursor=pointer]
+              - table "Materias, periodos y promedio anual de Andrés Felipe Ramírez Torres" [ref=e681]:
+                - caption [ref=e682]: Materias, periodos y promedio anual de Andrés Felipe Ramírez Torres
+                - rowgroup [ref=e683]:
+                  - row [ref=e684]:
+                    - columnheader "Materia" [ref=e685]
+                    - columnheader "P1 25 %" [ref=e686]:
+                      - text: P1
+                      - generic [ref=e687]: 25 %
+                    - columnheader "P2 25 %" [ref=e688]:
+                      - text: P2
+                      - generic [ref=e689]: 25 %
+                    - columnheader "P3 25 %" [ref=e690]:
+                      - text: P3
+                      - generic [ref=e691]: 25 %
+                    - columnheader "P4 25 %" [ref=e692]:
+                      - text: P4
+                      - generic [ref=e693]: 25 %
+                    - columnheader "Anual" [ref=e694]
+                - rowgroup [ref=e695]:
+                  - row [ref=e696]:
+                    - rowheader "Ciencias Naturales y Educación Ambiental" [ref=e697]
+                    - cell "3,40" [ref=e698]
+                    - cell "3,80" [ref=e699]
+                    - cell "—" [ref=e700]
+                    - cell "—" [ref=e701]
+                    - cell "— Pendiente" [ref=e702]:
+                      - strong [ref=e703]: —
+                      - generic [ref=e704]: Pendiente
+                  - row [ref=e705]:
+                    - rowheader "Ciencias sociales, hist, Geo,Const.Pol y Demo" [ref=e706]
+                    - cell "2,50" [ref=e707]
+                    - cell "3,30" [ref=e708]
+                    - cell "3,90" [ref=e709]
+                    - cell "—" [ref=e710]
+                    - cell "— Pendiente" [ref=e711]:
+                      - strong [ref=e712]: —
+                      - generic [ref=e713]: Pendiente
+                  - row [ref=e714]:
+                    - rowheader "Educación Artística" [ref=e715]
+                    - cell "3,10" [ref=e716]
+                    - cell "3,80" [ref=e717]
+                    - cell "—" [ref=e718]
+                    - cell "—" [ref=e719]
+                    - cell "— Pendiente" [ref=e720]:
+                      - strong [ref=e721]: —
+                      - generic [ref=e722]: Pendiente
+                  - row [ref=e723]:
+                    - rowheader "Educación Ética y en Valores Humanos" [ref=e724]
+                    - cell "3,10" [ref=e725]
+                    - cell "3,50" [ref=e726]
+                    - cell "—" [ref=e727]
+                    - cell "—" [ref=e728]
+                    - cell "— Pendiente" [ref=e729]:
+                      - strong [ref=e730]: —
+                      - generic [ref=e731]: Pendiente
+                  - row [ref=e732]:
+                    - rowheader "Educación Física, Recreación y Deportes" [ref=e733]
+                    - cell "3,40" [ref=e734]
+                    - cell "3,50" [ref=e735]
+                    - cell "—" [ref=e736]
+                    - cell "—" [ref=e737]
+                    - cell "— Pendiente" [ref=e738]:
+                      - strong [ref=e739]: —
+                      - generic [ref=e740]: Pendiente
+                  - row [ref=e741]:
+                    - 'rowheader "Idioma Extranjero: Inglés" [ref=e742]'
+                    - cell "4,00" [ref=e743]
+                    - cell "3,50" [ref=e744]
+                    - cell "—" [ref=e745]
+                    - cell "—" [ref=e746]
+                    - cell "— Pendiente" [ref=e747]:
+                      - strong [ref=e748]: —
+                      - generic [ref=e749]: Pendiente
+                  - row [ref=e750]:
+                    - rowheader "Lengua Castellana" [ref=e751]
+                    - cell "3,70" [ref=e752]
+                    - cell "3,20" [ref=e753]
+                    - cell "—" [ref=e754]
+                    - cell "—" [ref=e755]
+                    - cell "— Pendiente" [ref=e756]:
+                      - strong [ref=e757]: —
+                      - generic [ref=e758]: Pendiente
+                  - row [ref=e759]:
+                    - rowheader "Matemáticas" [ref=e760]
+                    - cell "3,70" [ref=e761]
+                    - cell "3,80" [ref=e762]
+                    - cell "—" [ref=e763]
+                    - cell "—" [ref=e764]
+                    - cell "— Pendiente" [ref=e765]:
+                      - strong [ref=e766]: —
+                      - generic [ref=e767]: Pendiente
+                  - row [ref=e768]:
+                    - rowheader "Tecnología e Informática" [ref=e769]
+                    - cell "4,00" [ref=e770]
+                    - cell "3,20" [ref=e771]
+                    - cell "—" [ref=e772]
+                    - cell "—" [ref=e773]
+                    - cell "— Pendiente" [ref=e774]:
+                      - strong [ref=e775]: —
+                      - generic [ref=e776]: Pendiente
+                - rowgroup [ref=e777]:
+                  - row [ref=e778]:
+                    - rowheader "Promedio por período" [ref=e779]
+                    - cell "3,43" [ref=e780]
+                    - cell "3,51" [ref=e781]
+                    - cell "3,90" [ref=e782]
+                    - cell "—" [ref=e783]
+                    - cell "— Parcial" [ref=e784]:
+                      - text: —
+                      - generic [ref=e785]: Parcial
+              - generic [ref=e786]:
+                - paragraph [ref=e787]:
+                  - strong [ref=e788]: "Promedio general:"
+                  - text: "media de 0 materias con final completa. 9 pendientes; el promedio es parcial. Las notas faltantes no se cuentan como cero. Meta por materia: 3,00."
+                - paragraph [ref=e789]: "Fuente: ResumenEvaluacionAsignaturaDocente_20-11-2026 (ejemplo).pdf · incluye actualizaciones registradas. «—» indica una nota pendiente."
+                - generic [ref=e790]:
+                  - generic [ref=e791]: Docente
+                  - generic [ref=e792]: Acudiente
+            - article [ref=e793]:
+              - generic [ref=e794]:
+                - generic [ref=e795]: IER La Josefina · Seguimiento académico
+                - generic [ref=e796]: Año 2026
+              - generic [ref=e797]:
+                - generic [ref=e798]:
+                  - generic [ref=e799]: FICHA ACADÉMICA ANUAL
+                  - heading "Camila Sofía Valencia Pérez" [level=3] [ref=e800]
+                  - paragraph [ref=e801]: Grado 6 · Código DEMO003
+                - generic [ref=e802]:
+                  - text: Promedio parcial
+                  - strong [ref=e803]: 3,53
+                  - generic [ref=e804]: 3 de 9 materias completas
+              - generic [ref=e805]:
+                - generic [ref=e806]: 6 materias pendientes
+                - generic [ref=e807]:
+                  - button "Ver notas" [ref=e808] [cursor=pointer]
+                  - button "Imprimir ficha" [ref=e811] [cursor=pointer]
+              - table "Materias, periodos y promedio anual de Camila Sofía Valencia Pérez" [ref=e813]:
+                - caption [ref=e814]: Materias, periodos y promedio anual de Camila Sofía Valencia Pérez
+                - rowgroup [ref=e815]:
+                  - row [ref=e816]:
+                    - columnheader "Materia" [ref=e817]
+                    - columnheader "P1 25 %" [ref=e818]:
+                      - text: P1
+                      - generic [ref=e819]: 25 %
+                    - columnheader "P2 25 %" [ref=e820]:
+                      - text: P2
+                      - generic [ref=e821]: 25 %
+                    - columnheader "P3 25 %" [ref=e822]:
+                      - text: P3
+                      - generic [ref=e823]: 25 %
+                    - columnheader "P4 25 %" [ref=e824]:
+                      - text: P4
+                      - generic [ref=e825]: 25 %
+                    - columnheader "Anual" [ref=e826]
+                - rowgroup [ref=e827]:
+                  - row [ref=e828]:
+                    - rowheader "Ciencias Naturales y Educación Ambiental" [ref=e829]
+                    - cell "—" [ref=e830]
+                    - cell "3,80" [ref=e831]
+                    - cell "3,90" [ref=e832]
+                    - cell "3,10" [ref=e833]
+                    - cell "— Pendiente" [ref=e834]:
+                      - strong [ref=e835]: —
+                      - generic [ref=e836]: Pendiente
+                  - row [ref=e837]:
+                    - rowheader "Ciencias sociales, hist, Geo,Const.Pol y Demo" [ref=e838]
+                    - cell "—" [ref=e839]
+                    - cell "3,30" [ref=e840]
+                    - cell "3,90" [ref=e841]
+                    - cell "3,10" [ref=e842]
+                    - cell "— Pendiente" [ref=e843]:
+                      - strong [ref=e844]: —
+                      - generic [ref=e845]: Pendiente
+                  - row [ref=e846]:
+                    - rowheader "Educación Artística" [ref=e847]
+                    - cell "3,10" [ref=e848]
+                    - cell "3,80" [ref=e849]
+                    - cell "3,90" [ref=e850]
+                    - cell "3,40" [ref=e851]
+                    - cell "3,55 Alcanza meta" [ref=e852]:
+                      - strong [ref=e853]: 3,55
+                      - generic [ref=e854]: Alcanza meta
+                  - row [ref=e855]:
+                    - rowheader "Educación Ética y en Valores Humanos" [ref=e856]
+                    - cell "—" [ref=e857]
+                    - cell "3,50" [ref=e858]
+                    - cell "3,70" [ref=e859]
+                    - cell "3,50" [ref=e860]
+                    - cell "— Pendiente" [ref=e861]:
+                      - strong [ref=e862]: —
+                      - generic [ref=e863]: Pendiente
+                  - row [ref=e864]:
+                    - rowheader "Educación Física, Recreación y Deportes" [ref=e865]
+                    - cell "—" [ref=e866]
+                    - cell "3,50" [ref=e867]
+                    - cell "3,70" [ref=e868]
+                    - cell "3,20" [ref=e869]
+                    - cell "— Pendiente" [ref=e870]:
+                      - strong [ref=e871]: —
+                      - generic [ref=e872]: Pendiente
+                  - row [ref=e873]:
+                    - 'rowheader "Idioma Extranjero: Inglés" [ref=e874]'
+                    - cell "4,00" [ref=e875]
+                    - cell "3,50" [ref=e876]
+                    - cell "3,70" [ref=e877]
+                    - cell "3,30" [ref=e878]
+                    - cell "3,63 Alcanza meta" [ref=e879]:
+                      - strong [ref=e880]: 3,63
+                      - generic [ref=e881]: Alcanza meta
+                  - row [ref=e882]:
+                    - rowheader "Lengua Castellana" [ref=e883]
+                    - cell "3,70" [ref=e884]
+                    - cell "3,20" [ref=e885]
+                    - cell "3,50" [ref=e886]
+                    - cell "3,20" [ref=e887]
+                    - cell "3,40 Alcanza meta" [ref=e888]:
+                      - strong [ref=e889]: 3,40
+                      - generic [ref=e890]: Alcanza meta
+                  - row [ref=e891]:
+                    - rowheader "Matemáticas" [ref=e892]
+                    - cell "—" [ref=e893]
+                    - cell "3,80" [ref=e894]
+                    - cell "3,90" [ref=e895]
+                    - cell "3,30" [ref=e896]
+                    - cell "— Pendiente" [ref=e897]:
+                      - strong [ref=e898]: —
+                      - generic [ref=e899]: Pendiente
+                  - row [ref=e900]:
+                    - rowheader "Tecnología e Informática" [ref=e901]
+                    - cell "—" [ref=e902]
+                    - cell "3,20" [ref=e903]
+                    - cell "3,50" [ref=e904]
+                    - cell "3,40" [ref=e905]
+                    - cell "— Pendiente" [ref=e906]:
+                      - strong [ref=e907]: —
+                      - generic [ref=e908]: Pendiente
+                - rowgroup [ref=e909]:
+                  - row [ref=e910]:
+                    - rowheader "Promedio por período" [ref=e911]
+                    - cell "3,60" [ref=e912]
+                    - cell "3,51" [ref=e913]
+                    - cell "3,74" [ref=e914]
+                    - cell "3,28" [ref=e915]
+                    - cell "3,53 Parcial" [ref=e916]:
+                      - text: 3,53
+                      - generic [ref=e917]: Parcial
+              - generic [ref=e918]:
+                - paragraph [ref=e919]:
+                  - strong [ref=e920]: "Promedio general:"
+                  - text: "media de 3 materias con final completa. 6 pendientes; el promedio es parcial. Las notas faltantes no se cuentan como cero. Meta por materia: 3,00."
+                - paragraph [ref=e921]: "Fuente: ResumenEvaluacionAsignaturaDocente_20-11-2026 (ejemplo).pdf · incluye actualizaciones registradas. «—» indica una nota pendiente."
+                - generic [ref=e922]:
+                  - generic [ref=e923]: Docente
+                  - generic [ref=e924]: Acudiente
+            - article [ref=e925]:
+              - generic [ref=e926]:
+                - generic [ref=e927]: IER La Josefina · Seguimiento académico
+                - generic [ref=e928]: Año 2026
+              - generic [ref=e929]:
+                - generic [ref=e930]:
+                  - generic [ref=e931]: FICHA ACADÉMICA ANUAL
+                  - heading "Daniel Santiago Muñoz Díaz" [level=3] [ref=e932]
+                  - paragraph [ref=e933]: Grado 6 · Código DEMO004
+                - generic [ref=e934]:
+                  - text: Promedio anual
+                  - strong [ref=e935]: 3,39
+                  - generic [ref=e936]: 9 de 9 materias completas
+              - generic [ref=e937]:
+                - generic [ref=e938]: 1 materia bajo la meta
+                - generic [ref=e939]:
+                  - button "Ver notas" [ref=e940] [cursor=pointer]
+                  - button "Imprimir ficha" [ref=e943] [cursor=pointer]
+              - table "Materias, periodos y promedio anual de Daniel Santiago Muñoz Díaz" [ref=e945]:
+                - caption [ref=e946]: Materias, periodos y promedio anual de Daniel Santiago Muñoz Díaz
+                - rowgroup [ref=e947]:
+                  - row [ref=e948]:
+                    - columnheader "Materia" [ref=e949]
+                    - columnheader "P1 25 %" [ref=e950]:
+                      - text: P1
+                      - generic [ref=e951]: 25 %
+                    - columnheader "P2 25 %" [ref=e952]:
+                      - text: P2
+                      - generic [ref=e953]: 25 %
+                    - columnheader "P3 25 %" [ref=e954]:
+                      - text: P3
+                      - generic [ref=e955]: 25 %
+                    - columnheader "P4 25 %" [ref=e956]:
+                      - text: P4
+                      - generic [ref=e957]: 25 %
+                    - columnheader "Anual" [ref=e958]
+                - rowgroup [ref=e959]:
+                  - row [ref=e960]:
+                    - rowheader "Ciencias Naturales y Educación Ambiental" [ref=e961]
+                    - cell "3,40" [ref=e962]
+                    - cell "3,80" [ref=e963]
+                    - cell "3,90" [ref=e964]
+                    - cell "3,10" [ref=e965]
+                    - cell "3,55 Alcanza meta" [ref=e966]:
+                      - strong [ref=e967]: 3,55
+                      - generic [ref=e968]: Alcanza meta
+                  - row [ref=e969]:
+                    - rowheader "Ciencias sociales, hist, Geo,Const.Pol y Demo" [ref=e970]
+                    - cell "2,50" [ref=e971]
+                    - cell "3,30" [ref=e972]
+                    - cell "3,90" [ref=e973]
+                    - cell "3,10" [ref=e974]
+                    - cell "3,20 Alcanza meta" [ref=e975]:
+                      - strong [ref=e976]: 3,20
+                      - generic [ref=e977]: Alcanza meta
+                  - row [ref=e978]:
+                    - rowheader "Educación Artística" [ref=e979]
+                    - cell "3,10" [ref=e980]
+                    - cell "3,80" [ref=e981]
+                    - cell "3,90" [ref=e982]
+                    - cell "3,40" [ref=e983]
+                    - cell "3,55 Alcanza meta" [ref=e984]:
+                      - strong [ref=e985]: 3,55
+                      - generic [ref=e986]: Alcanza meta
+                  - row [ref=e987]:
+                    - rowheader "Educación Ética y en Valores Humanos" [ref=e988]
+                    - cell "3,10" [ref=e989]
+                    - cell "3,50" [ref=e990]
+                    - cell "3,70" [ref=e991]
+                    - cell "3,50" [ref=e992]
+                    - cell "3,45 Alcanza meta" [ref=e993]:
+                      - strong [ref=e994]: 3,45
+                      - generic [ref=e995]: Alcanza meta
+                  - row [ref=e996]:
+                    - rowheader "Educación Física, Recreación y Deportes" [ref=e997]
+                    - cell "3,40" [ref=e998]
+                    - cell "3,50" [ref=e999]
+                    - cell "3,70" [ref=e1000]
+                    - cell "3,20" [ref=e1001]
+                    - cell "3,45 Alcanza meta" [ref=e1002]:
+                      - strong [ref=e1003]: 3,45
+                      - generic [ref=e1004]: Alcanza meta
+                  - row [ref=e1005]:
+                    - 'rowheader "Idioma Extranjero: Inglés" [ref=e1006]'
+                    - cell "4,00" [ref=e1007]
+                    - cell "3,50" [ref=e1008]
+                    - cell "3,70" [ref=e1009]
+                    - cell "3,30" [ref=e1010]
+                    - cell "3,63 Alcanza meta" [ref=e1011]:
+                      - strong [ref=e1012]: 3,63
+                      - generic [ref=e1013]: Alcanza meta
+                  - row [ref=e1014]:
+                    - rowheader "Lengua Castellana" [ref=e1015]
+                    - cell "3,70" [ref=e1016]
+                    - cell "3,20" [ref=e1017]
+                    - cell "3,50" [ref=e1018]
+                    - cell "3,20" [ref=e1019]
+                    - cell "3,40 Alcanza meta" [ref=e1020]:
+                      - strong [ref=e1021]: 3,40
+                      - generic [ref=e1022]: Alcanza meta
+                  - row [ref=e1023]:
+                    - rowheader "Matemáticas" [ref=e1024]
+                    - cell "2,40" [ref=e1025]
+                    - cell "2,70" [ref=e1026]
+                    - cell "2,60" [ref=e1027]
+                    - cell "3,30" [ref=e1028]
+                    - cell "2,75 Bajo la meta" [ref=e1029]:
+                      - strong [ref=e1030]: 2,75
+                      - generic [ref=e1031]: Bajo la meta
+                  - row [ref=e1032]:
+                    - rowheader "Tecnología e Informática" [ref=e1033]
+                    - cell "4,00" [ref=e1034]
+                    - cell "3,20" [ref=e1035]
+                    - cell "3,50" [ref=e1036]
+                    - cell "3,40" [ref=e1037]
+                    - cell "3,53 Alcanza meta" [ref=e1038]:
+                      - strong [ref=e1039]: 3,53
+                      - generic [ref=e1040]: Alcanza meta
+                - rowgroup [ref=e1041]:
+                  - row [ref=e1042]:
+                    - rowheader "Promedio por período" [ref=e1043]
+                    - cell "3,29" [ref=e1044]
+                    - cell "3,39" [ref=e1045]
+                    - cell "3,60" [ref=e1046]
+                    - cell "3,28" [ref=e1047]
+                    - cell "3,39" [ref=e1048]
+              - generic [ref=e1049]:
+                - paragraph [ref=e1050]:
+                  - strong [ref=e1051]: "Promedio general:"
+                  - text: "media de 9 materias con final completa. Las notas faltantes no se cuentan como cero. Meta por materia: 3,00."
+                - paragraph [ref=e1052]: "Fuente: ResumenEvaluacionAsignaturaDocente_20-11-2026 (ejemplo).pdf · incluye actualizaciones registradas. «—» indica una nota pendiente."
+                - generic [ref=e1053]:
+                  - generic [ref=e1054]: Docente
+                  - generic [ref=e1055]: Acudiente
+          - generic [ref=e1056]:
+            - status [ref=e1057]: Mostrando 1–4 de 15 estudiantes · Página 1 de 4
+            - generic [ref=e1058]:
+              - button "Anterior" [disabled] [ref=e1059]
+              - button "Siguiente" [ref=e1060] [cursor=pointer]
+        - generic [ref=e424]:
+          - generic [ref=e425]: "Cada periodo aporta el 25 % · Meta: 3,00"
+          - button "Configurar cálculo" [ref=e429] [cursor=pointer]
+        - paragraph [ref=e432]: «—» indica una nota pendiente. Las simulaciones no cambian las notas oficiales.
+    - generic [ref=e433]:
+      - generic "ResumenEvaluacionAsignaturaDocente_20-11-2026 (ejemplo).pdf" [ref=e437]: "Reporte: ResumenEvaluacionAsignaturaDocente_20-11-2026 (ejemplo).pdf"
+      - generic [ref=e438]: Reporte del 20 de nov de 2026

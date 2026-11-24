@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../comun/persona_imagen.php';
 
 class Persona extends Clase_mysqli{
 
@@ -66,23 +67,15 @@ function __construct($id_persona='')
 
 }//Fin Constructor
 
-public function permiso_home(){
-  $tarjetas=array();
-  $sql="SELECT *
-FROM tarjeta
-ORDER BY CASE
-    WHEN id_tarjeta = 67 THEN 0  -- Coloca la tarjeta 67 primero
-    ELSE 1                       -- El resto después
-  END";
-  $datos = json_decode($this->consultar_datos($sql,true),true);
-  foreach($datos as $clave => $campo){
-      if(in_array($_SESSION['rol'],json_decode($campo['permisos'],true))){
-      $tarjetas[]=$campo;
-    }
-  }  
-  return $tarjetas;
+public function permiso_home() {
+    $sql = 'SELECT id_tarjeta, permisos, titulo, icono, href, class_color, accion_rapida FROM tarjeta ORDER BY CASE WHEN id_tarjeta = 67 THEN 0 ELSE 1 END';
+    $rows = json_decode($this->consultar_datos($sql, true), true) ?: [];
+    $role = (string)($_SESSION['rol'] ?? 'invitado');
+    return array_values(array_filter($rows, static function($card) use ($role) {
+        $permissions = json_decode((string)$card['permisos'], true);
+        return is_array($permissions) && in_array($role, $permissions, true);
+    }));
 }
-
 
 public function acudiente(){
   $sql='select * from acudiente_estudiante where id_estudiante="'.$this->id_persona.'" order by parentesco desc';
@@ -187,6 +180,7 @@ foreach ($datos[0] as $clave => $value) {
 
 }  
 
+  $this->foto = guagua_persona_foto($this->foto, $this->genero);
  }else{
 
   return $datos;
@@ -473,35 +467,28 @@ foreach ($datos as $key => $value) {
 
  ?>
 
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="/guagua/comun/js/chart.js"></script>
 
     <script type="text/javascript">
 
-      google.charts.load('current', {'packages':['corechart']});
-
-      google.charts.setOnLoadCallback(GraficoPastel);
-
       function GraficoPastel() { 
 
-        var datos = google.visualization.arrayToDataTable([
+        var datos = [
 
           <?php echo $opciones; ?>
 
-        ]);
-
-        var Opciones = { 
-
-          title: '<?php echo $titulo; ?>',
-
-          is3D: true,
-
-        }; 
-
-        var Gráfico = new google.visualization.<?php echo $tipo ?>(document.getElementById('<?php echo $titulo; ?>'));
-
-        Gráfico.draw(datos,Opciones);
+        ];
+        var contenedor = document.getElementById('<?php echo $titulo; ?>');
+        if (!contenedor || !window.Chart || datos.length < 2) return;
+        contenedor.innerHTML = '';
+        var lienzo = document.createElement('canvas');
+        contenedor.appendChild(lienzo);
+        var tipo = '<?php echo $tipo; ?>' === 'PieChart' ? 'pie' : ('<?php echo $tipo; ?>' === 'LineChart' ? 'line' : 'bar');
+        new Chart(lienzo, {type: tipo, data: {labels: datos.slice(1).map(function(fila){ return fila[0]; }), datasets: [{label: '<?php echo $titulo; ?>', data: datos.slice(1).map(function(fila){ return fila[1]; }), backgroundColor: ['#2563eb','#16a34a','#f59e0b','#dc2626','#7c3aed','#0891b2'], borderColor: '#2563eb', borderWidth: 1}]}, options: {responsive: true, plugins: {title: {display: true, text: '<?php echo $titulo; ?>'}}}});
 
       }
+
+      GraficoPastel();
 
     </script>
 
@@ -653,7 +640,7 @@ $row = json_decode($this->consultar_datos($sql,true),true)[0];
     }
     } 
     $resultado = $resultado!="" ? $resultado : "user-icon.png";
-    $mifoto = $resultado;
+    $mifoto = guagua_persona_foto($resultado, $row['genero'] ?? '');
     $ruta_foto = SGA_MEDIA_FOTO.'/'.$mifoto;
  if($row['id_usuario'] != "" and $row['mascota']=='SI'){
  $sql_figura = 'select * from figuras where sha1(concat(figura,"SGA"))="'.$row['clave'].'" ' ;

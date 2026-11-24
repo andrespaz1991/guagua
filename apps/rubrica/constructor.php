@@ -1,18 +1,19 @@
 
 <?php
+require_once __DIR__ . '/../../comun/database.php';
+
 // =========================================================================
 // BACKEND PHP - CONSTRUCTOR DE RÚBRICAS
 // =========================================================================
-$db_host = 'localhost';
-$db_user = 'root';
-$db_pass = '';
-$db_name = 'guagua';
 
 mysqli_report(MYSQLI_REPORT_OFF);
-$mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_name, "7000");
+try {
+    $mysqli = guagua_db_mysqli();
+} catch (mysqli_sql_exception $error) {
+    $mysqli = null;
+}
 
-if (!$mysqli->connect_error) {
-    $mysqli->set_charset("utf8mb4");
+if ($mysqli instanceof mysqli) {
 
     $mysqli->query("CREATE TABLE IF NOT EXISTS custom_rubrics (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -29,7 +30,7 @@ if (!$mysqli->connect_error) {
 // API endpoints
 if (isset($_GET['action'])) {
     header('Content-Type: application/json');
-    if ($mysqli->connect_error) {
+    if (!($mysqli instanceof mysqli)) {
         echo json_encode(['error' => 'Sin conexión a MySQL']);
         exit;
     }
@@ -76,10 +77,9 @@ if (isset($_GET['action'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Constructor de Rúbricas — Guagua</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
+    <link href="/guagua/comun/vendor/fontawesome/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
         *, *::before, *::after { box-sizing: border-box; }
         body {

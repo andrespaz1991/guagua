@@ -18,7 +18,7 @@ python -m pip install --upgrade pip
 
 echo.
 echo [2/4] Instalando Flask y dependencias web...
-pip install flask flask-cors Pillow
+pip install flask flask-cors Pillow pillow-heif
 
 echo.
 echo [3/4] Instalando PyTorch...

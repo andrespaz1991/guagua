@@ -8,7 +8,9 @@
 require '../../comun/conexion.php'; // Incluido para mantener la consistencia del sistema
 
 // API key por defecto del servidor
-$default_api_key = 'AIzaSyB1ZbitpmioDkWOPWOlHJ-p_SORmxUYUrM';
+// Una clave compartida en código cliente queda expuesta a cualquiera que
+// visite la página. Cada usuario debe proporcionar su propia clave en el UI.
+$default_api_key = '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -17,21 +19,18 @@ $default_api_key = 'AIzaSyB1ZbitpmioDkWOPWOlHJ-p_SORmxUYUrM';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guagua Gemini Chat - Asistente Inteligente</title>
     
-    <!-- Google Fonts - Outfit para el cuerpo y JetBrains Mono para código -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS para el diseño ágil -->
-    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <!-- Recursos de interfaz servidos localmente -->
+    <script src="/guagua/comun/vendor/tailwindcss-typography.js"></script>
     
     <!-- FontAwesome 6 para iconos modernos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/guagua/comun/vendor/fontawesome/css/all.min.css">
     
     <!-- Marked.js para renderizar Markdown -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="/guagua/comun/vendor/marked.min.js"></script>
     
     <!-- Highlight.js para colorear sintaxis de código -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="/guagua/comun/vendor/highlight/github-dark.min.css">
+    <script src="/guagua/comun/vendor/highlight/highlight.min.js"></script>
 
     <script>
         tailwind.config = {

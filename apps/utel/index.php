@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agenda académica - Andrés Paz</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <!-- Google Identity Services -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
+    <link href="/guagua/comun/vendor/fontawesome/css/all.min.css" rel="stylesheet">
+    <link href="/guagua/comun/css/quill.snow.css" rel="stylesheet">
+    <script src="/guagua/comun/js/quill.js"></script>
     <style>
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }

@@ -124,35 +124,6 @@ echo(Fecha::formato_fecha($nota['fecha_nota']));
 echo "<a href=".SGA_CURSOS_URL.'/edunotas.php?estado='.$idnota."><img title='Desfijar' width='7%' src='".SGA_COMUN_URL."/img/negativo.png' ></img></a>";
 echo "</pre>";
 }
-$asignaciones_de_un_docente =$this->asignaciones_de_un_docente($_SESSION['id_usuario']);
-if(!empty($asignaciones_de_un_docente)){
-	require("comun/conexion.php");
-	foreach ($asignaciones_de_un_docente as $posicion => $asignacion) {
-
-
-		$sql_estudiante_asignacion='select count(id_inscripcion) from inscripcion where id_asignacion ="'.$asignacion.'" ';
-		$consulta_estudiante_asignacion =  $mysqli->query($sql_estudiante_asignacion);
-		 $cantidad_estudiante_asignacion[$asignacion] = $consulta_estudiante_asignacion ->num_rows ;
-		
-		 
-		 $sql_actividades = 'select * from actividad  where id_asignacion="'.$asignacion.'" and evaluable="SI" and   visible="SI"  and fecha_entrega>= "'.date('Y-m-d').'"  ' ;
-		 
-$consulta= $mysqli->query($sql_actividades);
-while($row = $consulta ->fetch_assoc()){
-	if($row['cuestionario']=='SI'){ 
-		$sql_respuesta ='Select count(id) from respuesta where id_actividad = "'.$actividad.'" ';
-		$consulta_respuesta = $mysqli ->query($sql_respuesta);
-		$cantidad_respuestas[$actividad] = $consulta_respuesta -> num_rows;
-	  }
-	if($row['adjunto']=='SI' and isset($activiad)){ 
-		$sql_adjunto ='Select count(id_tarea_adjunto) from tarea_adjunto where id_actividad = "'.$activiad.'" ';
-		$consulta_adjunto = $mysqli ->query($sql_adjunto);
-		$cantidad_adjunto[$actividad] = $consulta_adjunto -> num_rows;
-	  }
-	 
-}
-}
-}
 }
 public function mis_actividades(){  ###muestra en el home
 	$inscripcion_actual =inscripcion_actual($_SESSION['id_usuario']);

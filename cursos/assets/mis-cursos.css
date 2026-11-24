@@ -1,0 +1,92 @@
+.mis-cursos-page{--mc-ink:var(--guagua-text,#19392e);--mc-green:var(--guagua-primary,#217454);--mc-line:#dfe7e2;--mc-muted:#718078;color:var(--mc-ink);background:#f5f7f6;padding-bottom:48px;font-family:Inter,'Segoe UI',sans-serif}
+.mis-cursos-page *{box-sizing:border-box;font-family:inherit!important}
+#jumbotron.mis-cursos-hero{position:relative;height:auto!important;min-height:220px;margin:0;padding:42px 24px 64px;color:#fff;background:#173e31;background-size:cover!important;background-position:center;overflow:hidden;text-align:left}
+#jumbotron.mis-cursos-hero:before{position:absolute;inset:0;content:'';background:linear-gradient(100deg,rgba(15,49,38,.97),rgba(26,84,61,.88))}
+#jumbotron.mis-cursos-hero:after{position:absolute;right:-70px;top:-160px;width:420px;height:420px;border:60px solid rgba(255,255,255,.04);border-radius:50%;content:'';pointer-events:none}
+.mis-cursos-hero .container{position:relative;z-index:1;max-width:1240px;width:100%;padding:0}
+.mis-cursos-hero__content{display:flex;align-items:center;justify-content:space-between;gap:28px}
+.mis-cursos-hero__eyebrow{margin:0 0 12px!important;color:#b3d7c5;font-size:11px!important;letter-spacing:2px;text-transform:uppercase;font-weight:700}
+.mis-cursos-hero__title{margin:0!important;color:#fff;font-size:38px!important;letter-spacing:-1.2px;font-weight:700;line-height:1.2!important}
+.mis-cursos-hero__subtitle{margin:12px 0 0!important;max-width:590px;color:#d0e2d7;font-size:15px!important;line-height:1.7!important}
+#jumbotron.mis-cursos-hero #boton_opcion_curso{position:static;margin:0!important;white-space:nowrap}
+.mis-cursos-hero__action .btn{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#173e31;border:0;border-radius:10px;padding:13px 20px;font-weight:700;font-size:13px;box-shadow:0 6px 20px #102f3820}
+.mis-cursos-hero__action .btn:hover{background:#dff3e7;color:#173e31}
+.mc-toolbar{position:relative;z-index:2;display:flex;align-items:center;gap:16px;max-width:1240px;margin:-26px auto 30px;padding:18px 22px;background:#fff;border:1px solid var(--mc-line);border-radius:14px;box-shadow:0 8px 24px #19392e08}
+.mc-search{display:flex;align-items:center;gap:12px;flex:1;min-width:100px;color:var(--mc-muted)}
+.mc-search input{border:0!important;outline:0;background:transparent;width:100%;min-width:0;padding:9px 0;font:inherit;font-size:14px;color:var(--mc-ink);box-shadow:none!important}
+.mc-toolbar label{margin:0;font-weight:400}
+.mc-toolbar select{border:1px solid var(--mc-line);border-radius:8px;padding:10px 30px 10px 12px;background:#f9fbfa;color:var(--mc-ink);font-size:13px;max-width:180px}
+.mc-views{display:flex;gap:4px;border-left:1px solid var(--mc-line);padding-left:16px}
+.mc-views button,.mc-reset{border:0;border-radius:7px;background:transparent;padding:9px 12px;color:var(--mc-muted);cursor:pointer}
+.mc-views button[aria-pressed=true]{background:#eaf3ee;color:var(--mc-green)}
+.mc-feedback{max-width:1240px;margin:0 auto 14px;color:#914b27;font-size:13px}
+.mc-feedback:empty{display:none}
+.mis-cursos-content{max-width:1240px;margin:auto;padding:0}
+.mis-cursos-library{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:24px}
+.mis-cursos-library__heading{display:flex;align-items:center;gap:13px}
+.mis-cursos-library__icon{display:flex;align-items:center;justify-content:center;width:44px;height:44px;background:#e6eee9;border-radius:12px;color:var(--mc-green);font-size:23px}
+.mis-cursos-library__heading p{margin:0 0 4px!important;color:var(--mc-muted);text-transform:uppercase;letter-spacing:1px;font-size:10px!important;font-weight:700}
+.mis-cursos-library__heading h2{margin:0!important;font-size:22px!important;font-weight:700;color:var(--mc-ink)}
+.mis-cursos-summary{display:flex;align-items:center;gap:8px;color:var(--mc-muted);font-size:12px}
+.mis-cursos-summary strong{font-size:24px;color:var(--mc-ink)}
+.curso-year{margin-bottom:24px}
+.curso-year__toggle,.curso-category__toggle{display:flex;align-items:center;gap:10px;width:100%;border:0;text-align:left;cursor:pointer;font-family:inherit}
+.curso-year__toggle{padding:15px 0;border-bottom:1px solid #d8e2dc;background:transparent;color:var(--mc-ink);font-size:19px;font-weight:700}
+.curso-year__toggle:before,.curso-category__toggle:before{content:'⌄';font-size:17px;color:var(--mc-muted);transition:transform .2s}
+[aria-expanded=false].curso-year__toggle:before,[aria-expanded=false].curso-category__toggle:before{transform:rotate(-90deg)}
+.curso-year__toggle span,.curso-category__toggle span{margin-right:auto}
+.curso-year__toggle small,.curso-category__toggle small{font-size:12px;color:var(--mc-muted);font-weight:400}
+.curso-category{padding-top:20px}
+.curso-category__toggle{padding:0 0 16px;color:#50665a;background:transparent;font-size:14px;font-weight:600}
+.curso-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.curso-card{position:relative;min-width:0;border:1px solid var(--mc-line);border-radius:14px;background:#fff;overflow:hidden;transition:box-shadow .2s,border-color .2s,transform .2s}
+.curso-card:hover{border-color:#b0cbbc;box-shadow:0 10px 26px #19392e0c;transform:translateY(-3px)}
+.curso-card__link{display:flex;flex-direction:column;align-items:flex-start;min-height:270px;padding:22px;color:var(--mc-ink);text-decoration:none!important;text-align:left}
+.curso-card__link:hover{color:var(--mc-ink)}
+.curso-card__meta{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;margin-bottom:20px}
+.curso-card__category{font-size:10px!important;font-weight:700;color:var(--mc-muted);letter-spacing:.6px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%}
+.curso-card__status{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:5px 8px;background:#edf7f0;color:#39724d;font-size:10px!important;font-weight:600;white-space:nowrap}
+.curso-card__status:before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+.curso-card__icon{display:flex;align-items:center;justify-content:center;width:54px;height:54px;margin-bottom:16px;border-radius:13px;background:#f0f5f2}
+.curso-card__icon img{max-width:40px;max-height:40px;object-fit:contain}
+.curso-card h3{margin:0!important;color:var(--mc-ink);font-size:18px!important;line-height:1.4!important;font-weight:700;overflow-wrap:anywhere}
+.curso-card__teacher{margin:8px 0 0!important;font-size:12px!important;line-height:1.6!important;color:var(--mc-muted)}
+.curso-card__teacher strong{font-weight:500;color:#53685d}
+.curso-card__description{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:10px 0 0!important;color:#7c8981;font-size:12px!important;line-height:1.6!important}
+.curso-card__open{display:flex;justify-content:space-between;gap:14px;width:100%;padding-top:20px;margin-top:auto;color:var(--mc-green);font-size:12px!important;font-weight:700}
+.curso-acciones{display:flex;gap:8px;align-items:center;padding:12px 22px;border-top:1px solid #eef2ef;background:#fcfdfc}
+.curso-acciones .btn{padding:6px 9px;border:1px solid var(--mc-line);border-radius:6px;background:#fff;color:#53685d;font-size:11px}
+.curso-acciones .btn:hover{background:#edf5f0;color:#194d35}
+.curso-card.oculto .curso-card__status{background:#fff1e3;color:#986127}
+.curso-card.oculto{border-style:dashed}
+.mc-actions{position:relative;margin-left:auto}
+.mc-actions summary{cursor:pointer;color:#53685d;font-size:12px;padding:6px;list-style:none}
+.mc-actions[open] .mc-actions__links{display:flex}
+.mc-actions__links{display:none;position:relative;flex-direction:column;gap:2px;padding:8px 0;min-width:140px}
+.mc-actions__links a{padding:7px 0;color:#375a46;font-size:12px;text-decoration:none}
+.curso-acciones:has(.mc-actions[open]){flex-wrap:wrap;align-items:flex-start}
+.mis-cursos-empty{max-width:580px;margin:40px auto;padding:45px 24px;border:1px dashed #b9cdc0;border-radius:16px;background:#fff;text-align:center;color:var(--mc-muted)}
+.mis-cursos-empty span{font-size:36px;color:var(--mc-green)}
+.mis-cursos-empty h3{font-size:20px;color:var(--mc-ink);margin:14px 0 10px}
+.mis-cursos-error{color:#994c3f;border-color:#deb9b0}
+#span_buscar_mis_cursos{display:block}
+#span_buscar_mis_cursos.is-loading{opacity:.5;pointer-events:none}
+.mis-cursos-page :is(a,button,input,select,summary):focus-visible{outline:3px solid #69b493;outline-offset:3px}
+.mc-sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0)}
+.mc-list .curso-grid{grid-template-columns:1fr}
+.mc-list .curso-card__link{min-height:0;display:grid;grid-template-columns:54px 1fr auto;column-gap:20px}
+.mc-list .curso-card__meta{grid-column:2/4;margin-bottom:8px}
+.mc-list .curso-card__icon{grid-column:1;grid-row:1/5;margin:0}
+.mc-list .curso-card h3,.mc-list .curso-card__teacher,.mc-list .curso-card__description{grid-column:2}
+.mc-list .curso-card__open{grid-column:3;grid-row:2/5;align-self:center;padding:0}
+@media(min-width:1400px){.mis-cursos-content,.mc-toolbar,.mc-feedback{max-width:1240px}}
+@media(max-width:1300px){.mis-cursos-content,.mc-toolbar,.mc-feedback{margin-left:24px;margin-right:24px}}
+@media(max-width:650px){#jumbotron.mis-cursos-hero{padding:28px 18px 54px}.mis-cursos-hero__content{align-items:flex-start;flex-direction:column;gap:20px}.mis-cursos-hero__title{font-size:30px!important}.mc-toolbar{flex-wrap:wrap;padding:12px;margin: -24px 16px 24px;gap:8px}.mc-search{flex-basis:100%}.mc-toolbar select{flex:1;max-width:none}.mc-views{padding-left:8px}.mis-cursos-content,.mc-feedback{margin-left:16px;margin-right:16px}.mis-cursos-library__heading h2{font-size:18px!important}.mis-cursos-library__icon{display:none}.mis-cursos-summary{max-width:100px}.curso-grid{grid-template-columns:1fr}.mc-list .curso-card__link{column-gap:12px;grid-template-columns:42px 1fr}.mc-list .curso-card__icon{width:42px;height:42px}.mc-list .curso-card__open{grid-column:2;grid-row:auto;padding-top:12px}}
+@media(prefers-reduced-motion:reduce){.mis-cursos-page *{transition:none!important}.curso-card:hover{transform:none}}
+
+/* Preserve the configured theme without losing group hierarchy or text contrast. */
+.mis-cursos-page .curso-year{background:transparent!important;box-shadow:none!important}
+.mis-cursos-page .curso-category__toggle{color:var(--mc-ink)!important}
+.mis-cursos-page .curso-year__toggle{padding-left:12px;padding-right:12px;border-radius:8px}
+.mis-cursos-page .mis-cursos-summary{padding:8px 12px;border-radius:8px}
+.mis-cursos-page .curso-card__teacher strong{font-size:inherit!important;line-height:inherit!important}

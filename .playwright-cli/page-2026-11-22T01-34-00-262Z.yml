@@ -1,0 +1,113 @@
+- generic [ref=f1e2]:
+  - complementary [ref=f1e3]:
+    - link "Plan diario GUAGUA · TU ESPACIO" [ref=f1e4] [cursor=pointer]:
+      - /url: ./
+      - generic [ref=f1e8]:
+        - text: Plan diario
+        - generic [ref=f1e9]: GUAGUA · TU ESPACIO
+    - generic [ref=f1e10]: MI ORGANIZACIÓN
+    - button "Mi día Hoy" [ref=f1e11] [cursor=pointer]:
+      - text: Mi día
+      - generic [ref=f1e14]: Hoy
+    - button "Mis categorías" [disabled] [ref=f1e15]
+    - generic [ref=f1e19]: CADA COSA EN SU LUGAR
+    - navigation "Categorías del plan"
+    - button "Nueva categoría" [disabled] [ref=f1e20]
+    - generic [ref=f1e23]:
+      - generic [ref=f1e24]:
+        - text: ✦
+        - paragraph [ref=f1e25]:
+          - text: Pequeños pasos.
+          - strong [ref=f1e26]: Grandes días.
+        - generic [ref=f1e27]: Organiza lo importante y avanza a tu ritmo.
+      - link "Volver a Guagua ↗" [ref=f1e28] [cursor=pointer]:
+        - /url: ../../index.php
+        - text: Volver a Guagua
+        - generic [ref=f1e29]: ↗
+      - generic [ref=f1e30]: Tu plan es personal
+  - generic [ref=f1e33]:
+    - banner [ref=f1e34]:
+      - generic [ref=f1e35]:
+        - generic [ref=f1e36]: Mi espacio
+        - generic [ref=f1e37]: /
+        - strong [ref=f1e38]: Plan diario
+      - status [ref=f1e39]: Abriendo tu día…
+    - main [ref=f1e40]:
+      - generic [ref=f1e41]:
+        - generic [ref=f1e42]:
+          - generic [ref=f1e43]: UN POCO DE ORDEN, MÁS TRANQUILIDAD
+          - heading "Mi plan diario." [level=1] [ref=f1e46]
+          - paragraph [ref=f1e47]: Todo lo que necesitas hacer, en un lugar para ti.
+        - button "Nueva tarea" [disabled] [ref=f1e48]
+      - region "Navegación por fecha" [ref=f1e51]:
+        - generic [ref=f1e52]:
+          - heading "Tu semana" [level=2] [ref=f1e56]
+          - generic [ref=f1e57]:
+            - button "Semana anterior" [disabled] [ref=f1e58]
+            - button "Hoy" [disabled] [ref=f1e61]
+            - button "Semana siguiente" [disabled] [ref=f1e62]
+            - generic [ref=f1e65]:
+              - generic [ref=f1e66]: Ir a una fecha
+              - textbox "Ir a una fecha" [disabled] [ref=f1e67]
+      - generic [ref=f1e69]:
+        - region "Tu lista del día" [ref=f1e70]:
+          - generic [ref=f1e71]:
+            - generic [ref=f1e72]:
+              - heading "Tu lista del día" [level=2] [ref=f1e73]
+              - paragraph [ref=f1e74]: Elige lo importante para hoy.
+            - group "Vista del plan" [ref=f1e75]:
+              - button "Seguimiento" [pressed] [ref=f1e76] [cursor=pointer]
+              - button "Editar" [ref=f1e79] [cursor=pointer]
+          - tablist "Filtrar por categoría" [ref=f1e82]
+          - generic [ref=f1e83]:
+            - searchbox "Buscar tareas" [ref=f1e87]
+            - combobox "Filtrar por estado" [ref=f1e88]:
+              - option "Todos los estados" [selected]
+              - option "Pendientes"
+              - option "Completadas"
+              - option "Prioridad alta"
+          - paragraph [ref=f1e89]: Marca una tarea al terminarla. Tu avance se guarda automáticamente.
+          - heading "Preparando tu día…" [level=3] [ref=f1e95]
+          - generic [ref=f1e96]:
+            - textbox "Título de nueva tarea" [disabled] [ref=f1e99]:
+              - /placeholder: Añade una tarea y presiona Enter…
+            - button "Añadir" [disabled] [ref=f1e100]
+          - generic [ref=f1e101]:
+            - generic [ref=f1e102]: Tu espacio para avanzar
+            - button "Traer de otro día" [disabled] [ref=f1e103]
+        - complementary "Resumen del día" [ref=f1e106]:
+          - generic [ref=f1e107]:
+            - generic [ref=f1e108]:
+              - text: ASÍ VA TU DÍA
+              - generic [ref=f1e109]: ✦
+            - generic [ref=f1e111]:
+              - strong [ref=f1e112]: 0%
+              - generic [ref=f1e113]: completado
+            - heading "Un paso a la vez" [level=3] [ref=f1e114]
+            - paragraph [ref=f1e115]: Cada tarea cuenta.
+            - generic [ref=f1e116]:
+              - generic [ref=f1e117]:
+                - strong [ref=f1e118]: "0"
+                - generic [ref=f1e119]: Hechas
+              - generic [ref=f1e120]:
+                - strong [ref=f1e121]: "0"
+                - generic [ref=f1e122]: Pendientes
+              - generic [ref=f1e123]:
+                - strong [ref=f1e124]: "0"
+                - generic [ref=f1e125]: Prioritarias
+          - generic [ref=f1e126]:
+            - heading "◎ Mi enfoque de hoy" [level=3] [ref=f1e127]:
+              - generic [ref=f1e128]: ◎
+              - text: Mi enfoque de hoy
+            - paragraph [ref=f1e129]: ¿Qué hará que este sea un buen día?
+            - generic [ref=f1e130]: Mi enfoque de hoy
+            - textbox "Mi enfoque de hoy" [disabled] [ref=f1e131]:
+              - /placeholder: Hoy quiero concentrarme en…
+            - generic [ref=f1e132]:
+              - status [ref=f1e133]: Una intención para tu día
+              - button "Guardar" [disabled] [ref=f1e134]
+          - paragraph [ref=f1e135]:
+            - generic [ref=f1e138]: Cada día conserva su propio plan. Vuelve a una fecha para consultar tu avance.
+      - generic [ref=f1e139]:
+        - generic [ref=f1e140]: HECHO PARA TUS DÍAS EN EL COLEGIO
+        - generic [ref=f1e141]: Menos ruido. Más enfoque.

@@ -2,9 +2,9 @@
 require(dirname(__FILE__)."../comun/conexion.php");
 require_once(dirname(__FILE__)."../comun/config.php");
 ?>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script> 
-<script src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script src="/guagua/comun/js/jquery-2.2.4.min.js"></script>
+<script src="/guagua/comun/js/jquery-2.2.4.min.js"></script> 
+<script src="/guagua/comun/vendor/jquery-migrate-1.2.1.min.js"></script>
 <link rel="stylesheet" href="<?php echo SGA_COMUN_URL.'/'.'css/bootstrap.min.css'; ?>" type="text/css" />
 <link rel="stylesheet" href="<?php echo SGA_COMUN_URL.'/'.'js/bootstrap.min.js'; ?>" type="text/css" />
 <script type="text/javascript" src="<?php echo SGA_COMUN_URL.'/'.'js/funciones.js'; ?>"></script>

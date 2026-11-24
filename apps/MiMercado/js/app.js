@@ -393,15 +393,29 @@ async function loadInventario() {
     grid.innerHTML = '<div class="loading-spinner"></div>';
     
     try {
-        const res = await apiGet('get_productos', { search: search, categoria: cat });
+        const [res, resLista] = await Promise.all([
+            apiGet('get_productos', { search: search, categoria: cat }),
+            apiGet('get_lista')
+        ]);
         if(res.success) {
             grid.innerHTML = '';
             if(res.data.length === 0) {
                 grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1"><i class="fa fa-cubes"></i><p>No se encontraron productos.</p></div>`;
                 return;
             }
+
+            const pendientes = resLista.success ? resLista.data : [];
+            const productosEnLista = new Set(
+                pendientes
+                    .filter(item => item.id_producto)
+                    .map(item => String(item.id_producto))
+            );
+            const nombresEnLista = new Set(
+                pendientes.map(item => normalizarNombreProducto(item.nombre_producto))
+            );
             
             res.data.forEach(p => {
+                const estaEnLista = productosEnLista.has(String(p.id)) || nombresEnLista.has(normalizarNombreProducto(p.nombre));
                 // Duración total = unitaria × cantidad
                 const durTotal = parseInt(p.duracion_total) || (parseInt(p.duracion_dias) * parseInt(p.cantidad));
                 // Color duracion basado en duración total
@@ -414,10 +428,11 @@ async function loadInventario() {
                 const img = p.foto ? `<img src="${p.foto}" class="product-img">` : `<div class="product-img"><i class="fa fa-image"></i></div>`;
                 
                 grid.innerHTML += `
-                    <div class="product-card" id="card-${p.id}">
+                    <div class="product-card ${estaEnLista ? 'in-shopping-list' : ''}" id="card-${p.id}">
                         ${img}
                         <div class="product-content">
                             <span class="cat-badge" style="background: ${p.categoria_color || '#666'}">${p.categoria_nombre || 'Sin categoría'}</span>
+                            ${estaEnLista ? '<span class="in-list-badge"><i class="fa fa-check-circle"></i> En lista de compras</span>' : ''}
                             <h3 class="product-title">${p.nombre}</h3>
                             <div class="product-price">$${parseFloat(p.precio).toLocaleString()} <span style="font-size:12px;color:var(--text-secondary);font-weight:400">/ ${p.unidad}</span></div>
                             
@@ -445,6 +460,14 @@ async function loadInventario() {
             });
         }
     } catch(e) { console.error(e); }
+}
+
+function normalizarNombreProducto(nombre) {
+    return String(nombre || '')
+        .trim()
+        .toLocaleLowerCase('es-CO')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
 }
 
 // ==========================================
@@ -652,7 +675,7 @@ async function agregarItemLista() {
     const res = await apiPost('save_item_lista', { nombre_producto: nombre });
     if(res.success) {
         document.getElementById('nuevoItemNombre').value = '';
-        loadListaCompras();
+        await Promise.all([loadListaCompras(), loadInventario()]);
     }
 }
 
@@ -661,6 +684,7 @@ async function addToListaFromInv(id_producto) {
         id_producto: id_producto
     });
     if(res.success) {
+        await loadInventario();
         Swal.fire({
             toast: true, position: 'top-end', icon: 'success', 
             title: 'Agregado a la lista', showConfirmButton: false, timer: 1500,
@@ -670,9 +694,13 @@ async function addToListaFromInv(id_producto) {
 }
 
 async function deleteItemLista(id) {
-    await apiPost('delete_item_lista', { id: id });
-    listaSeleccionados.delete(String(id));
-    loadListaCompras();
+    const res = await apiPost('delete_item_lista', { id: id });
+    if (res.success) {
+        listaSeleccionados.delete(String(id));
+        await Promise.all([loadListaCompras(), loadInventario()]);
+    } else {
+        Swal.fire({ icon: 'error', title: 'No se pudo eliminar', text: res.message, background: '#1E293B', color: '#fff' });
+    }
 }
 
 async function comprarSeleccionados() {

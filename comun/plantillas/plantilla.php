@@ -1,5 +1,6 @@
 <?php
 require(dirname(__DIR__)."/autoload.php");
+require_once dirname(__DIR__) . '/vista_modulo.php';
 #require_once(dirname(__FILE__)."/comun/funciones.php");
 ?>
 <!DOCTYPE html>
@@ -10,7 +11,7 @@ require(dirname(__DIR__)."/autoload.php");
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<title>Guagua</title>
    <!--cdn textarea html -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.7.0/tinymce.min.js" integrity="sha512-XaygRY58e7fVVWydN6jQsLpLMyf7qb4cKZjIi93WbKjT6+kG/x4H5Q73Tff69trL9K0YDPIswzWe6hkcyuOHlw==" crossorigin="anonymous"></script>
+    <script src="/guagua/comun/vendor/tinymce/tinymce.min.js"></script>
     <!--cdn textarea html -->
 	<!--link rel="stylesheet" href="<?php echo SGA_COMUN_URL ?>/css/jquery.mobile-1.4.5.min.css"--> <!-- Pendite revisar utilidad sino borrar -->
 	<link rel="shortcut icon" href="<?php echo SGA_COMUN_URL ?>/img/logo.png" type="image/x-icon" /><!--Logo de la IEM-->
@@ -37,6 +38,6 @@ require(dirname(__DIR__)."/autoload.php");
             </main>
         </div>
     </div>
-     <?php require("footer.php"); ?>
+     <?php if (!guagua_modulo_embebido()) require("footer.php"); ?>
 </body>
 </html>

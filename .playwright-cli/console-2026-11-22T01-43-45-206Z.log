@@ -1,0 +1,3 @@
+[  103361ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ http://127.0.0.1:8167/app.js?v=1795310406:1
+[  103362ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ http://127.0.0.1:8167/style.css?v=1795310061:1
+[  103523ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8167/favicon.ico:1

@@ -1,0 +1,90 @@
+
+[TABLA]
+FILA 0: ["Institución Educativa Rural La JosefinaSan Luis AntioquiaDane:205660000853   Nit: 900221162-8   Aprobada por Resolución S 128463 del 16/10/2014     ierlajosefina@hotmail.com      Autopista Medellín Bogotá, Km 134Institución Educativa Rural La JosefinaSan Luis AntioquiaDane:205660000853   Nit: 900221162-8   Aprobada por Resolución S 128463 del 16/10/2014     ierlajosefina@hotmail.com      Autopista Medellín Bogotá, Km 134\n\n\n\n\n\n"]
+FILA 1: ["MALLA CURRICULAR", "Área: ETICA Y VALORES", "Grado: PRIMERO"]
+FILA 2: ["PERIODO", "ESTANDAR", "DBA", "EVIDENCIA DE APRENDIZAJE", "EJES TEMATICOS"]
+FILA 3: ["1\nDEMOCRACIA\n\nSEGURIDAD\n\n", "Identifica el valor del ser, para reafirmar la autoimagen y la autoestima.\n", "-Conoce el valor del ser a partir de acciones y de las relaciones con el otro.\nReconoce las emociones básicas que hay en él y los demás.\n", "Conoce el valor del ser a partir de su invidualidad y de las relaciones con el otro.\nCompara cómo se siente cuando en casa le aceptan o le discriminan.\nManifiesta su punto de vista cuando se toman decisiones en casa. \nRealiza acciones que ayudan a aliviar el malestar de las personas cercanas.\n", "Somos distintos, pero tenemos los mismos. (Democracia)\nEl maravilloso mundo de los niños y las niñas.\nSoy parte fundamental de mi familia. (seguridad)\n"]
+FILA 4: ["2\nTIEMPO LIBRE\n", ". Identifica el valor del ser, para reafirmar la autoimagen y la autoestima.\n", "Reconoce la diversidad de las formas de vida que existen alrededor", "Reconoce la diversidad de las formas de vida que existen a su alrededor.", "¿Cómo son las personas que quiero y el lugar donde vivo?\n¿Cómo me divierto? (Tiempo Libre)\nEn mi comunidad, ¡soy protagonista!\nMi comunidad es una escuela de Vida"]
+FILA 5: ["3\nPRAE\n", "Identifica el valor del ser, para reafirmar la autoimagen y la autoestima.\n", "Identifica los elementos ambientales y del entorno cercano, que le dan unidad e identidad", "Identifica los elementos ambientales de su entorno cercano que le dan unidad e identidad.\nIlustra de manera creativa su preocupación para que los animales, las plantas y las cosas que comparten con otros, reciban su buen trato.", "Los valores\nLos sentimientos\nEl bienestar de cada uno lo construimos todos.\n¿Cuáles son mis actuaciones frente a las responsabilidades escolares?\nLa vida es algo maravilloso ¡cuidémosla! (PRAE)\nLa escuela o el colegio me ayuda a crecer"]
+FILA 6: ["4\nEDUCACIÓN SEXUAL", "Identifica el valor del ser, para reafirmar la autoimagen y la autoestima.\n", "-Construyo creativamente mi imagen, “me acepto como soy", "Construye creativamente su imagen se acepta como es\n", "Yo soy un ser humano especial.\n Ser digno es mi grandeza\n ¡Que privilegio es ser un buen ser humano!\nConozco, admiro y cuido mi cuerpo.(Educación Sexual)\nEl bienestar empieza con el cuidado de mi cuerpo"]
+[/TABLA]
+
+OBJETIVO DEL AREA PARA EL GRADO:
+Identificar el valor del ser, para reafirmar la autoimagen y la autoestima.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

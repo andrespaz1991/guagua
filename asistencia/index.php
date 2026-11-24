@@ -1,8 +1,12 @@
 <?php
+require_once __DIR__ . '/../comun/persona_imagen.php';
+require_once __DIR__ . '/../comun/database.php';
+
 // Iniciar sesión y cargar clases necesarias.
 require_once("../comun/autoload.php");
 require_once('../clases/Academico.Class.php');
 require_once('../clases/Persona.Class.php');
+require_once __DIR__ . '/../usuario/lib/hoja_vida_periodos.php';
 date_default_timezone_set('America/Bogota');
 require_once "../comun/config.php";
 
@@ -20,10 +24,6 @@ require_once "../comun/config.php";
 
 // --- DETALLES DE CONEXIÓN A LA BASE DE DATOS ---
 
-$db_host = SERVIDORBD;
-$db_name = BASEDEDATOS;
-$db_user =USUARIOBD;
-$db_pass =CLAVEBD;
 
 // --- LÓGICA DE BACKEND (MANEJO DE AJAX Y CSV) ---
 
@@ -31,7 +31,7 @@ $db_pass =CLAVEBD;
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] == 'getStudentReport') {
     header('Content-Type: application/json');
     try {
-        $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
+        $pdo = guagua_db_pdo();
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $student_id = $_GET['student_id'] ?? 0;
@@ -47,11 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
         $summary = ['presente' => 0, 'ausente' => 0, 'permiso' => 0, 'retardo' => 0, 'total' => 0];
 
         if ($nombre_materia && $student_id) {
+            $fechaReporteSql = hv_fecha_asistencia_sql();
             $sql = "SELECT fechas_clase, asistencias FROM asistencias 
                     WHERE documento = :student_id 
                     AND materia = :materia 
-                    AND STR_TO_DATE(TRIM(fechas_clase), '%d/%m/%Y') BETWEEN :start_date AND :end_date
-                    ORDER BY STR_TO_DATE(TRIM(fechas_clase), '%d/%m/%Y') ASC";
+                    AND ($fechaReporteSql) BETWEEN :start_date AND :end_date
+                    ORDER BY ($fechaReporteSql) ASC";
 
             $params = [
                 ':student_id' => $student_id,
@@ -91,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $file_tmp_path = $_FILES['csv_file']['tmp_name'];
         
         try {
-            $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
+            $pdo = guagua_db_pdo();
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             $academico_temp = new Academico();
@@ -121,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         $existing_record = $check_stmt->fetch(PDO::FETCH_ASSOC);
 
                         if ($existing_record) {
-                            $update_sql = "UPDATE asistencias SET asistencias = :asistencias, estudiante = :estudiante WHERE id = :id";
+                            $update_sql = "UPDATE asistencias SET asistencias = :asistencias, estudiante = :estudiante, fecha_actualizacion=CURRENT_TIMESTAMP WHERE id = :id";
                             $update_stmt = $pdo->prepare($update_sql);
                             $update_stmt->execute([':asistencias' => $estado_db, ':estudiante' => $nombre_estudiante, ':id' => $existing_record['id']]);
                         } else {
@@ -156,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             set_time_limit(0);
             ini_set('memory_limit', '1024M');
             require_once __DIR__ . '/vendor/autoload.php';
-            $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
+            $pdo = guagua_db_pdo();
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             $academico_temp = new Academico();
@@ -187,9 +188,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 'Septiembre' => '09', 'Octubre' => '10', 'Noviembre' => '11', 'Diciembre' => '12'
             ];
             
-            $year = date('Y');
+            $year = ano_lectivo();
             if (preg_match('/20\d{2}/', basename($file_path), $matches)) {
-                $year = $matches[0];
+                if ($matches[0] !== $year) throw new RuntimeException('El archivo de asistencia no corresponde al año lectivo activo.');
             }
 
             $rowCount = 0;
@@ -278,7 +279,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                             $existing_record = $check_stmt->fetch(PDO::FETCH_ASSOC);
 
                             if ($existing_record) {
-                                $update_sql = "UPDATE asistencias SET asistencias = :asistencias, uniforme = :uniforme, justificacion = :justificacion, estudiante = :estudiante WHERE id = :id";
+                                $update_sql = "UPDATE asistencias SET asistencias = :asistencias, uniforme = :uniforme, justificacion = :justificacion, estudiante = :estudiante, fecha_actualizacion=CURRENT_TIMESTAMP WHERE id = :id";
                                 $update_stmt = $pdo->prepare($update_sql);
                                 $update_stmt->execute([':asistencias' => $estado_db, ':uniforme' => $uniforme_db, ':justificacion' => $justificacion_db, ':estudiante' => $nombre_estudiante, ':id' => $existing_record['id']]);
                             } else {
@@ -323,7 +324,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 set_time_limit(0);
                 ini_set('memory_limit', '1024M');
                 require_once __DIR__ . '/vendor/autoload.php';
-                $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
+                $pdo = guagua_db_pdo();
                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                 $academico_temp = new Academico();
@@ -356,9 +357,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     'Septiembre' => '09', 'Octubre' => '10', 'Noviembre' => '11', 'Diciembre' => '12'
                 ];
                 
-                $year = date('Y');
+                $year = ano_lectivo();
                 if (preg_match('/20\d{2}/', $_FILES['excel_file']['name'], $matches)) {
-                    $year = $matches[0];
+                    if ($matches[0] !== $year) throw new RuntimeException('El archivo de asistencia no corresponde al año lectivo activo.');
                 }
 
                 $rowCount = 0;
@@ -447,7 +448,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                 $existing_record = $check_stmt->fetch(PDO::FETCH_ASSOC);
 
                                 if ($existing_record) {
-                                    $update_sql = "UPDATE asistencias SET asistencias = :asistencias, uniforme = :uniforme, justificacion = :justificacion, estudiante = :estudiante WHERE id = :id";
+                                    $update_sql = "UPDATE asistencias SET asistencias = :asistencias, uniforme = :uniforme, justificacion = :justificacion, estudiante = :estudiante, fecha_actualizacion=CURRENT_TIMESTAMP WHERE id = :id";
                                     $update_stmt = $pdo->prepare($update_sql);
                                     $update_stmt->execute([':asistencias' => $estado_db, ':uniforme' => $uniforme_db, ':justificacion' => $justificacion_db, ':estudiante' => $nombre_estudiante, ':id' => $existing_record['id']]);
                                 } else {
@@ -512,7 +513,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
     header('Content-Type: application/json');
     $response_data = [];
     try {
-        $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
+        $pdo = guagua_db_pdo();
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $fecha = $_GET['fecha'] ?? date('Y-m-d');
@@ -553,7 +554,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SERVER['HTTP_X_REQUESTED_W
     header('Content-Type: application/json');
 
     try {
-        $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
+        $pdo = guagua_db_pdo();
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $data = json_decode(file_get_contents('php://input'), true);
@@ -594,7 +595,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SERVER['HTTP_X_REQUESTED_W
             $existing_record = $check_stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($existing_record) {
-                $update_sql = "UPDATE asistencias SET asistencias = :asistencias, estudiante = :estudiante, uniforme = :uniforme, justificacion = :justificacion WHERE id = :id";
+                $update_sql = "UPDATE asistencias SET asistencias = :asistencias, estudiante = :estudiante, uniforme = :uniforme, justificacion = :justificacion, fecha_actualizacion=CURRENT_TIMESTAMP WHERE id = :id";
                 $update_stmt = $pdo->prepare($update_sql);
                 $update_stmt->execute([
                     ':asistencias' => $estado_db,
@@ -640,7 +641,7 @@ if ($asignacion) {
 
     // MODIFICADO: Se ajusta la consulta para obtener el grado desde 'observaciones'
     try {
-        $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
+        $pdo = guagua_db_pdo();
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // Se obtiene la lista de estudiantes con su grado (desde observaciones) y se ordena.
@@ -674,10 +675,7 @@ if ($asignacion) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Módulo de Asistencia Mejorado</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         .toast { visibility: hidden; opacity: 0; transition: opacity 0.5s, top 0.5s; }
@@ -762,7 +760,7 @@ if ($asignacion) {
                     <?php 
                     $contador = 1;
                     foreach ($listado_estudiantes_ordenado as $persona):
-                        $foto = ($persona->genero == "F") ? "user-iconf.png" : "user-icon.png";
+                        $foto = guagua_persona_foto('', $persona->genero);
                         $ruta_foto = (defined('SGA_COMUN_SOLOSGA_DATA') ? SGA_COMUN_SOLOSGA_DATA : '../comun/sga-data') . '/' . $persona->foto;
                     ?>
                     <div class="student-row flex flex-col md:flex-row md:items-center p-3 md:p-2 border rounded-lg md:rounded-none md:border-x md:border-b" 
@@ -776,7 +774,7 @@ if ($asignacion) {
 
                         <div class="flex items-center flex-1 w-full md:w-auto mb-4 md:mb-0">
                             <span class="text-lg font-medium text-gray-500 mr-4 w-8 text-center"><?php echo $contador++; ?>.</span>
-                            <img class="h-12 w-12 rounded-full object-cover mr-4" src="<?php echo htmlspecialchars($ruta_foto, ENT_QUOTES, 'UTF-8'); ?>" alt="Foto de estudiante" onerror="this.onerror=null;this.src='https://placehold.co/48x48/E2E8F0/A0AEC0?text=Foto';">
+                            <img class="h-12 w-12 rounded-full object-cover mr-4" src="<?php echo htmlspecialchars($ruta_foto, ENT_QUOTES, 'UTF-8'); ?>" alt="Foto de estudiante" onerror="this.onerror=null;this.src='<?php echo htmlspecialchars(SGA_MEDIA_FOTO . '/' . $foto, ENT_QUOTES, 'UTF-8'); ?>';">
                             <div>
                                 <p class="student-name font-semibold text-gray-800">
                                     <a href="#" class="student-name-link"><?php echo htmlspecialchars($persona->apellido . ' ' . $persona->nombre, ENT_QUOTES, 'UTF-8'); ?></a>

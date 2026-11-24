@@ -1,0 +1,53 @@
+Archivados 1 archivos anteriores en D:\xampp\htdocs\guagua\tmp\faster-diario-qa\output\archivo_2026-11-02_00-46-16_9b5d2a03
+Ejecutando faster-whisper: C:\Users\Andres\Documents\Codex\2026-11-01\ex\outputs\Probar-faster-whisper.cmd
+Preparando bibliotecas: en curso | Tiempo: 00:00:00
+Preparando bibliotecas: en curso | Tiempo: 00:00:01
+Preparando bibliotecas: en curso | Tiempo: 00:00:02
+Preparando bibliotecas: en curso | Tiempo: 00:00:03
+Preparando bibliotecas: en curso | Tiempo: 00:00:04
+Preparando bibliotecas: en curso | Tiempo: 00:00:05
+Preparando bibliotecas: en curso | Tiempo: 00:00:06
+Preparando bibliotecas: en curso | Tiempo: 00:00:07
+Preparando bibliotecas: en curso | Tiempo: 00:00:08
+Preparando bibliotecas: en curso | Tiempo: 00:00:09
+Preparando bibliotecas: en curso | Tiempo: 00:00:10
+Preparando bibliotecas: en curso | Tiempo: 00:00:11
+Preparando bibliotecas: en curso | Tiempo: 00:00:12
+Preparando bibliotecas: en curso | Tiempo: 00:00:13
+Preparando bibliotecas: en curso | Tiempo: 00:00:14
+Preparando bibliotecas: en curso | Tiempo: 00:00:15
+Preparando bibliotecas: en curso | Tiempo: 00:00:16
+Preparando bibliotecas: listo | Tiempo: 00:00:16
+Modelo: medium | GPU | float16 | Idioma: es | Archivos: 1
+Cargando modelo: en curso | Tiempo: 00:00:00
+Cargando modelo: en curso | Tiempo: 00:00:01
+Cargando modelo: en curso | Tiempo: 00:00:02
+Cargando modelo: en curso | Tiempo: 00:00:03
+Cargando modelo: en curso | Tiempo: 00:00:04
+Cargando modelo: en curso | Tiempo: 00:00:05
+Cargando modelo: listo | Tiempo: 00:00:05
+Transcribiendo: audio_2026-10-15T21-36-04-000Z_true_120363395026501872@g.us_3A59B6F4C2BE9F383DDE_56749553926282@lid.ogg
+Archivo 1/1:   0.0% | Tiempo: 00:00:00 | Falta aprox.: calculando
+Archivo 1/1:   0.0% | Tiempo: 00:00:01 | Falta aprox.: calculando
+Archivo 1/1:   0.0% | Tiempo: 00:00:02 | Falta aprox.: calculando
+Archivo 1/1:   0.0% | Tiempo: 00:00:03 | Falta aprox.: calculando
+Archivo 1/1:   0.0% | Tiempo: 00:00:04 | Falta aprox.: calculando
+Archivo 1/1:   0.0% | Tiempo: 00:00:05 | Falta aprox.: calculando
+Archivo 1/1:   0.0% | Tiempo: 00:00:06 | Falta aprox.: calculando
+Archivo 1/1:   0.0% | Tiempo: 00:00:07 | Falta aprox.: calculando
+Archivo 1/1:   0.0% | Tiempo: 00:00:08 | Falta aprox.: calculando
+Archivo 1/1:  15.5% | Tiempo: 00:00:08 | Falta aprox.: 00:00:45
+Archivo 1/1:  28.4% | Tiempo: 00:00:08 | Falta aprox.: 00:00:21
+Archivo 1/1:  47.9% | Tiempo: 00:00:08 | Falta aprox.: 00:00:09
+Archivo 1/1:  62.8% | Tiempo: 00:00:08 | Falta aprox.: 00:00:05
+Archivo 1/1:  62.8% | Tiempo: 00:00:09 | Falta aprox.: 00:00:05
+Archivo 1/1:  62.8% | Tiempo: 00:00:10 | Falta aprox.: 00:00:06
+Archivo 1/1:  81.0% | Tiempo: 00:00:11 | Falta aprox.: 00:00:03
+Archivo 1/1:  95.8% | Tiempo: 00:00:11 | Falta aprox.: 00:00:00
+Archivo 1/1: 100.0% | Tiempo: 00:00:11 | Falta aprox.: 00:00:00
+Listo en 11.0 segundos. Idioma: es
+Archivos completados: 1/1
+Resultados: D:\xampp\htdocs\guagua\tmp\faster-diario-qa\output
+Tiempo total (preparación, carga y archivos): 00:00:33
+Presione una tecla para continuar . . . 
+Transcripción completada con faster-whisper: 1 audios, 4 archivos generados.

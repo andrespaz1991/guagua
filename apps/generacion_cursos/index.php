@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../../comun/database.php';
+
 
 /**
  * Creador de Carpetas Académicas
@@ -8,13 +10,6 @@
  * * @version 1.5 - Agrega una consulta de respaldo a la tabla 'materia' si no se encuentra en 'materia_oficial'.
  * @author Gemini
  */
-
-// --- CONFIGURACIÓN DE LA BASE DE DATOS ---
-// Modifica estos valores con los de tu servidor de base de datos.
-define('DB_HOST', '127.0.0.1:7000'); // Host y puerto, según tu archivo .sql
-define('DB_USER', 'root');             // Usuario de la base de datos
-define('DB_PASS', '');                 // Contraseña del usuario
-define('DB_NAME', 'guagua');           // Nombre de la base de datos
 
 // --- CONFIGURACIÓN DE CARPETAS ---
 // Nombre de la carpeta principal donde se crearán los directorios de los grados.
@@ -28,12 +23,7 @@ define('BASE_DIRECTORY', 'Carpetas_Academicas');
  */
 function conectar_db()
 {
-    $conexion = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-    if (!$conexion) {
-        die("Error de conexión: " . mysqli_connect_error());
-    }
-    mysqli_set_charset($conexion, "utf8");
-    return $conexion;
+    return guagua_db_mysqli();
 }
 
 /**
@@ -176,7 +166,7 @@ function crear_carpetas_seleccionadas($grados_seleccionados, $materias_seleccion
 $mensajes = [];
 $conexion = conectar_db();
 $datos_academicos = obtener_grados_y_materias($conexion);
-$ano_activo = !empty($datos_academicos) ? key($datos_academicos) : date('Y');
+$ano_activo = !empty($datos_academicos) ? key($datos_academicos) : 'Sin año activo con asignaciones';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $grados_a_crear = isset($_POST['grados']) ? $_POST['grados'] : [];

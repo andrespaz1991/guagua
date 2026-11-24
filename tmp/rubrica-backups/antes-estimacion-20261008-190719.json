@@ -1,0 +1,92 @@
+[
+    {
+        "id": "1",
+        "rubric_type": "oral",
+        "final_score": "3.9",
+        "criterion_scores": null
+    },
+    {
+        "id": "2",
+        "rubric_type": "ser_convivencia_institucional",
+        "final_score": "3.7",
+        "criterion_scores": null
+    },
+    {
+        "id": "3",
+        "rubric_type": "ser_convivencia_institucional",
+        "final_score": "4.5",
+        "criterion_scores": null
+    },
+    {
+        "id": "4",
+        "rubric_type": "ser_convivencia_institucional",
+        "final_score": "3.6",
+        "criterion_scores": null
+    },
+    {
+        "id": "5",
+        "rubric_type": "ser_convivencia_institucional",
+        "final_score": "3.4",
+        "criterion_scores": null
+    },
+    {
+        "id": "6",
+        "rubric_type": "ser_convivencia_institucional",
+        "final_score": "4.4",
+        "criterion_scores": null
+    },
+    {
+        "id": "7",
+        "rubric_type": "ser_convivencia_institucional",
+        "final_score": "4.5",
+        "criterion_scores": null
+    },
+    {
+        "id": "8",
+        "rubric_type": "ser_convivencia_institucional",
+        "final_score": "4.8",
+        "criterion_scores": null
+    },
+    {
+        "id": "9",
+        "rubric_type": "ser_convivencia_institucional",
+        "final_score": "4.4",
+        "criterion_scores": null
+    },
+    {
+        "id": "10",
+        "rubric_type": "ser_convivencia_institucional",
+        "final_score": "4.2",
+        "criterion_scores": null
+    },
+    {
+        "id": "11",
+        "rubric_type": "ser_convivencia_institucional",
+        "final_score": "4.2",
+        "criterion_scores": null
+    },
+    {
+        "id": "12",
+        "rubric_type": "ser_convivencia_institucional",
+        "final_score": "4.1",
+        "criterion_scores": null
+    },
+    {
+        "id": "13",
+        "rubric_type": "ser_convivencia_institucional",
+        "final_score": "4.2",
+        "criterion_scores": null
+    },
+    {
+        "id": "14",
+        "rubric_type": "ser_convivencia_institucional",
+        "final_score": "4.5",
+        "criterion_scores": null
+    },
+    {
+        "id": "15",
+        "rubric_type": "ser_convivencia_institucional",
+        "final_score": "4.4",
+        "criterion_scores": null
+    }
+]

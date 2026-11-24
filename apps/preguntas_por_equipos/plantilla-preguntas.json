@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "config": {
+    "title": "Mi reto de preguntas",
+    "seconds": 30,
+    "points": 10,
+    "penalty": 0,
+    "teams": [
+      { "id": "g1", "name": "Grupo 1" },
+      { "id": "g2", "name": "Grupo 2" },
+      { "id": "g3", "name": "Grupo 3" }
+    ],
+    "questions": [
+      {
+        "question": "¿Cuál es la capital de Colombia?",
+        "answer": "Bogotá.",
+        "teamId": "auto"
+      },
+      {
+        "question": "¿Cómo se llama el proceso por el que las plantas producen su alimento?",
+        "answer": "Fotosíntesis.",
+        "teamId": "g2",
+        "seconds": 45,
+        "points": 20
+      },
+      {
+        "question": "¿Cuántos lados tiene un hexágono?",
+        "answer": "Seis lados.",
+        "teamId": "g3"
+      }
+    ]
+  },
+  "session": null
+}

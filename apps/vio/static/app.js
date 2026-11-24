@@ -21,6 +21,9 @@ const state = {
   filterMode: 'all',
   exportFormat: 'txt',
   settingsCollapsed: false,
+  searchJobId: null,
+  cancelPending: false,
+  isSearchRunning: false,
 };
 
 // ---- DOM refs ----
@@ -30,6 +33,7 @@ const dom = {
   // Header
   statusDot:      $('statusDot'),
   statusLabel:    $('statusLabel'),
+  themeBtn:       $('themeBtn'),
   historyScroll:  $('historyScroll'),
   helpBtn:        $('helpBtn'),
 
@@ -63,6 +67,8 @@ const dom = {
 
   searchBtn:      $('searchBtn'),
   searchBtnLabel: $('searchBtnLabel'),
+  stopSearchBtn:  $('stopSearchBtn'),
+  stopSearchLabel:$('stopSearchLabel'),
 
   // States
   idleState:      $('idleState'),
@@ -81,6 +87,7 @@ const dom = {
   psTotal:        $('psTotal'),
   psMatches:      $('psMatches'),
   cancelSearchBtn:$('cancelSearchBtn'),
+  cancelSearchLabel: $('cancelSearchLabel'),
 
   // Results
   resultsCount:   $('resultsCount'),
@@ -106,6 +113,7 @@ const dom = {
   closeExportModal: $('closeExportModal'),
   exportCount:    $('exportCount'),
   exportPath:     $('exportPath'),
+  browseExportPathBtn: $('browseExportPathBtn'),
   createSubfolderCheck: $('createSubfolderCheck'),
   subfolderNameWrap: $('subfolderNameWrap'),
   subfolderName:  $('subfolderName'),
@@ -116,6 +124,7 @@ const dom = {
   panelMove:      $('panelMove'),
   panelNames:     $('panelNames'),
   movePath:       $('movePath'),
+  browseMovePathBtn: $('browseMovePathBtn'),
   createMoveSubfolderCheck: $('createMoveSubfolderCheck'),
   moveSubfolderNameWrap: $('moveSubfolderNameWrap'),
   moveSubfolderName: $('moveSubfolderName'),
@@ -164,12 +173,29 @@ const dom = {
 // INIT
 // ======================================================================
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   initCanvas();
   checkDependencies();
   renderHistory();
   initSliders();
   bindEvents();
 });
+
+function initTheme() {
+  const current = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+  setTheme(current, false);
+}
+
+function setTheme(theme, persist = true) {
+  const isLight = theme === 'light';
+  document.documentElement.dataset.theme = isLight ? 'light' : 'dark';
+  dom.themeBtn.setAttribute('aria-pressed', String(isLight));
+  dom.themeBtn.title = isLight ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro';
+  dom.themeBtn.setAttribute('aria-label', dom.themeBtn.title);
+  if (persist) {
+    try { localStorage.setItem('vs_theme', isLight ? 'light' : 'dark'); } catch (_) {}
+  }
+}
 
 // ======================================================================
 // CANVAS PARTICLES
@@ -311,11 +337,16 @@ function updateSlider(slider, display, format, min, max) {
 // EVENT BINDINGS
 // ======================================================================
 function bindEvents() {
+  dom.themeBtn.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    setTheme(next);
+  });
+
   // Folder
   dom.folderPath.addEventListener('input', () => {
     const hasVal = dom.folderPath.value.trim() !== '';
     dom.clearPathBtn.classList.toggle('hidden', !hasVal);
-    dom.searchBtn.disabled = !hasVal || dom.queryInput.value.trim() === '';
+    dom.searchBtn.disabled = state.isSearchRunning || !hasVal || dom.queryInput.value.trim() === '';
   });
   dom.folderPath.addEventListener('keydown', e => { if (e.key === 'Enter') loadFolder(); });
   dom.clearPathBtn.addEventListener('click', resetFolder);
@@ -337,7 +368,7 @@ function bindEvents() {
   dom.queryInput.addEventListener('input', () => {
     const len = dom.queryInput.value.length;
     dom.charCount.textContent = len;
-    dom.searchBtn.disabled = dom.folderPath.value.trim() === '' || len === 0;
+    dom.searchBtn.disabled = state.isSearchRunning || dom.folderPath.value.trim() === '' || len === 0;
   });
   dom.queryInput.addEventListener('keydown', e => {
     if (e.key === 'Enter' && e.ctrlKey) startSearch();
@@ -362,6 +393,7 @@ function bindEvents() {
   // Search
   dom.searchBtn.addEventListener('click', startSearch);
   dom.cancelSearchBtn.addEventListener('click', cancelSearch);
+  dom.stopSearchBtn.addEventListener('click', cancelSearch);
 
   // Results controls
   dom.sortSelect.addEventListener('change', () => {
@@ -401,6 +433,7 @@ function bindEvents() {
     dom.subfolderNameWrap.style.display = dom.createSubfolderCheck.checked ? '' : 'none';
   });
   dom.confirmExportBtn.addEventListener('click', doExport);
+  dom.browseExportPathBtn.addEventListener('click', () => selectDestination(dom.exportPath));
   dom.modalTabs.addEventListener('click', e => {
     const tab = e.target.closest('.modal-tab')?.dataset.tab;
     if (tab) setExportTab(tab);
@@ -410,6 +443,7 @@ function bindEvents() {
   });
   dom.cancelMoveBtn.addEventListener('click', closeExportModal);
   dom.confirmMoveBtn.addEventListener('click', doMove);
+  dom.browseMovePathBtn.addEventListener('click', () => selectDestination(dom.movePath));
   dom.formatSelector.addEventListener('click', e => {
     const btn = e.target.closest('.format-btn');
     if (!btn) return;
@@ -498,6 +532,22 @@ async function selectFolder() {
   }
 }
 
+async function selectDestination(target) {
+  const original = target.value;
+  target.disabled = true;
+  try {
+    const res = await fetch('/api/select-folder?title=' + encodeURIComponent('Selecciona carpeta destino'));
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    if (!data.cancelled) target.value = data.path;
+  } catch (e) {
+    target.value = original;
+    showToast('Error', e.message || 'No se pudo abrir el selector de carpetas', 'error');
+  } finally {
+    target.disabled = false;
+  }
+}
+
 async function loadFolder() {
   const path = dom.folderPath.value.trim();
   if (!path) { showToast('Carpeta requerida', 'Ingresa la ruta de tu carpeta', 'warn'); return; }
@@ -537,7 +587,7 @@ async function loadFolder() {
       dom.exportPath.value = path;
 
       // Enable search if query is set
-      dom.searchBtn.disabled = dom.queryInput.value.trim() === '';
+      dom.searchBtn.disabled = state.isSearchRunning || dom.queryInput.value.trim() === '';
 
       const scope = state.includeSubfolders ? 'incluyendo subcarpetas' : 'solo carpeta actual';
       showToast('Carpeta cargada', `${data.total} imágenes listas (${scope})`, 'success');
@@ -631,6 +681,10 @@ async function findDuplicates() {
 // SEARCH
 // ======================================================================
 async function startSearch() {
+  if (state.isSearchRunning) {
+    showToast('Búsqueda en curso', 'Pulsa “Detener búsqueda” antes de iniciar otra.', 'warn');
+    return;
+  }
   const folder = dom.folderPath.value.trim();
   const query  = dom.queryInput.value.trim();
 
@@ -641,7 +695,7 @@ async function startSearch() {
   saveToHistory(query);
 
   // UI: searching state
-  dom.searchBtn.disabled = true;
+  setSearchRunning(true);
   dom.searchBtnLabel.textContent = 'Buscando…';
   const spinnerHTML = `<div class="btn-spinner"></div>`;
   dom.searchBtn.querySelector('.search-btn-inner').insertAdjacentHTML('afterbegin', spinnerHTML);
@@ -666,23 +720,39 @@ async function startSearch() {
     if (data.error) {
       showToast('Error', data.error, 'error');
       showPanel('idle');
+      setSearchRunning(false);
       resetSearchBtn();
     } else {
+      state.searchJobId = data.job_id;
+      state.cancelPending = false;
       startPolling();
     }
   } catch (e) {
     showToast('Error', 'No se pudo iniciar la búsqueda', 'error');
     showPanel('idle');
+    setSearchRunning(false);
     resetSearchBtn();
   }
 }
 
 async function cancelSearch() {
-  if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
-  showPanel('idle');
-  resetSearchBtn();
-  setStatus('ok', 'CLIP listo');
-  showToast('Cancelado', 'Búsqueda cancelada', 'warn');
+  if (!state.isSearchRunning || state.cancelPending) return;
+  state.cancelPending = true;
+  setStopButtonsPending(true);
+  try {
+    const res = await fetch('/api/cancel-search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ job_id: state.searchJobId }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    setStatus('busy', 'Cancelando búsqueda…');
+  } catch (e) {
+    state.cancelPending = false;
+    setStopButtonsPending(false);
+    showToast('Error', e.message || 'No se pudo cancelar la búsqueda', 'error');
+  }
 }
 
 function startPolling() {
@@ -703,13 +773,20 @@ function startPolling() {
       if (!data.running) {
         clearInterval(state.pollTimer);
         state.pollTimer = null;
-        if (data.error) {
+        if (data.cancel_requested) {
+          showPanel('idle');
+          setStatus('ok', 'Búsqueda cancelada');
+          showToast('Cancelado', 'La búsqueda se detuvo sin modificar tus fotos', 'warn');
+        } else if (data.error) {
           showToast('Error', data.error, 'error');
           showPanel('idle');
           setStatus('error', 'Error en búsqueda');
         } else {
           await fetchResults();
         }
+        state.searchJobId = null;
+        state.cancelPending = false;
+        setSearchRunning(false);
         resetSearchBtn();
       }
     } catch (e) {
@@ -732,6 +809,16 @@ function updateProgressUI(data) {
   dom.psProcessed.textContent     = data.processed.toLocaleString();
   dom.psTotal.textContent         = data.total > 0 ? data.total.toLocaleString() : '—';
   dom.psMatches.textContent       = data.result_count || 0;
+
+  if (data.total > 0) {
+    const cacheText = data.cache_hits
+      ? ` · ${data.cache_hits.toLocaleString()} reutilizadas del índice`
+      : '';
+    const unavailableText = data.unreadable
+      ? ` · ${data.unreadable} no disponibles`
+      : '';
+    dom.progressSubtitle.textContent = `Procesando por lotes${cacheText}${unavailableText}`;
+  }
 
   if (data.current_file) {
     dom.progressFile.textContent = data.current_file;
@@ -766,6 +853,9 @@ async function fetchResults() {
       dom.noResults.classList.add('hidden');
       showToast('¡Listo!', `${count} imagen${count !== 1 ? 'es' : ''} encontrada${count !== 1 ? 's' : ''}`, 'success');
       setStatus('ok', `${count} coincidencias para "${state.selectedQuery}"`);
+    }
+    if (data.unreadable) {
+      showToast('Fotos sin descargar', `${data.unreadable} archivo${data.unreadable !== 1 ? 's' : ''} no se pudo leer. En iCloud, descárgalos primero en este PC.`, 'warn');
     }
     updateExportBtn();
   } catch (e) {
@@ -1345,12 +1435,25 @@ function showPanel(name) {
 function resetSearchBtn() {
   const hasPath  = dom.folderPath.value.trim() !== '';
   const hasQuery = dom.queryInput.value.trim() !== '';
-  dom.searchBtn.disabled = !hasPath || !hasQuery;
+  dom.searchBtn.disabled = state.isSearchRunning || !hasPath || !hasQuery;
   dom.searchBtnLabel.textContent = 'Buscar con IA';
 
   // Remove any spinner
   const spinner = dom.searchBtn.querySelector('.btn-spinner');
   if (spinner) spinner.remove();
+}
+
+function setSearchRunning(running) {
+  state.isSearchRunning = running;
+  dom.stopSearchBtn.classList.toggle('hidden', !running);
+  if (!running) setStopButtonsPending(false);
+}
+
+function setStopButtonsPending(pending) {
+  dom.stopSearchBtn.disabled = pending;
+  dom.cancelSearchBtn.disabled = pending;
+  dom.stopSearchLabel.textContent = pending ? 'Deteniendo…' : 'Detener búsqueda';
+  dom.cancelSearchLabel.textContent = pending ? 'Deteniendo…' : 'Detener búsqueda';
 }
 
 // ======================================================================

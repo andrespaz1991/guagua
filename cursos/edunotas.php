@@ -6,7 +6,7 @@ echo '<center>';
 
 require("../comun/conexion.php");
 ?>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.7.0/tinymce.min.js" integrity="sha512-XaygRY58e7fVVWydN6jQsLpLMyf7qb4cKZjIi93WbKjT6+kG/x4H5Q73Tff69trL9K0YDPIswzWe6hkcyuOHlw==" crossorigin="anonymous"></script>
+   <script src="/guagua/comun/vendor/tinymce/tinymce.min.js"></script>
   
 
 <?php
@@ -130,7 +130,7 @@ echo '<p><label for="id_asignacion">Id Asignacion:</label>';
 
 $sql3= "SELECT * FROM asignacion,materia,ano_lectivo WHERE
 
-asignacion.ano_lectivo = ano_lectivo.id_ano_lectivo and
+asignacion.ano_lectivo = ano_lectivo.id_ano_lectivo and ano_lectivo.estado = 'Activo' and
 
 asignacion.id_asignatura = materia.id_materia order by ano_lectivo.nombre_ano_lectivo desc;";
 
@@ -240,7 +240,7 @@ echo '<p><label for="id_asignacion">Id Asignacion:</label>';
 
 $sql3= "SELECT * FROM asignacion,materia,ano_lectivo WHERE
 
-asignacion.ano_lectivo = ano_lectivo.id_ano_lectivo and
+asignacion.ano_lectivo = ano_lectivo.id_ano_lectivo and ano_lectivo.estado = 'Activo' and
 
 asignacion.id_asignatura = materia.id_materia order by ano_lectivo.nombre_ano_lectivo desc;";
 

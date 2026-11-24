@@ -20,16 +20,18 @@ const behavioralCatalog = [
 async function requestApi(action, options = {}) {
     const requestOptions = { method: options.method || 'GET' };
     let requestUrl = `api.php?action=${encodeURIComponent(action)}`;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
     if (options.query) {
         requestUrl += `&${new URLSearchParams(options.query).toString()}`;
     }
     if (options.data) {
-        requestOptions.headers = { 'Content-Type': 'application/json' };
+        requestOptions.headers = { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken };
         requestOptions.body = JSON.stringify(options.data);
     }
     if (options.formData) {
         requestOptions.body = options.formData;
     }
+    if (options.formData) requestOptions.headers = { 'X-CSRF-Token': csrfToken };
     const response = await fetch(requestUrl, requestOptions);
     const payload = await response.json();
     if (!payload.success) {
@@ -150,7 +152,7 @@ function PreviewModal({ attachment, onClose }) {
 }
 
 function NewEvaluationModal({ onClose, onCreated, notify }) {
-    const [form, setForm] = useState({ ano: new Date().getFullYear() + 1, nombre_docente: 'HUGO ANDRES PAZ BURBANO', cedula: '1085290375', ciudad_concertacion: 'San Luis', fecha_inicio: `${new Date().getFullYear() + 1}-01-01`, ponderacion_academica: 30, ponderacion_administrativa: 20, ponderacion_comunitaria: 20, dias_valoracion_1: 0, dias_valoracion_2: 0, competencias_comportamentales: ['Trabajo en equipo', 'Iniciativa', 'Compromiso social e institucional'] });
+    const [form, setForm] = useState({ ano: Number(document.querySelector('meta[name="academic-year"]').content), nombre_docente: document.querySelector('meta[name="session-user-name"]').content, cedula: document.querySelector('meta[name="session-user-id"]').content, ciudad_concertacion: '', fecha_inicio: `${Number(document.querySelector('meta[name="academic-year"]').content)}-01-01`, ponderacion_academica: 30, ponderacion_administrativa: 20, ponderacion_comunitaria: 20, dias_valoracion_1: 0, dias_valoracion_2: 0, competencias_comportamentales: ['Trabajo en equipo', 'Iniciativa', 'Compromiso social e institucional'] });
     const [saving, setSaving] = useState(false);
     const update = (field, value) => setForm((currentForm) => ({ ...currentForm, [field]: value }));
     const toggleBehavior = (name) => setForm((currentForm) => {

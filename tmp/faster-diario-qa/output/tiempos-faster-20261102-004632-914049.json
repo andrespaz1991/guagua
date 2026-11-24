@@ -1,0 +1,17 @@
+[
+  {
+    "audio": "D:\\xampp\\htdocs\\guagua\\tmp\\faster-diario-qa\\input\\audio_2026-10-15T21-36-04-000Z_true_120363395026501872@g.us_3A59B6F4C2BE9F383DDE_56749553926282@lid.ogg",
+    "seconds": 11.04360999999335,
+    "language": "es",
+    "language_mode": "fixed",
+    "detected_language_probability": null,
+    "task": "transcribe",
+    "compute": "float16",
+    "outputs": [
+      "D:\\xampp\\htdocs\\guagua\\tmp\\faster-diario-qa\\output\\audio_2026-10-15T21-36-04-000Z_true_120363395026501872@g.us_3A59B6F4C2BE9F383DDE_56749553926282@lid.txt",
+      "D:\\xampp\\htdocs\\guagua\\tmp\\faster-diario-qa\\output\\audio_2026-10-15T21-36-04-000Z_true_120363395026501872@g.us_3A59B6F4C2BE9F383DDE_56749553926282@lid.srt",
+      "D:\\xampp\\htdocs\\guagua\\tmp\\faster-diario-qa\\output\\audio_2026-10-15T21-36-04-000Z_true_120363395026501872@g.us_3A59B6F4C2BE9F383DDE_56749553926282@lid.vtt",
+      "D:\\xampp\\htdocs\\guagua\\tmp\\faster-diario-qa\\output\\audio_2026-10-15T21-36-04-000Z_true_120363395026501872@g.us_3A59B6F4C2BE9F383DDE_56749553926282@lid.tsv"
+    ]
+  }
+]

@@ -5,7 +5,7 @@
 
 function listarcursoasignatura2 ($curso,$asignatura,$periodo) {
 require ("../comun/conexion.php");
-$sql_periodos = "SELECT count(`periodo`) as num_per FROM `periodo` WHERE `ano_lectivo` = '".date("Y")."'";
+$sql_periodos = 'SELECT COUNT(DISTINCT nombre_periodo) AS num_per FROM (' . guagua_periodos_sql() . ') periodos_configurados';
 if($consulta_periodos = $mysqli->query($sql_periodos)){
 if ($resultado_periodos = $consulta_periodos->fetch_assoc()){
  $numperiodos = $resultado_periodos['num_per'];
@@ -111,100 +111,15 @@ unset ($_SESSION['id_usu']);
 session_destroy();
 header("location: "."//".$_SERVER['SERVER_NAME']."/index.php");
 }
-function login ($user,$pass) {
- require '../comun/conexion.php';
-    $sql0 = 'select * from admin where usuario = "'.$user.'" and clave = "'.$pass.'"' ;
-$consulta0 = $mysqli -> query ($sql0);
-if ($row0 = $consulta0 -> fetch_assoc()) {
-  session_start();
-    $_SESSION['nombre_usu'] =$row0['usuario'] ;
-      echo $_SESSION['rol']  = $row0['rol'];
-         if ($_SESSION['rol']=='superadmin') { 
-        	header('location:../php/mis_cursos.php');
-                                            }
-                  elseif ($_SESSION['rol']=='admin') {
-         	header('location:../php/mis_cursos.php');
-
-                
-                                                    }
-                    
-                                        }
-    else {
- $sql = 'SELECT `identificacion`,`nombre`,apellido,REPLACE(`identificacion`, `identificacion`,"estudiante")
- as `rol` FROM `estudiante` where (identificacion = "'.$user.'" and clave = "'.$pass.'") 
- union SELECT `id_docente`, `nombre_docente`,apellido_docente,REPLACE
- (`id_docente`, `id_docente`, "docente") as `rol` FROM  `docente` where 
- (id_docente = "'.$user.'" and clave = "'.$pass.'") ';
-require("../comun/conexion.php");
-$consulta =$mysqli -> query ($sql);
-if ($row =  $consulta -> fetch_assoc())
-{
-//sesion start
-if (version_compare(phpversion(), '5.4.0', '<')) {//valida la instancia de función session start
-     if(session_id() == '') {
-        session_start();
-     }
- }
- else
- {
-    if (session_status() == PHP_SESSION_NONE) {
-        session_start();
-    }
- }
-//sesion start
-	$_SESSION['nombre_usu'] = $row['nombre']." ".$row['apellido'];
- $_SESSION['identificacion_usu'] = $row['identificacion'];
-   echo  $_SESSION['rol']  = $row['rol'];
-	#header('location:../modulo/seleccionar_listas.php');
- session_start(); if ($_SESSION['rol']=='docente') { 
-	header('location:../php/mis_cursosd.php');
-                                                    }
-else                                                  {
-    	header('location:../php/mis_cursos.php');
-
-                                                        
-                                                    }
+// El acceso y la asignación de identidad se realizan exclusivamente en el login común.
+function login($user, $pass) {
+    require_once __DIR__ . '/../comun/config.php';
+    header('Location: ' . SGA_USUARIO_URL . '/login.php');
+    exit;
 }
-else{ ?>
- <script type="text/javascript">
-alert('verifique sus datos y vuelva a intentar');
-window.location = "../index.php" ;
- </script>
-<?php 
+function login_est($user, $pass) {
+    login($user, $pass);
 }
-    }//fin función de si no encontró admin
-}
-function login_est ($user,$pass) {
-echo $sql = 'SELECT `identificacion`,`nombre`,apellido,REPLACE(`identificacion`, `identificacion`,"estudiante") as `rol` FROM `estudiante` where (identificacion = "'.$user.'" and clave = "'.$pass.'") union SELECT `id_docente`, `nombre_docente`,apellido_docente,REPLACE(`id_docente`, `id_docente`, "docente") as `rol` FROM  `docente` where (id_docente = "'.$user.'" and clave = "'.$pass.'") ';
-require("../comun/conexion.php");
-$consulta =$mysqli -> query ($sql);
-if ($row =  $consulta -> fetch_assoc())
-{
-//sesion start
-if (version_compare(phpversion(), '5.4.0', '<')) {//valida la instancia de función session start
-     if(session_id() == '') {
-        session_start();
-     }
- }
- else
- {
-    if (session_status() == PHP_SESSION_NONE) {
-        session_start();
-    }
- }
-//sesion start
-	$_SESSION['nombre_usu'] = $row['nombre']." ".$row['apellido'];
- $_SESSION['identificacion_usu'] = $row['identificacion'];
-    $_SESSION['rol']  = $row['rol'];
-	#header('location:../modulo/seleccionar_listas.php');
-//	header('location:../php/notas.php');
-}
-else{
- // header('location:../index.php');
-}
-    
-}
-
 //funcion listar cursos
 function curso($pre = ""){
     if (isset($_SESSION['id_usu'])){
@@ -374,7 +289,7 @@ return $row['escala_nal'];
 }
 function nota_periodo($periodo,$notas){
 $notas_array = json_decode($notas,true);
-return $notas_array[date("Y").$periodo];
+return $notas_array[ano_lectivo().$periodo] ?? null;
 }
 ?>
 <!-- fin función insertar -->

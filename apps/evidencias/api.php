@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../comun/config.php';
+guagua_exigir_rol(['admin', 'directivo', 'docente']);
 require_once __DIR__ . '/lib/Database.php';
 require_once __DIR__ . '/lib/EvaluationService.php';
 
@@ -51,6 +53,7 @@ try {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 throw new InvalidArgumentException('Use POST para registrar puntajes.');
             }
+            guagua_exigir_csrf();
             $data = jsonBody();
             respond(true, $service->updateScore((int) ($data['competencia_id'] ?? 0), $data['puntaje_val_1'] ?? null, $data['puntaje_val_2'] ?? null));
 
@@ -58,6 +61,7 @@ try {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 throw new InvalidArgumentException('Use POST para actualizar la concertación.');
             }
+            guagua_exigir_csrf();
             $data = jsonBody();
             respond(true, $service->updateEvaluationSettings((int) ($data['evaluacion_id'] ?? 0), $data));
 
@@ -65,6 +69,7 @@ try {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 throw new InvalidArgumentException('Use POST para actualizar el estado.');
             }
+            guagua_exigir_csrf();
             $data = jsonBody();
             respond(true, $service->updateEvaluationState((int) ($data['evaluacion_id'] ?? 0), (string) ($data['estado'] ?? '')));
 
@@ -72,12 +77,14 @@ try {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 throw new InvalidArgumentException('Use POST para crear una evaluación.');
             }
+            guagua_exigir_csrf();
             respond(true, $service->createEvaluation(jsonBody()));
 
         case 'attachment':
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 throw new InvalidArgumentException('Use POST para adjuntar una evidencia.');
             }
+            guagua_exigir_csrf();
             respond(true, $service->addAttachment($_POST, $_FILES, __DIR__));
 
         default:
@@ -86,5 +93,6 @@ try {
 } catch (InvalidArgumentException $exception) {
     respond(false, null, $exception->getMessage(), 422);
 } catch (Throwable $exception) {
-    respond(false, null, $exception->getMessage(), 500);
+    error_log('apps/evidencias/api.php: ' . $exception->getMessage());
+    respond(false, null, 'No fue posible completar la operación. Inténtelo nuevamente.', 500);
 }

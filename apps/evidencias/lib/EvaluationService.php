@@ -13,12 +13,14 @@ final class EvaluationService
     /** @return array<int,array<string,mixed>> */
     public function listEvaluations(): array
     {
+        require_once __DIR__ . '/../../../comun/academico.php';
+        $academicYear = (int)guagua_ano_configurado($this->database);
         $result = $this->database->query(
             'SELECT evaluation.id, school_year.ano, evaluation.estado, teacher.nombre, teacher.cedula
              FROM evidencias_evaluaciones_anuales evaluation
              INNER JOIN evidencias_anos_lectivos school_year ON school_year.id = evaluation.ano_lectivo_id
              INNER JOIN evidencias_docentes teacher ON teacher.id = evaluation.docente_id
-             ORDER BY school_year.ano DESC, teacher.nombre ASC'
+             ORDER BY (school_year.ano = ' . $academicYear . ') DESC, school_year.ano DESC, teacher.nombre ASC'
         );
 
         return $result->fetch_all(MYSQLI_ASSOC);

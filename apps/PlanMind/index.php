@@ -10,6 +10,8 @@ $planmindInitialStatus = [
 $planmindOfficialMaterias = [];
 $planmindAsignacionData = null;
 $planmindActivePeriodo = null;
+$planmindPeriodos = [];
+$planmindAno = null;
 
 function planmind_send_json(array $data, int $statusCode = 200): void
 {
@@ -23,21 +25,9 @@ function planmind_db(): mysqli
 {
     require_once __DIR__ . '/../../comun/config.php';
 
-    $mysqli = new mysqli(SERVIDORBD, USUARIOBD, CLAVEBD, BASEDEDATOS);
+    $mysqli = guagua_db_mysqli();
     if ($mysqli->connect_errno) {
         throw new RuntimeException('Error de conexión: ' . $mysqli->connect_error);
-    }
-
-    if (!$mysqli->set_charset('utf8mb4')) {
-        $mysqli->set_charset('utf8');
-    }
-
-    if (defined('TIME_ZONE')) {
-        date_default_timezone_set(TIME_ZONE);
-    }
-    if (defined('TIME_ZONE_OFFSET')) {
-        $offset = $mysqli->real_escape_string(TIME_ZONE_OFFSET);
-        $mysqli->query("SET time_zone = '$offset'");
     }
 
     return $mysqli;
@@ -55,7 +45,8 @@ function planmind_quote(mysqli $mysqli, $value): string
 
 function planmind_fetch_active_periodo(mysqli $mysqli): ?array
 {
-    $result = $mysqli->query("SELECT `id_periodo`, `nombre_periodo`, `descripcion_periodo`, `fecha_inicio`, `fecha_fin`, `ano_lectivo`, `estado_periodo` FROM `periodo` WHERE `estado_periodo` = '1' LIMIT 1");
+    require_once __DIR__ . '/../../comun/academico.php';
+    $result = $mysqli->query(guagua_periodos_sql(true));
     if (!$result) {
         return null;
     }
@@ -315,6 +306,8 @@ try {
     $mysqli = planmind_db();
     $planmindOfficialMaterias = planmind_fetch_official_materias($mysqli);
     $planmindActivePeriodo = planmind_fetch_active_periodo($mysqli);
+    $planmindPeriodos = $mysqli->query(guagua_periodos_sql())->fetch_all(MYSQLI_ASSOC);
+    $planmindAno = guagua_ano_activo($mysqli);
 
     if ($planmindRequestedId > 0) {
         $planmindInitialPlan = planmind_fetch_plan($mysqli, $planmindRequestedId);
@@ -371,7 +364,7 @@ try {
         .materia-item button:hover { color:#b91c1c; }
     </style>
 </head>
-<body class="h-screen flex overflow-hidden relative">
+<body class="h-screen flex flex-col overflow-hidden relative">
 
     <div id="customConfirmModal" class="modal-hidden fixed inset-0 bg-black/50 z-[100] items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm border border-slate-200 p-6 flex flex-col modal-box">
@@ -534,6 +527,12 @@ try {
         </div>
     </div>
 
+    <header class="shrink-0 border-b border-blue-200 bg-blue-50 px-6 py-3 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">Planeación actual</p>
+        <h2 id="plannerContextTitle" class="mt-1 text-xl font-bold leading-snug text-blue-950 break-words" aria-live="polite" aria-atomic="true">Cargando materia, grado y mes…</h2>
+    </header>
+
+    <div class="flex flex-1 min-h-0 overflow-hidden">
     <aside id="sidebar" class="w-[45%] min-w-[380px] max-w-[60%] bg-white border-r border-slate-200 flex flex-col h-full relative shadow-sm z-10">
         <div class="p-6 overflow-y-auto flex-1">
             <!-- Enlaces adicionales solicitados -->
@@ -797,6 +796,7 @@ try {
             </div>
         </div>
     </main>
+    </div>
 
     <script>
         const DEFAULT_LOCAL_URL = 'http://localhost:1234/v1/chat/completions';
@@ -808,6 +808,8 @@ try {
         const PLANMIND_OFFICIAL_MATERIAS = <?php echo json_encode($planmindOfficialMaterias, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
         const PLANMIND_ASIGNACION_DATA = <?php echo json_encode($planmindAsignacionData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
         const PLANMIND_ACTIVE_PERIODO = <?php echo json_encode($planmindActivePeriodo, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+        const PLANMIND_PERIODOS = <?php echo json_encode($planmindPeriodos, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+        const PLANMIND_ANO = <?php echo json_encode($planmindAno['nombre_ano_lectivo'] ?? null); ?>;
 
         const apiTypeSelect      = document.getElementById('apiType');
         const apiUrlInput        = document.getElementById('apiUrl');
@@ -1302,7 +1304,7 @@ try {
                 window.history.replaceState({}, '', url);
 
                 setDatabaseState('saved', result.mode === 'updated' ? 'Registro actualizado correctamente.' : 'Registro creado correctamente.');
-                showMessage(result.mode === 'updated' ? 'Planeación actualizada en base de datos.' : 'Planeación guardada en base de datos.', false);
+                showMessage(result.mode === 'updated' ? `Planeación actualizada en base de datos. ID: ${currentPlanId}` : `Planeación guardada en base de datos. ID: ${currentPlanId}`, false);
             } catch (error) {
                 setDatabaseState('saveError', error.message);
                 showMessage(`Error al guardar: ${error.message}`, true);
@@ -1328,24 +1330,30 @@ try {
 
         function getActiveYear() {
             const parsed = parseISODate(fechaInicioInput.value) || parseISODate(fechaFinInput.value);
-            return parsed ? parsed.year : new Date().getFullYear();
+            return parsed ? parsed.year : Number(PLANMIND_ANO);
         }
         function getMonthIndex() {
             const option = mesInput.selectedOptions[0];
             return option ? Number(option.dataset.monthIndex) : new Date().getMonth();
         }
-        function getPeriodCount() { return Math.max(1, Math.min(4, Number(periodCountSelect.value) || 4)); }
+        periodCountSelect.disabled = true;
+        periodCountSelect.replaceChildren(new Option(String(new Set(PLANMIND_PERIODOS.map(p => p.nombre_periodo)).size), String(new Set(PLANMIND_PERIODOS.map(p => p.nombre_periodo)).size)));
+        function getPeriodCount() { return new Set(PLANMIND_PERIODOS.map(p => p.nombre_periodo)).size; }
         function getDefaultPeriodForMonth(monthIndex = getMonthIndex()) {
-            return String(Math.min(getPeriodCount(), Math.max(1, Math.ceil((monthIndex + 1) / (12 / getPeriodCount())))));
+            const fecha = fechaInicioInput.value || toISODate(getActiveYear(), monthIndex, 1);
+            const periodo = PLANMIND_PERIODOS.find(p => fecha >= p.fecha_inicio && fecha <= p.fecha_fin);
+            return String(periodo?.nombre_periodo || PLANMIND_ACTIVE_PERIODO?.nombre_periodo || '');
         }
 
         function populateMonths() {
             mesInput.innerHTML = MONTHS.map((m, i) => `<option value="${m}" data-month-index="${i}">${m}</option>`).join('');
         }
         function populatePeriodOptions(preferredValue = periodoInput.value) {
-            const count = getPeriodCount();
-            periodoInput.innerHTML = Array.from({ length: count }, (_, i) => `<option value="${i+1}">${i+1}</option>`).join('');
-            periodoInput.value = (preferredValue && Number(preferredValue) <= count) ? preferredValue : getDefaultPeriodForMonth();
+            periodoInput.replaceChildren();
+            for (const nombre of new Set(PLANMIND_PERIODOS.map(p => String(p.nombre_periodo)))) {
+                periodoInput.add(new Option(nombre, nombre));
+            }
+            periodoInput.value = [...periodoInput.options].some(p => p.value === preferredValue) ? preferredValue : getDefaultPeriodForMonth();
         }
         function setDateRangeForMonth(monthIndex, year = getActiveYear(), updatePeriod = true) {
             const lastDay = new Date(year, monthIndex + 1, 0).getDate();
@@ -1377,6 +1385,11 @@ try {
             return input.value.trim();
         }
         function updatePreview() {
+            const materia = getMateriaDisplayName() || 'Materia sin seleccionar';
+            const grado = getPreviewValue('grado');
+            const mes = getPreviewValue('mes') || 'Mes sin seleccionar';
+            document.getElementById('plannerContextTitle').textContent =
+                `${materia} · ${grado ? `Grado ${grado}` : 'Grado sin seleccionar'} · ${mes}`;
             allFields.forEach(id => {
                 const preview = document.getElementById(`prev-${id}`);
                 if (preview) {
@@ -1397,14 +1410,40 @@ try {
                 localModelConfig.classList.add('hidden');
             }
         }
+        async function requestLocalAI(operation, payload = {}) {
+            let response;
+            try {
+                response = await fetch('lmstudio.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ endpoint: apiUrlInput.value.trim(), operation, payload })
+                });
+            } catch (error) {
+                throw new Error('No se pudo conectar con Guagua. Comprueba que Apache esté iniciado y vuelve a intentarlo.');
+            }
+            const data = await response.json().catch(() => null);
+            if (!response.ok) {
+                throw new Error(data?.message || `No se pudo consultar LM Studio (HTTP ${response.status}).`);
+            }
+            if (!data) throw new Error('Guagua no devolvió una respuesta JSON válida. Actualiza la página e inicia sesión de nuevo.');
+            return data;
+        }
+
+        async function generateLocalAI(messages, temperature) {
+            let model = apiModelSelect.value;
+            if (!model) {
+                const data = await requestLocalAI('models');
+                model = data.data?.find(m => m?.id && !/embedding/i.test(m.id))?.id;
+            }
+            if (!model) throw new Error('No hay modelos de chat disponibles en LM Studio. Carga uno y pulsa Actualizar en Configurar IA.');
+            return requestLocalAI('chat', { model, messages, temperature });
+        }
+
         async function loadLocalModels(showStatus = true) {
             if (apiTypeSelect.value !== 'local') return [];
             try {
-                const endpoint = apiUrlInput.value.replace(/\/chat\/completions\/?$/i, '/models');
-                const response = await fetch(endpoint, { cache: 'no-store' });
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const data = await response.json();
-                const models = Array.isArray(data.data) ? data.data.filter(m => m && m.id) : [];
+                const data = await requestLocalAI('models');
+                const models = Array.isArray(data.data) ? data.data.filter(m => m && m.id && !/embedding/i.test(m.id)) : [];
                 
                 apiModelSelect.innerHTML = '<option value="">Selecciona tu modelo</option>';
                 models.forEach(m => { const opt = document.createElement('option'); opt.value = m.id; opt.textContent = m.id; apiModelSelect.appendChild(opt); });
@@ -1413,7 +1452,7 @@ try {
                 if (saved && models.some(m => m.id === saved)) apiModelSelect.value = saved;
                 else if (models.length > 0) apiModelSelect.value = models[0].id;
                 
-                if (showStatus) showMessage("Modelos locales actualizados.", false);
+                if (showStatus) showMessage(models.length ? "Modelos locales actualizados." : "No hay modelos de chat disponibles en LM Studio. Carga un modelo y pulsa Actualizar.", models.length === 0);
                 return models;
             } catch (error) {
                 if (showStatus) showMessage(`Aviso: Error conectando al servidor local (${error.message}).`, true);
@@ -1688,9 +1727,7 @@ try {
                     const data = await res.json();
                     responseText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
                 } else {
-                    const model = apiModelSelect.value || (await loadLocalModels(false))[0]?.id;
-                    const res = await fetch(apiUrlInput.value, { method: 'POST', headers, body: JSON.stringify({ model, messages: [{ role: "system", content: "Genera JSON únicamente. No uses formato Markdown." }, { role: "user", content: prompt }], temperature: 0.2 }) });
-                    const data = await res.json();
+                    const data = await generateLocalAI([{ role: "system", content: "Genera JSON únicamente. No uses formato Markdown." }, { role: "user", content: prompt }], 0.2);
                     responseText = data?.choices?.[0]?.message?.content || '';
                 }
 
@@ -1782,13 +1819,10 @@ try {
                     const data = await res.json();
                     responseText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
                 } else {
-                    const model = apiModelSelect.value || (await loadLocalModels(false))[0]?.id;
-                    const res = await fetch(apiUrlInput.value, { method: 'POST', headers,
-                        body: JSON.stringify({ model, messages: [
+                    const data = await generateLocalAI([
                             { role: 'system', content: 'Eres un asistente que modifica planeadores de clase. Devuelve SOLO JSON válido.' },
                             { role: 'user', content: refinePrompt }
-                        ], temperature: 0.1 }) });
-                    const data = await res.json();
+                        ], 0.1);
                     responseText = data?.choices?.[0]?.message?.content || '';
                 }
 
@@ -1859,7 +1893,7 @@ try {
             if (!response.ok || !result?.ok) {
                 throw new Error(result?.message || `No se pudo guardar el documento en la ruta configurada (${directory}).`);
             }
-            return result.path;
+            return result;
         }
 
         async function downloadPlannerWord() {
@@ -1908,8 +1942,31 @@ try {
                 const filename = `planeador_vallesol_${safeName(data.mes)}_${safeName(data.grado)}_${safeName(data.materia)}.docx`;
                 if (outputMode === 'path') {
                     showMessage(`Guardando en ruta: ${outputPathInput.value.trim() || DEFAULT_OUTPUT_PATH}`, false);
-                    const savedPath = await saveDocxToConfiguredPath(out, filename);
-                    showMessage(`¡Planeador guardado en: ${savedPath}!`);
+                    const savedFile = await saveDocxToConfiguredPath(out, filename);
+                    showMessage(`¡Planeador guardado en: ${savedFile.path}!`);
+                    if (savedFile.canOpenFolder) {
+                        const openFolderButton = document.createElement('button');
+                        openFolderButton.type = 'button';
+                        openFolderButton.textContent = 'Abrir carpeta';
+                        openFolderButton.className = 'ml-3 underline font-semibold';
+                        openFolderButton.addEventListener('click', async () => {
+                            openFolderButton.disabled = true;
+                            try {
+                                const response = await fetch('save_docx.php', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ action: 'open_folder', token: savedFile.folderToken })
+                                });
+                                const result = await response.json();
+                                if (!response.ok || !result.ok) throw new Error(result.message || 'No se pudo abrir la carpeta.');
+                            } catch (error) {
+                                showMessage(error.message, true);
+                            } finally {
+                                openFolderButton.disabled = false;
+                            }
+                        });
+                        document.getElementById('statusMessage').appendChild(openFolderButton);
+                    }
                 } else {
                     saveAs(out, filename);
                     showMessage("¡Planeador descargado!");
@@ -2036,14 +2093,17 @@ try {
 
         populateMonths();
         populatePeriodOptions();
-        setDateRangeForMonth(new Date().getMonth(), new Date().getFullYear());
+        const inicioConfigurado = parseISODate(PLANMIND_ACTIVE_PERIODO?.fecha_inicio);
+        const hoy = new Date();
+        const mesInicial = inicioConfigurado && (hoy.toISOString().slice(0, 10) < PLANMIND_ACTIVE_PERIODO.fecha_inicio || hoy.toISOString().slice(0, 10) > PLANMIND_ACTIVE_PERIODO.fecha_fin) ? inicioConfigurado.monthIndex : hoy.getMonth();
+        if (PLANMIND_ANO) setDateRangeForMonth(mesInicial, Number(PLANMIND_ANO));
 
         // Auto-seleccionar el periodo activo desde la base de datos
         if (PLANMIND_ACTIVE_PERIODO && PLANMIND_ACTIVE_PERIODO.nombre_periodo) {
             ensureSelectOption(periodoInput, PLANMIND_ACTIVE_PERIODO.nombre_periodo);
             periodoInput.value = PLANMIND_ACTIVE_PERIODO.nombre_periodo;
         }
-        document.getElementById('docente').value = localStorage.getItem('planmindDocente') || "Andrés Paz";
+        document.getElementById('docente').value = <?php echo json_encode((string)($_SESSION['nombre_usu'] ?? ''), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
         templatePathInput.value = localStorage.getItem('planmindTemplatePath') || '';
         outputPathInput.value = localStorage.getItem('planmindOutputPath') || DEFAULT_OUTPUT_PATH;
         

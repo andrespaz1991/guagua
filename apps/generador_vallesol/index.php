@@ -18,12 +18,13 @@ error_reporting(E_ALL);
 // ==========================================
 
 // Lista de Periodos
-$periodos = [
-    "Primer Periodo",
-    "Segundo Periodo",
-    "Tercer Periodo",
-    "Cuarto Periodo"
-];
+require_once __DIR__ . '/../../comun/config.php';
+$db = guagua_db_request();
+$periodos = array_values(array_unique(array_map(
+    fn($p) => 'Periodo ' . preg_replace('/[^\p{L}\p{N} _-]/u', '', (string)$p['nombre_periodo']),
+    $db->query(guagua_periodos_sql())->fetch_all(MYSQLI_ASSOC)
+)));
+if (!$periodos) exit('Configure los períodos del año lectivo activo antes de generar carpetas.');
 
 // Lista de Materias para Grados 6-8 (Básica Secundaria)
 // Se han actualizado las materias y corregido ortografía (tildes)

@@ -1,0 +1,9 @@
+<IfModule mod_headers.c>
+    # El generador emite código que se copia a la consola; una versión en caché
+    # puede dejar al usuario con un inyector incompatible con SISGA.
+    <Files "index.html">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </Files>
+</IfModule>

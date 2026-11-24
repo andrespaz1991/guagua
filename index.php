@@ -1,11 +1,19 @@
 <?php
 
 error_reporting(E_ALL);
-ini_set('display_errors', '1');
+ini_set('display_errors', '0');
 ob_start();
-@session_start();
+require_once __DIR__ . '/comun/seguridad.php';
+guagua_iniciar_sesion_segura();
+if (empty($_SESSION['id_usuario'])) {
+    header('Location: usuario/login.php');
+    exit;
+}
+require_once __DIR__ . '/comun/home_cards.php';
+require_once __DIR__ . '/comun/tienda_estado.php';
 ?>
 <script>
+window.guaguaCsrfToken = <?php echo json_encode(guagua_csrf_token()); ?>;
 window.addEventListener('load', function() {
     var nombreEstudiante = document.getElementById('nombrees');
     if (nombreEstudiante) {
@@ -32,6 +40,7 @@ $(document).ready(function() {
                 id_asignacion: asignacionId,
                 visible: newState
             }),
+            headers: { 'X-CSRF-Token': <?php echo json_encode(guagua_csrf_token()); ?> },
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             success: function(response) {
@@ -69,7 +78,6 @@ $persona=new Persona();
 ####### Notificar Sobre Eventos
 
 $eventos->notificador_eventos(date('Y-m-d'));
-$academico->verificarAsistenciaYRedirigir();
 #exit();
 ####### Notificar Sobre Eventos
 $academico->ano_lectivo =ano_lectivo();
@@ -78,7 +86,7 @@ if(isset($_SESSION['id_institucion'])){
   $datos_curso =$academico ->mis_cursos_otros(); 
 }
 
-if(!isset($_SESSION['rol'])) $_SESSION['rol']="invitado";
+// La identidad y el rol se cargan desde la cuenta autenticada.
 $tarjetas=$persona->permiso_home();
 
 if(!empty($_SESSION) and $_SESSION['rol']=="docente"){
@@ -100,9 +108,9 @@ $widget_period_name = "Sin Periodo Activo";
 $widget_start_date = 0;
 $widget_end_date = 0;
 
-$sql_periodo_widget = "SELECT nombre_periodo, fecha_inicio, fecha_fin FROM periodo WHERE estado_periodo = '1' LIMIT 1";
+$sql_periodo_widget = guagua_periodos_sql(true);
 if (!isset($mysqli) || $mysqli === null) {
-    $mysqli = new mysqli(SERVIDORBD, USUARIOBD, CLAVEBD, BASEDEDATOS);
+    $mysqli = guagua_db_mysqli();
 }
 $query_periodo_widget = $mysqli->query($sql_periodo_widget);
 if($query_periodo_widget && $query_periodo_widget->num_rows > 0) {
@@ -480,16 +488,26 @@ $(function() {
     calculateProgress();
 });
 </script>
-<?php 
+<?php
+if (!empty($_SESSION['id_usuario'])) {
+    if (guagua_tienda_app_disponible('apps/plan_diario/')) {
+        require __DIR__ . '/comun/plan_diario_card.php';
+    }
+    require __DIR__ . '/comun/google_calendar_card.php';
+    require __DIR__ . '/comun/fitness_card.php';
+}
 foreach($tarjetas as $clave => $row){
     $id_tarjeta = (int) ($row['id_tarjeta'] ?? 0);
     $es_tarjeta_pendientes = $id_tarjeta === 68;
+    if (($es_tarjeta_pendientes && !guagua_tienda_app_disponible('apps/utel/'))
+        || !guagua_tienda_app_disponible((string)($row['href'] ?? ''))
+        || !guagua_tienda_app_disponible((string)($row['accion_rapida'] ?? ''))) continue;
 ?>
  <div class="col-xs-12 col-lg-4 widget-header-item home-card-widget" data-card-id="<?php echo $id_tarjeta; ?>">
- <div class="panel panel-<?php echo $row['class_color'] ?>">
+ <div class="panel panel-<?php echo guagua_home_color($row['class_color']) ?>">
                     <div class="panel-heading">
-                      <h4><span class="glyphicon glyphicon-move home-card-drag-handle" title="Arrastrar para reordenar" aria-hidden="true"></span><?php echo $row['titulo'] ?></h4>
-                                <a href="<?php echo $row['accion_rapida'] ?>"><img style='margin-top:-12%' align="right" id="icono_tarjeta_home" src="<?php echo SGA_COMUN_URL ?>/img/png/<?php echo $row['icono'] ?>"></a>
+                      <h4><span class="glyphicon glyphicon-move home-card-drag-handle" title="Arrastrar para reordenar" aria-hidden="true"></span><?php echo guagua_home_escape($row['titulo']) ?></h4>
+                                <a href="<?php echo guagua_home_link($row['accion_rapida']) ?>"><img style='margin-top:-12%' align="right" id="icono_tarjeta_home" src="<?php echo SGA_COMUN_URL ?>/img/png/<?php echo rawurlencode(basename((string)$row['icono'])) ?>"></a>
                     </div>
                     <div style="overflow: scroll;"  class="panel-body tarjeta">
                               <?php if ($es_tarjeta_pendientes): ?>
@@ -497,11 +515,11 @@ foreach($tarjetas as $clave => $row){
                                   Cargando pendientes de UTEL...
                                 </div>
                               <?php else: ?>
-                                <?php eval($row['funcion']); ?>
+                                <?php guagua_render_home_card((int)$row['id_tarjeta'], compact('academico', 'actividad', 'curso', 'red', 'mensajes')); ?>
                               <?php endif; ?>
                     </div>
                     <div class="panel-footer">
-                                <a href="<?php echo SGA_URL.$row['href'] ?>" class="btn btn-<?php echo $row['class_color'] ?>">Ver más</a>
+                                <a href="<?php echo guagua_home_link(SGA_URL.$row['href']) ?>" class="btn btn-<?php echo guagua_home_color($row['class_color']) ?>">Ver más</a>
                     </div>
                           
                           </div>
@@ -771,5 +789,6 @@ foreach($tarjetas as $clave => $row){
 
 <?php $contenido = ob_get_contents();
 ob_clean();
+$es_pagina_inicio = true;
 include (dirname(__FILE__)."/comun/plantilla.php");
 ?>

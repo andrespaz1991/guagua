@@ -1,0 +1,278 @@
+- generic [active] [ref=f4e1]:
+  - navigation [ref=f4e2]:
+    - generic [ref=f4e3]:
+      - generic [ref=f4e4]:
+        - button "❮" [ref=f4e5] [cursor=pointer]
+        - list [ref=f4e7]:
+          - listitem [ref=f4e8]:
+            - link "INICIO" [ref=f4e9] [cursor=pointer]:
+              - /url: //localhost/guagua/index.php
+          - listitem [ref=f4e11]:
+            - link "ESPACIO" [ref=f4e12] [cursor=pointer]:
+              - /url: //localhost/guagua/apps/espacio/
+          - listitem [ref=f4e14]:
+            - link "PROMPTS" [ref=f4e15] [cursor=pointer]:
+              - /url: //localhost/guagua/apps/prompts/
+          - listitem [ref=f4e17]:
+            - link "CURSOS" [ref=f4e18] [cursor=pointer]:
+              - /url: //localhost/guagua/cursos
+          - listitem [ref=f4e20]:
+            - link "RED" [ref=f4e21] [cursor=pointer]:
+              - /url: //localhost/guagua/red
+          - listitem [ref=f4e23]:
+            - link "APPS" [ref=f4e24] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/gestor_menu.php
+          - listitem [ref=f4e26]:
+            - link "Datos" [ref=f4e27] [cursor=pointer]:
+              - /url: //localhost/guagua/reportes/informe_docente.php
+          - listitem [ref=f4e29]:
+            - link "CONFIG" [ref=f4e30] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/configuracion.php
+          - listitem [ref=f4e32]:
+            - link "Sisga" [ref=f4e33] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=59
+          - listitem [ref=f4e35]:
+            - link "UTEL" [ref=f4e36] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=79
+          - listitem [ref=f4e38]:
+            - link "Seguimiento" [ref=f4e39] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=87
+          - listitem [ref=f4e41]:
+            - link "Alerta" [ref=f4e42] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=88
+          - listitem [ref=f4e44]:
+            - link "PAE" [ref=f4e45] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=90
+          - listitem [ref=f4e47]:
+            - link "NOTI" [ref=f4e48] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=91
+          - listitem [ref=f4e50]:
+            - link "PlanIa" [ref=f4e51] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=92
+          - listitem [ref=f4e53]:
+            - link "Merca" [ref=f4e54] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=96
+          - listitem [ref=f4e56]:
+            - link "pdf" [ref=f4e57] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=101
+          - listitem [ref=f4e59]:
+            - link "rubrica" [ref=f4e60] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=102
+          - listitem [ref=f4e62]:
+            - link "Davinci" [ref=f4e63] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=104
+          - listitem [ref=f4e65]:
+            - link "dba" [ref=f4e66] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=105
+          - listitem [ref=f4e68]:
+            - link "Diario" [ref=f4e69] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=107
+          - listitem [ref=f4e71]:
+            - link "Plantilla" [ref=f4e72] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=108
+          - listitem [ref=f4e74]:
+            - link "evidencias" [ref=f4e75] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=109
+          - listitem [ref=f4e77]:
+            - link "Asignaciones" [ref=f4e78] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=110
+        - button "❯" [ref=f4e80] [cursor=pointer]
+      - list [ref=f4e81]:
+        - listitem [ref=f4e82]:
+          - generic "Cuenta actual" [ref=f4e83]:
+            - generic [ref=f4e84]:
+              - generic "Root App" [ref=f4e85]
+              - 'link "Cambiar perfil. Perfil actual: Docente" [ref=f4e86] [cursor=pointer]':
+                - /url: //localhost/guagua/usuario/login.php
+                - text: Docente
+            - link "Cerrar sesión en Guagua" [ref=f4e90] [cursor=pointer]:
+              - /url: //localhost/guagua/usuario/login.php?logout=1
+              - generic [ref=f4e93]: Cerrar sesión
+  - iframe [ref=f4e94]:
+    - generic [ref=f5e1]:
+      - banner [ref=f5e2]:
+        - paragraph [ref=f5e3]: Planeación actual
+        - heading "Economia/politica · Grado Sexto · Octubre" [level=2] [ref=f5e158]
+      - generic [ref=f5e5]:
+        - complementary [ref=f5e6]:
+          - generic [ref=f5e7]:
+            - generic [ref=f5e8]:
+              - link "Ver Calendario" [ref=f5e9] [cursor=pointer]:
+                - /url: ../../Planeador/calendario.php
+              - link "Taxonomía Bloom" [ref=f5e12] [cursor=pointer]:
+                - /url: ../../Planeador/img/TAXONOMiA.jpg
+              - link "DBA" [ref=f5e17] [cursor=pointer]:
+                - /url: ../../apps/dba/index.php
+            - generic [ref=f5e22]:
+              - 'heading "Paso 1: Tus Datos Base" [level=1] [ref=f5e23]'
+              - generic [ref=f5e24]:
+                - button "Limpiar todo" [ref=f5e25] [cursor=pointer]
+                - button "Configurar IA" [ref=f5e26] [cursor=pointer]
+            - paragraph [ref=f5e27]: Diligencia tus aportes. La IA generará el resto.
+            - generic [ref=f5e29]:
+              - generic [ref=f5e30]:
+                - paragraph [ref=f5e31]: Nueva planeación
+                - paragraph [ref=f5e32]: Lista para guardar en la base de datos.
+              - generic [ref=f5e33]: BD
+            - generic [ref=f5e34]:
+              - generic [ref=f5e35]:
+                - generic [ref=f5e36]:
+                  - generic [ref=f5e37]: Mes
+                  - combobox [ref=f5e38]:
+                    - option "Enero"
+                    - option "Febrero"
+                    - option "Marzo"
+                    - option "Abril"
+                    - option "Mayo"
+                    - option "Junio"
+                    - option "Julio"
+                    - option "Agosto"
+                    - option "Septiembre"
+                    - option "Octubre" [selected]
+                    - option "Noviembre"
+                    - option "Diciembre"
+                - generic [ref=f5e39]:
+                  - generic [ref=f5e40]: Periodo
+                  - combobox [ref=f5e41]:
+                    - option "1"
+                    - option "2"
+                    - option "3"
+                    - option "4" [selected]
+              - generic [ref=f5e42]:
+                - generic [ref=f5e43]:
+                  - generic [ref=f5e44]: Grado
+                  - combobox [ref=f5e45]:
+                    - option "Sexto" [selected]
+                    - option "Séptimo"
+                    - option "Octavo"
+                    - option "Noveno"
+                    - option "Décimo"
+                    - option "Undécimo"
+                - generic [ref=f5e46]:
+                  - generic [ref=f5e47]: Materia
+                  - combobox [ref=f5e48]:
+                    - option "Ciencias Sociales"
+                    - option "Economia/politica" [selected]
+                    - option "Educación Física"
+                    - option "Emprendimiento"
+                    - option "Fisica"
+                    - option "Geometria"
+                    - option "matemáticas"
+                    - option "Tecnología e informática"
+                    - option "Urbanidad"
+                - generic [ref=f5e49]:
+                  - generic [ref=f5e50]:
+                    - generic [ref=f5e51]: Tiempo
+                    - button "Limpiar" [ref=f5e52] [cursor=pointer]
+                  - 'spinbutton "Ej: 2 horas" [ref=f5e53]': "2"
+                  - paragraph [ref=f5e54]: Calculando horas desde el horario…
+              - generic [ref=f5e55]:
+                - generic [ref=f5e56]:
+                  - generic [ref=f5e57]:
+                    - generic [ref=f5e58]: Fecha inicio
+                    - button "Limpiar" [ref=f5e59] [cursor=pointer]
+                  - textbox [ref=f5e60]: 2026-10-01
+                - generic [ref=f5e61]:
+                  - generic [ref=f5e62]:
+                    - generic [ref=f5e63]: Fecha fin
+                    - button "Limpiar" [ref=f5e64] [cursor=pointer]
+                  - textbox [ref=f5e65]: 2026-10-31
+              - generic [ref=f5e66]:
+                - generic [ref=f5e67]:
+                  - generic [ref=f5e68]: "Tú asignas: Referente de Calidad (DBA)"
+                  - button "Limpiar" [ref=f5e69] [cursor=pointer]
+                - textbox [ref=f5e70]: "DBA 7: Participación activa en decisiones colectivas y democracia. DBA 8: No aceptabilidad de la discriminación en sociedades democráticas."
+              - generic [ref=f5e71]:
+                - generic [ref=f5e72]:
+                  - generic [ref=f5e73]: "Tú asignas: Ejes temáticos"
+                  - button "Limpiar" [ref=f5e74] [cursor=pointer]
+                - textbox [ref=f5e75]: Conflicto y relación con el Estado, Resolución pacífica y convivencia, Organización ciudadana y expresiones políticas
+                - paragraph [ref=f5e76]: Consultando DBA y ejes temáticos…
+              - generic [ref=f5e77]:
+                - generic [ref=f5e78]:
+                  - generic [ref=f5e79]: "Tú asignas: Observaciones Adicionales"
+                  - button "Limpiar" [ref=f5e80] [cursor=pointer]
+                - textbox [ref=f5e81]
+              - generic [ref=f5e82]:
+                - generic [ref=f5e83]:
+                  - generic [ref=f5e84]:
+                    - generic [ref=f5e85]: Objetivo de Aprendizaje (opcional)
+                    - button "Limpiar" [ref=f5e86] [cursor=pointer]
+                  - textbox [ref=f5e87]
+                - generic [ref=f5e88]:
+                  - generic [ref=f5e89]: Reflexión pedagógica
+                  - button "Limpiar" [ref=f5e90] [cursor=pointer]
+                - textbox [ref=f5e91]
+              - generic [ref=f5e92]:
+                - generic [ref=f5e93]:
+                  - generic [ref=f5e94]: Estrategias
+                  - button "Limpiar" [ref=f5e95] [cursor=pointer]
+                - textbox [ref=f5e96]
+              - generic [ref=f5e97]:
+                - generic [ref=f5e98]:
+                  - generic [ref=f5e99]: Observaciones / momentos de clase
+                  - button "Limpiar" [ref=f5e100] [cursor=pointer]
+                - textbox [ref=f5e101]
+              - generic [ref=f5e102]:
+                - generic [ref=f5e103]:
+                  - generic [ref=f5e104]: Evaluación
+                  - button "Limpiar" [ref=f5e105] [cursor=pointer]
+                - textbox [ref=f5e106]
+              - button "Generar con IA" [ref=f5e107] [cursor=pointer]
+              - button "Guardar planeación" [ref=f5e108] [cursor=pointer]
+              - button "Descargar Planeador Word" [ref=f5e109] [cursor=pointer]
+        - main [ref=f5e111]:
+          - generic [ref=f5e113]:
+            - 'heading "Paso 2: Vista Previa del Documento Completo Falta la IA" [level=2] [ref=f5e114]':
+              - text: "Paso 2: Vista Previa del Documento Completo"
+              - generic [ref=f5e115]: Falta la IA
+            - generic [ref=f5e116]:
+              - generic [ref=f5e117]:
+                - generic [ref=f5e118]: Mes
+                - text: Octubre
+              - generic [ref=f5e119]:
+                - generic [ref=f5e120]: Periodo
+                - text: "4"
+              - generic [ref=f5e121]:
+                - generic [ref=f5e122]: Inicio
+                - text: 01/10/2026
+              - generic [ref=f5e123]:
+                - generic [ref=f5e124]: Fin
+                - text: 31/10/2026
+              - generic [ref=f5e125]:
+                - generic [ref=f5e126]: Docente
+                - text: Root App
+              - generic [ref=f5e127]:
+                - generic [ref=f5e128]: Grado
+                - text: Sexto
+              - generic [ref=f5e129]:
+                - generic [ref=f5e130]: Tiempo
+                - text: "2"
+              - generic [ref=f5e131]:
+                - generic [ref=f5e132]: Materia
+                - text: Economia/politica
+            - generic [ref=f5e133]:
+              - generic [ref=f5e134]:
+                - heading "DBA:" [level=3] [ref=f5e135]
+                - paragraph [ref=f5e136]: "DBA 7: Participación activa en decisiones colectivas y democracia. DBA 8: No aceptabilidad de la discriminación en sociedades democráticas."
+              - generic [ref=f5e137]:
+                - heading "Ejes temáticos:" [level=3] [ref=f5e138]
+                - paragraph [ref=f5e139]: Conflicto y relación con el Estado, Resolución pacífica y convivencia, Organización ciudadana y expresiones políticas
+              - generic [ref=f5e140]:
+                - heading "✨ Objetivo:" [level=3] [ref=f5e141]
+                - paragraph [ref=f5e142]: Esperando a la IA...
+              - generic [ref=f5e143]:
+                - heading "Observaciones:" [level=3] [ref=f5e144]
+                - paragraph [ref=f5e145]: Pendiente...
+              - generic [ref=f5e146]:
+                - heading "Reflexión pedagógica:" [level=3] [ref=f5e147]
+                - paragraph [ref=f5e148]: Pendiente...
+              - generic [ref=f5e149]:
+                - heading "✨ Estrategia Educativa:" [level=3] [ref=f5e150]
+                - paragraph [ref=f5e151]: Esperando a la IA...
+              - generic [ref=f5e152]:
+                - heading "✨ Momentos de Clase:" [level=3] [ref=f5e153]
+                - paragraph [ref=f5e154]: Esperando a la IA...
+              - generic [ref=f5e155]:
+                - heading "✨ Evaluación:" [level=3] [ref=f5e156]
+                - paragraph [ref=f5e157]: Esperando a la IA...

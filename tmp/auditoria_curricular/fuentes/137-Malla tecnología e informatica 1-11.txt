@@ -1,0 +1,1859 @@
+
+=== PÁGINA PDF 1 ===
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+MALLA CURRICULAR Área: Tecnología e Informática Grado: Sexto 
+PERIODO ESTANDAR DBA EVIDENCIA DE APRENDIZAJE EJES TEMATICOS 
+ 
+1 
+DEMOCRACIA - 
+SEGURIDAD 
+ 
+ 
+ 
+ 
+• Reconoce los principios y 
+conceptos propios de la 
+tecnología, así como momentos 
+de la historia que le han 
+permitido al hombre 
+transformar el  entorno para 
+resolver problemas y satisfacer 
+necesidades. 
+• Relaciona el funcionamiento de 
+algunos artefactos, productos, 
+procesos y sistemas tecnológicos 
+con su utilización segura. 
+ 
+• Identifica innovaciones e inventos 
+trascendentales para la  sociedad; los ubica 
+y explica en su contexto histórico. 
+• Analiza y aplica las normas de seguridad que 
+se deben tener en  cuenta para el uso de 
+algunos artefactos, productos y sistemas  
+tecnológicos. 
+• Ejemplifica cómo en el uso de artefactos, 
+procesos o sistemas  tecnológicos, existen 
+principios de funcionamiento que los  
+sustentan. 
+• Participa en la elaboración de actividades 
+colaborativas para fortalecer os procesos 
+de aprendizaje. 
+• Identifica y describe los diferentes elementos que 
+constituyen un ordenador. 
+• Reconoce el funcionamiento interno del 
+ordenador, realizando esquemas de las distintas 
+unidades. 
+• Define conceptos básicos de hardware y software. 
+• Reconoce el concepto de byte y de sus múltiplos 
+realizando operaciones. 
+• Identifica los diferentes dispositivos de entrada y 
+salida que se le pueden conectar al computador. 
+• Reconoce las diferentes aplicaciones que se le 
+pueden instalar al ordenador por su uso o 
+aplicabilidad. (seguridad)  
+• Reconoce y nombra varios dispositivos de entrada 
+y de salida de un computador. 
+• Fortalece el trabajo colaborativo a partir de la 
+interacción, el respeto y la tolerancia para mejorar 
+la producción del grupo. (Democracia). 
+• ¿Qué es un computador? 
+✓ Utilidad del computador. 
+✓ Proceso histórico de la 
+computación. 
+✓ Generación de las computadoras. 
+✓ Clasificación de las 
+computadoras. 
+ 
+• Definición de hardware. 
+✓ Estructura física. 
+✓ Esquema funcional del 
+computador. 
+✓ Otras unidades de entrada. 
+✓ Otras unidades de salida. 
+✓ Dispositivos de almacenamiento. 
+✓ El teclado y su división. 
+✓ La memoria principal. 
+✓ El microprocesador y la tarjeta 
+principal. 
+✓ Tarjetas de interface. 
+ 
+• Definición de software. 
+✓ Unidades de medida para la 
+información. 
+✓ Sistemas operativos. 
+✓ Paquetes de utilidad o programas 
+de aplicación. 
+✓ Lenguajes de programación. 
+✓ Programas de comunicaciones. 
+✓ Aplicaciones comerciales. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Institución Educativa Rural La Josefina 
+San Luis Antioquia 
+Dane:205660000853   Nit: 900221162-8    
+Aprobada por Resolución S 128463 del 16/10/2014     
+ ierlajosefina@hotmail.com       
+Autopista Medellín Bogotá, Km 134 
+ 
+
+
+=== PÁGINA PDF 2 ===
+ 
+ 
+2 
+TIEMPO LIBRE 
+• Relaciona el funcionamiento de 
+algunos artefactos, productos, 
+procesos y sistemas tecnológicos 
+con su utilización segura. 
+• Propone estrategias para 
+soluciones tecnológicas a 
+problemas en diferentes 
+contextos. 
+• Relaciona la transformación de 
+los recursos naturales con el 
+desarrollo tecnológico y su 
+impacto en el bienestar de la 
+sociedad. 
+• Utiliza las tecnologías de la información y la 
+comunicación, para apoyar los procesos de 
+aprendizaje y actividades personales  
+(recolectar, seleccionar, organizar y 
+procesar información). 
+• Reconozco y utilizo algunas formas de 
+organización del trabajo  para solucionar 
+problemas con la ayuda de la tecnología. 
+• Participa en discusiones sobre el uso 
+racional de algunos artefactos tecnológicos. 
+• Utiliza eficientemente las ventanas, menús y 
+objetos gráficos de las diferentes aplicaciones y 
+del S.O. Windows. 
+• Reconoce y emplea alguno de los accesorios y 
+utilidades del sistema operativo.  
+• Realiza correctamente las operaciones habituales 
+de mantenimiento de ficheros, carpetas y  discos 
+(crear, copiar, borrar, cambiar el nombre, mover, 
+etc.) 
+• Trabaja simultáneamente con varias aplicaciones 
+e intercambiar información y discuten sobre ellas. 
+(Tiempo libre) 
+• Generalidades y aplicacio nes 
+de Windows. 
+✓ Entrada y salida de Windows. 
+✓ El escritorio y sus componentes. 
+✓ Las ventanas. 
+✓ Menús y cuadros de diálogo. 
+✓ El botón inicio y el menú inicio. 
+✓ Inicio y salida de aplicaciones. 
+✓ Accesorios de Windows 
+(WordPad, Paint, Bloc de notas y 
+Calculadora). 
+✓ El portapapeles. 
+✓ Impresión de archivos. 
+✓ Organización de la información 
+dentro del computador. 
+✓ Descripción y ventana principal 
+del Explorador de Windows. 
+✓ Creación y borrado de carpetas 
+con el Explorador. 
+✓ Copiar, mover, borrar y cambiar 
+nombres a las carpetas y los 
+archivos. 
+ 
+• Las máquinas y sus tipos. 
+✓ ¿Qué son las maquinas? 
+✓ Tipos de máquinas. 
+- Simples. 
+- Compuestas 
+✓ Ventajas y desventajas. 
+3 
+PRAE 
+ 
+• Relaciona el funcionamiento de 
+algunos artefactos, productos, 
+procesos y sistemas tecnológicos 
+con su utilización segura. 
+• Propone estrategias para 
+soluciones tecnológicas a 
+problemas en diferentes 
+contextos. 
+• Relaciona la transformación de 
+los recursos naturales con el 
+desarrollo tecnológico y su 
+impacto en el bienestar de la 
+sociedad. 
+• Utiliza las tecnologías de la información y la 
+comunicación, para apoyar los procesos de 
+aprendizaje y actividades personales  
+(recolectar, seleccionar, organizar y 
+procesar información). 
+• Detecta fallas en artefactos, procesos y 
+sistemas tecnológicos, siguiendo 
+procedimientos de prueba y descarte, y 
+propone estrategias de solución. 
+• Se interesa por las tradiciones y valores de 
+la comunidad y participa  en la gestión de 
+iniciativas en favor del medio  ambiente, la 
+salud y la cultura ( como jornadas de 
+recolección de materiales reciclables, 
+vacunación, bazares, festivales, etc.). 
+• Crea accesos directos diferenciando entre 
+carpetas, archivos, discos y programas en el S.O. 
+• Utiliza el panel de control para personalizar el 
+ambiente de trabajo del sistema operativo 
+Windows.  
+• Utiliza las herramientas de Scandisk y 
+desfragmentador de disco para solucionar 
+problemas del sistema operativo. 
+• Participa en jornadas de recolección y separación 
+de residuos sólidos y elementos tecnológicos en 
+desuso. (Prae) 
+• Mantenimiento y personali-
+zación de Windows. 
+✓ Formatear y copiar un disco. 
+✓ El Scandisk. 
+✓ El Desfragmentador de disco. 
+✓ Información del sistema. 
+✓ Liberador de espacio en disco. 
+✓ Papelera de reciclaje. 
+✓ Creación de accesos directos. 
+✓ Configurar el menú Inicio y la 
+Barra de tareas. 
+✓ El Panel de Control. 
+• Jornada de reciclaje 
+ 
+ 
+ 
+4 
+EDUCACIÓN 
+SEXUAL 
+• Relaciona el funcionamiento de 
+algunos artefactos, productos, 
+procesos y sistemas tecnológicos 
+con su utilización segura. 
+• Propone estrategias para 
+soluciones tecnológicas a 
+problemas en diferentes 
+contextos. 
+• Utiliza las tecnologías de la información y la 
+comunicación, para apoyar los procesos de 
+aprendizaje y actividades personales  
+(recolectar, seleccionar, organizar y 
+procesar información). 
+• Asumo y promuevo comportamientos 
+legales relacionados con  el uso de los 
+recursos tecnológicos. 
+• Reconoce y utiliza las posibilidades que ofrece una 
+red local. 
+• Identifica los elementos y componentes 
+necesarios para el montaje de una red local de  
+ordenadores. 
+• Comparte información en una red de área local. 
+• Las redes de computadoras. 
+✓ Descripción y utilidad de las 
+redes. 
+✓ Tipos de redes de acuerdo a las 
+distancias. 
+✓ Topologías de las redes de área 
+local. 
+✓ Tipos de conexión. 
+
+=== PÁGINA PDF 3 ===
+ 
+ 
+• Relaciona la transformación de 
+los recursos naturales con el 
+desarrollo tecnológico y su 
+impacto en el bienestar de la 
+sociedad. 
+• Analizo el impacto de artefactos, procesos y 
+sistemas tecnológicos en la solución de 
+problemas y satisfacción de necesidades. 
+• Usa la computadora como herramienta de 
+comunicación e información mediante la 
+navegación por la web. (Sexualidad) 
+✓ Ventajas y desventajas de una red 
+de computadora. 
+✓ Componentes de una red. 
+✓ Compartir archivos, programas e 
+impresoras en la red. 
+ 
+ 
+ 
+ 
+ 
+MALLA CURRICULAR Área: Tecnología e Informática Grado: Séptimo 
+PERIODO ESTANDAR DBA EVIDENCIA DE APRENDIZAJE EJES TEMATICOS 
+ 
+1 
+DEMOCRACIA - 
+SEGURIDAD 
+ 
+ 
+ 
+ 
+• Reconoce principios y conceptos 
+propios de la tecnología, así 
+como momentos de la historia 
+que le han permitido al hombre 
+transformar el entorno  para 
+resolver problemas y satisfacer 
+necesidades. 
+• Relaciona el funcionamiento de 
+algunos artefactos, productos, 
+procesos y sistemas tecnológicos 
+con su utilización segura. 
+• Adquiere habilidades y destrezas 
+en el manejo de herramientas 
+ofimáticas a través de aparatos 
+tecnológicos. 
+• Hace uso de herramientas informáticas 
+como los procesadores de textos , en 
+especial el programa de Microsoft Word. 
+• Analiza y aplica las normas de seguridad que 
+se deben tener en cuenta para el uso de 
+algunos artefactos, productos y sistemas 
+tecnológicos. 
+• Utiliza las tecnologías de la información y la 
+comunicación, para apoyar los procesos de 
+aprendizaje y actividades personales 
+(recolectar, seleccionar, organizar y 
+procesar información). 
+• Maneja herramientas informáti cas para el desa -
+rrollo de actividades tecnológicas. 
+• Realiza de manera adecuada pasos para guardar 
+información de forma segura en el computador. 
+(seguridad). 
+• Utiliza los procesadores de textos para producir 
+documentos y comunicar información. 
+• Realiza una breve descripción del proceso 
+electoral estudiantil utilizando la herramienta de 
+Microsoft Word. (Democracia). 
+• Maneja eficientemente las operaciones básicas y 
+barras de herramientas disponibles en Microsoft 
+Word.  
+• Reconoce las tecnologías de la información y 
+comunicación (TICS) en el entorno educativo. 
+• Identifica las ventajas y desventajas de las Tics en 
+la educación rural. 
+• ¿Qué es Microsoft Word? 
+✓ Descripción y características. 
+✓ Tipos de procesadores de texto. 
+✓ El procesador de texto en la 
+empresa. 
+• Operaciones básicas de 
+Microsoft Word. 
+✓ Entrada, salida, Abrir, guardar, 
+guardar como, etc. 
+✓ Movimiento del punto de 
+inserción. 
+• La barra de herramienta y el 
+área de trabajo. 
+✓ Buscar y reemplazar texto. 
+✓ Cortar, copiar y pegar texto. 
+• Imprimir un documento. 
+ 
+• Las tecnologías de la 
+información y comunicación  
+✓ Qué son las TICS 
+✓ Tipos de TICS 
+✓ Ejemplos de TICS 
+✓ Características de las TICS 
+✓ Ventajas de las TICS 
+• Desventajas de las TICS 
+2 
+TIEMPO LIBRE 
+• Reconoce principios y conceptos 
+propios de la tecnología, así 
+como momentos de la historia 
+que le han permitido al hombre 
+transformar el entorno para 
+resolver problemas y satisfacer 
+necesidades. 
+• Adquiere habilidades y destrezas 
+en el manejo de herramientas 
+• Hace uso de herramientas informáticas 
+como los procesadores de textos , en 
+especial el programa de Microsoft Word. 
+• Utiliza las tecnologías de la información y la 
+comunicación, para apoyar los procesos de 
+aprendizaje y actividades personales 
+(recolectar, seleccionar, organizar y 
+procesar información). 
+• Elabora diferentes documentos aplicando los tipos 
+de formatos especiales en el procesador de textos 
+Microsoft Word. 
+• Diseña a través de un collage de imágenes las 
+etapas de su vida utilizando el programa de 
+Microsoft Word. (Tiempo Libre).  
+• Utiliza el programa de Microsoft Word en el diseño 
+y elaboración de tablas y objetos gráficos. 
+• Formateo de documentos en 
+Microsoft Word. 
+✓ Formato de texto. 
+✓ Adición de viñetas y números. 
+✓ Aplicar sangrías. 
+✓ Alinear párrafos. 
+✓ Interlineado de párrafos. 
+• Configuración de página  
+Institución Educativa Rural La Josefina 
+San Luis Antioquia 
+Dane:205660000853   Nit: 900221162-8    
+Aprobada por Resolución S 128463 del 16/10/2014     
+ ierlajosefina@hotmail.com       
+Autopista Medellín Bogotá, Km 134 
+ 
+
+
+=== PÁGINA PDF 4 ===
+ 
+ 
+ 
+ 
+ofimáticas a través de aparatos 
+tecnológicos. 
+Comprende las representaciones gráficas 
+tridimensionales de sus ideas y diseños. 
+• Construye modelos, maquetas o prototipos 
+teniendo en cuenta sus características. 
+✓ Márgenes, tamaño, orientación y 
+columnas. 
+• Insertar objetos 
+✓ Letra capital, imágenes,  formas, 
+tablas y cuadro de texto. 
+• Modelo, maquetas y 
+prototipos. 
+✓ ¿Qué es un modelo? 
+✓ ¿Qué es una maqueta? 
+• ¿Qué es un prototipo? 
+3 
+PRAE 
+ 
+• Propone estrategias para 
+soluciones tecnológicas a 
+problemas, en diferentes 
+contextos. 
+• Reconoce principios y conceptos 
+propios de la tecnología, así 
+como momentos de la historia 
+que le han permitido al hombre 
+transformar el entorno para 
+resolver problemas y satisfacer 
+necesidades. 
+• Interpreta gráficos, bocetos y planos de 
+diferentes actividades. 
+• Reconoce los procedimientos que puede 
+utilizar para diseñar diagramas, paginar 
+documentos, insertar hipervínculos,  
+encabezados, crear tablas de contenido y 
+combinar correspondencia. 
+• Utiliza la computadora para apoyar los 
+procesos de aprendizaje y actividades 
+personales (recolectar, seleccionar, 
+organizar y procesar información). 
+• Realiza gráficos estadísticos utilizando la 
+herramienta ofimática Microsoft Word. 
+• Diseña y elabora documentos que incluyen 
+encabezados y pie de páginas referentes al medio 
+ambiente. (Prae). 
+• Elabora documentos aplicando las normas APA o 
+ICONTEC. 
+• Realiza combinación de correspondencia a partir 
+de una lista de distribución o una fuente de datos 
+externa. 
+• Diferencia las maquinas simples de las maquinas 
+compuestas. 
+•  
+• Los encabezados y pies de 
+página. 
+✓ Numeración de páginas. 
+✓ Saltos de página. 
+✓ Hipervínculos. 
+✓ Tablas de contenido. 
+• Normas APA o ICONTEC. 
+• Editor de ecuaciones. 
+• Gráficas estadísticas. 
+• Combinar correspondencia. 
+ 
+• Las Maquinas I. 
+✓ Las maquinas simples: la rueda, la 
+polea, la palanca 
+✓ Las maquinas compuestas: el 
+motor, tipos de movimiento.  
+✓ Los aparatos tecnológicos y su 
+impacto ambiental 
+ 
+ 
+4 
+EDUCACIÓN 
+SEXUAL 
+• Reconoce principios y conceptos 
+propios de la tecnología, así 
+como momentos de la historia 
+que le han permitido al hombre 
+transformar el entorno para 
+resolver problemas y satisfacer 
+necesidades.  
+• Reconoce las causas y los efectos 
+sociales, económicos y 
+culturales de los desarrollos 
+tecnológicos y actuar en 
+consecuencia, de manera ética y 
+responsable. 
+• Propone estrategias para 
+soluciones tecnológicas a 
+problemas, en diferentes 
+contextos. 
+• Hace uso de herramientas tecnológicas y 
+recursos de la web para buscar y validar 
+información. 
+• Utiliza las tecnologías de la información y la 
+comunicación, para apoyar mis procesos de 
+aprendizaje y actividades personales  
+(recolectar, seleccionar, organizar y 
+procesar información). 
+• Participa e n discusiones sobre el uso 
+racional de algunos artefactos, sistemas o 
+herramientas tecnológicas. 
+• Manipula los navegadores y buscadores para 
+encontrar direcciones de sitios web e información 
+que necesita para sus trabajos. 
+• Identifica los principales servicios que ofrece el 
+Internet y sus ventajas. 
+• Diferencia los tipos de computadoras existentes 
+en la red de Internet (cliente - servidor). 
+• Utiliza la red Internet para buscar información 
+acerca de las consecuencias de la sexualidad a 
+temprana edad. (Sexualidad). 
+• La Telemática y su desarrollo. 
+✓ Origen y evolución de la red 
+Internet. 
+✓ Los clientes y servidores. 
+• La World Wide Web. 
+✓ El protocolo TCP/IP. 
+✓ Las direcciones IP y los dominios. 
+✓ Formas básicas para acceder a 
+Internet. 
+• Los navegadores y Motores de 
+búsqueda. 
+✓ Descarga de información desde 
+Internet. 
+
+=== PÁGINA PDF 5 ===
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+MALLA CURRICULAR Área: Tecnología e Informática Grado: Octavo 
+PERIODO ESTANDAR DBA EVIDENCIA DE APRENDIZAJE EJES TEMATICOS 
+ 
+1 
+DEMOCRACIA - 
+SEGURIDAD 
+ 
+ 
+ 
+ 
+• Tiene en cuenta normas de 
+mantenimiento y utilización de 
+artefactos, productos, servicios, 
+procesos y sistemas tecnológicos 
+de su entorno  para su uso 
+eficiente y seguro. 
+• Resuelve problemas utilizando 
+conocimientos tecnológicos y 
+teniendo en cuenta algunas  
+restricciones y condiciones. 
+• Adquiere habilidades y destrezas 
+en el manejo de herramientas 
+ofimáticas a través de aparatos 
+tecnológicos. 
+ 
+ 
+• Utiliza responsable y autónomamente las 
+Tecnologías de la Información y la 
+Comunicación (TIC) para aprender, 
+investigar y  comunicarme con otros en el 
+mundo. 
+• Utiliza elementos de protección y normas 
+de seguridad para  la realización de 
+actividades y manipulación de 
+herramientas y equipos. 
+• Utiliza correctamente elementos de 
+protección cuando involucra artefactos y 
+procesos tecnológicos en las diferentes  
+actividades que realiza (por ejemplo, en 
+deporte usa  cascos, rodilleras, guantes, 
+etc.). 
+• Interpreta y representa ideas sobre diseños, 
+innovaciones o protocolos de experimentos 
+mediante el uso de registros,  textos, 
+diagramas, figuras, planos, maquetas, 
+modelos y prototipos. 
+• Elabora presentaciones gráficas con texto 
+significativo, efectos y elementos multimedia. 
+• Crea diapositivas que contienen elementos 
+procedentes de otras aplicaciones ofimáticas. 
+• Diseña y elabora presentaciones destinadas a 
+apoyar el discurso verbal en la exposición de ideas. 
+• Realiza presentaciones en PowerPoint en donde 
+da a conocer a sus compañeros las normas básicas 
+de seguridad en la escuela o trabajo. (seguridad)  
+• Fortalece el trabajo colaborativo a partir de la 
+interacción, el respeto y la tolerancia para mejorar 
+la producción del grupo. (Democracia). 
+• Reconoce la electricidad como una de las formas 
+de obtener energía. 
+• Reconoce la importancia de la 
+energía eléctrica como fuente y recurso para la 
+elaboración de prototipos tecnológicos. 
+• Identifica y elabora un circuito eléctrico teniendo 
+en cuenta las partes que lo componen. 
+• Describe la importancia de la electricidad para el 
+desarrollo de la sociedad. 
+• Diseño de presentaciones en el 
+PowerPoint. 
+✓ Utilización de plantillas. 
+✓ Definición de presentación y 
+diapositivas. 
+✓ El área de trabajo del PowerPoint. 
+✓ Modos de visualización. 
+ 
+• Operaciones Básicas de 
+Microsoft PowerPoint 
+✓ Crear, abrir, guardar, Guardar 
+como y cerrar. 
+✓ Formato de texto y de párrafo.  
+✓ Transición de diapositivas y 
+efectos de animación. 
+ 
+• Insertar objetos, imágenes y 
+gráficos 
+✓ Manipulación de objetos (cortar, 
+copiar y pegar) 
+✓ Efectos especiales de texto con 
+WordArt. 
+✓ Insertar imágenes. 
+✓ Manejo de organigramas en el 
+diseñador de presentaciones. 
+• Patrón de diapositivas. 
+• Impresión de diapositivas. 
+ 
+• La electricidad. 
+✓ ¿Qué la electricidad? 
+✓ Tipos de electricidad (estática y 
+dinámica). 
+✓ El Circuito eléctrico y sus partes. 
+✓  La carga eléctrica. 
+✓ Ley de la conservación de la carga 
+eléctrica. 
+Institución Educativa Rural La Josefina 
+San Luis Antioquia 
+Dane:205660000853   Nit: 900221162-8    
+Aprobada por Resolución S 128463 del 16/10/2014     
+ ierlajosefina@hotmail.com       
+Autopista Medellín Bogotá, Km 134 
+ 
+
+
+=== PÁGINA PDF 6 ===
+ 
+ 
+2 
+TIEMPO LIBRE 
+• Tiene en cuenta normas de 
+mantenimiento y utilización de 
+artefactos, productos, servicios, 
+procesos y sistemas tecnológicos 
+de su entorno para su uso 
+eficiente y seguro. 
+• Reconoce las causas y los efectos 
+sociales, económicos y 
+culturales de los desarrollos  
+tecnológicos y actúa  en 
+consecuencia, de manera ética y 
+responsable. 
+• Adquiere habilidades y destrezas 
+en el manejo de herramientas 
+ofimáticas a través de aparatos 
+tecnológicos. 
+•  
+• Utiliza responsable y autónomamente las 
+Tecnologías de la Información y la 
+Comunicación (TIC) para aprender, 
+investigar y comunicarme con otros en el 
+mundo. 
+Utiliza responsablemente productos 
+tecnológicos, valorando su pertinencia, calidad y 
+efectos potenciales sobre la salud y el  medio 
+ambiente. 
+• Crea boletines, folletos (trípticos), tarjetas y otras 
+publicaciones para compartir información. 
+• Diseña avisos publicitarios utilizando las 
+herramientas más importantes de Publisher. 
+• Usa de manera responsable el computador para 
+realizar tareas escolares. 
+• Realiza de forma creativa diferentes tarjetas e 
+invitaciones en Publisher y los compara con sus 
+compañeros. (Tiempo libre) 
+• Interpreta y aplica la ley de OHM , intensidad de 
+corriente eléctrica, voltaje eléc trico, resistencia 
+eléctrica y voltaje. 
+• Diferencia la corriente alterna de la corriente 
+directa o continua en un entorno rural. 
+• Diseñando con Microsoft 
+Publisher. 
+✓ Introducción a Microsoft 
+Publisher. 
+✓ Elementos de la ventana principal.  
+• Operaciones básicas del 
+programa de Microsoft 
+Publisher 
+✓ Crear, abrir, guardar, Guardar 
+como y cerrar 
+✓ Utilización del asistente para el 
+diseño de publicaciones. 
+✓ Propiedades del cuadro de texto. 
+✓ Aplicando colores al cuadro de 
+texto. 
+✓ Autoformas y dibujos. 
+✓ Incorporando Imágenes. 
+ 
+• La Corriente Eléctrica. 
+✓ Ley de Ohm (voltaje, intensidad y 
+resistencia) 
+✓ La corriente alterna.  
+✓ La corriente directa o continua. 
+3 
+PRAE 
+ 
+• Resuelvo problemas utilizando 
+conocimientos tecnológicos y 
+teniendo en cuenta algunas  
+restricciones y condiciones. 
+• Tiene en cuenta normas de 
+mantenimiento y utilización de 
+artefactos, productos, servicios, 
+procesos y sistemas tecnológicos 
+de su entorno para su uso 
+eficiente y seguro. 
+• Adquiere habilidades y destrezas 
+en el manejo de herramientas 
+ofimáticas a través de aparatos 
+tecnológicos. 
+ 
+• Detecta fallas en sistemas tecnológicos 
+sencillos (mediante un proceso de prueba y 
+descarte) y propone soluciones. 
+• Hago un mantenimiento adecuado de mis 
+artefactos tecnológicos. 
+• Utiliza responsablemente productos 
+tecnológicos, valorando  su pertinencia, 
+calidad y efectos potenciales sobre la  salud 
+y el medio ambiente. 
+• Se interesa por las tradiciones y valores de 
+la comunidad y participa  en la gestión de 
+iniciativas en favor del medio  ambiente, la 
+salud y la cultura ( como jornadas de 
+recolección de materiales reciclables, 
+vacunación, bazares, festivales, etc.) 
+• Reconoce el significado de los términos 
+relacionados con los virus informáticos.  
+• Utiliza herramientas de los antivirus para la 
+detección de infecciones. 
+• Participa en jornadas de recolección y separación 
+de residuos sólidos y elementos tecnológicos en 
+desuso. (Prae) 
+ 
+• Virus informáticos. 
+✓ ¿Cómo nacieron los virus? 
+✓ ¿Qué es un virus informático? 
+✓ Generalidades sobre los virus de 
+computadoras. 
+✓ ¿Quiénes los hacen? 
+✓ Funcionamiento de los virus. 
+✓ Algunos métodos de infección. 
+✓ Clasificación de los virus. 
+✓ Algunos ejemplos de virus. 
+✓ Correo spam (basura) y spyware 
+(software espía). 
+ 
+• ¿Qué es un antivirus?  
+✓ ¿cómo funcionan los antivirus? 
+✓ Algunos programas antivirus. 
+ 
+• Jornada de reciclaje 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+=== PÁGINA PDF 7 ===
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+4 
+EDUCACIÓN 
+SEXUAL 
+• Tiene en cuenta normas de 
+mantenimiento y utilización de 
+artefactos, productos, servicios, 
+procesos y sistemas tecnológicos 
+de su entorno para su uso 
+eficiente y seguro. 
+• Adquiere habilidades y destrezas 
+en el manejo de herramientas 
+ofimáticas a través de aparatos 
+tecnológicos. 
+• Relaciona los conocimientos 
+científicos y tecnológicos que se 
+han empleado en diversas 
+culturas y regiones del mundo a 
+través de la historia para  
+resolver problemas y 
+transformar el entorno. 
+• Identifico principios científicos aplicados al 
+funcionamiento de algunos artefactos, 
+productos, servicios, procesos y sistemas  
+tecnológicos. 
+• Utiliza responsablemente productos 
+tecnológicos, valorando  su pertinencia, 
+calidad y efectos potenciales sobre la  salud 
+y el medio ambiente. 
+• Analizo el impacto de artefactos, procesos y 
+sistemas tecnológicos en la solución de 
+problemas y satisfacción de necesidades. 
+• Hace un uso adecuado del correo electrónico. 
+• Comprime y descomprime archivos o carpetas. 
+• Descarga archivos y programa de Internet. 
+• Realiza conversaciones sincrónicas en la red de 
+Internet. 
+• Realiza transferencia de archivos a través del 
+servicio FTP (file transfer protocolo). 
+• Realiza conversaciones utilizando el servicio de 
+programas de chat, Messenger, Skype, etc.  
+• Usa la computadora como herramienta de 
+comunicación e información mediante la 
+navegación por la web. (Sexualidad) 
+•  
+• Principales servicios de 
+internet  
+✓ La World Wide Web 
+✓ El Correo Electrónico y sus 
+ventajas. 
+✓ Las cuentas de e-mail gratuitas. 
+✓ Compresión y descompresión de 
+archivos. 
+✓ Enviar y recibir mensajes de 
+correo electrónicos. 
+✓ Adjuntar archivos al correo 
+electrónico. 
+✓ Descargar archivos adjuntos 
+desde el correo electrónico. 
+✓ Los Grupos de Noticias. 
+✓ Transferencias de archivos o el 
+FTP. 
+• El IRC o chat. 
+
+=== PÁGINA PDF 8 ===
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+MALLA CURRICULAR Área: Tecnología e Informática Grado: Noveno 
+PERIODO ESTANDAR DBA EVIDENCIA DE APRENDIZAJE EJES TEMATICOS 
+ 
+1 
+DEMOCRACIA - 
+SEGURIDAD 
+ 
+ 
+ 
+ 
+• Reconoce principios y conceptos 
+propios de la tecnología, así 
+como momentos de la historia 
+que le han permitido al hombre 
+transformar el entorno  para 
+resolver problemas y satisfacer 
+necesidades. 
+• Relaciona el funcionamiento de 
+algunos artefactos, productos, 
+procesos y sistemas tecnológicos 
+con su utilización segura. 
+• Adquiere habilidades y destrezas 
+en el manejo de herramientas 
+ofimáticas a través de aparatos 
+tecnológicos. 
+• Hace uso de herramientas informáticas 
+como son las hojas de cálculo, en especial el 
+programa de Microsoft Excel. 
+• Reconoce la importancia de las hojas de 
+cálculo en el proceso contable de las 
+empresas y elaboración de su presupuesto 
+familiar. 
+• Interpreta el contenido de una factura de 
+servicios públicos. 
+• Ejerce su papel de ciudadano responsable 
+con el uso adecuado de los sistemas 
+tecnológicos (transporte, ahorro de 
+energía, etc.) 
+• Maneja conceptos básicos, partes de la ventana 
+principal y opciones importantes de la hoja de 
+cálculo de Microsoft Excel. 
+• Practica las combinaciones de teclas que permiten 
+el desplazamiento del puntero de celda en el 
+Microsoft Excel. 
+• Elabora correctamente formulas utilizando los 
+operadores matemáticos básicos. 
+• Realiza tablas y gráficos sobre el proceso de 
+elección del representante estudiantil. 
+(Democracia) 
+• Elabora tablas y gráficos a partir de encuestas 
+sobre el uso adecuado de sistemas tecnológicos. 
+(Seguridad) 
+• Destaca el aporte de las máquinas simples a las 
+actividades cotidianas de los seres vivos. 
+• Comprende las clases de máquinas y su utilidad 
+en la sociedad y el impacto ambiental que 
+produce. 
+• Identifica la importancia de las máquinas en la vida 
+del hombre y la aplicación en la eficiencia del 
+trabajo. 
+• ¿Qué es Microsoft Excel? 
+✓ Descripción y características. 
+✓ La hoja de cálculo 
+✓ Tipos de hojas de cálculos. 
+✓ Libro de trabajo 
+• Operaciones básicas de 
+Microsoft Excel. 
+✓ Entrada, salida, Abrir, guardar, 
+guardar como, etc. 
+• La barra de herramientas y el 
+área de trabajo. 
+✓ Menús y comandos en Excel 
+✓ Creación de un libro de trabajo. 
+✓ Desplazamiento en la hoja de 
+cálculo. 
+✓ Rangos y selección de celdas. 
+• Los datos en Microsoft Excel 
+✓ Introducción y tipos de datos 
+✓ Edición de una hoja de cálculo. 
+• Operaciones con las celdas 
+✓ Insertar y eliminar celdas, filas y 
+columnas. 
+✓ Insertar, eliminar, mover y copiar 
+hojas de cálculo. 
+ 
+• Las Máquinas  
+monofuncionales 
+✓  ¿Qué son l as Máquinas 
+monofuncionales? 
+✓ Clasificaciones de las máquinas 
+monofuncionales. 
+✓ Representación gráfica. 
+✓ Evolución histórica. 
+ 
+ 
+Institución Educativa Rural La Josefina 
+San Luis Antioquia 
+Dane:205660000853   Nit: 900221162-8    
+Aprobada por Resolución S 128463 del 16/10/2014     
+ ierlajosefina@hotmail.com       
+Autopista Medellín Bogotá, Km 134 
+ 
+
+
+=== PÁGINA PDF 9 ===
+ 
+ 
+2 
+TIEMPO LIBRE 
+• Reconoce principios y conceptos 
+propios de la tecnología, así 
+como momentos de la historia 
+que le han permitido al hombre 
+transformar el entorno para 
+resolver problemas y satisfacer 
+necesidades. 
+• Adquiere habilidades y destrezas 
+en el manejo de herramientas 
+ofimáticas a través de aparatos 
+tecnológicos. 
+• Hace uso de herramientas informáticas 
+como son las hojas de cálculo, en especial el 
+programa de Microsoft Excel. 
+• Utiliza las tecnologías de la información y la 
+comunicación, para apoyar los procesos de 
+aprendizaje y actividades personales 
+(recolectar, seleccionar, organizar y 
+procesar información). 
+• Comprende las representaciones gráficas 
+tridimensionales de sus ideas y diseños. 
+• Aplica eficientemente formatos a las celdas y a las 
+hojas de cálculo mejorando su presentación. 
+• Realiza adecuadamente la protección de una 
+celda, hoja de cálculo y libro mediante el ingreso 
+de una contraseña. 
+• Diseña objetos gráficos  y organig ramas con la 
+barra de dibujo del programa de Microsoft Excel. 
+• Crea tablas , modifica la estructura de las 
+columnas, filas y celdas, aplica el formato y la 
+alineación deseada, para ajustarla a las 
+necesidades. 
+• Elabora un gráfico estadístico sobre el manejo del 
+tiempo libre de sus compañeros de clases. 
+(Tiempo libre) 
+• Reconoce la importancia de la buena utilización de 
+materiales en la realización de las estructuras. 
+• Comprende la importancia que hay entre las 
+estructuras artificiales y naturales en la 
+satisfacción de necesidades. 
+• Formateo de d atos en 
+Microsoft Excel. 
+✓ Autoformato. 
+✓ Formato de fuente y números. 
+✓ Alineación de datos. 
+✓ Bordes. 
+✓ Cambio de tamaño de filas y de 
+columnas. 
+✓ Borrar una celda. 
+✓ Protección de celdas. 
+✓ Ocultar filas y columnas. 
+✓ Creación de objetos gráficos. 
+ 
+• Las Estructuras. 
+✓ ¿Qué son las estructuras? 
+✓ Clases de estructuras (Naturales y 
+artificiales). 
+✓ Propiedades de las estructuras. 
+✓ Materiales de las estructuras. 
+✓ Elaboración de estructuras 
+(materiales reciclables). 
+3 
+PRAE 
+ 
+• Reconoce principios y conceptos 
+propios de la tecnología, así 
+como momentos de la historia 
+que le han permitido al hombre 
+transformar el entorno para 
+resolver problemas y satisfacer 
+necesidades. 
+• Propone estrategias para 
+soluciones tecnológicas a 
+problemas, en diferentes 
+contextos. 
+• Hace uso de la hoja de cálculo para la 
+manipulación y organización de datos 
+numéricos que le permitan realizar cálculos 
+y representarlos a través de gráficos 
+estadísticos. 
+• Interpreta gráficos, bocetos y planos de 
+diferentes actividades. 
+• Utiliza la computadora para apoyar los 
+procesos de aprendizaje y actividades 
+personales (recolectar, seleccionar, 
+organizar y procesar información) a través 
+de gráficos estadísticos. 
+• Utiliza correctamente el asistente de funciones y 
+de gráficos en el programa de Microsoft Excel. 
+• Maneja funciones lógicas sencillas y anidadas. 
+• Ordena y filtra información en una base de datos 
+creada en el programa de Microsoft Excel. 
+• Crea reportes de una manera dinámica y versátil 
+sin la necesidad de emplear formulas. 
+• Elabora gráficos de columnas, barras, líneas, 
+circular y de dispersión en el programa de 
+Microsoft Excel. 
+• Soluciona problemas de la vida real aplicando las 
+herramientas más importantes del programa de 
+Microsoft Excel. (Prae) 
+• Reconoce diferentes fuentes de energía y explica 
+la forma de utilización de las mismas. 
+• Diferencia la importancia de las energías 
+renovables de las no renovables. 
+• Opciones avanzadas del Excel. 
+✓ Descripción de fórmulas y 
+funciones. 
+✓ Operadores de cálculo para las 
+fórmulas. 
+✓ Prioridad de operadores. 
+✓ La barra de fórmulas. 
+✓ El asistente de funciones. 
+✓ Referencias relativas y absolutas. 
+✓ Funciones más utilizadas del Excel. 
+✓ Formato condicional. 
+✓ Validación de datos. 
+✓ Listas y formularios. 
+✓ Filtros. 
+✓ Subtotales. 
+✓ Tablas dinámicas. 
+ 
+• La Energía. 
+✓ ¿Qué es la energía? 
+✓ Los Tipos de energía. 
+✓ Las fuentes y formas de energía. 
+✓ Energías limpias. Renovables. 
+✓ No renovables. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+=== PÁGINA PDF 10 ===
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+4 
+EDUCACIÓN 
+SEXUAL 
+• Reconoce principios y conceptos 
+propios de la tecnología, así 
+como momentos de la historia 
+que le han permitido al hombre 
+transformar el entorno para 
+resolver problemas y satisfacer 
+necesidades.  
+• Reconoce las causas y los efectos 
+sociales, económicos y 
+culturales de los desarrollos 
+tecnológicos y actuar en 
+consecuencia, de manera ética y 
+responsable. 
+• Propone estrategias para 
+soluciones tecnológicas a 
+problemas, en diferentes 
+contextos. 
+• Hace uso de herramientas tecnológicas y 
+recursos de la web para buscar y validar 
+información. 
+• Utiliza las tecnologías de la información y la 
+comunicación, para apoyar mis procesos de 
+aprendizaje y actividades personales  
+(recolectar, seleccionar, organizar y 
+procesar información). 
+• Reconoce las principales herramientas 
+tecnológicas de trabajo colaborativo. 
+• Identifica el funcionamiento y la 
+aplicabilidad de las herramientas 
+tecnológicas que ofrece la Web. 
+• Reconoce las características, ventajas y 
+desventajas entre la Web 1 y la Web 2. 
+• Identifica los principales servicios que ofrece la 
+Web 2.0. 
+• Diferencia los tipos de comunicación existente en 
+la Web. 
+• Utiliza el Blog como herramienta de trabajo 
+colaborativo en la publicación del proyecto de 
+sexualidad. (Sexualidad). 
+• La Web 2.0 
+✓ Introducción y evolución de la 
+Web 2.0. 
+✓ Diferencias entre la Web 1.0 y la 
+Web 2.0 y Web 3.0. 
+✓ Servicios que ofrece la Web 2.0 
+• El Blog 
+✓ Ventajas y desventajas 
+ 
+• La Comunicación 
+✓ Sincrónica 
+✓ Asincrónica 
+
+=== PÁGINA PDF 11 ===
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+MALLA CURRICULAR Área: Tecnología e Informática Grado: Decimo 
+PERIODO ESTANDAR DBA EVIDENCIA DE APRENDIZAJE EJES TEMATICOS 
+1 
+DEMOCRACIA - 
+SEGURIDAD 
+ 
+ 
+ 
+ 
+• Analiza y valora críticamente los 
+componentes y evolución de los 
+sistemas tecnológicos y las  
+estrategias para su desarrollo. 
+• Tiene en cuenta principios de 
+funcionamiento y criterios de 
+selección, para la utilización 
+eficiente y segura de artefactos, 
+productos, servicios, procesos  y 
+sistemas tecnológicos de mi 
+entorno. 
+• Resuelve problemas 
+tecnológicos y evalúa  las 
+soluciones teniendo en cuenta 
+las condiciones, restricciones y 
+especificaciones del problema 
+planteado. 
+• Reconoce las implicaciones 
+éticas, sociales y ambientales de 
+las manifestaciones tecnológicas 
+del mundo en que vive, y actúa 
+responsablemente. 
+• Indaga sobre la prospectiva e incidencia de 
+algunos desarrollos tecnológicos. 
+• Integra componentes y pone  en marcha 
+sistemas informáticos personales utilizando 
+manuales de instrucciones. 
+• Identifica las condiciones, especificaciones 
+y restricciones de  diseño, utilizadas en una 
+solución tecnológica y puede  verificar su 
+cumplimiento. 
+• Utiliza diversas estrategias tecnológicas 
+(computador y celular) para crear páginas 
+web en HTML. 
+• Diseña y desarrolla  estrategias de trabajo 
+en equipo que contribuyan a la protección 
+de sus derechos y los de su comunidad. 
+(Campañas de promoción y divulgación de 
+derechos humanos, de la juventud). 
+• Inserta texto, imágenes, tablas y videos en un a 
+página web con etiquetas HTML. 
+• Reconoce las etiquetas básicas del lenguaje HTML 
+y las aplica en la elaboración de páginas web. 
+• Elabora en HTML una página sobre la seguridad en 
+la escuela y el hogar. (seguridad)  
+• Fortalece el trabajo colaborativo a partir de la 
+interacción, el respeto y la tolerancia para mejorar 
+la producción del grupo. (Democracia). 
+• Reconoce la importancia de las innovaciones en la 
+consolidación de un producto, marca o servicio. 
+• Generalidades y etiquetas del 
+lenguaje HTML. 
+✓ Introducción al lenguaje HTML. 
+✓ Formato básico de una página 
+web. 
+✓ Formato de texto. 
+✓ Enlaces con otras páginas. 
+✓ Insertar Imágenes. 
+✓ Alineación y dimensionado de 
+imágenes 
+✓ Caracteres especiales. 
+✓ Separador horizontal. 
+✓ Fuentes. 
+✓ El fondo de una página. 
+✓ Tablas. 
+✓ Principales etiquetas HTML. 
+ 
+• Las Innovaciones 
+Tecnológicas. 
+✓ ¿Qué es innovación? 
+✓ Ejemplos de innovación. 
+✓ Tipos de innovación. 
+✓ Innovaciones de sistemas 
+tecnológicos. 
+✓ Innovaciones en búsqueda de 
+información. 
+✓ La inteligencia artificial (IA) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Institución Educativa Rural La Josefina 
+San Luis Antioquia 
+Dane:205660000853   Nit: 900221162-8    
+Aprobada por Resolución S 128463 del 16/10/2014     
+ ierlajosefina@hotmail.com       
+Autopista Medellín Bogotá, Km 134 
+ 
+
+
+=== PÁGINA PDF 12 ===
+ 
+ 
+ 
+ 
+2 
+TIEMPO LIBRE 
+• Analiza y valora críticamente los 
+componentes y evolución de los 
+sistemas tecnológicos y las  
+estrategias para su desarrollo. 
+• Tiene en cuenta principios de 
+funcionamiento y criterios de 
+selección, para la utilización 
+eficiente y segura de artefactos, 
+productos, servicios, procesos  y 
+sistemas tecnológicos de mi 
+entorno. 
+• Resuelve problemas 
+tecnológicos y evalúa  las 
+soluciones teniendo en cuenta 
+las condiciones, restricciones y 
+especificaciones del problema 
+planteado. 
+• Indaga sobre la prospectiva e incidencia de 
+algunos desarrollos tecnológicos. 
+• Integra componentes y pone  en marcha 
+sistemas informáticos personales utilizando 
+manuales e instrucciones. 
+• Identifica las condiciones, especificaciones 
+y restricciones de  diseño, utilizadas en una 
+solución tecnológica y puede  verificar su 
+cumplimiento. 
+ 
+• Crea imágenes utilizando programas de diseño 
+gráfico. 
+• Manipula imágenes digitales utilizando 
+herramientas básicas y avanzadas de Photoshop. 
+• Elabora de forma creativa manipulaciones de 
+imágenes de acuerdo con sus intereses y gustos . 
+(Tiempo libre) 
+• Identifica las diferentes alternativas o formas de 
+reproducción vegetal. 
+• Reconoce las diferentes formas de reproducción 
+asexual (Injertos) de los vegetales. 
+• Diseño gráfico con Photoshop 
+✓ Introducción a Photoshop. 
+✓ Operaciones básicas.  
+✓ Crear objetos.  
+✓ Organizar objetos. 
+✓ Dar forma a objetos.  
+✓ Transformar objetos. 
+✓ Rellenos y Bordes. 
+✓ Dibujar libremente y a partir de 
+nodos. 
+✓ Tablas. 
+✓ Aplicar efectos tridimensionales a 
+Imágenes, textos y capas. 
+ 
+• Alternativas de reproducción 
+vegetal. 
+✓ Propagación vegetativa por tallos 
+y yemas. 
+✓ Propagación vegetativa por 
+raíces. 
+✓ Propagación vegetativa por hojas. 
+✓ Propagación vegetativa por 
+estructuras florales. 
+✓ Los injertos. 
+✓ La clonación. 
+3 
+PRAE 
+ 
+• Analiza y valora críticamente los 
+componentes y evolución de los 
+sistemas tecnológicos y las  
+estrategias para su desarrollo. 
+• Tiene en cuenta principios de 
+funcionamiento y criterios de 
+selección, para la utilización 
+eficiente y segura de artefactos, 
+productos, servicios, procesos  y 
+sistemas tecnológicos de mi 
+entorno. 
+• Resuelve problemas 
+tecnológicos y evalúa  las 
+soluciones teniendo en cuenta 
+las condiciones, restricciones y 
+especificaciones del problema 
+planteado. 
+•  
+• Indaga sobre la prospectiva e incidencia de 
+algunos desarrollos tecnológicos. 
+• Integra componentes y pone  en marcha 
+sistemas informáticos personales utilizando 
+manuales de instrucciones. 
+• Identifica las condiciones, especificaciones 
+y restricciones de  diseño, utilizadas en una 
+solución tecnológica y pued e verificar su 
+cumplimiento. 
+• Se interesa por las tradiciones y valores de 
+la comunidad y participa  en la gestión de 
+iniciativas en favor del medio  ambiente, la 
+salud y la cultura ( como jornadas de 
+recolección de materiales reciclables, 
+vacunación, bazares, festivales, etc.) 
+• Identifica los elementos que hacen parte en la 
+construcción de un mapa conceptual. 
+• Elabora mapas con ceptuales teniendo en cuenta 
+un tópico determinado  
+• Elabora mapas conceptuales teniendo en cuenta 
+la inserción de hipervínculos (imágenes, videos y 
+sitios web) a través de la aplicación Cmaptool. 
+• Participa en jornadas de recolección y separación 
+de residuos sólidos y elementos tecnológicos en 
+desuso. (Prae) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+• Los mapas conceptuales – 
+Cmaptool 
+✓ ¿Qué es un mapa conceptual?  
+✓ ¿Cuáles son las características de 
+un mapa conceptual? 
+✓ Elementos de un mapa 
+conceptual 
+✓ ¿Cómo elaborar un mapa 
+conceptual? 
+✓ Páginas web y programas para 
+crearlos 
+✓ Diferencias ent re mapas 
+conceptuales y mentales. 
+✓ Utilidad y beneficios de los mapas 
+conceptuales. 
+✓ Ejemplos. 
+✓ Practica a través del programa 
+CMAPTOOL. 
+• Jornada de reciclaje. 
+
+=== PÁGINA PDF 13 ===
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+4 
+EDUCACIÓN 
+SEXUAL 
+• Analiza y valora críticamente los 
+componentes y evolución de los 
+sistemas tecnológicos y las  
+estrategias para su desarrollo. 
+• Tiene en cuenta principios de 
+funcionamiento y criterios de 
+selección, para la utilización 
+eficiente y segura de artefactos, 
+productos, servicios, procesos  y 
+sistemas tecnológicos de mi 
+entorno. 
+• Resuelve problemas 
+tecnológicos y evalúa  las 
+soluciones teniendo en cuenta 
+las condiciones, restricciones y 
+especificaciones del problema 
+planteado. 
+• Indaga sobre la prospectiva e incidencia de 
+algunos desarrollos tecnológicos. 
+• Integra componentes y pone  en marcha 
+sistemas informáticos personales utilizando 
+manuales de instrucciones. 
+• Identifica las condiciones, especificaciones 
+y restricciones de  diseño, utilizadas en una 
+solución tecnológica y pued e verificar su 
+cumplimiento. 
+• Reconoce los conceptos básicos de Google drive 
+en el tratamiento de sus diferentes aplicaciones. 
+• Desarrolla formularios para la elaboración de 
+encuestas y exámenes en la publicación de la 
+información. 
+• Administra adecuadamente las aplicaciones de 
+Google drive. 
+• Usa la computadora como herramienta de 
+comunicación e información mediante la creación 
+de encuestas dirigidas a sus compañeros y 
+miembros de la comunidad. (Sexualidad) 
+• Identifica como los cambios ambientales afectan 
+la producción de alimentos. 
+• Reconoce los factores que influyen en la 
+producción de alimentos de origen vegetal. 
+ 
+• Google Drive – creación de 
+formularios 
+✓ ¿Qué es Google Drive? 
+✓ Características de Google Drive. 
+✓ Formularios en Google Drive. 
+✓ Pasos para construir un 
+formulario. 
+✓ Tipos de preguntas 
+✓ Agregar elementos a un 
+formulario. 
+ 
+• Producción de alimentos. 
+✓ ¿Qué es la producción de los 
+alimentos? 
+✓ ¿Cómo se producen los 
+alimentos? 
+✓ ¿Cómo afecta el medio ambiente 
+la producción de alimentos? 
+✓ ¿Qué factores influyen en la 
+producción de alimentos de 
+origen vegetal? 
+ 
+• Agricultura Biodinámica. 
+✓ ¿Qué es la agricultura 
+Biodinámica? 
+✓ Origen de la agricultura 
+biodinámica. 
+✓ ¿Cómo se practica la agricultura 
+biodinámica? 
+
+=== PÁGINA PDF 14 ===
+ 
+ 
+ 
+
+=== PÁGINA PDF 15 ===
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+MALLA CURRICULAR Área: Tecnología e Informática Grado: Undécimo 
+PERIODO ESTANDAR DBA EVIDENCIA DE APRENDIZAJE EJES TEMATICOS 
+1 
+DEMOCRACIA - 
+SEGURIDAD 
+ 
+ 
+ 
+ 
+• Reconoce principios y conceptos 
+propios de la tecnología, así 
+como momentos de la historia 
+que le han permitido al hombre 
+transformar el entorno  para 
+resolver problemas y satisfacer 
+necesidades. 
+• Relaciona el funcionamiento de 
+algunos artefactos, productos, 
+procesos y sistemas tecnológicos 
+con su utilización segura. 
+• Resuelve problemas 
+tecnológicos y evalúa  las 
+soluciones teniendo en cuenta 
+las condiciones, restricciones y 
+especificaciones del problema 
+planteado. 
+• Hace uso de herramientas informáticas 
+como son las bases de datos, en especial el 
+programa de Microsoft Access. 
+• Reconoce los conceptos básicos sobre 
+bases de datos relacionales y como son de 
+gran utilidad en las grandes empresas del 
+siglo XXI. 
+• Trabaja en equipo en la realización de 
+proyectos tecnológicos y, cuando la hace, 
+involucra herramientas tecnológicas de  
+comunicación. 
+• Reconoce la estructura de una base de datos 
+relacional. 
+• Diferencia en una base de datos relacional cuando 
+es una llave primaria y cuando es llave foránea. 
+• Aplica la teoría de normalización en bases de datos 
+relacionales. 
+• Realiza diagrama de entidad - relación sobre el 
+gobierno escolar. (Democracia) 
+• Identifica los posibles fallos de seguridad que se 
+pueden dar en una base datos. (Seguridad) 
+• Reconoce las ventajas que ofrece los sistemas de 
+producción limpia en el mejoramiento del medio 
+ambiente. 
+• Identifica los factores que influyen en la 
+generación de desechos y emisiones en la 
+contaminación del medio ambiente. 
+• Introducción a los conceptos 
+de bases de datos. 
+✓ Definiciones básicas sobre bases 
+de datos. 
+✓ Relaciones y conjuntos de 
+relaciones. 
+✓ Llaves primarias y foráneas. 
+✓ Características del modelo 
+relacional. 
+✓ Estructura de las bases de datos 
+relacionales. 
+✓ Normalización de una base de 
+datos. 
+ 
+• Sistemas de producción limpia 
+✓ ¿Qué es la producción limpia? 
+✓ Ventajas de la producción limpia. 
+✓ ¿Qué son los desechos y 
+emisiones? 
+✓ ¿Qué factores influyen en la 
+generación de desechos y 
+emisiones? 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Institución Educativa Rural La Josefina 
+San Luis Antioquia 
+Dane:205660000853   Nit: 900221162-8    
+Aprobada por Resolución S 128463 del 16/10/2014     
+ ierlajosefina@hotmail.com       
+Autopista Medellín Bogotá, Km 134 
+ 
+
+
+=== PÁGINA PDF 16 ===
+ 
+ 
+2 
+TIEMPO LIBRE 
+• Resuelve problemas 
+tecnológicos y evalúa  las 
+soluciones teniendo en cuenta 
+las condiciones, restricciones y 
+especificaciones del problema 
+planteado. 
+• Adquiere habilidades y destrezas 
+en el manejo de herramientas 
+ofimáticas a través de aparatos 
+tecnológicos. 
+• Administra bases de datos utilizando la 
+herramienta Access, de acuerdo a los 
+parámetros técnicos y especificaciones 
+solicitados. 
+Utiliza las tecnologías de la información y la 
+comunicación, para apo yar los procesos de 
+aprendizaje y actividades personales (recolectar, 
+seleccionar, organizar y procesar información). 
+• Reconoce los elementos de la ventana de 
+Microsoft Access, como los menús, las  barras y el 
+área de trabajo. 
+• Pone en práctica los procedimientos para crear 
+una base de datos, diseñar tablas para organizar la 
+información en ellas y diseñar formularios de 
+entrada de datos. 
+• Elabora una base datos en Access sobre los juegos 
+tradicionales preferidos. (Tiempo libre) 
+• Identifica las 4 R como estrategia en el desarrollo 
+de soluciones sostenibles. 
+• Reconoce las diferencias entre materiales 
+reciclables, reciclados, reutilizables y 
+biodegradables. 
+• Administración de bases de 
+datos en Microsoft Access. 
+✓ Introducción a Microsoft Access. 
+✓ Diseño de una base de datos con 
+Access. 
+✓ Las tablas. 
+✓ Los campos y sus propiedades. 
+✓ Relacionar tablas. 
+✓ Los formularios. 
+✓ Ordenar, buscar, reemplazar y 
+filtrar información. 
+ 
+• Las Soluciones sostenibles 
+✓ ¿Qué son las soluciones 
+sostenibles? 
+✓ Materias primas sostenibles. 
+✓ El material biodegradable. 
+✓ Los materiales reciclables. 
+✓ Los materiales reciclados. 
+✓ Los materiales reutilizables 
+✓ Las 4 R (Reducir, reciclar, reutilizar 
+y reemplazar). 
+3 
+PRAE 
+ 
+• Reconoce principios y conceptos 
+propios de la tecnología, así 
+como momentos de la historia 
+que le han permitido al hombre 
+transformar el entorno para 
+resolver problemas y satisfacer 
+necesidades. 
+• Reconoce las implicaciones 
+éticas, sociales y ambientales de 
+las manifestaciones tecnológicas 
+del mundo en que vive y actuar 
+responsablemente. 
+• Propone estrategias para 
+soluciones tecnológicas a 
+problemas, en diferentes 
+contextos. 
+• Analiza proyectos tecnológicos en 
+desarrollo y debate el impacto de su posible 
+implementación en su comunidad. 
+• Utiliza la computadora para apoyar los 
+procesos de aprendizaje y actividades 
+personales (recolectar, seleccionar, 
+organizar y procesar información) a través 
+de gráficos estadísticos. 
+• Toma decisiones relacionadas con las 
+implicaciones sociales y ambientales de la 
+tecnología y comunica  los criterios básicos 
+que utiliza o las razones que le condujeron 
+a tomarlas.  
+• Elabora consultas e informes con bases de datos 
+relacionales en el programa de Microsoft Access. 
+• Diseña proyectos en el  programa de Microsoft  
+Access aplicando normas y técnicas que resuelven 
+problemas de la vida cotidiana. 
+• Soluciona problemas de la vida real aplicando las 
+herramientas más importantes del programa de 
+Microsoft Access. (Prae) 
+• Identifica las características de una huerta 
+agroecológica. 
+• Reconoce cada uno de los pasos para realizar una 
+huerta agroecológica. 
+• Opciones avanzadas  de 
+Microsoft Access. 
+✓ El lenguaje de consultas SQL. 
+✓ Instrucciones del Lenguaje SQL. 
+✓ Consultas sencillas. 
+✓ Consultas avanzadas con varias 
+tablas. 
+✓ Los informes. 
+✓ Personalización de informes. 
+ 
+• Huerta agroecológica 
+✓ Característica de huerta 
+agroecológica. 
+✓ Beneficios. 
+✓ ¿Cómo montar una huerta 
+agroecológica? 
+ 
+ 
+4 
+EDUCACIÓN 
+SEXUAL 
+• Reconoce principios y conceptos 
+propios de la tecnología, así 
+como momentos de la historia 
+que le han permitido al hombre 
+transformar el entorno para 
+resolver problemas y satisfacer 
+necesidades.  
+• Propone estrategias para 
+soluciones tecnológicas a 
+problemas, en diferentes 
+contextos. 
+• Hace uso de herramientas tecnológicas y 
+recursos de la W eb para buscar y validar 
+información. 
+• Utiliza las tecnologías de la información y la 
+comunicación, para apoyar mis procesos de 
+aprendizaje y actividades personales  
+(recolectar, seleccionar, organizar y 
+procesar información). 
+• Reconoce las principales herramientas 
+tecnológicas de trabajo colaborativo. 
+• Identifica el funcionamiento y la 
+aplicabilidad de las herramientas 
+tecnológicas que ofrece la Web. 
+• Identifica los servicios Web 2.0 y establece 
+diferencias entre ellos. 
+• Comprende la importancia de las redes sociales en 
+la comunicación sincrónica. 
+• Maneja herramientas tecnológicas de trabajo 
+colaborativo. 
+• Elabora una Wiki como herramienta de trabajo 
+colaborativo en la publicación de temáticas de 
+sexualidad. (Sexualidad). 
+• Reconoce los elementos que conforman un 
+sistema tecnológico (entrada, proceso y salida). 
+• Identifica y diferencia cada uno de los tipos 
+tecnológicos utilizados para satisfacer las 
+necesidades humanas. 
+• Servicios de la Web 2.0. 
+✓ Los Foros. 
+✓ Las redes sociales. 
+✓ Los blogs. 
+✓ Las Wikis. 
+✓ Los Smartphone. 
+✓ El WhatsApp. 
+ 
+• Los Sistemas Tecnológicos. 
+✓ ¿Qué es un sistema? 
+✓ Elementos de un sistema. 
+✓ Ejemplos de sistemas. 
+✓ ¿Qué es un sistema tecnológico? 
+✓ Tipos de sistemas tecnológicos. 

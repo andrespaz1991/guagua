@@ -1,5 +1,7 @@
 <?php 
 ob_start();
+require_once __DIR__ . '/../comun/vista_modulo.php';
+$urlCategoriaCurso = guagua_url_integrada('categoria_curso.php');
 
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
@@ -8,6 +10,7 @@ require_once("../comun/funciones.php");
 require_once("../comun/config.php");
 require_once("../comun/conexion.php");
 function buscar_categoria_curso($datos="",$reporte=""){
+$urlCategoriaCurso = guagua_url_integrada('categoria_curso.php');
   
 require("../comun/conexion.php");
 require_once("../comun/config.php");
@@ -68,7 +71,7 @@ echo "<p>Resultados de $minimo_usuario a $maximo_usuario del total de ".$numero_
 <th>Cantidad de Estudiantes</th>
 <th>Descripcion Categoria</th>
 <?php if ($reporte==""){ ?>
-<th colspan="2"><form id="formNuevo" name="formNuevo" method="post" action="categoria_curso.php">
+<th colspan="2"><form id="formNuevo" name="formNuevo" method="post" action="<?php echo $urlCategoriaCurso; ?>">
 <input name="cod" type="hidden" id="cod" value="0">
 <input type="submit" name="submit" id="submit" value="Nuevo">
 </form>
@@ -87,7 +90,7 @@ while($row=$consulta->fetch_assoc()){
 <td><?php echo $row['descripcion_categoria_curso']?></td>
 <?php if ($reporte==""){ ?>
 <td>
-<form id="formModificar" name="formModificar" method="post" action="categoria_curso.php">
+<form id="formModificar" name="formModificar" method="post" action="<?php echo $urlCategoriaCurso; ?>">
 <input name="cod" type="hidden" id="cod" value="<?php echo $row['id_categoria_curso']?>">
 <input class="btn btn-success" type="submit" name="submit" id="submit" value="Modificar">
 </form>
@@ -123,12 +126,12 @@ if ($eliminar = $mysqli->query($sql)){
  /*Validamos si el registro fue eliminado con éxito*/ 
 echo '
 Registro eliminado
-<meta http-equiv="refresh" content="1; url=categoria_curso.php" />
+<meta http-equiv="refresh" content="1; url=' . $urlCategoriaCurso . '" />
 '; 
 }else{
 ?>
 Eliminación fallida, por favor compruebe que la usuario no esté en uso
-<meta http-equiv="refresh" content="2; url=categoria_curso.php" />
+<meta http-equiv="refresh" content="2; url=<?php echo $urlCategoriaCurso; ?>" />
 <?php 
 }
 }
@@ -153,10 +156,10 @@ $sql = "INSERT INTO categoria_curso (`id_categoria_curso`, `nombre_categoria_cur
 if ($insertar = $mysqli->query($sql)) {
  /*Validamos si el registro fue ingresado con éxito*/ 
 echo 'Registro exitoso';
-echo '<meta http-equiv="refresh" content="1; url=categoria_curso.php" />';
+echo '<meta http-equiv="refresh" content="1; url=' . $urlCategoriaCurso . '" />';
  }else{ 
 echo 'Registro fallido';
-echo '<meta http-equiv="refresh" content="1; url=categoria_curso.php" />';
+echo '<meta http-equiv="refresh" content="1; url=' . $urlCategoriaCurso . '" />';
 }
 } /*fin Registrar*/ 
 if ($_POST['submit']=="Nuevo"){
@@ -164,7 +167,7 @@ if ($_POST['submit']=="Nuevo"){
 $textoh1 ="Registrar";
 $textobtn ="Registrar";
 
-echo '<form id="form1" name="form1" method="post" action="categoria_curso.php">
+echo '<form id="form1" name="form1" method="post" action="' . $urlCategoriaCurso . '">
 <h1>'.$textoh1.'</h1>';
 ?>
 
@@ -186,7 +189,7 @@ $row=$consulta->fetch_assoc();
 
 $textoh1 ="Modificar";
 $textobtn ="Actualizar";
-echo '<form id="form1" name="form1" method="post" action="categoria_curso.php">
+echo '<form id="form1" name="form1" method="post" action="' . $urlCategoriaCurso . '">
 <h1>'.$textoh1.'</h1>';
 ?>
 
@@ -209,11 +212,11 @@ $sql = "UPDATE categoria_curso SET id_categoria_curso='".$_POST['id_categoria_cu
 if ($actualizar = $mysqli->query($sql)) {
  /*Validamos si el registro fue ingresado con éxito*/
 echo 'Modificación exitosa';
-echo '<meta http-equiv="refresh" content="1; url=categoria_curso.php" />';
+echo '<meta http-equiv="refresh" content="1; url=' . $urlCategoriaCurso . '" />';
  }else{ 
 echo 'Modificacion fallida';
 }
-echo '<meta http-equiv="refresh" content="2; url=categoria_curso.php" />';
+echo '<meta http-equiv="refresh" content="2; url=' . $urlCategoriaCurso . '" />';
 } /*fin Actualizar*/ 
  }else{ 
  ?>
@@ -232,7 +235,8 @@ buscar_categoria_curso();
 echo '</center>';
  ?>
 <script>
-document.getElementById('menu_categoria_curso').className ='active '+document.getElementById('menu_categoria_curso').className;
+var menuCategoriaCurso = document.getElementById('menu_categoria_curso');
+if (menuCategoriaCurso) menuCategoriaCurso.classList.add('active');
 </script>
 <?php
 $contenido = ob_get_clean();

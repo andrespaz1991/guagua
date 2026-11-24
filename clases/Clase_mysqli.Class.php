@@ -16,37 +16,24 @@ class Clase_mysqli extends Comun {
     }
 
     public function conectar() {
-        // 1. Si ya existe una instancia estática previa en esta clase, la devolvemos
-        if (self::$connectionInstance !== null && !self::$connectionInstance->connect_error) {
-            return self::$connectionInstance;
+        require_once __DIR__ . '/../comun/database.php';
+        // The shared legacy handle may have been closed by another caller.
+        if (self::$connectionInstance instanceof mysqli) {
+            try {
+                if (self::$connectionInstance->ping()) return self::$connectionInstance;
+            } catch (Throwable $closed) {
+                self::$connectionInstance = null;
+            }
         }
-
-        // 2. Si comun/conexion.php ya abrió una conexión $mysqli global, la reutilizamos
-        if (isset($GLOBALS['mysqli']) && $GLOBALS['mysqli'] instanceof mysqli && !$GLOBALS['mysqli']->connect_error) {
-            self::$connectionInstance = $GLOBALS['mysqli'];
-            return self::$connectionInstance;
+        if (isset($GLOBALS['mysqli']) && $GLOBALS['mysqli'] instanceof mysqli) {
+            try {
+                if ($GLOBALS['mysqli']->ping()) {
+                    self::$connectionInstance = $GLOBALS['mysqli'];
+                    return self::$connectionInstance;
+                }
+            } catch (Throwable $closed) { /* Use a new owned connection. */ }
         }
-
-        // 3. De lo contrario, nos conectamos usando las constantes globales de config.php
-        if (defined('SERVIDORBD') && defined('USUARIOBD') && defined('CLAVEBD') && defined('BASEDEDATOS')) {
-            $hostParts = explode(':', SERVIDORBD);
-            $host = $hostParts[0];
-            $port = isset($hostParts[1]) ? (int)$hostParts[1] : 3306;
-            
-            $conexion_mysqli = @new mysqli($host, USUARIOBD, CLAVEBD, BASEDEDATOS, $port);
-        } else {
-            // Fallback por defecto si no se ha cargado config.php
-            $conexion_mysqli = @new mysqli("127.0.0.1", "root", "", "guagua", 7000);
-        }
-
-        // Manejo de errores de conexión
-        if ($conexion_mysqli->connect_error) {
-            die("Error de conexión: " . $conexion_mysqli->connect_error);
-        } else {
-            mysqli_set_charset($conexion_mysqli, 'utf8');
-        }
-        
-        self::$connectionInstance = $conexion_mysqli;
+        self::$connectionInstance = guagua_db_mysqli();
         return self::$connectionInstance;
     }
 
@@ -128,30 +115,21 @@ class Clase_mysqli extends Comun {
         }
     }
 
-    public function consultar_datos($consulta='',$mysqli_assoc=false){
-        if ($consulta==''){
-            $consulta = $_POST['consulta'];
-            $mysqli_assoc = true;
+    public function consultar_datos($consulta = '', $mysqli_assoc = false, array $parameters = []) {
+        // La consulta proviene del código; nunca tomar SQL del cuerpo HTTP.
+        if (!is_string($consulta) || !preg_match('/^\s*SELECT\b/i', $consulta)) {
+            throw new InvalidArgumentException('Proporcione una consulta SELECT explícita.');
         }
-        $consulta = str_replace("DELETE","",$consulta);
-        $consulta = str_replace("UPDATE","",$consulta);
-        $consulta = str_replace("DROP","",$consulta);
-        $consulta = str_replace("CREATE","",$consulta);
-        $consulta = str_replace("ALTER","",$consulta);
-        
-        if (strlen(stristr($consulta,"SELECT"))>0) {
-            $mysqli = $this->conectar();
-            if ($gconsulta_red = $mysqli->prepare($consulta)){
-                $gconsulta_red->execute();
-                $arraydedatos = $gconsulta_red->get_result();
-                if($mysqli_assoc){
-                    $datos = $arraydedatos->fetch_all(MYSQLI_ASSOC);
-                }else{
-                    $datos = $arraydedatos->fetch_all();
-                }
-                return json_encode($datos);
-            }
-        }
+        $connection = $this->conectar();
+        $statement = $connection->prepare($consulta);
+        if (!$statement) return null;
+        try {
+            if ($parameters) $statement->bind_param(str_repeat('s', count($parameters)), ...$parameters);
+            $statement->execute();
+            $result = $statement->get_result();
+            if (!$result) return null;
+            return json_encode($result->fetch_all($mysqli_assoc ? MYSQLI_ASSOC : MYSQLI_NUM));
+        } finally { $statement->close(); }
     }
 
     public function query_insertar($sql,$insert_id=false){

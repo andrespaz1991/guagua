@@ -1,4 +1,13 @@
 <?php
+// Esta librería también puede solicitarse directamente: no permitir dispatch anónimo.
+require_once __DIR__ . '/seguridad.php';
+if (PHP_SAPI !== 'cli' && realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? '')) === __FILE__) {
+    guagua_exigir_rol(['admin','directivo','docente','estudiante','acudiente']);
+    guagua_exigir_origen_legado();
+}
+
+$legacyRoutes = ['actualizar_posicion_portada', 'buscar_iconos', 'nuevo_foro', 'duplicar_cuestionario', 'denunciar_mensaje', 'enviar_mensaje', 'bandeja_salida', 'olvidar_usuario', 'consultar_foto', 'consultar_datos_usuario', 'revisar_adjunto', 'revisar_cuestionario', 'guardar_valoracion', 'buscar_estudiantes_actividad', 'buscar_cuestionario', 'nueva_categoria_curso', 'buscar_cuestionario_pag', 'buscar_mensaje', 'buscar_mensaje_denuncias', 'buscar_mensaje_suscripciones', 'buscar_mensaje_favoritos', 'buscar_mensaje_papelera', 'papelera_mensaje', 'cambiar_docente_asignacion', 'asignar_acudiente', 'eliminar_asignacion_acudiente', 'num_mensajes', 'denunciar_tema', 'suscribir_tema_foro', 'contar_suscripbiones', 'leer_mensaje', 'nuevo_cuestionario', 'guardar_cuestionario', 'guardar_icono', 'buscar_docente_para_asignar', 'buscar_acudiente_para_asignar', 'clonar_curso'];
+if (PHP_SAPI !== 'cli' && array_intersect($legacyRoutes,array_keys($_GET))) guagua_exigir_origen_legado();
 
 if (isset($_GET['actualizar_posicion_portada'])){
 $contenidoc = ob_get_clean();

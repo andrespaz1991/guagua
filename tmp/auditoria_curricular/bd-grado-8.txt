@@ -1,0 +1,478 @@
+
+EST 596 M1 P1 Unidad 1: Los números reales y sus aplicaciones
+DESC: Números reales.
+DBA 607: DBA 1: Construye representaciones, argumentos y ejemplos de propiedades de los números reales.
+DESC: 1. Identificar y clasificar números irracionales en contextos de medición.
+2. Aplicar propiedades de la potenciación y radicación en la resolución de problemas.
+3. Representar números reales en la recta numérica con precisión.
+CLAVES: números irracionales, potencia, radicación, representación gráfica, recta numérica
+EJE 858: Guía 1: Los números reales y la radicación. Guía 2: Aplicaciones de los números reales. Guía 3: El Teorema de Pitágoras. | None
+EVID 464: El estudiante elabora una lista de ejemplos de números irracionales, clasificándolos según su naturaleza (por ejemplo, √2, π) y justifica su clasificación con argumentos matemáticos. El estudiante presenta un problema en el que se requieren cálculos con números irracionales y resuelve el problema utilizando la potenciación y la radicación. | ia_pendiente
+
+EST 597 M1 P1 Unidad 2: El lenguaje algebraico
+DESC: Álgebra básica.
+DBA 608: DBA 2: Utiliza procesos inductivos y lenguaje algebraico para formular y poner a prueba conjeturas.
+DESC: 1. Traducir situaciones del lenguaje común al lenguaje algebraico.
+2. Evaluar expresiones algebraicas mediante el valor numérico.
+3. Identificar las partes de un monomio y un polinomio (grado, coeficiente, parte literal).
+CLAVES: lenguaje algebraico, conjeturas, ecuaciones
+EJE 859: Guía 4: El lenguaje de la matemática. Guía 5: Expresiones algebraicas. Guía 6: Los polinomios. | None
+EVID 465: El estudiante realiza una conjetura sobre la relación entre dos variables y la valida mediante un sistema de ecuaciones algebraicas. La conjetura se expresa en lenguaje común y luego se traduce al lenguaje algebraico. | ia_pendiente
+
+EST 598 M1 P2 Unidad 2: El lenguaje algebraico (Continuación)
+DESC: Refuerzo álgebra.
+DBA 609: DBA 2: Utiliza procesos inductivos y lenguaje algebraico para formular y poner a prueba conjeturas.
+DESC: 1. Traducir situaciones del lenguaje común al lenguaje algebraico.
+2. Evaluar expresiones algebraicas mediante el valor numérico.
+3. Identificar las partes de un monomio y un polinomio (grado, coeficiente, parte literal).
+CLAVES: lenguaje algebraico, traduccion, evaluación algebraica, monomio, polinomio
+EJE 860: Profundización en polinomios y expresiones algebraicas | None
+EVID 466: El estudiante realiza una serie de ejercicios que traducen situaciones del lenguaje común al lenguaje algebraico y luego evalúa la expresión algebraica mediante el valor numérico.  El estudiante identifica las partes de un monomio y un polinomio (grado, coeficiente, parte literal). | ia_pendiente
+
+EST 599 M1 P2 Unidad 3: Operaciones entre expresiones algebraicas
+DESC: Operaciones algebraicas.
+DBA 610: DBA 3: Reconoce los diferentes usos de las variables y las facultades analíticas del álgebra.
+DESC: 1. Realizar adiciones y sustracciones de polinomios reduciendo términos semejantes.
+2. Resolver multiplicaciones y divisiones de expresiones algebraicas.
+3. Aplicar las fórmulas de productos notables en ejercicios de simplificación.
+CLAVES: polinomios, adiciones, sustracciones, multiplicaciones, divisiones
+EJE 861: Guía 7: Suma y resta de expresiones algebraicas. Guía 8: Multiplicación y división. Guía 9: Los productos notables. | None
+EVID 467: El estudiante realiza la adición y sustracción de polinomios, reduciendo términos semejantes, obteniendo un resultado correcto y con una explicación clara del proceso. | ia_pendiente
+
+EST 600 M1 P3 Unidad 4: Factorización de expresiones algebraicas
+DESC: Factorización.
+DBA 611: DBA 4: Identifica y utiliza diferentes maneras de definir y medir la eficiencia de un algoritmo (enfoque en procesos algebraicos).
+DESC: 1. Descomponer expresiones algebraicas utilizando el factor común.
+2. Factorizar trinomios de cuadrado perfecto y de la forma x2+bx+c.
+3. Resolver problemas de áreas y volúmenes mediante la factorización de polinomios.
+CLAVES: factorización, trinomio, polinomio, área, volumen
+EJE 862: Guía 10: Factor común y diferencia de cuadrados. Guía 11: Factorización de trinomios. Guía 12: Cubos perfectos y otros casos de factorización. | None
+EVID 468: El estudiante realiza una factorización de un trinomio de la forma x² + bx + c, utilizando el método de factorización por agrupación y demuestra su comprensión del proceso mediante la presentación de un trabajo escrito donde explica los pasos realizados y las razones detrás de cada uno. | ia_pendiente
+
+EST 601 M1 P3 Unidad 5: Cuerpos geométricos y sus medidas
+DESC: Geometría 3D.
+DBA 612: DBA 5: Identifica y describe relaciones entre figuras bidimensionales y objetos tridimensionales.
+DESC: 1. Calcular el área superficial y el volumen de prismas y pirámides.
+2. Determinar la capacidad de cuerpos redondos (cilindros, conos y esferas).
+3. Construir modelos tridimensionales a partir de sus desarrollos planos.
+CLAVES: pirámide, área superficial, volumen, modelo tridimensional
+EJE 863: Guía 13: Prismas y pirámides. Guía 14: Los cuerpos redondos. Guía 15: Volumen de cuerpos geométricos. | None
+EVID 469: La estudiante realiza un modelo tridimensional de una pirámide con base cuadrada y altura de 10 cm, calculando su área superficial y volumen. La construcción del modelo se basa en la comprensión de las relaciones entre figuras bidimensionales y objetos tridimensionales. | ia_pendiente
+
+EST 602 M1 P4 Unidad 6: Variación, probabilidad y azar
+DESC: Estadística.
+DBA 613: DBA 6: Utiliza conceptos básicos de probabilidad y estadística para interpretar información.
+DESC: 1. Diferenciar entre variables cualitativas y cuantitativas en un estudio estadístico.
+2. Calcular medidas de tendencia central para datos agrupados y no agrupados.
+3. Determinar la probabilidad de eventos simples mediante la regla de Laplace.
+CLAVES: variables cualitativas, variables cuantitativas, promedio, mediana, desviación estándar
+EJE 864: Guía 16: Población, muestra y variables. Guía 17: Caracterización de variables cuantitativas. Guía 18: Probabilidad y azar. | None
+EVID 470: El estudiante elabora un diagrama de Venn que compara las características de variables cualitativas y cuantitativas en un contexto real. El diagrama incluye ejemplos de cada tipo de variable y explica la diferencia entre ellas. | ia_pendiente
+
+EST 603 M6 P1 Módulo 1: La reproducción y la herencia de los seres vivos
+DESC: Reproducción y genética.
+DBA 614: DBA 1: Explica la transmisión de información genética de padres a hijos.
+DBA 2: Comprende que la reproducción permite la preservación de las especies.
+DESC: 1. Diferenciar los procesos de mitosis y meiosis en la división celular.
+2. Resolver problemas de genética mendeliana mediante cuadros de Punnett.
+3. Comparar las ventajas y desventajas de la reproducción sexual y asexual.
+CLAVES: mitosis, meiosis, herencia genética, reproducción sexual, reproducción asexual
+EJE 865: Guía 1: ¿Por qué nos parecemos a nuestros padres? Guía 2: ¿Cómo heredamos la información genética? Guía 3: El ser humano y la reproducción. | None
+EVID 471: El estudiante elabora un video explicativo sobre la transmisión de información genética de padres a hijos, utilizando imágenes y diagramas para ilustrar el proceso. | ia_pendiente
+
+EST 604 M6 P1 Módulo 2: Relación y control en los seres vivos
+DESC: Sistemas de relación.
+DBA 615: DBA 3: Analiza los sistemas de relación (nervioso y endocrino) y explica cómo permiten responder a estímulos.
+DESC: 1. Describir el funcionamiento de la neurona y la transmisión del impulso nervioso.
+2. Identificar las glándulas del sistema endocrino y su papel en la homeostasis.
+3. Explicar la coordinación motora y el papel de los sentidos en la relación con el medio.
+CLAVES: neuronas, impulso nervioso, glándulas endocrinas, homeostasis
+EJE 866: Guía 4: ¿Cómo responden los seres vivos a los cambios en su medio? Guía 5: El sistema nervioso y el sistema endocrino. Guía 6: ¿Cómo nos movemos y cómo se coordina nuestro cuerpo? | None
+EVID 472: La estudiante elabora un modelo tridimensional de una neurona, incluyendo sus componentes principales (dendritas, soma, axon) y la transmisión del impulso nervioso mediante diagramas o ilustraciones. La estudiante presenta una exposición oral sobre la función de las glándulas endocrinas y su rol en la homeostasis, utilizando ejemplos específicos. | ia_pendiente
+
+EST 605 M6 P2 Módulo 2: Relación y control en los seres vivos (Continuación)
+DESC: Refuerzo sistemas.
+DBA 616: DBA 3: Analiza los sistemas de relación (nervioso y endocrino) y explica cómo permiten responder a estímulos.
+DESC: 1. Describir el funcionamiento de la neurona y la transmisión del impulso nervioso.
+2. Identificar las glándulas del sistema endocrino y su papel en la homeostasis.
+3. Explicar la coordinación motora y el papel de los sentidos en la relación con el medio.
+CLAVES: neurona, sistema nervioso, glándulas endocrinas, homeostasis, coordinación motora, sentidos
+EJE 867: Coordinación del cuerpo y respuesta a estímulos | None
+EVID 473: La estudiante elabora un modelo tridimensional de la estructura de una neurona, incluyendo su cuerpo celular, dendritas, axón y sinapsis. La estudiante presenta un informe escrito que describe las funciones de los diferentes componentes del sistema nervioso y cómo se transmiten impulsos nerviosos. | ia_pendiente
+
+EST 606 M6 P2 Módulo 3: El mundo de la química
+DESC: Química básica.
+DBA 617: DBA 5: Explica la organización de la tabla periódica y la formación de compuestos químicos a partir de enlaces.
+DESC: 1. Diferenciar entre sustancias puras, mezclas homogéneas y heterogéneas.
+2. Interpretar las propiedades periódicas de los elementos en la tabla periódica.
+3. Aplicar las normas básicas de nomenclatura para compuestos químicos simples.
+CLAVES: sustancias puras, mezclas homogéneas, mezclas heterogéneas
+EJE 868: Guía 7: ¿De qué están hechas las cosas? Guía 8: ¿Cómo se organizan los elementos químicos? Guía 9: Los compuestos químicos y su utilidad. | None
+EVID 474: La estudiante elabora un diagrama que muestra la clasificación de sustancias puras, mezclas homogéneas y heterogéneas, incluyendo ejemplos de cada tipo. La descripción del diagrama debe incluir las propiedades que definen a cada tipo de sustancia. | ia_pendiente
+
+EST 607 M6 P3 Módulo 4: Materia y energía
+DESC: Física de la materia.
+DBA 618: DBA 4: Comprende que el comportamiento de los gases y cambios de estado se explican por el modelo cinético molecular.
+DESC: 1. Caracterizar los estados de la materia basándose en la teoría cinético-molecular.
+2. Identificar diferentes formas de energía y sus procesos de transformación.
+3. Explicar los principios básicos de la electricidad y el magnetismo en circuitos simples.
+CLAVES: modelo cinético molecular, comportamiento de los gases, teoría cinética molecular
+EJE 869: Guía 10: ¿Qué son los estados de la materia? Guía 11: ¿Qué es la energía y cómo se transforma? Guía 12: La electricidad y el magnetismo. | None
+EVID 475: El estudiante elabora un modelo cinético molecular para explicar el comportamiento de los gases, incluyendo la presión, volumen y temperatura. El modelo se basa en la teoría cinética molecular y se presenta de manera clara y concisa. | ia_pendiente
+
+EST 608 M6 P3 Módulo 5: La Tierra y el Universo
+DESC: Geología.
+DBA 619: DBA 4 (Parcial): Analiza la relación entre la ubicación geográfica de los recursos y la dinámica terrestre.
+DESC: 1. Reconocer la estructura interna de la Tierra y la dinámica de las placas tectónicas.
+2. Analizar los fenómenos geológicos como volcanes y sismos y su impacto en el paisaje.
+3. Describir la organización del Sistema Solar y las teorías sobre el origen del Universo.
+CLAVES: dinámica terrestre, placas tectónicas, volcanes, sismos
+EJE 870: Guía 13: ¿Cómo es nuestro planeta por dentro y por fuera? Guía 14: Los fenómenos geológicos y su impacto. Guía 15: El Universo y el Sistema Solar. | None
+EVID 476: El estudiante elabora un mapa conceptual que relaciona la ubicación geográfica de los recursos naturales con sus procesos geológicos, incluyendo ejemplos como volcanes y sismos. El mapa incluye información sobre la estructura interna de la Tierra y la dinámica de las placas tectónicas. | ia_pendiente
+
+EST 609 M6 P4 Módulo 6: Ecología y medio ambiente
+DESC: Ecología.
+DBA 620: DBA 2 (Parcial): Evalúa el impacto de las actividades humanas sobre los ecosistemas y el equilibrio ecológico.
+DESC: 1. Explicar los flujos de energía y materia a través de las redes tróficas.
+2. Modelar los ciclos biogeoquímicos (agua, carbono, nitrógeno) y su importancia vital.
+3. Proponer estrategias de desarrollo sostenible para mitigar problemáticas ambientales locales.
+CLAVES: flujos de energía, ciclos biogeoquímicos, desarrollo sostenible
+EJE 871: Guía 16: ¿Cómo interactúan los seres vivos con su medio? Guía 17: Los ciclos biogeoquímicos y el equilibrio ecológico. Guía 18: Problemáticas ambientales y desarrollo sostenible. | None
+EVID 477: El estudiante elabora un plan de acción para la implementación de una granja urbana sostenible, incluyendo la selección de plantas nativas, compostaje y gestión de agua. El plan se basa en la comprensión de los ciclos biogeoquímicos y la importancia del equilibrio ecológico. | ia_pendiente
+
+EST 610 M3 P1 Unidad 1: Revoluciones que cambiaron al mundo
+DESC: Historia universal s.XIX.
+DBA 621: DBA 1: Analiza los procesos de expansión territorial en los Estados Unidos y las transformaciones económicas y políticas en el siglo XIX.
+DESC: 1. Caracterizar las transformaciones sociales y económicas de la Revolución Industrial.
+2. Analizar el impacto político y los derechos derivados de la Revolución Francesa.
+3. Relacionar el pensamiento ilustrado con los movimientos de independencia americanos.
+CLAVES: revolución industrial, pensamiento ilustrado, movimientos de independencia, transformación social
+EJE 872: Guía 1: ¿Por qué fue importante la Revolución Industrial? Guía 2: La Revolución Francesa, un cambio para la humanidad. Guía 3: La época de las revoluciones. | None
+EVID 478: El estudiante elabora un ensayo argumentativo sobre la relación entre el pensamiento ilustrado y los movimientos de independencia americana, utilizando como fuentes bibliográficas relevantes. El ensayo debe incluir una introducción, desarrollo con argumentos claros y conclusiones que reflejen la comprensión del tema. | ia_pendiente
+
+EST 611 M3 P1 Unidad 2: Los orígenes de nuestra nación
+DESC: Independencia de Colombia.
+DBA 622: DBA 2: Evalúa la influencia de los procesos de independencia en la configuración de las naciones latinoamericanas y de Colombia.
+DESC: 1. Identificar las causas internas y externas que llevaron a la crisis del imperio español.
+2. Comparar los proyectos políticos de Bolivar y Santander en la formación de la República.
+3. Analizar la importancia de la Constitución de Cúcuta en la organización territorial.
+CLAVES: crisis del imperio español, causas internas, causas externas, desigualdad social, resistencia indígena
+EJE 873: Guía 4: ¿Cómo nos independizamos? Guía 5: Colombia, un país en formación. Guía 6: ¿Cómo se organizó la nación colombiana? | None
+EVID 479: El estudiante elabora un ensayo argumentativo que analice las causas internas y externas del colapso del imperio español en América, incluyendo la influencia de factores como la desigualdad social y la resistencia indígena. El ensayo se sustenta en información proveniente de fuentes confiables y presenta una estructura lógica con argumentos sólidos. | ia_pendiente
+
+EST 612 M3 P2 Unidad 2: Los orígenes de nuestra nación (Continuación)
+DESC: Refuerzo independencia.
+DBA 623: DBA 2: Evalúa la influencia de los procesos de independencia en la configuración de las naciones latinoamericanas y de Colombia.
+DESC: 1. Identificar las causas internas y externas que llevaron a la crisis del imperio español.
+2. Comparar los proyectos políticos de Bolivar y Santander en la formación de la República.
+3. Analizar la importancia de la Constitución de Cúcuta en la organización territorial.
+CLAVES: crisis del imperio español, causas internas, causas externas, imperio español
+EJE 874: Organización territorial de la nación colombiana | None
+EVID 480: La estudiante elabora un ensayo argumentativo que analiza las causas internas y externas que llevaron a la crisis del imperio español en América Latina, incluyendo ejemplos específicos de cada proceso. El ensayo debe incluir al menos tres fuentes académicas relevantes. | ia_pendiente
+
+EST 613 M3 P2 Unidad 3: Colombia: un país por construir
+DESC: Colombia s.XIX.
+DBA 624: DBA 3: Comprende la conformación del Estado-Nación en Colombia durante el siglo XIX (reformas liberales, guerras civiles).
+DESC: 1. Explicar las diferencias ideológicas que dieron origen a los partidos tradicionales.
+2. Evaluar el impacto de las reformas liberales de mitad de siglo en la estructura agraria.
+3. Reconocer la importancia de la economía cafetera en la inserción de Colombia al mercado mundial.
+CLAVES: reformas liberales, guerras civiles, estado-nación, actores sociales
+EJE 875: Guía 7: Los partidos políticos en Colombia. Guía 8: Las reformas liberales de mitad de siglo. Guía 9: Economía y sociedad en el siglo XIX. | None
+EVID 481: El estudiante elabora un mapa conceptual que relaciona las reformas liberales con los diferentes actores sociales de la época, identificando sus consecuencias y impacto en el proceso de formación del Estado-Nación. | ia_pendiente
+
+EST 614 M3 P3 Unidad 4: El siglo XX: cambios y conflictos
+DESC: Colombia s.XX.
+DBA 625: DBA 5: Analiza los cambios politicos y económicos de la primera mitad del siglo XX en Colombia (Hegemonía conservadora, República Liberal).
+DESC: 1. Describir los procesos de modernización y urbanización en Colombia durante el inicio del siglo XX.
+2. Analizar las causas y consecuencias de la pérdida de Panamá para el Estado colombiano.
+3. Identificar las causas del periodo conocido como "La Violencia" y sus efectos en el campesinado.
+CLAVES: hegemonía conservadora, república liberal, políticas económicas, figuras políticas, acciones claves
+EJE 876: Guía 10: Colombia a principios del siglo XX. Guía 11: La República Liberal y los cambios sociales. Guía 12: De la violencia a la búsqueda de la paz. | None
+EVID 482: El estudiante elabora un mapa conceptual que relaciona las principales figuras políticas de la época con sus ideas ideológicas y acciones claves. El mapa incluye ejemplos como José María Córdova, Alfonso López Pumarejo y Carlos Lleras Restrepo. | ia_pendiente
+
+EST 615 M3 P3 Unidad 5: El universo y la Tierra
+DESC: Astronomía y geografía.
+DBA 626: DBA 4 (Parcial): Analiza la relación entre la ubicación geográfica de los recursos naturales y el desarrollo de actividades económicas.
+DESC: 1. Explicar las principales teorías sobre el origen y evolución del universo.
+2. Identificar la estructura del sistema solar y la posición de la Tierra en el cosmos.
+3. Reconocer la dinámica interna y externa de la Tierra y su importancia para la vida humana.
+CLAVES: recursos naturales, desarrollo económico, localización geográfica
+EJE 877: Guía 13: El origen del universo. Guía 14: Nuestro sistema solar. Guía 15: La Tierra: nuestra casa. | None
+EVID 483: El estudiante elabora un mapa conceptual que relaciona la ubicación geográfica de los recursos naturales con las actividades económicas en su región. | ia_pendiente
+
+EST 616 M3 P4 Unidad 6: La población en el mundo actual
+DESC: Demografía.
+DBA 627: DBA 6: Analiza los problemas demográficos en el mundo contemporáneo (crecimiento, distribución y migración).
+DESC: 1. Interpretar mapas y gráficos sobre la distribución de la población en los continentes.
+2. Analizar las causas y consecuencias de los movimientos migratorios actuales.
+3. Evaluar el impacto de la explosión demográfica en el medio ambiente y la seguridad alimentaria.
+CLAVES: crecimiento poblacional, distribución geográfica, migración, intervención social
+EJE 878: Guía 16: ¿Cómo se distribuye la población mundial? Guía 17: Dinámica de la población. Guía 18: Problemáticas de la población en el mundo actual. | None
+EVID 484: El estudiante elabora un mapa conceptual que relaciona las causas del crecimiento poblacional con la distribución geográfica de las poblaciones. Además, presenta una propuesta de intervención social para abordar el problema de la migración en un contexto global. | ia_pendiente
+
+EST 617 M12 P1 Unidad 1: La magia de nuestras raíces
+DESC: Literatura colonial.
+DBA 628: DBA 3: Analiza textos literarios a partir de sus rasgos formales y el contexto en el que han sido producidos.
+DESC: 1. Identificar las características de la narrativa precolombina y su valor cultural.
+2. Analizar crónicas de la conquista como visiones del encuentro cultural.
+3. Reconocer la influencia del Barroco y la Ilustración en la literatura colonial.
+CLAVES: rasgos formales, contexto, revisión crítica
+EJE 879: Guía 1: Lo que nos cuentan los antepasados. Guía 2: Un encuentro de dos mundos. Guía 3: La voz de la Colonia en América. | None
+EVID 485: El estudiante identifica los rasgos formales de un texto literario (estructura, estilo, tono, etc.) y explica su influencia en la comprensión del mensaje. | ia_pendiente
+
+EST 618 M12 P1 Unidad 2: Literatura de la independencia y de la nación
+DESC: Literatura s.XIX.
+DBA 629: DBA 4: Caracteriza los temas, momentos y autores de la literatura latinoamericana (Romanticismo y Realismo).
+DESC: 1. Explicar los rasgos del Romanticismo y su relación con los ideales de libertad.
+2. Analizar el Realismo y el Costumbrismo como reflejo de la sociedad del siglo XIX.
+3. Producir textos literarios que exploren la identidad nacional.
+CLAVES: romanticismo, realismo, autores, temas
+EJE 880: Guía 4: El sentimiento en la literatura. Guía 5: Retratando la realidad social. Guía 6: Autores y obras del siglo XIX. | None
+EVID 486: El estudiante podrá identificar al menos dos autores del Romanticismo y dos del Realismo en la literatura latinoamericana.  Además, el estudiante podrá describir los principales temas abordados por cada autor. | ia_pendiente
+
+EST 619 M12 P2 Unidad 2: Literatura de la independencia y de la nación (Continuación)
+DESC: Refuerzo literatura.
+DBA 630: DBA 4: Caracteriza los temas, momentos y autores de la literatura latinoamericana.
+DESC: 1. Explicar los rasgos del Romanticismo y su relación con los ideales de libertad.
+2. Analizar el Realismo y el Costumbrismo como reflejo de la sociedad del siglo XIX.
+3. Producir textos literarios que exploren la identidad nacional.
+CLAVES: literatura latinoamericana, temas, autores, contexto histórico
+EJE 881: Escritura creativa nacional | None
+EVID 487: El estudiante elabora un mapa conceptual que incluye los principales temas abordados en la literatura latinoamericana del siglo XX, así como sus autores más representativos. | ia_pendiente
+
+EST 620 M12 P2 Unidad 3: Hacia una literatura propia
+DESC: Modernismo y vanguardias.
+DBA 631: DBA 4 (Parcial): Evalúa la influencia de los movimientos literarios en la configuración de la identidad cultural.
+DESC: 1. Diferenciar las innovaciones métricas y estéticas del Modernismo.
+2. Evaluar el impacto de las Vanguardias en la ruptura de la tradición literaria.
+3. Identificar las voces contemporáneas en la literatura latinoamericana.
+CLAVES: modernismo, identidad cultural, realismo
+EJE 882: Guía 7: La elegancia del Modernismo. Guía 8: Ruptura y experimentación: las vanguardias. Guía 9: Hacia una literatura auténtica. | None
+EVID 488: El estudiante elabora un ensayo argumentativo que analiza la influencia del Modernismo en la construcción de la identidad cultural colombiana, utilizando como evidencia textual ejemplos literarios de autores colombianos del periodo. | ia_pendiente
+
+EST 621 M12 P3 Unidad 4: Imágenes y mensajes
+DESC: Medios de comunicación.
+DBA 632: DBA 7: Determina la influencia de la publicidad y los medios de comunicación en la construcción de identidades sociales.
+DESC: 1. Interpretar el lenguaje de la imagen y su capacidad persuasiva en la publicidad.
+2. Analizar críticamente la información emitida por los medios masivos.
+3. Decodificar sistemas simbólicos y semióticos en contextos cotidianos.
+CLAVES: identidad social, publicidad, medios de comunicación, persuasión, construcción de imagen
+EJE 883: Guía 10: El poder de la imagen y la publicidad. Guía 11: Los medios de comunicación masiva. Guía 12: Señales y símbolos en la comunicación. | None
+EVID 489: El estudiante elabora un ensayo argumentativo que analiza el impacto de una campaña publicitaria específica en la percepción social de un producto o servicio, identificando las estrategias utilizadas para construir la identidad del consumidor. | ia_pendiente
+
+EST 622 M12 P3 Unidad 5: La ética de la comunicación
+DESC: Ética y comunicación.
+DBA 633: DBA 8: Produce textos orales y escritos en los que se evidencia el respeto por las normas lingüísticas y la ética de la comunicación.
+DESC: 1. Aplicar la ética y el respeto por el turno de palabra en procesos dialógicos.
+2. Valorar la diversidad lingüística de Colombia como patrimonio cultural.
+3. Analizar la responsabilidad ética de los usuarios en entornos virtuales y redes.
+CLAVES: gramática, ortografia, puntuación, respeto, ética
+EJE 884: Guía 13: La ética en el diálogo. Guía 14: Diversidad de lenguas y culturas. Guía 15: Responsabilidad en la red. | None
+EVID 490: El estudiante presenta un texto escrito con gramática correcta, ortografía precisa y uso adecuado de signos de puntuación. El estudiante también realiza una presentación oral en la que se evidencia respeto por las normas lingüísticas y la ética de la comunicación. | ia_pendiente
+
+EST 623 M12 P4 Unidad 6: Produciendo textos
+DESC: Producción textual.
+DBA 634: DBA 6: Produce textos académicos (ensayos, reseñas, reportes) empleando procesos de planeación, textualización y revisión.
+DESC: 1. Redactar ensayos argumentativos siguiendo una estructura lógica y coherente.
+2. Utilizar mecanismos de cohesión y conectores para dar fluidez al texto.
+3. Participar en talleres de coevaluación y revisión de la producción escrita.
+CLAVES: planeación, textualización, revisión, argumentación, análisis crítico, resolución de problemas
+EJE 885: Guía 16: El arte de escribir ensayos. Guía 17: Coherencia y cohesión textual. Guía 18: Taller de producción escrita y revisión. | None
+EVID 491: El estudiante elabora un ensayo argumentativo sobre la importancia del reciclaje en la comunidad, utilizando una estructura narrativa con introducción, desarrollo y conclusión. El ensayo presenta un análisis crítico de la problemática y propone soluciones. | ia_pendiente
+
+EST 656 M9 P3 diseña los formatos operativos para su proyecto, estableciendo cronogramas de actividades (Diagramas de Gantt), indicadores de cumplimiento y presupuestos financieros detallados
+DESC: 
+DBA 667: diseña los formatos operativos para su proyecto, estableciendo cronogramas de actividades (Diagramas de Gantt), indicadores de cumplimiento y presupuestos financieros detallados|
+DESC: 
+CLAVES: diagramas de gantt, presupuesto financiero, indicadores de cumplimiento
+EJE 917: Entender quién administra el municipio, qué es el Plan de Desarrollo y el POT, y cómo afectan al sector rural|,Analizar la oferta climática local para saber qué cultivos o animales se adaptan mejor al entorno | 
+EVID 524: El estudiante elabora un diagrama de Gantt con las tareas del proyecto, incluyendo fechas límite y responsables. El estudiante presenta un presupuesto detallado con costos por cada etapa del proyecto. | ia_pendiente
+
+EST 662 M8 P4 Preveo las consecuencias, a corto y largo plazo, de mis acciones y evito aquellas que pueden causar sufrimiento; utilizo estrategias creativas para solucionar conflictos y analizo críticamente los conflictos entre grupos.
+DESC: Diálogo respetuoso, solución creativa de conflictos y análisis de situaciones sociales del entorno.
+DBA 672: Expone sus posiciones y escucha en situaciones de conflicto.
+DESC: Interviene en conversaciones teniendo en cuenta el buen trato con las personas de su entorno y analiza críticamente conflictos en su barrio, ciudad y país.
+CLAVES: resolución de conflictos, participación activa, comunicación efectiva
+EJE 922: Unidad 4. La conversación: el trato, la forma y las visitas. | Aborda necesidades sociales regionales, recursos naturales, proyecto de vida, equidad y participación en situaciones donde se respetan o vulneran derechos.
+EVID 529: El estudiante participa activamente en la resolución de conflictos, presentando su postura con claridad y respeto a las diferentes perspectivas. | ia_pendiente
+
+EST 675 M4 P1 Aplica conceptos de seguridad personal y ejecuta tareas del contexto familiar e institucional de manera eficiente.
+DESC: Explora movimientos y expresa emociones de forma corporal y gestual.
+DBA 685: Aplica higiene corporal antes, durante y después de la actividad física.
+DESC: Reconoce alimentación e hidratación saludables, calentamiento, lesiones y primeros auxilios.
+CLAVES: higiene corporal, rutina, práctica deportiva
+EJE 935: Sistemas corporales y autocuidado. | Sistemas digestivo y excretor, hidratación, calentamiento, lesiones deportivas, primeros auxilios e higiene.
+EVID 542: El estudiante realiza una rutina de higiene personal con agua y jabón antes, durante y después de realizar ejercicio físico en clase. | ia_pendiente
+
+EST 676 M4 P2 Reconoce diferencias individuales y se integra mediante actividades lúdicas, deportivas y corporales.
+DESC: Fortalece cooperación, comunicación y socialización en deportes de conjunto.
+DBA 686: Valora el trabajo en equipo durante la práctica deportiva.
+DESC: Comprende capacidades físicas condicionales y organización deportiva.
+CLAVES: trabajo en equipo, colaboración, análisis crítico
+EJE 936: Condición física y deportes de conjunto. | Test de condición física, fuerza, resistencia, velocidad, flexibilidad, deportes de conjunto y organización deportiva.
+EVID 543: El estudiante participa activamente en las actividades grupales de práctica deportiva, colaborando con sus compañeros para alcanzar objetivos comunes. | ia_pendiente
+
+EST 677 M4 P3 Reconoce diferencias individuales y se integra con facilidad mediante actividades lúdicas y deportivas.
+DESC: Desarrolla ritmo, expresión corporal y participación recreativa.
+DBA 687: Conoce conceptos básicos de rítmica aplicada a actividades deportivas y lúdicas.
+DESC: Participa en actividades de juego, gimnasia, danza y recreación.
+CLAVES: rítmica, movimiento, patrones, entonación, entrenamiento
+EJE 937: Rítmica, lúdica y recreación. | Juego, lúdica, recreación, deporte, gimnasia, aeróbicos, caminatas, ciclo paseos y expresiones rítmico-danzarias.
+EVID 544: El estudiante realiza una secuencia de movimientos ritmos en un espacio libre, utilizando diferentes patrones de ritmo y entonación. | ia_pendiente
+
+EST 678 M4 P4 Realiza ejercicio físico sistemáticamente para mejorar funciones orgánicas y corporales.
+DESC: Promueve autocuidado y prácticas saludables en actividades deportivas.
+DBA 688: Identifica hábitos que fortalecen autocuidado y salud en la práctica cotidiana.
+DESC: Reconoce estilos de vida saludable como parte de su bienestar integral.
+CLAVES: autocuidado, salud, ejercicio físico, alimentación, descanso
+EJE 938: Estilos de vida saludable. | Autocuidado, hábitos saludables y actividad física responsable.
+EVID 545: El estudiante elabora un plan de autocuidado semanal con acciones específicas para mejorar su salud física y mental, incluyendo actividades como ejercicio físico regular, alimentación saludable y descanso adecuado. | ia_pendiente
+
+EST 707 M9 P1 Módulo 1: caracteriza el municipio para reconocer oportunidades de PPP.
+DESC: Analiza administración municipal, oferta climática y actores sociales.
+DBA 717: Interpreta información territorial para elaborar diagnóstico municipal.
+DESC: Desarrolla las guías 1 y 2 del PPP.
+CLAVES: interpretación de datos, diagnóstico municipal, análisis territorial, fortalezas, debilidades, oportunidades y amenazas
+EJE 967: Módulo 1 - Guías 1 y 2. | Funcionamiento del municipio y oferta climática municipal.
+EVID 574: El estudiante elabora un mapa conceptual que sintetiza los principales indicadores demográficos, económicos y sociales del municipio, utilizando fuentes de información pública. | ia_pendiente
+
+EST 708 M9 P1 Módulo 2: identifica actores y posibilidades de emprendimiento.
+DESC: Reconoce dinámicas sociales y oportunidades del municipio.
+DBA 718: Relaciona actores municipales con posibilidades de emprendimiento.
+DESC: Desarrolla las guías 3 y 4 del PPP.
+CLAVES: emprendimiento, plan de negocios, oportunidades, desafíos
+EJE 968: Módulo 2 - Guías 3 y 4. | Conformación del municipio e identificación de posibilidades de emprendimiento.
+EVID 575: El estudiante elabora un plan de negocios que incluya una propuesta de valor para un producto o servicio que pueda ser desarrollado en el municipio. | ia_pendiente
+
+EST 709 M9 P2 Módulo 3: usa información del entorno para resolver problemas.
+DESC: Analiza datos para identificar alternativas de solución.
+DBA 719: Selecciona información pertinente para definir un emprendimiento.
+DESC: Desarrolla las guías 5 y 6 del PPP.
+CLAVES: mercado, competencia, recursos
+EJE 969: Módulo 3 - Guías 5 y 6. | Uso de información del entorno y alternativas de solución.
+EVID 576: El estudiante identifica tres fuentes de información relevantes para la definición de un emprendimiento: mercado, competencia y recursos. | ia_pendiente
+
+EST 710 M9 P2 Módulo 4: elabora un plan de negocios sostenible.
+DESC: Organiza emprendimiento, recursos y criterios de sostenibilidad.
+DBA 720: Formula componentes básicos de un plan de negocios.
+DESC: Desarrolla las guías 7, 8 y 9 del PPP.
+CLAVES: plan de negocios, mercado objetivo, propuesta de valor, análisis de la competencia
+EJE 970: Módulo 4 - Guías 7 a 9. | Organización del emprendimiento, recursos y diseño sostenible.
+EVID 577: El estudiante elabora un plan de negocios para una empresa ficticia, identificando los componentes clave como mercado objetivo, propuesta de valor y análisis de la competencia. | ia_pendiente
+
+EST 711 M9 P3 Módulo 5: gestiona el proyecto mediante un plan de trabajo.
+DESC: Organiza tareas y tiempos de ejecución del emprendimiento.
+DBA 721: Elabora un plan de trabajo y cronograma de actividades.
+DESC: Desarrolla las guías 10 y 11 del PPP.
+CLAVES: plan de trabajo, cronograma, actividades, responsabilidades, recursos
+EJE 971: Módulo 5 - Guías 10 y 11. | Plan de trabajo y programación temporal de actividades.
+EVID 578: El estudiante elabora un plan de trabajo con una descripción detallada de las actividades a realizar, incluyendo fechas límite y responsables, para un proyecto de emprendimiento. | ia_pendiente
+
+EST 712 M9 P3 Módulo 6: verifica la ejecución e implementación del proyecto.
+DESC: Hace seguimiento al cumplimiento de actividades y resultados.
+DBA 722: Registra evidencias de avances en el PPP.
+DESC: Desarrolla las guías 12 y 13 del PPP.
+CLAVES: plan de acción, presentación oral, progreso del proyecto, superación de desafíos
+EJE 972: Módulo 6 - Guías 12 y 13. | Verificación de actividades y parámetros para medir proyectos.
+EVID 579: El estudiante presenta un plan de acción para la implementación del PPP, con una descripción clara de los pasos a seguir y las acciones que se realizarán. | ia_pendiente
+
+EST 713 M9 P4 Módulo 7: evalúa el emprendimiento y su proyección comunitaria.
+DESC: Analiza momentos y aspectos de evaluación del proyecto.
+DBA 723: Formula acciones de proyección comunitaria a partir de resultados.
+DESC: Desarrolla las guías 14, 15 y 16 del PPP.
+CLAVES: proyectos, proyección comunitaria, análisis de mercado, plan de acción
+EJE 973: Módulo 7 - Guías 14 a 16. | Momentos y aspectos de evaluación y actividad de proyección comunitaria.
+EVID 580: El estudiante elabora un plan de acción para la implementación de una iniciativa social en su comunidad, basándose en datos obtenidos de un estudio de mercado y análisis de necesidades. | ia_pendiente
+
+EST 714 M9 P4 Módulo 8: comunica y fortalece el PPP en la comunidad.
+DESC: Participa en feria de emprendimiento y reconoce opciones de financiación.
+DBA 724: Socializa propuestas y explora fondos concursables de forma responsable.
+DESC: Desarrolla las guías 17 y 18 del PPP.
+CLAVES: propuesta de negocio, plan financiero, fondos concursables, investigación
+EJE 974: Módulo 8 - Guías 17 y 18. | Feria de emprendimiento y participación en fondos concursables.
+EVID 581: El estudiante elabora una propuesta de negocio que incluye un plan financiero realista, incluyendo fuentes de financiamiento potenciales. El estudiante presenta su propuesta a un panel de jueces y responde preguntas sobre la viabilidad económica del proyecto. | ia_pendiente
+
+EST 739 M7 P1 Diseña páginas web básicas y analiza innovaciones.
+DESC: Aplica lenguaje HTML en productos digitales.
+DBA 749: Integra componentes informáticos siguiendo instrucciones.
+DESC: Crea páginas con texto, enlaces, imágenes y tablas.
+CLAVES: instalación, programa, lenguaje de programación, estructura lógica, variables
+EJE 999: HTML e innovación tecnológica. | Etiquetas, formato de página, enlaces, imágenes y tablas.
+EVID 606: El estudiante realiza la instalación de un programa informático siguiendo las instrucciones del manual, utilizando comandos específicos en el sistema operativo. | ia_pendiente
+
+EST 740 M7 P2 Crea producciones gráficas digitales.
+DESC: Usa herramientas de diseño y reconoce alternativas sostenibles.
+DBA 750: Integra componentes y recursos digitales.
+DESC: Edita objetos, imágenes y capas.
+CLAVES: herramientas digitales, recursos digitales, creación de proyectos
+EJE 1000: Diseño gráfico y sostenibilidad. | Photoshop, objetos, efectos y reproducción vegetal.
+EVID 607: El estudiante podrá identificar y utilizar al menos tres herramientas digitales para la creación de un proyecto tecnológico. | ia_pendiente
+
+EST 741 M7 P3 Organiza información mediante representaciones gráficas.
+DESC: Construye mapas conceptuales digitales.
+DBA 751: Indaga y comunica con herramientas tecnológicas.
+DESC: Diferencia mapas conceptuales y mentales.
+CLAVES: investigación, herramientas tecnológicas, comunicación, infografía, video tutorial
+EJE 1001: Mapas conceptuales. | CmapTools, características, elementos y utilidad.
+EVID 608: El estudiante realiza una investigación sobre un tema tecnológico utilizando Google Scholar, extrae información relevante y presenta los resultados en formato de infografía. | ia_pendiente
+
+EST 742 M7 P4 Usa herramientas colaborativas para recolectar información.
+DESC: Diseña formularios digitales y analiza producción de alimentos.
+DBA 752: Integra recursos informáticos personales.
+DESC: Crea formularios y organiza preguntas.
+CLAVES: integración de recursos informáticos, diseño digital, manejo responsable de la información
+EJE 1002: Google Drive y formularios. | Drive, formularios y producción sostenible de alimentos.
+EVID 609: El estudiante realiza una presentación digital utilizando un software de diseño gráfico, con la información recopilada de su investigación personal sobre el uso responsable de los recursos informáticos. | ia_pendiente
+
+EST 763 M5 P1 Reconoce relaciones entre números reales y medidas geométricas.
+DESC: Estima y compara longitudes usando representaciones numéricas.
+DBA 773: Usa números racionales e irracionales en contextos geométricos.
+DESC: Representa longitudes y medidas en la recta numérica.
+CLAVES: números racionales, irracionales, geometría, longitud, área, volumen
+EJE 1023: Medida y números reales. | Longitudes, aproximaciones, raíces y representación de medidas.
+EVID 630: El estudiante realiza un problema de geometría utilizando tanto números racionales como irracionales para calcular la longitud de un segmento, la área de un triángulo y el volumen de una pirámide. | ia_pendiente
+
+EST 764 M5 P2 Formula relaciones algebraicas a partir de figuras geométricas.
+DESC: Representa perímetros y áreas mediante expresiones algebraicas.
+DBA 774: Construye equivalencias entre expresiones algebraicas.
+DESC: Resuelve ecuaciones relacionadas con medidas de figuras.
+CLAVES: expresiones algebraicas, gráficas, relación
+EJE 1024: Álgebra y geometría. | Expresiones algebraicas de perímetro y área; ecuaciones geométricas.
+EVID 631: El estudiante realiza una tabla de equivalencias entre expresiones algebraicas y sus correspondientes gráficas, mostrando la relación entre ambas. | ia_pendiente
+
+EST 765 M5 P3 Establece relaciones entre áreas y productos notables.
+DESC: Usa representaciones geométricas para justificar identidades algebraicas.
+DBA 775: Relaciona factorización con modelos de área.
+DESC: Construye y analiza figuras para verificar productos y cocientes notables.
+CLAVES: factorización, modelo de área, figura geométrica
+EJE 1025: Geometría de las expresiones algebraicas. | Modelos de área, productos notables, factorización y triángulo de Pascal.
+EVID 632: El estudiante puede relacionar la factorización de un polinomio con el modelo de área de una figura geométrica, utilizando ejemplos concretos. | ia_pendiente
+
+EST 766 M5 P4 Aplica propiedades de triángulos para resolver problemas.
+DESC: Justifica relaciones de congruencia, longitud y área.
+DBA 776: Utiliza el teorema de Pitágoras en situaciones geométricas.
+DESC: Clasifica triángulos y calcula longitudes y áreas.
+CLAVES: teorema de pitágoras, triángulo rectángulo, geometría, cálculo de longitud, análisis de situaciones
+EJE 1026: Triángulos y teorema de Pitágoras. | Ángulos, clasificación, congruencia, áreas y teorema de Pitágoras.
+EVID 633: El estudiante aplica el teorema de Pitágoras para calcular la longitud de un lado de un triángulo rectángulo, utilizando una tabla de valores y un diagrama. El estudiante presenta un trabajo escrito con la solución del problema. | ia_pendiente
+
+EST 785 M8 P1 Entiende la importancia del afecto y el cuidado mutuo pese a diferencias, disgustos o conflictos.
+DESC: Reconoce deberes cívicos y respeto por sí mismo y por los demás.
+DBA 795: Comprende que el autocuidado y los hábitos saludables favorecen su bienestar y relaciones.
+DESC: Identifica deberes con la patria, los semejantes y el respeto por las diferencias.
+CLAVES: None
+EJE 1045: Unidad 1. Deberes para con la patria. | Deberes consigo mismo y con los semejantes, respeto por las diferencias y pluralidad.
+
+EST 786 M8 P2 Comprende que los conflictos pueden manejarse de manera constructiva y supera emociones para perdonar y reconciliarse.
+DESC: Promueve diálogo, convivencia y reconocimiento de los derechos de las personas.
+DBA 796: Identifica puntos de vista en conflictos y analiza alternativas de solución.
+DESC: Reconoce la importancia de políticas de inclusión y respeto por la diversidad.
+CLAVES: None
+EJE 1046: Unidad 2. Convivencia y derechos. | Conflicto, reconciliación, puntos de vista, inclusión y respeto a las diferencias.
+
+EST 787 M8 P3 Reconoce que todos los seres humanos tienen el mismo valor y rechaza el racismo y la discriminación.
+DESC: Fortalece la convivencia pacífica mediante el respeto por la diversidad cultural.
+DBA 797: Expone sus posiciones y escucha en situaciones de conflicto.
+DESC: Reconoce consecuencias de sus acciones y usa mecanismos democráticos para defender derechos.
+CLAVES: None
+EJE 1047: Unidad 3. La diversidad y la convivencia. | Valores, respeto, pluralidad, identidad cultural y rechazo de la discriminación.

@@ -1,0 +1,810 @@
+
+EST 7 M4 P1 Desarrollo físico y respeto al cuerpo humano
+DESC: Reconoce y valora su potencial biológico y psicológico para realizar tareas motrices. Incrementa las capacidades y posibilidades físicas en el contexto del respeto a la vida y del cuerpo humano cumpliendo normas de seguridad e higiene.
+DBA 7: Comprende la importancia de aplicar los criterios de trabajo para el desarrollo de la personalidad. Participa en la aplicación de pruebas físicas como herramienta para conocer sus posibilidades corporales y motrices.
+DESC: Comprende la importancia de aplicar los criterios de trabajo para el desarrollo de la personalidad. Participa en la aplicación de pruebas físicas como herramienta para conocer sus posibilidades corporales y motrices.
+CLAVES: desarrollo físico, prueba física, control corporal, personalidad
+EJE 7: Sistemas del cuerpo humano y fortalecimiento físico | Sistemas del cuerpo humano: respiratorio y circulatorio, articulaciones del cuerpo humano, fortalecimiento de la condición física, actividad física y estilos de vida saludable, manejo de lesiones deportivas.
+EVID 7: Reconoce las funciones específicas del sistema respiratorio y circulatorio y su influencia en la actividad física. Identifica los movimientos articulares del cuerpo, reconoce lesiones deportivas y sabe manejarlas adecuadamente en la práctica deportiva. Respeta las normas que propicien el juego limpio. | manual
+
+EST 9 M7 P1 Reconocimiento de tecnología y su aplicación práctica
+DESC: Reconoce principios y conceptos propios de la tecnología, así como momentos de la historia que le han permitido al hombre transformar el entorno para resolver problemas y satisfacer necesidades. Relaciona el funcionamiento de artefactos, productos, procesos y sistemas tecnológicos con su utilización segura. Adquiere habilidades y destrezas en el manejo de herramientas ofimáticas a través de aparatos tecnológicos.
+DBA 9: Hace uso de herramientas informáticas como las hojas de cálculo, en especial el programa de Microsoft Excel. Reconoce la importancia de las hojas de cálculo en el proceso contable de las empresas y en la elaboración de su presupuesto familiar. Interpreta el contenido de una factura de servicios públicos. Ejerce su papel de ciudadano responsable con el uso adecuado de sistemas tecnológicos.
+DESC: Hace uso de herramientas informáticas como las hojas de cálculo, en especial el programa de Microsoft Excel. Reconoce la importancia de las hojas de cálculo en el proceso contable de las empresas y en la elaboración de su presupuesto familiar. Interpreta el contenido de una factura de servicios públicos. Ejerce su papel de ciudadano responsable con el uso adecuado de sistemas tecnológicos.
+CLAVES: hojas de cálculo, presupuesto familiar, contabilidad
+EJE 9: Microsoft Excel y máquinas monofuncionales | 1. ¿Qué es Microsoft Excel?: descripción, características, y tipos de hojas de cálculo. Operaciones básicas como abrir, guardar, y editar libros de trabajo. Manejo de la barra de herramientas, menús, comandos, y rangos de celdas. Introducción de datos y edición. 2. Operaciones con celdas: insertar y eliminar celdas, filas, columnas, y hojas de cálculo. 3. Máquinas monofuncionales: definición, clasificación, representación gráfica, y evolución histórica.
+EVID 9: Maneja conceptos básicos y partes de la ventana principal en Microsoft Excel. Practica combinaciones de teclas para desplazarse en el programa. Elabora correctamente fórmulas utilizando operadores matemáticos básicos. Realiza tablas y gráficos sobre el proceso de elección del representante estudiantil y encuestas relacionadas con el uso adecuado de sistemas tecnológicos. Destaca el aporte de máquinas simples a las actividades cotidianas, comprendiendo su utilidad e impacto ambiental. | manual
+
+EST 13 M9 P1 Mentalidad emprendedora
+DESC: Vivencia la mentalidad emprendedora.
+DBA 13: Comprende, vivencia y valora la mentalidad emprendedora como estrategia para mejorar su calidad de vida, la de su familia e impactar positivamente su entorno lejano y cercano.
+DESC: Comprende, vivencia y valora la mentalidad emprendedora como estrategia para mejorar su calidad de vida, la de su familia e impactar positivamente su entorno lejano y cercano.
+CLAVES: mentalidad emprendedora, plan de negocios, análisis de mercado, propuesta de valor
+EJE 17: Conceptos clave de emprendimiento | Caracterización económica. Aptitudes, habilidades y competencias. Riesgo. Empleabilidad.
+EVID 18: Entiende la realización de los diagnósticos en el emprendimiento.
+Realiza diagnósticos en propuestas de emprendimiento.
+Resalta la importancia del diagnóstico en el emprendimiento.
+Analiza una necesidad turística y plantea una sociedad comandita sobre las oportunidades que ofrece el diagnóstico. | manual
+
+EST 18 M9 P2 Aplica el ciclo contable
+DESC: Aplica el ciclo contable
+DBA 18: Conoce, aplica y aprecia el ciclo contable de una empresa bajo una información financiera básica.
+Genera diagnósticos en oportunidades emprendedoras.
+DESC: Conoce, aplica y aprecia el ciclo contable de una empresa bajo una información financiera básica.
+Genera diagnósticos en oportunidades emprendedoras.
+CLAVES: ciclo contable, diagnóstico financiero, análisis de oportunidades
+EJE 22: Diagnóstico, emprendimiento, turismo y oportunidades | Diagnóstico
+Emprendimiento
+Turismo
+oportunidades
+EVID 24: Entiende la realización de los diagnósticos en el emprendimiento.
+Realiza diagnósticos en propuestas de emprendimiento.
+Resalta la importancia del diagnóstico en el emprendimiento.
+Analiza una necesidad turística y plantea una sociedad comandita sobre las oportunidades que ofrece el diagnóstico. | manual
+
+EST 20 M4 P2 Reconoce las diferencias individuales y el carácter único de cada persona y se integra con facilidad a través de actividades lúdicas y/o deportivas. Realiza de manera sistemática ejercicio físico para el mejoramiento de mis funciones orgánicas y corporales. Valora la competencia deportiva como un escenario para mi desarrollo personal. Mantiene y respeto las normas de juego y contribuye a la creación de nuevas.
+DESC: Reconoce las diferencias individuales y el carácter único de cada persona y se integra con facilidad a través de actividades lúdicas y/o deportivas. Realiza de manera sistemática ejercicio físico para el mejoramiento de mis funciones orgánicas y corporales. Valora la competencia deportiva como un escenario para mi desarrollo personal. Mantiene y respeto las normas de juego y contribuye a la creación de nuevas.
+DBA 20: Relaciona variaciones en la respiración durante la actividad física y relajación. Aplica reglas sencillas en diferentes prácticas deportivas individuales y de grupo.
+Identifica hábitos de comportamiento saludable para el adecuado desarrollo de la actividad física.
+DESC: Relaciona variaciones en la respiración durante la actividad física y relajación. Aplica reglas sencillas en diferentes prácticas deportivas individuales y de grupo.
+Identifica hábitos de comportamiento saludable para el adecuado desarrollo de la actividad física.
+CLAVES: respiración, relajación, reglas de juego, participación, competencia
+EVID 26: Reconoce planos y ejes de movimiento y ubica su cuerpo de acuerdo con éstos.
+Comprendo y mejoro el desarrollo de mis capacidades coordinativas básicas y especiales en forma gradual.
+Diferencia distintas manifestaciones de las actividades gimnásticas.
+Asimila las pruebas de pista y campo desde el ámbito perceptivo motriz.
+Fortalece conceptos sobre el ritmo por medio de la consulta.
+Incluye la danza como elemento fundamental para el desarrollo del ritmo. | manual
+
+EST 24 M7 P2 Reconoce principios y conceptos propios de la tecnología, así como momentos de la historia que le han permitido al hombre transformar el entorno para resolver problemas y satisfacer necesidades. Adquiere habilidades y destrezas en el manejo de herramientas ofimáticas a través de aparatos tecnológicos.
+DESC: Reconoce principios y conceptos propios de la tecnología, así como momentos de la historia que le han permitido al hombre transformar el entorno para resolver problemas y satisfacer necesidades. Adquiere habilidades y destrezas en el manejo de herramientas ofimáticas a través de aparatos tecnológicos.
+DBA 24: Hace uso de herramientas informáticas como son las hojas de cálculo, en especial el programa de Microsoft Excel.
+Utiliza las tecnologías de la información y la comunicación, para apoyar los procesos de aprendizaje y actividades personales (recolectar, seleccionar, organizar y procesar información).
+Comprende las representaciones gráficas tridimensionales de sus ideas y diseños.
+DESC: Hace uso de herramientas informáticas como son las hojas de cálculo, en especial el programa de Microsoft Excel.
+Utiliza las tecnologías de la información y la comunicación, para apoyar los procesos de aprendizaje y actividades personales (recolectar, seleccionar, organizar y procesar información).
+Comprende las representaciones gráficas tridimensionales de sus ideas y diseños.
+CLAVES: herramientas informáticas, organización, gestión de tiempo, representaciones gráficas
+EVID 30: Aplica eficientemente formatos a las celdas y a las hojas de cálculo mejorando su presentación.
+Realiza adecuadamente la protección de una celda, hoja de cálculo y libro mediante el ingreso de una contraseña.
+Diseña objetos gráficos y organigramas con la barra de dibujo del programa de Microsoft Excel.
+Crea tablas, modifica la estructura de las columnas, filas y celdas, aplica el formato y la alineación deseada, para ajustarla a las necesidades.
+Elabora un gráfico estadístico sobre el manejo del tiempo libre de sus compañeros de clases. (Tiempo libre)
+Reconoce la importancia de la buena utilización de materiales en la realización de las estructuras.
+Comprende la importancia que hay entre las estructuras artificiales y naturales en la satisfacción de necesidades. | manual
+
+EST 32 M9 P3 Aplica los principios de organización empresarial
+DESC: Aplica los principios de organización empresarial
+DBA 32: •	Conoce; aplica y resalta los principios y estrategias de manejo; organización y estructuración empresarial.
+•	Reconoce las tendencias emprendedoras del entorno
+DESC: None
+CLAVES: estructura empresarial, organización, marketing, gestión de recursos humanos
+EJE 32: Mi cronograma de tareas, El termómetro del éxito, Cuentas y presupuestos,Vigilando el progreso | 
+EVID 38: •	Identifica las tendencias de emprendimiento de la localidad.
+•	Reflexiona sobre la eficiencia de la tendencias de emprendimiento de la localidad
+•	Identifica los agentes contaminantes de la localidad
+•	Propone creativamente planes de contingencia para evitar riesgos | manual
+
+EST 34 M4 P3 •	Recupera; conserva y mejora el ambiente como escenario propicio para la práctica de actividad física.
+•	Reconoce las diferencias individuales y el carácter único de cada persona y se integra con facilidad a través de actividades lúdicas y/o deportivas.
+•	Realiza de manera sistemática ejercicio físico para el mejoramiento de las funciones orgánicas y corporales.
+•	Participa en la creación de normas de juego y las tengo en cuenta para las actividades programadas en clase.
+DESC: •	Recupera; conserva y mejora el ambiente como escenario propicio para la práctica de actividad física.
+•	Reconoce las diferencias individuales y el carácter único de cada persona y se integra con facilidad a través de actividades lúdicas y/o deportivas.
+•	Realiza de manera sistemática ejercicio físico para el mejoramiento de las funciones orgánicas y corporales.
+•	Participa en la creación de normas de juego y las tengo en cuenta para las actividades programadas en clase.
+DBA 34: •	Reconoce la importancia de un ambiente limpio y seguro para la práctica de actividad física y participa activamente en su conservación.
+•	Implementa prácticas de reciclaje y reducción de residuos en el entorno escolar y comunitario para mantener un espacio propicio para la actividad física.
+DESC: None
+CLAVES: reciclaje, inclusión, normas de juego, ambiente propicio
+EJE 34: •	Movimientos articulares.
+•	Test de aptitud física.
+•	Fundamentos Básicos de la condición física: Carga y Adaptación | •	Movimientos articulares.
+•	Test de aptitud física.
+•	Fundamentos Básicos de la condición física: Carga y Adaptación
+EVID 40: •	Reconoce los movimientos articulares que se realizan en el cuerpo humano.
+•	Diferencia los test que permiten evaluar cada una de las capacidades físicas.
+•	Identifica fundamentos básicos de la condición física para aplicarlos en el entrenamiento.
+•	Identifica factores y características colectivas determinantes de los deportes de conjunto.
+•	Clasifica los sistemas de eliminación de acuerdo con características de los participantes y del entorno.
+•	Reconocer la importancia de mantener los escenarios deportivos y espacios utilizados para realizar actividades físicas limpios preservando su buen estado.  | manual
+
+EST 38 M7 P3 •	Reconoce principios y conceptos propios de la tecnología; así como momentos de la historia que le han permitido al hombre transformar el entorno para resolver problemas y satisfacer necesidades.
+•	Adquiere habilidades y destrezas en el manejo de herramientas ofimáticas a través de aparatos tecnológicos.
+DESC: •	Reconoce principios y conceptos propios de la tecnología; así como momentos de la historia que le han permitido al hombre transformar el entorno para resolver problemas y satisfacer necesidades.
+•	Adquiere habilidades y destrezas en el manejo de herramientas ofimáticas a través de aparatos tecnológicos.
+DBA 38: •	Hace uso de herramientas informáticas como son las hojas de cálculo; en especial el programa de Microsoft Excel.
+•	Utiliza las tecnologías de la información y la comunicación; para apoyar los procesos de aprendizaje y actividades personales (recolectar; seleccionar; organizar y procesar información).
+•	Comprende las representaciones gráficas tridimensionales de sus ideas y diseños.
+DESC: None
+CLAVES: herramientas informáticas, organización, representaciones gráficas
+EVID 44: •	Aplica eficientemente formatos a las celdas y a las hojas de cálculo mejorando su presentación.
+•	Realiza adecuadamente la protección de una celda; hoja de cálculo y libro mediante el ingreso de una contraseña.
+•	Diseña objetos gráficos y organigramas con la barra de dibujo del programa de Microsoft Excel.
+•	Crea tablas; modifica la estructura de las columnas; filas y celdas; aplica el formato y la alineación deseada; para ajustarla a las necesidades.
+•	Elabora un gráfico estadístico sobre el manejo del tiempo libre de sus compañeros de clases. (Tiempo libre)
+•	Reconoce la importancia de la buena utilización de materiales en la realización de las estructuras.
+•	Comprende la importancia que hay entre las estructuras artificiales y naturales en la satisfacción de necesidades. | manual
+
+EST 158 M9 P4 Respeta la legislaci¢n comercial
+DESC: None
+DBA 146: Conoce  aplica y respeta la legislaci¢n comercial  tributaria y laboral vigente en un contexto empresarial
+DESC: None
+CLAVES: legislación comercial, tributaria, laboral, plan de acción, debate
+EJE 59: Labor | None
+EJE 60: Emprendimiento | None
+EJE 61: Retenci¢n en la fuente | None
+EJE 62: IVA | None
+EJE 63: Cuidado personal | None
+EVID 232: Establece una diferenciaci¢n entre emprendimiento y labor | manual
+EVID 233: Identifica la labor en las persona de la comunidad | manual
+EVID 234: Entiende qu‚ es el IVA y retenci¢n en la fuente | manual
+EVID 235: Reconoce los impuestos en productos de cuidado personal y corporal. | manual
+
+EST 160 M4 P4 Realiza de manera sistem tica ejercicio f¡sico para el mejoramiento de mis funciones org nicas y corporales.
+DESC: None
+DBA 149: Identifica los diferentes h bitos que aportaran a implementar en sus pr cticas deportivas diarias el autocuidado y practicas saludables.
+DESC: None
+CLAVES: autocuidado, ejercicio físico, salud, rutina diaria
+EJE 70: Estilos de vida saludable: | None
+EVID 240: Relaciona y comparo los conceptos de juego  l£dica  recreaci¢n y deporte. | manual
+EVID 241: Conoce diversos estilos de vida saludable y los aprovecha para su disfrute. | manual
+
+EST 164 M7 P4 Reconoce principios y conceptos propios de la tecnolog¡a  as¡ como momentos de la historia que le han permitido al hombre transformar el entorno para resolver problemas y satisfacer necesidades.
+*	Relaciona el funcionamiento de algunos artefactos  productos  procesos y sistemas tecnol¢gicos con su utilizaci¢n segura.
+*	Adquiere habilidades y destrezas en el manejo de herramientas ofim ticas a trav‚s de aparatos tecnol¢gicos.
+DESC: None
+DBA 161: Hace uso de herramientas inform ticas como son las hojas de c lculo  en especial el programa de Microsoft Excel.
+DESC: None
+CLAVES: herramientas informáticas, seguridad informática, planificación, análisis
+EJE 178: ¨Qu‚ es Microsoft Excel* | None
+EJE 179: Descripci¢n y caracter¡sticas. | None
+EJE 180: La hoja de c lculo | None
+EJE 181: Tipos de hojas de c lculos. | None
+EJE 182: Libro de trabajo | None
+EJE 183: Operaciones b sicas de Microsoft Excel. | None
+EJE 184: Entrada  salida  Abrir  guardar  guardar como  etc. | None
+EJE 185: La barra de herramientas y el  rea de trabajo. | None
+EJE 186: Men£s y comandos en Excel | None
+EJE 187: Creaci¢n de un libro de trabajo. | None
+EJE 188: Desplazamiento en la hoja de c lculo. | None
+EJE 189: Rangos y selecci¢n de celdas. | None
+EJE 190: Los datos en Microsoft Excel | None
+EJE 191: Introducci¢n y tipos de datos | None
+EJE 192: Edici¢n de una hoja de c lculo. | None
+EJE 193: Operaciones con las celdas | None
+EJE 194: Insertar y eliminar celdas  filas y columnas. | None
+EJE 195: Insertar  eliminar  mover y copiar hojas de c lculo. | None
+EJE 196: Las M quinas monofuncionales | None
+EJE 197: ¨Qu‚ son las M quinas monofuncionales* | None
+EJE 198: Clasificaciones de las m quinas monofuncionales. | None
+EJE 199: Representaci¢n gr fica. | None
+EJE 200: Evoluci¢n hist¢rica. | None
+EJE 201: Formateo de datos en Microsoft Excel. | None
+EJE 202: Autoformato. | None
+EJE 203: Formato de fuente y n£meros. | None
+EJE 204: Alineaci¢n de datos. | None
+EJE 205: Bordes. | None
+EJE 206: Cambio de tama¤o de filas y de columnas. | None
+EJE 207: Borrar una celda. | None
+EJE 208: Protecci¢n de celdas. | None
+EJE 209: Ocultar filas y columnas. | None
+EJE 210: Creaci¢n de objetos gr ficos. | None
+EJE 211: Las Estructuras. | None
+EJE 212: ¨Qu‚ son las estructuras* | None
+EJE 213: Clases de estructuras (Naturales y artificiales). | None
+EJE 214: Propiedades de las estructuras. | None
+EJE 215: Materiales de las estructuras. | None
+EJE 216: Elaboraci¢n de estructuras (materiales reciclables). | None
+EVID 328: Maneja conceptos b sicos  partes de la ventana principal y opciones importantes de la hoja de c lculo de Microsoft Excel. | manual
+EVID 329: Practica las combinaciones de teclas que permiten el desplazamiento del puntero de celda en el Microsoft Excel. | manual
+EVID 330: Elabora correctamente formulas utilizando los operadores matem ticos b sicos. | manual
+EVID 331: Realiza tablas y gr ficos sobre el proceso de elecci¢n del representante estudiantil. (Democracia) | manual
+EVID 332: Elabora tablas y gr ficos a partir de encuestas sobre el uso adecuado de sistemas tecnol¢gicos. (Seguridad) | manual
+EVID 333: Destaca el aporte de las m quinas simples a las actividades cotidianas de los seres vivos. | manual
+EVID 334: Comprende las clases de m quinas y su utilidad en la sociedad y el impacto ambiental que produce. | manual
+EVID 335: Identifica la importancia de las m quinas en la vida del hombre y la aplicaci¢n en la eficiencia del trabajo. | manual
+DBA 162: Reconoce la importancia de las hojas de c lculo en el proceso contable de las empresas y elaboraci¢n de su presupuesto familiar.
+DESC: None
+CLAVES: hojas de cálculo, presupuesto familiar, gestión financiera
+EJE 217: ¨Qu‚ es Microsoft Excel* | None
+EJE 218: Descripci¢n y caracter¡sticas. | None
+EJE 219: La hoja de c lculo | None
+EJE 220: Tipos de hojas de c lculos. | None
+EJE 221: Libro de trabajo | None
+EJE 222: Operaciones b sicas de Microsoft Excel. | None
+EJE 223: Entrada  salida  Abrir  guardar  guardar como  etc. | None
+EJE 224: La barra de herramientas y el  rea de trabajo. | None
+EJE 225: Men£s y comandos en Excel | None
+EJE 226: Creaci¢n de un libro de trabajo. | None
+EJE 227: Desplazamiento en la hoja de c lculo. | None
+EJE 228: Rangos y selecci¢n de celdas. | None
+EJE 229: Los datos en Microsoft Excel | None
+EJE 230: Introducci¢n y tipos de datos | None
+EJE 231: Edici¢n de una hoja de c lculo. | None
+EJE 232: Operaciones con las celdas | None
+EJE 233: Insertar y eliminar celdas  filas y columnas. | None
+EJE 234: Insertar  eliminar  mover y copiar hojas de c lculo. | None
+EJE 235: Las M quinas monofuncionales | None
+EJE 236: ¨Qu‚ son las M quinas monofuncionales* | None
+EJE 237: Clasificaciones de las m quinas monofuncionales. | None
+EJE 238: Representaci¢n gr fica. | None
+EJE 239: Evoluci¢n hist¢rica. | None
+EJE 240: Formateo de datos en Microsoft Excel. | None
+EJE 241: Autoformato. | None
+EJE 242: Formato de fuente y n£meros. | None
+EJE 243: Alineaci¢n de datos. | None
+EJE 244: Bordes. | None
+EJE 245: Cambio de tama¤o de filas y de columnas. | None
+EJE 246: Borrar una celda. | None
+EJE 247: Protecci¢n de celdas. | None
+EJE 248: Ocultar filas y columnas. | None
+EJE 249: Creaci¢n de objetos gr ficos. | None
+EJE 250: Las Estructuras. | None
+EJE 251: ¨Qu‚ son las estructuras* | None
+EJE 252: Clases de estructuras (Naturales y artificiales). | None
+EJE 253: Propiedades de las estructuras. | None
+EJE 254: Materiales de las estructuras. | None
+EJE 255: Elaboraci¢n de estructuras (materiales reciclables). | None
+EVID 336: Maneja conceptos b sicos  partes de la ventana principal y opciones importantes de la hoja de c lculo de Microsoft Excel. | manual
+EVID 337: Practica las combinaciones de teclas que permiten el desplazamiento del puntero de celda en el Microsoft Excel. | manual
+EVID 338: Elabora correctamente formulas utilizando los operadores matem ticos b sicos. | manual
+EVID 339: Realiza tablas y gr ficos sobre el proceso de elecci¢n del representante estudiantil. (Democracia) | manual
+EVID 340: Elabora tablas y gr ficos a partir de encuestas sobre el uso adecuado de sistemas tecnol¢gicos. (Seguridad) | manual
+EVID 341: Destaca el aporte de las m quinas simples a las actividades cotidianas de los seres vivos. | manual
+EVID 342: Comprende las clases de m quinas y su utilidad en la sociedad y el impacto ambiental que produce. | manual
+EVID 343: Identifica la importancia de las m quinas en la vida del hombre y la aplicaci¢n en la eficiencia del trabajo. | manual
+DBA 163: Interpreta el contenido de	una factura de servicios p£blicos.
+DESC: None
+CLAVES: consumo energético, seguridad informática, utilidad de dispositivos tecnológicos
+EJE 256: ¨Qu‚ es Microsoft Excel* | None
+EJE 257: Descripci¢n y caracter¡sticas. | None
+EJE 258: La hoja de c lculo | None
+EJE 259: Tipos de hojas de c lculos. | None
+EJE 260: Libro de trabajo | None
+EJE 261: Operaciones b sicas de Microsoft Excel. | None
+EJE 262: Entrada  salida  Abrir  guardar  guardar como  etc. | None
+EJE 263: La barra de herramientas y el  rea de trabajo. | None
+EJE 264: Men£s y comandos en Excel | None
+EJE 265: Creaci¢n de un libro de trabajo. | None
+EJE 266: Desplazamiento en la hoja de c lculo. | None
+EJE 267: Rangos y selecci¢n de celdas. | None
+EJE 268: Los datos en Microsoft Excel | None
+EJE 269: Introducci¢n y tipos de datos | None
+EJE 270: Edici¢n de una hoja de c lculo. | None
+EJE 271: Operaciones con las celdas | None
+EJE 272: Insertar y eliminar celdas  filas y columnas. | None
+EJE 273: Insertar  eliminar  mover y copiar hojas de c lculo. | None
+EJE 274: Las M quinas monofuncionales | None
+EJE 275: ¨Qu‚ son las M quinas monofuncionales* | None
+EJE 276: Clasificaciones de las m quinas monofuncionales. | None
+EJE 277: Representaci¢n gr fica. | None
+EJE 278: Evoluci¢n hist¢rica. | None
+EJE 279: Formateo de datos en Microsoft Excel. | None
+EJE 280: Autoformato. | None
+EJE 281: Formato de fuente y n£meros. | None
+EJE 282: Alineaci¢n de datos. | None
+EJE 283: Bordes. | None
+EJE 284: Cambio de tama¤o de filas y de columnas. | None
+EJE 285: Borrar una celda. | None
+EJE 286: Protecci¢n de celdas. | None
+EJE 287: Ocultar filas y columnas. | None
+EJE 288: Creaci¢n de objetos gr ficos. | None
+EJE 289: Las Estructuras. | None
+EJE 290: ¨Qu‚ son las estructuras* | None
+EJE 291: Clases de estructuras (Naturales y artificiales). | None
+EJE 292: Propiedades de las estructuras. | None
+EJE 293: Materiales de las estructuras. | None
+EJE 294: Elaboraci¢n de estructuras (materiales reciclables). | None
+EVID 344: Maneja conceptos b sicos  partes de la ventana principal y opciones importantes de la hoja de c lculo de Microsoft Excel. | manual
+EVID 345: Practica las combinaciones de teclas que permiten el desplazamiento del puntero de celda en el Microsoft Excel. | manual
+EVID 346: Elabora correctamente formulas utilizando los operadores matem ticos b sicos. | manual
+EVID 347: Realiza tablas y gr ficos sobre el proceso de elecci¢n del representante estudiantil. (Democracia) | manual
+EVID 348: Elabora tablas y gr ficos a partir de encuestas sobre el uso adecuado de sistemas tecnol¢gicos. (Seguridad) | manual
+EVID 349: Destaca el aporte de las m quinas simples a las actividades cotidianas de los seres vivos. | manual
+EVID 350: Comprende las clases de m quinas y su utilidad en la sociedad y el impacto ambiental que produce. | manual
+EVID 351: Identifica la importancia de las m quinas en la vida del hombre y la aplicaci¢n en la eficiencia del trabajo. | manual
+DBA 164: Ejerce su papel	de ciudadano responsable con el uso adecuado de los sistemas tecnol¢gicos (transporte  ahorro de energ¡a  etc.)
+DESC: None
+CLAVES: huella ambiental, uso responsable, tecnología, gestión de recursos
+EJE 295: ¨Qu‚ es Microsoft Excel* | None
+EJE 296: Descripci¢n y caracter¡sticas. | None
+EJE 297: La hoja de c lculo | None
+EJE 298: Tipos de hojas de c lculos. | None
+EJE 299: Libro de trabajo | None
+EJE 300: Operaciones b sicas de Microsoft Excel. | None
+EJE 301: Entrada  salida  Abrir  guardar  guardar como  etc. | None
+EJE 302: La barra de herramientas y el  rea de trabajo. | None
+EJE 303: Men£s y comandos en Excel | None
+EJE 304: Creaci¢n de un libro de trabajo. | None
+EJE 305: Desplazamiento en la hoja de c lculo. | None
+EJE 306: Rangos y selecci¢n de celdas. | None
+EJE 307: Los datos en Microsoft Excel | None
+EJE 308: Introducci¢n y tipos de datos | None
+EJE 309: Edici¢n de una hoja de c lculo. | None
+EJE 310: Operaciones con las celdas | None
+EJE 311: Insertar y eliminar celdas  filas y columnas. | None
+EJE 312: Insertar  eliminar  mover y copiar hojas de c lculo. | None
+EJE 313: Las M quinas monofuncionales | None
+EJE 314: ¨Qu‚ son las M quinas monofuncionales* | None
+EJE 315: Clasificaciones de las m quinas monofuncionales. | None
+EJE 316: Representaci¢n gr fica. | None
+EJE 317: Evoluci¢n hist¢rica. | None
+EJE 318: Formateo de datos en Microsoft Excel. | None
+EJE 319: Autoformato. | None
+EJE 320: Formato de fuente y n£meros. | None
+EJE 321: Alineaci¢n de datos. | None
+EJE 322: Bordes. | None
+EJE 323: Cambio de tama¤o de filas y de columnas. | None
+EJE 324: Borrar una celda. | None
+EJE 325: Protecci¢n de celdas. | None
+EJE 326: Ocultar filas y columnas. | None
+EJE 327: Creaci¢n de objetos gr ficos. | None
+EJE 328: Las Estructuras. | None
+EJE 329: ¨Qu‚ son las estructuras* | None
+EJE 330: Clases de estructuras (Naturales y artificiales). | None
+EJE 331: Propiedades de las estructuras. | None
+EJE 332: Materiales de las estructuras. | None
+EJE 333: Elaboraci¢n de estructuras (materiales reciclables). | None
+EVID 352: Maneja conceptos b sicos  partes de la ventana principal y opciones importantes de la hoja de c lculo de Microsoft Excel. | manual
+EVID 353: Practica las combinaciones de teclas que permiten el desplazamiento del puntero de celda en el Microsoft Excel. | manual
+EVID 354: Elabora correctamente formulas utilizando los operadores matem ticos b sicos. | manual
+EVID 355: Realiza tablas y gr ficos sobre el proceso de elecci¢n del representante estudiantil. (Democracia) | manual
+EVID 356: Elabora tablas y gr ficos a partir de encuestas sobre el uso adecuado de sistemas tecnol¢gicos. (Seguridad) | manual
+EVID 357: Destaca el aporte de las m quinas simples a las actividades cotidianas de los seres vivos. | manual
+EVID 358: Comprende las clases de m quinas y su utilidad en la sociedad y el impacto ambiental que produce. | manual
+EVID 359: Identifica la importancia de las m quinas en la vida del hombre y la aplicaci¢n en la eficiencia del trabajo. | manual
+
+EST 624 M1 P1 1. Sistemas de ecuaciones lineales 2x2
+DESC: Sistemas 2x2.
+DBA 635: Identifica relaciones entre propiedades de las gráficas y propiedades de las ecuaciones algebraicas.
+DESC: 1. Resolver sistemas de ecuaciones 2x2 por métodos de igualación, sustitución y reducción.
+2. Aplicar la Regla de Cramer en la resolución de problemas.
+CLAVES: relación, variables, ecuaciones
+EJE 886: Definición de ecuaciones lineales, Métodos analíticos de solución, Determinantes 2x2 y Regla de Cramer, Problemas de aplicación | None
+EVID 492: El estudiante identifica la relación entre las variables en una gráfica y sus valores en una ecuación algebraica, mostrando un análisis de la dependencia entre ambas. | ia_pendiente
+
+EST 625 M1 P1 2. Sistemas de ecuaciones lineales 3x3
+DESC: Sistemas 3x3.
+DBA 636: Resuelve problemas y simplifica cálculos usando propiedades de los números reales.
+DESC: 1. Evaluar determinantes de 3x3 utilizando determinantes menores.
+2. Implementar la Regla de Cramer para tres variables.
+CLAVES: propiedades de los números reales, proporciones, cálculos con fracciones y decimales
+EJE 887: Determinantes de 3x3, Determinantes menores y cofactores, Sistemas de tres ecuaciones con tres incógnitas | None
+EVID 493: El estudiante resuelve un problema de proporciones utilizando la propiedad de los números reales, mostrando el proceso con claridad. | ia_pendiente
+
+EST 626 M1 P2 2. Sistemas de ecuaciones lineales 3x3 (Práctica)
+DESC: Práctica sistemas 3x3.
+DBA 637: Resuelve problemas y simplifica cálculos usando propiedades de los números reales.
+DESC: 1. Evaluar determinantes de 3x3 utilizando determinantes menores.
+2. Implementar la Regla de Cramer para tres variables.
+CLAVES: fracciones, propiedades de los números reales, algebraica
+EJE 888: Aplicación de sistemas 3x3 en problemas reales | None
+EVID 494: El estudiante resuelve un problema de cálculo con fracciones, utilizando la propiedad de las fracciones como parte del proceso. | ia_pendiente
+
+EST 627 M1 P2 3. Funciones, Radicación y Racionalización
+DESC: Funciones.
+DBA 638: Modela situaciones de variación mediante expresiones algebraicas.
+DESC: 1. Comprender el concepto de función, dominio, codominio y rango.
+2. Representar gráficamente funciones lineales, cuadráticas, exponenciales y logarítmicas.
+CLAVES: expresión algebraica, modelado, situación
+EJE 889: Racionalización, Elementos y representaciones de funciones, Función lineal, cuadrática, exponencial y logarítmica | None
+EVID 495: El estudiante realiza un problema real utilizando una expresión algebraica para modelar la situación. | ia_pendiente
+
+EST 628 M1 P3 4. Geometría: Semejanza y Teorema de Tales
+DESC: Geometría.
+DBA 639: Reconoce y contrasta relaciones geométricas en demostración de teoremas básicos.
+DESC: 1. Establecer razones entre perímetros, áreas y volúmenes de figuras semejantes.
+2. Aplicar el Teorema de Tales y el uso de escalas.
+CLAVES: teoremas geométricos, relaciones geométricas, demostración matemática
+EJE 890: Semejanza de polígonos y sólidos, Teorema de Tales, Escalas, planos y maquetas | None
+EVID 496: El estudiante realiza una demostración del teorema de Pitágoras utilizando un triángulo rectángulo y un círculo, mostrando la relación entre sus lados. | ia_pendiente
+
+EST 629 M1 P3 5. Pensamiento Aleatorio y Probabilidad
+DESC: Probabilidad.
+DBA 640: Usa conceptos de probabilidad para predecir eventos y analizar datos.
+DESC: 1. Identificar el espacio muestral y calcular probabilidades de diversos eventos.
+2. Representar experimentos mediante diagramas de árbol y de Venn.
+CLAVES: probabilidad, predicción, análisis de datos
+EJE 891: Espacio muestral y eventos aleatorios, Probabilidad de eventos simples y compuestos, Diagramas de árbol y de Venn | None
+EVID 497: El estudiante realiza un análisis de datos utilizando la probabilidad para predecir el resultado de una serie de experimentos. | ia_pendiente
+
+EST 630 M1 P4 6. Apoyo Tecnológico en Matemáticas
+DESC: Tecnología en matemáticas.
+DBA 641: Identifica la relación entre cambios algebraicos y sus representaciones gráficas mediante software.
+DESC: 1. Utilizar Microsoft Excel para el cálculo de media, mediana y moda y creación de gráficas.
+2. Emplear calculadoras científicas y software como Winplot y Regla y Compás.
+CLAVES: representación gráfica, ecuación lineal, función polinómica, geogebra, desmos
+EJE 892: Medidas de tendencia central en Excel, Calculadora científica (potenciación, radicación, logaritmación), Software especializado (Winplot, GeoGebra, Regla y Compás) | None
+EVID 498: El estudiante podrá identificar la representación gráfica de una ecuación lineal en un sistema de coordenadas cartesianas utilizando software, como Geogebra o Desmos. El estudiante deberá mostrar la relación entre la ecuación y su representación gráfica mediante la interpolación de puntos. | ia_pendiente
+
+EST 631 M6 P1 1. ¿Qué es la ingeniería genética?
+DESC: Genética.
+DBA 642: DBA 5: Explica la forma como se expresa la información genética (ADN) y su capacidad de modificación.
+DESC: 1. Reconocer la importancia del modelo de la doble hélice para la transmisión hereditaria.
+2. Establecer relaciones entre genes proteínas y funciones celulares.
+3. Identificar la utilidad del ADN y las ventajas de la manipulación genética.
+CLAVES: adn, secuencia de bases nitrogenadas, mutaciones genéticas, expresión de proteínas
+EJE 893: Estructura del ADN, Síntesis de proteínas, Herencia, mutación y variabilidad, Modificación genética y bioética | None
+EVID 499: El estudiante podrá explicar en detalle cómo se codifica la información genética en el ADN mediante la secuencia de bases nitrogenadas, utilizando un modelo simple para ilustrar la estructura del ADN. | ia_pendiente
+
+EST 632 M6 P1 2. ¿Se duplica la vida?
+DESC: Reproducción.
+DBA 643: DBA 4: Comprende los principios genéticos mendelianos y post-mendelianos.
+DBA 5: Interpreta modelos de división celular como mecanismos de crecimiento.
+DBA 4: Demuestra la relación entre la meiosis y las leyes de la herencia.
+DESC: 1. Justificar la importancia de la reproducción sexual en el mantenimiento de la variabilidad.
+2. Comparar diferentes sistemas de reproducción en microorganismos, plantas y animales.
+3. Explicar la importancia de las hormonas en la regulación de funciones humanas.
+CLAVES: meiosis, division celular, herencia, genes
+EJE 894: Control del ciclo celular y cáncer, Anomalías cromosómicas, Reproducción asexual y sexual, Sistema endocrino y ciclo menstrual | None
+EVID 500: El estudiante realiza una simulación de la meiosis en un programa informático, mostrando la segregación de cromosomas y la formación de gametos. | ia_pendiente
+
+EST 633 M6 P2 2. ¿Se duplica la vida? (Continuación)
+DESC: Refuerzo reproducción.
+DBA 644: DBA 4: Hormonas y regulación.
+DESC: 1. Justificar la importancia de la reproducción sexual en el mantenimiento de la variabilidad.
+2. Comparar diferentes sistemas de reproducción en microorganismos, plantas y animales.
+3. Explicar la importancia de las hormonas en la regulación de funciones humanas.
+CLAVES: hormonas, regulación, sistema nervioso, crecimiento
+EJE 895: Sistema endocrino y ciclo menstrual | None
+EVID 501: El estudiante realiza una investigación sobre la influencia de las hormonas en el sistema nervioso, presentando un informe con gráficos y tablas que ilustran los mecanismos de acción de estas sustancias. | ia_pendiente
+
+EST 634 M6 P2 3. ¿Qué otras formas existen de agrupar los seres vivos?
+DESC: Taxonomía.
+DBA 645: DBA 6 (Referente): Explica la clasificación taxonómica como mecanismo para reconocer la biodiversidad.
+DESC: 1. Clasificar organismos según sus características celulares y taxonómicas.
+2. Indagar sobre las aplicaciones de la microbiología en la industria y medicina.
+3. Establecer la importancia de mantener la biodiversidad para el desarrollo del país.
+CLAVES: clasificación taxonómica, biodiversidad, organismos, relación, diagrama, tabla
+EJE 896: Bacterias y antibióticos, Algas y hongos (levaduras), Plantas comestibles y medicinales, Importancia ecológica de invertebrados y vertebrados | None
+EVID 502: El estudiante podrá identificar las diferentes categorías de clasificación taxonómica, como reino, filo, clase y orden, utilizando un diagrama o tabla. | ia_pendiente
+
+EST 635 M6 P3 4. ¿Todos los organismos se adaptan y evolucionan?
+DESC: Evolución.
+DBA 646: DBA 6: Analiza teorías científicas sobre el origen de las especies (selección natural y ancestro común).
+DESC: 1. Comparar diferentes teorías y formular hipótesis sobre el origen y evolución de los organismos.
+2. Relacionar el clima en las eras geológicas con las adaptaciones de los seres vivos.
+3. Explicar sistemas de defensa, ataque y comportamientos animales.
+CLAVES: teoría de selección natural, ancestro común, evolución, diferencias entre teorías
+EJE 897: Teoría de Darwin y selección natural, Biodiversidad y especiación, Fósiles y eras geológicas, Comportamiento animal (innato y aprendido) | None
+EVID 503: El estudiante elabora un ensayo argumentativo que expone la teoría de la selección natural, incluyendo ejemplos de cómo funciona en la naturaleza. El ensayo incluye una descripción del concepto de ancestro común y su importancia en la evolución. | ia_pendiente
+
+EST 636 M6 P3 5. ¿Qué tipos de sustancias conoces?
+DESC: Química.
+DBA 647: DBA 2: Comprende que la acidez y la basicidad son propiedades químicas relacionadas con la importancia biológica e industrial.
+DBA 3: Analiza relaciones cuantitativas entre solutos y solventes.
+DESC: 1. Establecer relaciones entre variables de estado para predecir cambios químicos.
+2. Identificar y clasificar sustancias en óxidos, ácidos, bases y sales.
+3. Analizar factores que afectan la formación de soluciones y su concentración.
+CLAVES: acidez, basicidad, ph, solutos, solventes
+EJE 898: Óxidos metálicos y no metálicos, Hidróxidos, ácidos y sales, Reacciones químicas (síntesis, descomposición), pH, indicadores y lluvia ácida | None
+EVID 504: El estudiante realiza un experimento para determinar la acidez de diferentes soluciones utilizando un indicador de pH, registrando sus resultados en un cuaderno. | ia_pendiente
+
+EST 637 M6 P4 6. Un mundo lleno de ondas
+DESC: Ondas.
+DBA 648: DBA 1: Comprende que el movimiento de un cuerpo se puede describir con gráficos y predecir matemáticamente.
+DESC: 1. Establecer relaciones entre frecuencia, amplitud y velocidad de propagación en ondas mecánicas.
+2. Diferenciar modelos para explicar la naturaleza de la luz y el sonido.
+3. Relacionar la transferencia de energía térmica con fenómenos y catástrofes naturales.
+CLAVES: movimiento, gráficos, ecuaciones de movimiento
+EJE 899: Espectro electromagnético y radio, Cualidades del sonido y óptica, Dispersión de la luz y ultrasonido, Energía en terremotos, volcanes y huracanes | None
+EVID 505: El estudiante elabora un gráfico lineal para representar la trayectoria de un objeto en movimiento, utilizando datos reales obtenidos de una experiencia física. | ia_pendiente
+
+EST 638 M3 P1 1. Globalización y mercantilización
+DESC: Globalización.
+DBA 649: DBA 3: Analiza las crisis económicas en la Colombia contemporánea.
+DBA 8: Comprende el impacto social del crecimiento económico desigual.
+DESC: 1. Conocer diferentes sistemas económicos y el papel del estudiante en la economía.
+2. Estudiar el significado de vivir en un mundo globalizado.
+3. Analizar la sociedad de la información.
+CLAVES: crisis económica, impacto social, crecimiento económico desigual, análisis crítico, evidencia documental
+EJE 900: Capitalismo y Socialismo, Globalización, Sociedad de la información, Mercantilización de la sociedad | None
+EVID 506: El estudiante elabora un análisis crítico de una crisis económica colombiana reciente, identificando sus causas y consecuencias sociales, utilizando evidencia documental y datos estadísticos. El estudiante presenta un trabajo escrito que incluye una introducción, desarrollo y conclusión. | ia_pendiente
+
+EST 639 M3 P1 2. Violencia, desempleo y pobreza
+DESC: Problemas sociales.
+DBA 650: DBA 4: Analiza los cambios sociales, políticos y económicos en Colombia en el siglo XX.
+DBA 7: Evalúa la solución de conflictos mediante acuerdos.
+DESC: 1. Identificar el potencial de legados sociales y políticos como fuente de identidad o conflicto.
+2. Conocer el origen histórico de las problemáticas actuales del país.
+3. Analizar las consecuencias de las guerras mundiales.
+CLAVES: desarrollo económico, conflicto, política, economía, sociedad
+EJE 901: Conflictos del siglo XX: I y II Guerra Mundial, Guerra Fría, Revolución Rusa, Esclavitud (ayer y hoy) y trata de personas, Desplazamiento forzado y pobreza en Colombia | None
+EVID 507: La estudiante elabora un mapa conceptual que relaciona las diferentes etapas del desarrollo económico de Colombia en el siglo XX, identificando los principales cambios sociales y políticos que acompañaron a cada etapa. | ia_pendiente
+
+EST 640 M3 P2 2. Violencia y pobreza (Continuación)
+DESC: Refuerzo problemas sociales.
+DBA 651: DBA 4: Analiza los cambios sociales, políticos y económicos en Colombia en el siglo XX.
+DESC: 1. Identificar el potencial de legados sociales y políticos como fuente de identidad o conflicto.
+2. Conocer el origen histórico de las problemáticas actuales del país.
+3. Analizar las consecuencias de las guerras mundiales.
+CLAVES: violencia política, industrialización, estructura social, economía, consecuencias socioeconómicas
+EJE 902: Los afrodescendientes y su identidad | None
+EVID 508: El estudiante elabora un mapa conceptual que relaciona las principales causas de la violencia política en Colombia durante el siglo XX con sus consecuencias socioeconómicas. | ia_pendiente
+
+EST 641 M3 P2 3. Cambios y problemáticas ambientales
+DESC: Medio ambiente.
+DBA 652: DBA 1: Analiza la situación ambiental de los geo sistemas más biodiversos de Colombia.
+DESC: 1. Analizar la interacción permanente entre el espacio geográfico y el ser humano.
+2. Reconocer al planeta como un organismo vivo y la relación de las comunidades con él.
+CLAVES: biodiversidad, ecosistema, mapas conceptuales
+EJE 903: Relación de culturas indígenas (Kogui) con la naturaleza, Deforestación, monocultivo y contaminación del agua, Calentamiento global | None
+EVID 509: El estudiante elabora un mapa conceptual que relaciona las características del ecosistema con su biodiversidad, utilizando ejemplos específicos de los ecosistemas más biodiversos de Colombia. | ia_pendiente
+
+EST 642 M3 P3 4. Administración y defensa del territorio
+DESC: Territorio.
+DBA 653: DBA 2: Comprende las consecuencias de los procesos migratorios en Colombia.
+DESC: 1. Evaluar críticamente los avances y limitaciones de la relación humano-espacio.
+2. Acercarse al concepto de territorio y poder.
+3. Conocer cómo las comunidades campesinas defienden el territorio.
+CLAVES: flujo migratorio, consecuencias, economía, cultura, identidad nacional
+EJE 904: Migraciones y desplazamientos (Colonización antioqueña), El concepto de Territorio y soberanía, Reforma Agraria y Ley de Víctimas/Restitución de Tierras | None
+EVID 510: El estudiante elabora un mapa conceptual que relaciona las causas y consecuencias del flujo migratorio hacia Colombia, incluyendo la influencia en la economía, la cultura y la sociedad. | ia_pendiente
+
+EST 643 M3 P3 5. Promoción y defensa de los Derechos Humanos
+DESC: Derechos humanos.
+DBA 654: DBA 5: Evalúa cómo el Estado protege y promueve los derechos fundamentales.
+DBA 6: Comprende el papel de las mujeres en los cambios sociales y políticos.
+DESC: 1. Analizar críticamente los elementos constituyentes de la democracia.
+2. Reconocer que los derechos humanos son inherentes, universales e inalienables.
+CLAVES: derechos fundamentales, estado, igualdad, políticas públicas
+EJE 905: Movimientos sociales: estudiantiles y obreros/sindicales, Masacre de las bananeras y sindicalismo en Colombia, Seguridad alimentaria y derechos del campo, Liderazgo femenino en la defensa de derechos | None
+EVID 511: El estudiante elabora un ensayo argumentativo que expone la importancia del Estado en la protección de los derechos humanos, utilizando ejemplos concretos del contexto colombiano. | ia_pendiente
+
+EST 644 M3 P4 6. Identidad en comunidades campesinas
+DESC: Identidad campesina.
+DBA 655: DBA Relacionado: Reconocimiento de la diversidad étnica y cultural como derecho (Transversal a DBA 5 de grado 9.° y DBA 3 de grado 10.°).
+DESC: 1. Reconocer expresiones, tradiciones y costumbres como parte de la identidad.
+2. Reflexionar sobre la identidad rural como construcción colectiva.
+CLAVES: diversidad cultural, reconocimiento de derechos, tradiciones, participación activa
+EJE 906: Cultura festiva: carnavales y fiestas (Negros y Blancos, Barranquilla), Grupos étnicos (Indígenas, Afro, Raizales, Rom), Protección del conocimiento tradicional y propiedad intelectual, Identidad nacional y respeto a la diferencia | None
+EVID 512: El estudiante elabora un mural que refleja la riqueza cultural de su comunidad, identificando diferentes grupos étnicos presentes y sus tradiciones. | ia_pendiente
+
+EST 645 M12 P1 1. América, antes de llamarse así
+DESC: Literatura precolombina.
+DBA 656: DBA 3: Analiza el lenguaje literario como manifestación artística para crear ficciones y expresar emociones.
+DBA 8: Produce textos verbales y no verbales siguiendo procedimientos de corrección lingüística.
+DESC: 1. Determinar elementos textuales, estéticos e históricos en obras latinoamericanas.
+2. Producir textos escritos que evidencien el uso de estrategias de producción textual.
+CLAVES: expresión emocional, literatura, recursos literarios, gramática, ortografía
+EJE 907: Literatura prehispánica (Mayas, Aztecas, Incas), El mito y la leyenda (Popol Vuh), La oración compuesta (coordinada, yuxtapuesta y subordinada), Uso de las comillas | None
+EVID 513: El estudiante elabora un texto narrativo corto (500 palabras) utilizando recursos literarios como personificación, metáforas y lenguaje figurado para expresar una emoción específica. El estudiante realiza una revisión de la gramática, ortografía y puntuación del texto final. | ia_pendiente
+
+EST 646 M12 P1 2. Conquista y cultura: mirada y palabra
+DESC: Literatura conquista.
+DBA 657: DBA 3: Reconoce la literatura como memoria de los pensamientos y sucesos de un país.
+DBA 7: Produce textos orales empleando diversas estrategias para exponer argumentos.
+DESC: 1. Caracterizar los principales momentos de la literatura de la Conquista y la Colonia.
+2. Analizar aspectos textuales, conceptuales y formales de crónicas y poemas épicos.
+CLAVES: patrimonio literario, argumentación, presentación oral
+EJE 908: Crónicas de Indias y diarios de viaje, Poesía de la Colonia y cantos épicos (La Araucana), La entrevista de semblanza y el reportaje, Tiempos y modos verbales, Siglas y acrónimos | None
+EVID 514: El estudiante elabora una presentación oral sobre la importancia del patrimonio literario colombiano, utilizando diferentes recursos como imágenes y ejemplos históricos. El estudiante presenta un discurso coherente que incluye la argumentación de la influencia del pasado en el presente. | ia_pendiente
+
+EST 647 M12 P2 2. Conquista y cultura: mirada y palabra (Continuación)
+DESC: Refuerzo literatura conquista.
+DBA 658: DBA 8: Produce textos verbales y no verbales siguiendo procedimientos de corrección lingüística.
+DESC: 1. Caracterizar los principales momentos de la literatura de la Conquista y la Colonia.
+2. Analizar aspectos textuales, conceptuales y formales de crónicas y poemas épicos.
+CLAVES: ortografía, gramática, estructura, pronunciación
+EJE 909: Tiempos y modos verbales, Siglas y acrónimos | None
+EVID 515: El estudiante elabora un texto escrito con una ortografía correcta, sin errores gramaticales ni de concordancia, utilizando la gramática aprendida en clase. | ia_pendiente
+
+EST 648 M12 P2 3. Latinoamérica y su literatura en el siglo XIX
+DESC: Literatura s.XIX.
+DBA 659: DBA 3: Determina la identidad cultural presente en textos literarios y la relaciona con épocas y autores.
+DBA 6: Infiere otros sentidos en los textos que lee y los relaciona con su contexto.
+DESC: 1. Identificar recursos del lenguaje empleados por autores del Romanticismo, Realismo y Modernismo.
+2. Inferir rasgos sociológicos, ideológicos y culturales en la literatura del siglo XIX.
+CLAVES: identidad cultural, contexto histórico, autor, representación
+EJE 910: El Romanticismo (Individualismo y Nacionalismo), El Realismo (Indigenismo y naturaleza), El Modernismo (Parnasianismo y Simbolismo), Cohesión por sinonimia, Tilde en exclamativos | None
+EVID 516: El estudiante realiza una investigación sobre la representación de la identidad cultural en un texto literario del siglo XIX, presentando un análisis crítico de cómo se relaciona con el contexto histórico y las ideas de autores relevantes. | ia_pendiente
+
+EST 649 M12 P3 4. ¿Un "boom" en la literatura?
+DESC: Boom latinoamericano.
+DBA 660: DBA 4: Compara formatos de obras literarias y producciones audiovisuales para analizar la narración.
+DBA 5: Comprende y respeta las opiniones en debates sobre temas de actualidad social.
+DESC: 1. Utilizar textos explicativos y argumentativos para presentar ideas y saberes.
+2. Utilizar el discurso oral para establecer acuerdos a partir de argumentos propios y ajenos.
+CLAVES: comparación, narrativa, estructura, lenguaje, argumentos
+EJE 911: Vanguardias literarias (Creacionismo, Ultraísmo, Surrealismo), Novela de la Revolución Mexicana, El Boom Latinoamericano (Realismo mágico), El ensayo y la reseña crítica, Cohesión por conectores y pronombres, Tilde diacrítica e interrogativa | None
+EVID 517: El estudiante realiza una comparación entre dos obras literarias con diferentes formatos (libro y película) analizando su narrativa, incluyendo la estructura, el lenguaje y los elementos narrativos. El estudiante participa activamente en un debate sobre un tema de actualidad social, expresando sus opiniones con respeto y argumentos sólidos. | ia_pendiente
+
+EST 650 M12 P3 5. Otros lenguajes
+DESC: Otros lenguajes.
+DBA 661: DBA 1: Asume una posición crítica frente a los medios de comunicación masiva y su influencia.
+DBA 2: Incorpora símbolos de diversos órdenes en los discursos que produce.
+DESC: 1. Comprender los factores sociales y culturales que determinan el lenguaje no verbal.
+2. Interpretar y crear mensajes publicitarios y manifestaciones artísticas no verbales.
+CLAVES: influencia de los medios de comunicación masiva, símbolos en discursos, persuasión
+EJE 912: Lenguaje corporal y gestual, Semiótica de la imagen (punto, línea, planos y colores), El grafiti y la fotografía, Publicidad (comercial, política y preventiva), Denotación y connotación en la imagen, El collage | None
+EVID 518: El estudiante elabora un ensayo crítico sobre la influencia de los medios de comunicación masiva, utilizando ejemplos específicos para sustentar sus argumentos. El estudiante también presenta una propuesta de campaña publicitaria que utiliza símbolos y lenguaje persuasivo para comunicar una idea específica. | ia_pendiente
+
+EST 663 M8 P4 Reflexiono sobre el uso del poder y la autoridad en mi entorno y expreso pacíficamente mi desacuerdo cuando considero que hay injusticia.
+DESC: Participación política honesta, democracia y liderazgo comunitario.
+DBA 673: Identifica diversas formas de participar correctamente en política y las características de un líder en la comunidad.
+DESC: Explica la necesidad de una nueva generación en política, reconoce formas de participación y analiza la honestidad y la corrupción en la vida política.
+CLAVES: participación ciudadana, liderazgo, comunidad, proyecto local
+EJE 923: Unidades 7 y 8. Participación política y liderazgo comunitario: democracia, tipos de política, participación, comunidad, líderes, tipos de liderazgo y habilidades para liderar. | Promueve la cultura participativa, la defensa de las libertades, la igualdad de derechos y la protección de los derechos ciudadanos.
+EVID 530: El estudiante elabora una propuesta para la participación ciudadana en un proyecto local, identificando diferentes roles y responsabilidades. | ia_pendiente
+
+EST 679 M4 P1 Reconoce su potencial motriz e incrementa capacidades físicas cumpliendo normas de seguridad e higiene.
+DESC: Participa en pruebas físicas para conocer posibilidades corporales y motrices.
+DBA 689: Comprende criterios de trabajo para el desarrollo personal y aplica pruebas físicas.
+DESC: Fortalece condición física y reconoce actividad física saludable.
+CLAVES: desarrollo personal, pruebas físicas
+EJE 939: Sistemas corporales y condición física. | Sistemas respiratorio y circulatorio, articulaciones, condición física, lesiones deportivas y estilos de vida saludable.
+EVID 546: El estudiante realiza un análisis crítico sobre los criterios de trabajo del plan de desarrollo personal, identificando sus fortalezas y áreas de mejora. | ia_pendiente
+
+EST 680 M4 P2 Reconoce diferencias individuales y realiza ejercicio físico para mejorar funciones orgánicas y corporales.
+DESC: Valora competencia deportiva, respeta normas de juego y contribuye a crearlas.
+DBA 690: Relaciona respiración, relajación, reglas deportivas y hábitos saludables.
+DESC: Aplica prácticas individuales y grupales con coordinación y ritmo.
+CLAVES: relajación, respiración, reglas deportivas, hábitos saludables
+EJE 940: Coordinación, gimnasia y ritmo. | Planos y ejes de movimiento, capacidades coordinativas, gimnasia, conciencia corporal, ritmo, danza y atletismo.
+EVID 547: El estudiante realiza una actividad de respiración consciente durante 5 minutos, con un registro de la frecuencia y profundidad del ritmo respiratorio. El estudiante describe las ventajas de la relajación muscular en el contexto deportivo. | ia_pendiente
+
+EST 681 M4 P3 Conserva y mejora el ambiente como escenario para la práctica de actividad física.
+DESC: Participa en creación de normas y mejora sus funciones orgánicas y corporales.
+DBA 691: Reconoce la importancia de ambientes limpios y seguros y aplica reducción y reciclaje de residuos.
+DESC: Relaciona ambiente, salud y práctica motriz responsable.
+CLAVES: reducción, reciclaje, ambiente
+EJE 941: Ambiente, aptitud física y adaptación. | Movimientos articulares, test de aptitud física y fundamentos de carga y adaptación.
+EVID 548: El estudiante realiza un plan de acción para reducir el consumo de papel en clase, utilizando alternativas como hojas digitales o pizarra digital. | ia_pendiente
+
+EST 682 M4 P4 Realiza ejercicio físico y valora competencia deportiva y ambiente como escenarios de desarrollo personal.
+DESC: Fortalece recreación, integración y convivencia saludable.
+DBA 692: Participa responsablemente en actividades lúdicas, recreativas y deportivas.
+DESC: Reconoce estilos de vida saludable en entornos escolar y familiar.
+CLAVES: participación, equipo, colaboración
+EJE 942: Lúdica, recreación y deporte. | Juego, lúdica, recreación, deporte, manifestaciones recreativas y estilos de vida saludable.
+EVID 549: El estudiante participa activamente en juegos de equipo durante la clase de Educación Física, mostrando iniciativa y colaboración con sus compañeros. | ia_pendiente
+
+EST 715 M9 P1 Módulo 1: caracteriza el municipio para reconocer oportunidades de PPP.
+DESC: Analiza administración municipal, oferta climática y actores sociales.
+DBA 725: Interpreta información territorial para elaborar diagnóstico municipal.
+DESC: Desarrolla las guías 1 y 2 del PPP.
+CLAVES: información territorial, diagnóstico municipal, análisis de datos
+EJE 975: Módulo 1 - Guías 1 y 2. | Funcionamiento del municipio y oferta climática municipal.
+EVID 582: El estudiante elabora un diagnóstico municipal utilizando datos geográficos y demográficos, identificando fortalezas, debilidades, oportunidades y amenazas del territorio. | ia_pendiente
+
+EST 716 M9 P1 Módulo 2: identifica actores y posibilidades de emprendimiento.
+DESC: Reconoce dinámicas sociales y oportunidades del municipio.
+DBA 726: Relaciona actores municipales con posibilidades de emprendimiento.
+DESC: Desarrolla las guías 3 y 4 del PPP.
+CLAVES: emprendimiento, plan de negocios, necesidades municipales, colaboración
+EJE 976: Módulo 2 - Guías 3 y 4. | Conformación del municipio e identificación de posibilidades de emprendimiento.
+EVID 583: El estudiante elabora un plan de negocios que identifica las necesidades del municipio y propone soluciones innovadoras para la generación de empleo. | ia_pendiente
+
+EST 717 M9 P2 Módulo 3: usa información del entorno para resolver problemas.
+DESC: Analiza datos para identificar alternativas de solución.
+DBA 727: Selecciona información pertinente para definir un emprendimiento.
+DESC: Desarrolla las guías 5 y 6 del PPP.
+CLAVES: plan de negocio, análisis de mercado, propuesta de valor, emprendimiento
+EJE 977: Módulo 3 - Guías 5 y 6. | Uso de información del entorno y alternativas de solución.
+EVID 584: El estudiante elabora un plan de negocio que incluya una descripción del problema, la propuesta de valor y un análisis de mercado, utilizando herramientas digitales como Google Sheets o Excel. | ia_pendiente
+
+EST 718 M9 P2 Módulo 4: elabora un plan de negocios sostenible.
+DESC: Organiza emprendimiento, recursos y criterios de sostenibilidad.
+DBA 728: Formula componentes básicos de un plan de negocios.
+DESC: Desarrolla las guías 7, 8 y 9 del PPP.
+CLAVES: plan de negocios, mercado objetivo, propuesta de valor, estrategias de marketing
+EJE 978: Módulo 4 - Guías 7 a 9. | Organización del emprendimiento, recursos y diseño sostenible.
+EVID 585: El estudiante elabora un plan de negocios que incluye una descripción de los componentes básicos, como el mercado objetivo, la propuesta de valor y las estrategias de marketing. | ia_pendiente
+
+EST 719 M9 P3 Módulo 5: gestiona el proyecto mediante un plan de trabajo.
+DESC: Organiza tareas y tiempos de ejecución del emprendimiento.
+DBA 729: Elabora un plan de trabajo y cronograma de actividades.
+DESC: Desarrolla las guías 10 y 11 del PPP.
+CLAVES: planificación, cronograma, objetivos
+EJE 979: Módulo 5 - Guías 10 y 11. | Plan de trabajo y programación temporal de actividades.
+EVID 586: El estudiante elabora un plan de trabajo con una estructura clara que incluye objetivos, actividades, recursos y plazos para la realización de un proyecto de emprendimiento. | ia_pendiente
+
+EST 720 M9 P3 Módulo 6: verifica la ejecución e implementación del proyecto.
+DESC: Hace seguimiento al cumplimiento de actividades y resultados.
+DBA 730: Registra evidencias de avances en el PPP.
+DESC: Desarrolla las guías 12 y 13 del PPP.
+CLAVES: plan de negocio, análisis de mercado, presupuesto
+EJE 980: Módulo 6 - Guías 12 y 13. | Verificación de actividades y parámetros para medir proyectos.
+EVID 587: El estudiante presenta un plan de negocio con una propuesta de valor clara, un análisis de mercado y un presupuesto realista para su proyecto. | ia_pendiente
+
+EST 721 M9 P4 Módulo 7: evalúa el emprendimiento y su proyección comunitaria.
+DESC: Analiza momentos y aspectos de evaluación del proyecto.
+DBA 731: Formula acciones de proyección comunitaria a partir de resultados.
+DESC: Desarrolla las guías 14, 15 y 16 del PPP.
+CLAVES: proyectos, investigación, impacto social, plan de acción, marketing
+EJE 981: Módulo 7 - Guías 14 a 16. | Momentos y aspectos de evaluación y actividad de proyección comunitaria.
+EVID 588: El estudiante elabora un plan de acción para la implementación de una iniciativa social en su comunidad, basado en los resultados de una investigación sobre las necesidades locales. | ia_pendiente
+
+EST 722 M9 P4 Módulo 8: comunica y fortalece el PPP en la comunidad.
+DESC: Participa en feria de emprendimiento y reconoce opciones de financiación.
+DBA 732: Socializa propuestas y explora fondos concursables de forma responsable.
+DESC: Desarrolla las guías 17 y 18 del PPP.
+CLAVES: plan de negocio, fuentes de financiamiento, propuesta de valor
+EJE 982: Módulo 8 - Guías 17 y 18. | Feria de emprendimiento y participación en fondos concursables.
+EVID 589: El estudiante elabora un plan de negocio que incluye la identificación de posibles fuentes de financiamiento, presentando una propuesta de valor clara y concisa para cada una. | ia_pendiente
+
+EST 743 M7 P1 Comprende bases de datos relacionales.
+DESC: Reconoce información estructurada y producción limpia.
+DBA 753: Usa conceptos de bases de datos.
+DESC: Distingue tablas, llaves y relaciones.
+CLAVES: bases de datos, sql, consultas
+EJE 1003: Bases de datos relacionales. | Modelo relacional, llaves y normalización.
+EVID 610: El estudiante podrá diseñar una base de datos simple utilizando un lenguaje de consulta SQL para almacenar información sobre estudiantes y sus calificaciones. | ia_pendiente
+
+EST 744 M7 P2 Administra bases de datos con herramientas digitales.
+DESC: Diseña tablas, formularios y relaciones en Access.
+DBA 754: Organiza y consulta información según parámetros técnicos.
+DESC: Aplica soluciones sostenibles.
+CLAVES: organizar, consultar, información, parámetros técnicos, fuentes, credibilidad
+EJE 1004: Microsoft Access básico. | Tablas, campos, relaciones, formularios y filtros.
+EVID 611: El estudiante realiza una búsqueda en internet utilizando palabras clave específicas para encontrar información sobre un tema tecnológico, seleccionando las fuentes más relevantes y validando su credibilidad. | ia_pendiente
+
+EST 745 M7 P3 Analiza proyectos tecnológicos y gestiona información.
+DESC: Utiliza consultas y reportes de bases de datos.
+DBA 755: Debate impacto de tecnologías en su comunidad.
+DESC: Usa SQL y personaliza informes.
+CLAVES: tecnologías, impacto, solución, debate
+EJE 1005: Access avanzado y SQL. | Consultas, lenguaje SQL e informes.
+EVID 612: El estudiante presenta una propuesta de solución a un problema social identificado en su comunidad utilizando tecnologías digitales, como por ejemplo, una aplicación móvil para la gestión de residuos. | ia_pendiente
+
+EST 746 M7 P4 Usa servicios web y reconoce sistemas tecnológicos.
+DESC: Participa responsablemente en entornos de Web 2.0.
+DBA 756: Busca y valida información en la web.
+DESC: Distingue componentes y tipos de sistemas.
+CLAVES: búsqueda en internet, evaluación de fuentes
+EJE 1006: Web 2.0 y sistemas tecnológicos. | Foros, redes, blogs, wikis, smartphone y sistemas.
+EVID 613: El estudiante identifica y evalúa la confiabilidad de fuentes web para la búsqueda de información técnica. | ia_pendiente
+
+EST 767 M5 P1 Relaciona expresiones algebraicas con medidas geométricas.
+DESC: Resuelve situaciones de perímetro, área y semejanza mediante álgebra.
+DBA 777: Utiliza expresiones algebraicas para resolver problemas geométricos.
+DESC: Opera polinomios y fracciones algebraicas en contextos de medida.
+CLAVES: expresiones algebraicas, geometría, área, perímetro
+EJE 1027: Álgebra aplicada a la geometría. | Polinomios, factorización y fracciones algebraicas en problemas geométricos.
+EVID 634: El estudiante resuelve un problema de área y perímetro utilizando una expresión algebraica. | ia_pendiente
+
+EST 768 M5 P2 Representa relaciones geométricas mediante funciones y ecuaciones.
+DESC: Interpreta la pendiente y la ecuación de la recta en el plano.
+DBA 778: Modela situaciones usando representaciones algebraicas y gráficas.
+DESC: Resuelve ecuaciones lineales y sistemas 2x2 vinculados con figuras.
+CLAVES: representaciones algebraicas, representaciones gráficas, área, ecuaciones
+EJE 1028: Geometría analítica inicial. | Plano cartesiano, pendiente, ecuación de la recta y sistemas de ecuaciones.
+EVID 635: El estudiante puede representar un problema de área con una ecuación algebraica y luego graficarlo en un sistema de ejes. | ia_pendiente
+
+EST 769 M5 P3 Analiza transformaciones y relaciones de escala entre figuras.
+DESC: Utiliza potencias y raíces para calcular longitudes desconocidas.
+DBA 779: Usa números reales para resolver problemas de medida.
+DESC: Aplica radicales y notación científica en contextos geométricos.
+CLAVES: medida, fracciones, proporciones
+EJE 1029: Semejanza y medidas irracionales. | Semejanza, escalas, potenciación, radicación y racionalización.
+EVID 636: El estudiante resuelve un problema de medida utilizando fracciones y proporciones, mostrando la conversión de unidades en el proceso. | ia_pendiente
+
+EST 770 M5 P4 Reconoce propiedades de sólidos y cuerpos redondos.
+DESC: Relaciona volumen y capacidad en situaciones del entorno.
+DBA 780: Calcula volumen y capacidad de cilindros, conos y esferas.
+DESC: Aplica teoremas de Tales y Pitágoras en la solución de problemas.
+CLAVES: volumen, capacidad, cilindros, conos, esferas
+EJE 1030: Geometría espacial. | Prismas, pirámides, cilindros, conos, esferas, volumen y capacidad.
+EVID 637: El estudiante realiza correctamente la fórmula para calcular el volumen de un cilindro, conos y esferas utilizando un modelo en papel y muestra su proceso con precisión. | ia_pendiente
+
+EST 788 M8 P1 Construye relaciones pacíficas que contribuyen a la convivencia cotidiana en comunidad y municipio.
+DESC: Reconoce responsabilidad democrática, dignidad y derechos sociales.
+DBA 798: Define trabajo, derecho al trabajo, dignidad y vivienda digna desde una perspectiva ciudadana.
+DESC: Analiza situaciones donde se vulneran derechos y valora el transporte público y los medios de comunicación.
+CLAVES: None
+EJE 1048: Unidad 1. Responsabilidad democrática. | Derecho al trabajo, marginalidad, medios de comunicación, vivienda digna y transporte público.
+
+EST 789 M8 P2 Contribuye a la convivencia y a la defensa de los derechos humanos en el ámbito escolar y comunitario.
+DESC: Reconoce los conflictos en las relaciones y propone respuestas constructivas.
+DBA 799: Analiza dilemas cotidianos donde entran en conflicto derechos o valores.
+DESC: Valora privacidad, cuidado, convivencia y mecanismos de protección de derechos.
+CLAVES: None
+EJE 1049: Unidad 2. Convivencia y paz. | Conflicto en relaciones, privacidad, cuidado personal, diálogo y derechos humanos.
+
+EST 790 M8 P3 Participa democráticamente con criterios de justicia, solidaridad y equidad.
+DESC: Comprende derechos humanos, convivencia y mecanismos de participación ciudadana.
+DBA 800: Analiza la participación en situaciones que vulneran derechos y propone acciones no violentas.
+DESC: Reconoce derechos civiles y políticos y valora organizaciones de la sociedad civil.
+CLAVES: None
+EJE 1050: Unidad 3. Participación democrática. | Derechos humanos, derechos para vivir en paz, deberes ciudadanos y mecanismos de participación.

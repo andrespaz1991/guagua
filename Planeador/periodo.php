@@ -52,6 +52,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
     $ano_lectivo    = isset($_POST['ano_lectivo']) ? $mysqli->real_escape_string(trim($_POST['ano_lectivo'])) : '';
     $estado_periodo = isset($_POST['estado_periodo']) && $_POST['estado_periodo'] === '1' ? '1' : '0';
 
+    try {
+    $mysqli->begin_transaction();
+    $anoActivo = guagua_ano_configurado($mysqli);
+    if (in_array($accion, ['crear', 'editar'], true)) {
+        $fechaInicio = DateTimeImmutable::createFromFormat('!Y-m-d', $inicio);
+        $fechaFin = DateTimeImmutable::createFromFormat('!Y-m-d', $fin);
+        if (!$fechaInicio || !$fechaFin || $fechaInicio->format('Y-m-d') !== $inicio
+            || $fechaFin->format('Y-m-d') !== $fin || $fin < $inicio || $nombre === '') {
+            throw new InvalidArgumentException('Complete el nombre y un rango de fechas válido.');
+        }
+        if ($estado_periodo === '1' && (substr($inicio, 0, 4) !== $anoActivo || substr($fin, 0, 4) !== $anoActivo)) {
+            throw new InvalidArgumentException('Las fechas del período activo deben corresponder al año lectivo activo.');
+        }
+    }
+    if ($accion === 'activar') {
+        $seleccionado = guagua_sql($mysqli, 'SELECT ano_lectivo FROM periodo WHERE id_periodo = ? FOR UPDATE', [$id_periodo], 'i')->fetch_assoc();
+        if (!$seleccionado || (string)$seleccionado['ano_lectivo'] !== $anoActivo) {
+            throw new InvalidArgumentException('Solo puede activar un período del año lectivo activo.');
+        }
+    }
+    if (in_array($accion, ['crear', 'editar'], true) && $estado_periodo === '1' && $ano_lectivo !== $anoActivo) {
+        throw new InvalidArgumentException('El período activo debe pertenecer al año lectivo activo.');
+    }
+
     // REGLA DE NEGOCIO (EXCLUSIVIDAD): Si este periodo entra como activo, desactivamos todos los demás primero
     if (($accion === 'crear' || $accion === 'editar') && $estado_periodo === '1') {
         $mysqli->query("UPDATE periodo SET estado_periodo = '0'");
@@ -103,6 +127,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
             $mensaje = "Error al eliminar el periodo: " . $mysqli->error;
             $tipo_mensaje = "error";
         }
+    }
+    if ($tipo_mensaje === 'error') throw new RuntimeException('No fue posible guardar el período.');
+    $mysqli->commit();
+    } catch (Throwable $e) {
+        $mysqli->rollback();
+        $mensaje = $e instanceof InvalidArgumentException ? $e->getMessage() : 'No fue posible guardar el período. Se conservó la configuración anterior.';
+        $tipo_mensaje = 'error';
     }
 }
 
@@ -241,11 +272,10 @@ function renderizar_tabla_periodos($busqueda, $pagina, $sort_by, $sort_order) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Periodos - Vallesol</title>
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
     <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/guagua/comun/vendor/fontawesome/css/all.min.css">
     <!-- Fuentes Google -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
@@ -303,7 +333,7 @@ function renderizar_tabla_periodos($busqueda, $pagina, $sort_by, $sort_order) {
                             </div>
                             <div class="col-span-1">
                                 <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-1">Año Lectivo *</label>
-                                <input type="number" name="ano_lectivo" id="ano_lectivo" required min="2000" max="2100" value="<?= date('Y') ?>" 
+                                <input type="number" name="ano_lectivo" id="ano_lectivo" required min="2000" max="2100" value="<?= htmlspecialchars(guagua_ano_configurado($mysqli), ENT_QUOTES, 'UTF-8') ?>" 
                                        class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all">
                             </div>
                         </div>

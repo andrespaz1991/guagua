@@ -1,0 +1,65 @@
+<?php
+declare(strict_types=1);
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
+require_once __DIR__.'/../apps/plan_diario/lib/Compliance.php';
+$db=new PDO('sqlite::memory:',null,null,[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC]);
+DailyPlanner::install($db);
+$planner=new DailyPlanner($db,'teacher-a');
+$initial=$planner->run('2026-11-16');
+[$math,$social,,$personal]=array_column($initial['categories'],'id');
+$add=static function(string $date,int $category,string $title,bool $done=false,string $priority='normal') use($planner): int {
+    $state=$planner->run($date);
+    $state=$planner->run($date,'save_task',['revision'=>$state['revision'],'category_id'=>$category,'title'=>$title,'priority'=>$priority]);
+    $task=end($state['tasks']);
+    if ($done) $planner->run($date,'complete',['revision'=>$state['revision'],'id'=>$task['id'],'done'=>true]);
+    return $task['id'];
+};
+$first=$add('2026-11-16',$math,'Preparar evaluación',true);
+$late=$add('2026-11-16',$math,'Revisar talleres');
+$add('2026-11-17',$math,'Entregar materiales',true);
+$add('2026-11-17',$social,'Presentación de derechos humanos',false,'alta');
+$add('2026-11-22',$personal,'Leer');
+$add('2026-11-15',$math,'Fuera por el inicio',true);
+$add('2026-11-23',$math,'Fuera por el final');
+$other=new DailyPlanner($db,'teacher-b'); $otherState=$other->run('2026-11-16');
+$other->run('2026-11-16','save_task',['revision'=>$otherState['revision'],'category_id'=>$otherState['categories'][0]['id'],'title'=>'Tarea privada de otro usuario']);
+$checks=0;
+function compliance_check(bool $ok,string $message): void { global $checks; if(!$ok) throw new RuntimeException($message); $checks++; }
+function compliance_reject(callable $action): void { try { $action(); } catch(InvalidArgumentException $error) { compliance_check(true,'Rejected'); return; } throw new RuntimeException('Invalid range accepted.'); }
+$load=fn($from='2026-11-16',$to='2026-11-22')=>DailyCompliance::load($db,'teacher-a',$from,$to,'2026-11-18');
+$before=(int)$db->query('SELECT total_changes()')->fetchColumn();
+$revision=$planner->run('2026-11-16')['revision'];
+$report=$load();
+compliance_check($report['summary']===['total'=>5,'done'=>2,'pending'=>3,'overdue'=>2,'rate'=>40],'Period totals, denominator, overdue dates or tenant isolation failed.');
+compliance_check(count($report['days'])===7 && $report['days'][0]['date']==='2026-11-16' && $report['days'][6]['date']==='2026-11-22','Inclusive planning-date range failed.');
+compliance_check($report['days'][0]['rate']===50 && $report['days'][1]['rate']===50,'Daily progress is incorrect.');
+compliance_check($report['days'][2]['rate']===null && $report['days'][2]['total']===0,'A day without tasks must not report a failure percentage.');
+compliance_check($report['days'][6]['pending']===1 && $report['days'][6]['overdue']===0,'Future pending tasks are incorrectly overdue.');
+compliance_check(count($report['categories'])===3 && $report['categories'][0]['id']===$math && $report['categories'][0]['rate']===67,'Category totals or rounding failed.');
+compliance_check(array_column($report['pending'],'title')===['Revisar talleres','Presentación de derechos humanos','Leer'],'Pending list includes completed, out-of-range or another owner’s tasks.');
+compliance_check($report['pending'][0]['overdue']===true && $report['pending'][2]['overdue']===false,'Pending dates are not classified against server today.');
+compliance_check($planner->run('2026-11-16')['revision']===$revision && (int)$db->query('SELECT total_changes()')->fetchColumn()===$before,'Reading compliance writes to the database or changes revision.');
+$empty=DailyCompliance::load($db,'new-user','2026-11-16','2026-11-22','2026-11-18');
+compliance_check($empty['summary']['rate']===null && $empty['summary']['total']===0 && $empty['categories']===[] && $empty['pending']===[],'Empty account report is misleading.');
+compliance_check((int)$db->query("SELECT COUNT(*) FROM pd_accounts WHERE owner='new-user'")->fetchColumn()===0,'Monitoring seeds accounts instead of only reading.');
+$oneDay=$load('2026-11-16','2026-11-16');
+compliance_check(count($oneDay['days'])===1 && $oneDay['summary']['total']===2,'Single-day report failed.');
+$state=$planner->run('2026-11-16');
+$planner->run('2026-11-16','complete',['revision'=>$state['revision'],'id'=>$first,'done'=>false]);
+$report=$load();
+compliance_check($report['summary']['rate']===20 && $report['summary']['overdue']===3,'Unchecking a task does not update the current compliance state.');
+$state=$planner->run('2026-11-16');
+$planner->run('2026-11-16','save_task',['revision'=>$state['revision'],'id'=>$late,'category_id'=>$math,'title'=>'Revisar talleres','task_date'=>'2026-11-23']);
+compliance_check($load()['summary']['total']===4 && $load()['summary']['rate']===25,'Moving a task does not update its planning-date totals.');
+$leap=$load('2028-01-01','2028-12-31');
+compliance_check(count($leap['days'])===366,'A complete leap year should be allowed.');
+compliance_reject(fn()=> $load('2026-11-22','2026-11-16'));
+compliance_reject(fn()=> $load('2026-02-30','2026-03-01'));
+compliance_reject(fn()=> $load('2026-01-01','2027-01-02'));
+compliance_reject(fn()=> $load(['2026-01-01'],'2026-01-02'));
+$bulk=new DailyPlanner($db,'many-tasks'); $bulkState=$bulk->run('2026-11-16');
+$insert=$db->prepare("INSERT INTO pd_tasks(owner,plan_date,category_id,title,description,priority,highlight,position) VALUES('many-tasks','2026-11-16',?,?,'','normal','green',?)");
+for($i=0;$i<51;$i++) $insert->execute([$bulkState['categories'][0]['id'],'Pendiente '.$i,$i]);
+$limited=DailyCompliance::load($db,'many-tasks','2026-11-16','2026-11-22','2026-11-18');
+compliance_check(count($limited['pending'])===50 && $limited['summary']['pending']===51,'The pending preview limit incorrectly truncates aggregate totals.');
+echo "OK: $checks comprobaciones de cumplimiento, fechas, porcentajes, aislamiento, actualización, lectura sin cambios y límite de pendientes.\n";

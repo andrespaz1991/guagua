@@ -185,11 +185,11 @@ if (isset($_GET['ajax_action'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matriz Curricular y DBAs</title>
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
     <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="/guagua/comun/vendor/phosphor-icons.js"></script>
     <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/guagua/comun/js/sweetalert2@11.js"></script>
     
     <style>
         .loader { border-top-color: #3b82f6; animation: spinner 1.5s linear infinite; }

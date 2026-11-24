@@ -1,5 +1,8 @@
 <?php
 declare(strict_types=1);
+require_once dirname(__DIR__,3) . '/comun/seguridad.php';
+guagua_exigir_rol(['admin','directivo']);
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') guagua_exigir_csrf();
 
 require_once dirname(__DIR__) . '/lib/Database.php';
 require_once dirname(__DIR__) . '/lib/EvaluationSeeder.php';
@@ -55,6 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php if ($message !== null): ?><p class="notice ok"><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></p><p><a href="../index.php">Abrir el sistema</a></p><?php endif; ?>
     <?php if ($error !== null): ?><p class="notice error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
     <form method="post">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(guagua_csrf_token(),ENT_QUOTES,'UTF-8') ?>">
         <label for="confirmacion">Confirmación</label>
         <input id="confirmacion" name="confirmacion" required placeholder="INSTALAR EVIDENCIAS" autocomplete="off">
         <button type="submit">Crear tablas y cargar plantilla 2026</button>

@@ -100,7 +100,8 @@ function calendario_buscar_planeacion(array $planeaciones, array $evento)
 
 // =================================================================
 // 2. ENDPOINT AJAX: buscar_planeaciones
-//    Soporta: q (texto libre), materia, grado, startDate, endDate, limit, page
+//    Soporta: q (texto libre), materia, grado, startDate, endDate,
+//    createdDate, limit, page
 // =================================================================
 if (isset($_GET['action']) && $_GET['action'] === 'buscar_planeaciones') {
     header('Content-Type: application/json; charset=utf-8');
@@ -172,6 +173,19 @@ if (isset($_GET['action']) && $_GET['action'] === 'buscar_planeaciones') {
         $types   .= 's';
     }
 
+    // — Fecha de creación —
+    $createdDate = trim($_GET['createdDate'] ?? '');
+    if ($createdDate !== '') {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $createdDate)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'La fecha de creación no es válida.', 'data' => [], 'total' => 0], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+        $where[]  = 'DATE(p.fecha_creacion) = ?';
+        $params[] = $createdDate;
+        $types   .= 's';
+    }
+
     $whereClause = $where ? ' WHERE ' . implode(' AND ', $where) : '';
 
     // — Contar total —
@@ -191,6 +205,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'buscar_planeaciones') {
                     p.grado,
                     p.fecha_inicio AS start,
                     p.fecha_fin    AS end,
+                    DATE(p.fecha_creacion) AS fecha_creacion,
                     p.objetivo,
                     p.eje_tematico
                 $baseSql$whereClause
@@ -218,7 +233,45 @@ if (isset($_GET['action']) && $_GET['action'] === 'buscar_planeaciones') {
 }
 
 // =================================================================
-// 3. ENDPOINT AJAX: obtener_filtros
+// 3. ENDPOINT AJAX: planeaciones_por_fecha_creacion
+//    Datos completos para construir el ZIP de planeaciones del día.
+// =================================================================
+if (isset($_GET['action']) && $_GET['action'] === 'planeaciones_por_fecha_creacion') {
+    header('Content-Type: application/json; charset=utf-8');
+
+    $fechaCreacion = trim((string)($_GET['fechaCreacion'] ?? ''));
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaCreacion)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Seleccione una fecha de creación válida.', 'data' => []], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $sql = "SELECT p.id_plan, p.fecha_creacion, p.fecha_inicio, p.fecha_fin, p.grado, p.materia,
+                   p.periodo, p.tiempo_plan, p.dba, p.estrategias, p.observaciones, p.reflexion,
+                   p.objetivo, p.eje_tematico, p.evaluacion,
+                   COALESCE(mo.nombre_materia, m2.nombre_materia, p.materia) AS materia_nombre
+            FROM planeador_vallesol p
+            LEFT JOIN materia_oficial mo ON mo.id_materia = CAST(TRIM(p.materia) AS UNSIGNED)
+            LEFT JOIN materia m2 ON mo.id_materia IS NULL AND m2.id_materia = CAST(TRIM(p.materia) AS UNSIGNED)
+            WHERE DATE(p.fecha_creacion) = ?
+            ORDER BY p.id_plan ASC";
+    $stmt = $mysqli->prepare($sql);
+    if (!$stmt) {
+        http_response_code(500);
+        echo json_encode(['error' => 'No fue posible consultar las planeaciones.', 'data' => []], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    $stmt->bind_param('s', $fechaCreacion);
+    $stmt->execute();
+    $planes = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    echo json_encode(['data' => $planes, 'total' => count($planes)], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// =================================================================
+// 4. ENDPOINT AJAX: obtener_filtros
 //    Devuelve materias (de materia_oficial) y grados reales del planeador
 // =================================================================
 if (isset($_GET['action']) && $_GET['action'] === 'obtener_filtros') {
@@ -249,7 +302,97 @@ if (isset($_GET['action']) && $_GET['action'] === 'obtener_filtros') {
 }
 
 // =================================================================
-// 4. LÓGICA PARA LA CARGA INICIAL DE LA PÁGINA (calendario visual)
+// 4. ENDPOINT AJAX: materias_sin_planeacion
+//    Combinaciones materia/grado activas que no tienen plan vigente
+//    durante el mes solicitado.
+// =================================================================
+if (isset($_GET['action']) && $_GET['action'] === 'materias_sin_planeacion') {
+    header('Content-Type: application/json; charset=utf-8');
+
+    $mes = trim((string)($_GET['month'] ?? ''));
+    if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $mes)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Seleccione un mes válido.', 'data' => [], 'total' => 0], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $inicioMes = $mes . '-01';
+    $finMes    = date('Y-m-t', strtotime($inicioMes));
+
+    // Las asignaciones del año lectivo activo definen las materias y grados
+    // que deben contar con planeación. Si no hay año activo, se conservan
+    // todas las asignaciones para no ocultar información.
+    $anoActivo = $mysqli->query("SELECT id_ano_lectivo, nombre_ano_lectivo FROM ano_lectivo WHERE estado = 'Activo' LIMIT 1");
+    $datosAno  = $anoActivo ? $anoActivo->fetch_assoc() : null;
+    $filtroAno = '';
+    if ($datosAno) {
+        $idAno     = (int)$datosAno['id_ano_lectivo'];
+        $nombreAno = (int)$datosAno['nombre_ano_lectivo'];
+        $filtroAno = " WHERE (a.ano_lectivo = $idAno OR a.ano_lectivo = $nombreAno)";
+    }
+
+    $sqlAsignaciones = "SELECT DISTINCT
+                            a.id_asignatura,
+                            a.id_categoria_curso,
+                            COALESCE(NULLIF(TRIM(mo.nombre_materia), ''), NULLIF(TRIM(m2.nombre_materia), ''), CONCAT('Materia #', a.id_asignatura)) AS materia,
+                            COALESCE(NULLIF(TRIM(cc.nombre_categoria_curso), ''), CAST(a.id_categoria_curso AS CHAR)) AS grado
+                        FROM asignacion a
+                        LEFT JOIN materia_oficial mo ON mo.id_materia = a.id_asignatura
+                        LEFT JOIN materia m2 ON m2.id_materia = a.id_asignatura
+                        LEFT JOIN categoria_curso cc ON cc.id_categoria_curso = a.id_categoria_curso"
+                     . $filtroAno
+                     . " ORDER BY grado ASC, materia ASC";
+    $resAsignaciones = $mysqli->query($sqlAsignaciones);
+    $asignaciones = $resAsignaciones ? $resAsignaciones->fetch_all(MYSQLI_ASSOC) : [];
+
+    $stmtPlanes = $mysqli->prepare(
+        'SELECT id_plan, materia, grado, fecha_inicio, fecha_fin
+         FROM planeador_vallesol
+         WHERE fecha_inicio <= ? AND fecha_fin >= ?'
+    );
+    $planes = [];
+    if ($stmtPlanes) {
+        $stmtPlanes->bind_param('ss', $finMes, $inicioMes);
+        $stmtPlanes->execute();
+        $planes = $stmtPlanes->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmtPlanes->close();
+    }
+
+    $sinPlaneacion = [];
+    foreach ($asignaciones as $asignacion) {
+        $materiaAsignacion = calendario_normalizar_texto($asignacion['materia']);
+        $gradoAsignacion   = calendario_grado_clave($asignacion['grado']);
+        $tienePlaneacion   = false;
+
+        foreach ($planes as $plan) {
+            $coincideMateria = (string)$plan['materia'] === (string)$asignacion['id_asignatura']
+                || ($materiaAsignacion !== '' && calendario_normalizar_texto($plan['materia']) === $materiaAsignacion);
+            $coincideGrado = $gradoAsignacion !== ''
+                && calendario_grado_clave($plan['grado']) === $gradoAsignacion;
+            if ($coincideMateria && $coincideGrado) {
+                $tienePlaneacion = true;
+                break;
+            }
+        }
+
+        if (!$tienePlaneacion) {
+            $sinPlaneacion[] = [
+                'materia' => $asignacion['materia'],
+                'grado'   => $asignacion['grado'],
+            ];
+        }
+    }
+
+    echo json_encode([
+        'month' => $mes,
+        'data'  => $sinPlaneacion,
+        'total' => count($sinPlaneacion),
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// =================================================================
+// 5. LÓGICA PARA LA CARGA INICIAL DE LA PÁGINA (calendario visual)
 // =================================================================
 $eventos_calendario = [];
 
@@ -260,8 +403,7 @@ $diasSemana = [
 
 $anoLectivo     = $mysqli->query("SELECT id_ano_lectivo, nombre_ano_lectivo FROM ano_lectivo WHERE estado = 'Activo' LIMIT 1");
 $datosAnoLectivo = $anoLectivo ? $anoLectivo->fetch_assoc() : null;
-$anioCalendario  = isset($datosAnoLectivo['nombre_ano_lectivo']) ? (int)$datosAnoLectivo['nombre_ano_lectivo'] : (int)date('Y');
-if ($anioCalendario < 2000) $anioCalendario = (int)date('Y');
+$anioCalendario = (int)guagua_ano_configurado($mysqli);
 
 $inicioCalendario = $anioCalendario . '-01-01';
 $finCalendario    = $anioCalendario . '-12-31';
@@ -482,6 +624,20 @@ usort($eventos_calendario, static fn($a, $b) => strcmp($a['start'], $b['start'])
         .result-item .result-objetivo { color: #4a5568; font-size: .85em; margin-top: 4px;
             overflow: hidden; text-overflow: ellipsis; display: -webkit-box;
             -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .result-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .result-action, .bulk-download-button { border: 1px solid var(--primary); border-radius: 7px;
+            background: #fff; color: var(--primary); padding: 7px 10px; cursor: pointer; font-size: .82em;
+            font-weight: 600; text-decoration: none; }
+        .result-action:hover, .bulk-download-button:hover { background: #ebf8ff; }
+        .result-action.save { border-color: #2f855a; color: #2f855a; }
+        .result-action.save:hover { background: #f0fff4; }
+        .bulk-export { display: flex; align-items: end; gap: 12px; flex-wrap: wrap; margin: -4px 0 22px;
+            padding: 14px; border: 1px solid #bee3f8; border-radius: 9px; background: #ebf8ff; }
+        .bulk-export label { display: block; font-weight: 600; margin-bottom: 6px; font-size: .88em; color: #2c5282; }
+        .bulk-export input { padding: 8px; border: 1px solid #90cdf4; border-radius: 7px; font-size: .9em; }
+        .bulk-download-button { background: var(--primary); color: #fff; padding: 9px 13px; }
+        .bulk-download-button:hover { background: #1f436d; }
+        #bulk-export-status { width: 100%; color: #2c5282; font-size: .88em; min-height: 1.15em; }
         #no-results-message { text-align: center; padding: 40px; color: #718096; }
 
         /* Paginación */
@@ -500,11 +656,44 @@ usort($eventos_calendario, static fn($a, $b) => strcmp($a['start'], $b['start'])
         .spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid var(--gray);
             border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ---- Pestañas y materias sin planeación ---- */
+        .module-tabs { display: flex; gap: 8px; margin-bottom: 18px; border-bottom: 1px solid var(--gray); }
+        .module-tab { border: 0; background: transparent; color: #718096; cursor: pointer; font-size: .95em;
+            font-weight: 600; padding: 11px 16px; border-bottom: 3px solid transparent; }
+        .module-tab:hover { color: var(--primary); background: #edf2f7; }
+        .module-tab.active { color: var(--primary); border-bottom-color: var(--accent); }
+        .missing-container { background: var(--card); padding: 25px; border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.1); }
+        .missing-container h2 { margin-top: 0; color: var(--primary); }
+        .missing-description { color: #718096; margin: -6px 0 20px; }
+        .missing-controls { display: flex; align-items: end; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+        .missing-controls label { display: block; font-weight: 600; margin-bottom: 6px; font-size: .88em; color: #4a5568; }
+        .missing-controls input { display: block; padding: 10px; border: 1px solid var(--gray); border-radius: 8px; font-size: .95em; }
+        .missing-controls button { padding: 10px 16px; border: 0; border-radius: 8px; background: var(--primary); color: #fff;
+            font-weight: 600; cursor: pointer; }
+        .missing-controls button:hover { background: #1f436d; }
+        #missing-summary { color: #4a5568; font-weight: 600; margin-bottom: 12px; }
+        #missing-results { list-style: none; margin: 0; padding: 0; display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+        .missing-item { background: #fffaf0; border: 1px solid #fbd38d; border-left: 5px solid var(--accent);
+            border-radius: 8px; padding: 14px; }
+        .missing-item strong { color: var(--primary); display: block; }
+        .missing-item span { color: #718096; font-size: .9em; display: block; margin-top: 4px; }
+        #missing-empty { color: #2f855a; background: #f0fff4; border: 1px solid #9ae6b4; border-radius: 8px; padding: 16px; }
+        #missing-error { color: #c53030; background: #fff5f5; border: 1px solid #feb2b2; border-radius: 8px; padding: 16px; }
     </style>
 </head>
 <body>
 
 <div class="container">
+
+    <div class="module-tabs" role="tablist" aria-label="Vistas de planeación">
+        <button class="module-tab active" type="button" data-panel="planning-panel" role="tab" aria-selected="true">Calendario y búsqueda</button>
+        <button class="module-tab" type="button" data-panel="missing-panel" role="tab" aria-selected="false">Materias sin planeación</button>
+    </div>
+
+    <div id="planning-panel" role="tabpanel">
 
     <!-- ===================== CALENDARIO ===================== -->
     <div class="calendar-container">
@@ -535,6 +724,15 @@ usort($eventos_calendario, static fn($a, $b) => strcmp($a['start'], $b['start'])
     <div class="search-container">
         <h2>📋 Búsqueda de Planeaciones (Vallesol)</h2>
 
+        <div class="bulk-export">
+            <div>
+                <label for="created-date-filter">Fecha de creación</label>
+                <input type="date" id="created-date-filter">
+            </div>
+            <button type="button" id="bulk-download-btn" class="bulk-download-button">Descargar todas las planeaciones del día</button>
+            <span id="bulk-export-status" role="status" aria-live="polite"></span>
+        </div>
+
         <!-- Caja de búsqueda por texto libre -->
         <div class="search-box-wrap">
             <span class="search-icon">🔍</span>
@@ -561,6 +759,10 @@ usort($eventos_calendario, static fn($a, $b) => strcmp($a['start'], $b['start'])
                 <input type="date" id="end-date-filter">
             </div>
             <div class="filter-group">
+                <label for="created-date-search-filter">Creada el</label>
+                <input type="date" id="created-date-search-filter">
+            </div>
+            <div class="filter-group">
                 <label for="limit-filter">Registros por página</label>
                 <select id="limit-filter">
                     <option value="5">5</option>
@@ -577,6 +779,26 @@ usort($eventos_calendario, static fn($a, $b) => strcmp($a['start'], $b['start'])
         <div id="pagination-controls"></div>
     </div>
 
+    </div><!-- /#planning-panel -->
+
+    <!-- ===================== MATERIAS SIN PLANEACIÓN ===================== -->
+    <div id="missing-panel" class="missing-container" role="tabpanel" hidden>
+        <h2>Materias y grados sin planeación</h2>
+        <p class="missing-description">Consulta las asignaciones del año lectivo activo que no tienen una planeación vigente durante el mes seleccionado.</p>
+        <div class="missing-controls">
+            <div>
+                <label for="missing-month">Mes a revisar</label>
+                <input type="month" id="missing-month">
+            </div>
+            <button type="button" id="load-missing-btn">Consultar</button>
+        </div>
+        <div id="missing-summary" aria-live="polite"></div>
+        <div id="missing-loading" style="display:none;"><span class="spinner"></span> Consultando asignaciones…</div>
+        <p id="missing-empty" style="display:none;">Todas las materias y grados tienen planeación en este mes.</p>
+        <p id="missing-error" style="display:none;">No se pudo cargar la consulta.</p>
+        <ul id="missing-results"></ul>
+    </div>
+
 </div><!-- /.container -->
 
 <!-- ===================== MODAL ===================== -->
@@ -590,6 +812,9 @@ usort($eventos_calendario, static fn($a, $b) => strcmp($a['start'], $b['start'])
     </div>
 </div>
 
+<script src="../apps/PlanMind/pizzip.min.js"></script>
+<script src="../apps/PlanMind/docxtemplater.js"></script>
+<script src="../apps/PlanMind/FileSaver.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -600,7 +825,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const calendarBody     = document.getElementById('calendar-body');
     const monthYearDisplay = document.getElementById('month-year-display');
     const legendContainer  = document.getElementById('calendar-legend');
-    let currentDate = new Date();
+    const anoConfigurado = <?php echo $anioCalendario; ?>;
+    let currentDate = new Date(anoConfigurado, new Date().getMonth(), 1);
 
     function renderCalendar() {
         calendarBody.innerHTML = '';
@@ -713,9 +939,98 @@ document.addEventListener('DOMContentLoaded', function () {
     const materiaFilter  = document.getElementById('materia-filter');
     const gradoFilter    = document.getElementById('grado-filter');
 
+    // El módulo se muestra dentro de comun/modulo.php. Esta marca evita que
+    // las llamadas AJAX sean redirigidas de nuevo al contenedor en .htaccess.
+    function apiUrl(params) {
+        const query = new URLSearchParams({ ...params, guagua_embedded: '1' });
+        return `?${query.toString()}`;
+    }
+
+    // ===================== MATERIAS SIN PLANEACIÓN =====================
+    const panelTabs        = document.querySelectorAll('.module-tab');
+    const planningPanel    = document.getElementById('planning-panel');
+    const missingPanel     = document.getElementById('missing-panel');
+    const missingMonth     = document.getElementById('missing-month');
+    const loadMissingBtn   = document.getElementById('load-missing-btn');
+    const missingSummary   = document.getElementById('missing-summary');
+    const missingResults   = document.getElementById('missing-results');
+    const missingLoading   = document.getElementById('missing-loading');
+    const missingEmpty     = document.getElementById('missing-empty');
+    const missingError     = document.getElementById('missing-error');
+
+    const hoy = new Date();
+    missingMonth.value = `${anoConfigurado}-${String(hoy.getMonth() + 1).padStart(2, '0')}`;
+
+    function nombreMes(mes) {
+        return new Date(`${mes}-01T12:00:00`).toLocaleDateString('es-CO', {
+            month: 'long', year: 'numeric'
+        });
+    }
+
+    function activarPanel(panelId) {
+        const mostrarFaltantes = panelId === 'missing-panel';
+        planningPanel.hidden = mostrarFaltantes;
+        missingPanel.hidden = !mostrarFaltantes;
+        panelTabs.forEach(tab => {
+            const activa = tab.dataset.panel === panelId;
+            tab.classList.toggle('active', activa);
+            tab.setAttribute('aria-selected', String(activa));
+        });
+        if (mostrarFaltantes) cargarMateriasSinPlaneacion();
+    }
+
+    async function cargarMateriasSinPlaneacion() {
+        if (!missingMonth.value) return;
+        missingResults.innerHTML = '';
+        missingSummary.textContent = '';
+        missingEmpty.style.display = 'none';
+        missingError.style.display = 'none';
+        missingLoading.style.display = 'block';
+        loadMissingBtn.disabled = true;
+
+        try {
+            const res = await fetch(apiUrl({
+                action: 'materias_sin_planeacion',
+                month: missingMonth.value,
+            }));
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const json = await res.json();
+            const materias = Array.isArray(json.data) ? json.data : [];
+            const mesLegible = nombreMes(json.month || missingMonth.value);
+            missingSummary.textContent = `${json.total || 0} materia(s) o grado(s) sin planeación en ${mesLegible}.`;
+
+            if (materias.length === 0) {
+                missingEmpty.style.display = 'block';
+                return;
+            }
+
+            materias.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'missing-item';
+                const materia = document.createElement('strong');
+                materia.textContent = item.materia;
+                const grado = document.createElement('span');
+                grado.textContent = `Grado: ${item.grado}`;
+                li.append(materia, grado);
+                missingResults.appendChild(li);
+            });
+        } catch (error) {
+            console.error('Error consultando materias sin planeación:', error);
+            missingError.style.display = 'block';
+        } finally {
+            missingLoading.style.display = 'none';
+            loadMissingBtn.disabled = false;
+        }
+    }
+
+    panelTabs.forEach(tab => tab.addEventListener('click', () => activarPanel(tab.dataset.panel)));
+    loadMissingBtn.addEventListener('click', cargarMateriasSinPlaneacion);
+    missingMonth.addEventListener('change', cargarMateriasSinPlaneacion);
+
     async function loadFilters() {
         try {
-            const res  = await fetch('?action=obtener_filtros');
+            const res  = await fetch(apiUrl({ action: 'obtener_filtros' }));
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
             data.materias.forEach(m => {
                 const opt = document.createElement('option');
@@ -737,6 +1052,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const qClearBtn        = document.getElementById('q-clear-btn');
     const startDateFilter  = document.getElementById('start-date-filter');
     const endDateFilter    = document.getElementById('end-date-filter');
+    const createdDateSearchFilter = document.getElementById('created-date-search-filter');
+    const createdDateFilter = document.getElementById('created-date-filter');
+    const bulkDownloadBtn   = document.getElementById('bulk-download-btn');
+    const bulkExportStatus  = document.getElementById('bulk-export-status');
     const limitFilter      = document.getElementById('limit-filter');
     const searchResults    = document.getElementById('search-results');
     const noResultsMsg     = document.getElementById('no-results-message');
@@ -745,6 +1064,170 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let isLoading = false;
     let debounceTimer = null;
+    let templateContentPromise = null;
+
+    const DEFAULT_OUTPUT_PATH = 'G:\\Mi unidad\\Josefina\\Vallesol2026\\Planeaciones';
+    const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+    function escapeHtml(value) {
+        const element = document.createElement('div');
+        element.textContent = String(value ?? '');
+        return element.innerHTML;
+    }
+
+    function formatDateForDoc(value) {
+        const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value || ''));
+        return match ? `${match[3]}/${match[2]}/${match[1]}` : '';
+    }
+
+    function getMonthName(value) {
+        const match = /^\d{4}-(\d{2})/.exec(String(value || ''));
+        return match ? MONTHS[Number(match[1]) - 1] || '' : '';
+    }
+
+    function safeFilename(value) {
+        return String(value || 'Vacio').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g, '') || 'Vacio';
+    }
+
+    function documentFilename(plan) {
+        return `planeador_vallesol_${safeFilename(getMonthName(plan.fecha_inicio))}_${safeFilename(plan.grado)}_${safeFilename(plan.materia_nombre || plan.materia)}_${plan.id_plan}.docx`;
+    }
+
+    function sanitizeXml(value) {
+        return String(value ?? '').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '')
+            .replace(/\uFFFE|\uFFFF/g, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+    }
+
+    function getDocumentData(plan) {
+        const materia = plan.materia_nombre || plan.materia || '';
+        const estrategia = plan.estrategia ?? plan.estrategias ?? '';
+        const momentos = plan.momentos ?? plan.observaciones ?? '';
+        const ejes = plan.ejes_tematicos ?? plan.eje_tematico ?? '';
+        const data = {
+            mes: getMonthName(plan.fecha_inicio),
+            periodo: plan.periodo || '',
+            docente: <?php echo json_encode((string)($_SESSION['nombre_usu'] ?? ''), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
+            grado: plan.grado || '',
+            materia,
+            materia_id: plan.materia_id || plan.materia || '',
+            materia_nombre: materia,
+            nombre_materia: materia,
+            tiempo: plan.tiempo || plan.tiempo_plan || '',
+            tiempo_plan: plan.tiempo_plan || plan.tiempo || '',
+            fecha_inicio: formatDateForDoc(plan.fecha_inicio),
+            fecha_fin: formatDateForDoc(plan.fecha_fin),
+            dba: plan.dba || '',
+            ejes_tematicos: ejes,
+            eje_tematico: ejes,
+            observaciones: momentos,
+            reflexion: plan.reflexion || '',
+            objetivo: plan.objetivo || '',
+            estrategia,
+            estrategias: estrategia,
+            momentos,
+            evaluacion: plan.evaluacion || '',
+            tema: '',
+            objetivos: plan.objetivo || '',
+            estrategias_educativas: estrategia,
+            estrategia_educativa: estrategia,
+            estrategia_metodologica: estrategia,
+            ejes,
+            reflexion_pedagogica: plan.reflexion || '',
+            observaciones_adicionales: momentos,
+            momentos_clase: momentos,
+        };
+        return Object.fromEntries(Object.entries(data).map(([key, value]) => [key, sanitizeXml(value)]));
+    }
+
+    async function getTemplateContent() {
+        if (!templateContentPromise) {
+            const templateMode = localStorage.getItem('planmindTemplateMode') || 'upload';
+            const configuredPath = localStorage.getItem('planmindTemplatePath') || '';
+            const url = templateMode === 'path' && configuredPath
+                ? `../apps/PlanMind/load_template.php?path=${encodeURIComponent(configuredPath)}`
+                : 'plantilla2026/PLANEADOR2026.docx';
+            templateContentPromise = fetch(url, { cache: 'no-store' }).then(async response => {
+                if (!response.ok) {
+                    const error = await response.json().catch(() => null);
+                    throw new Error(error?.message || 'No se pudo cargar la plantilla Word.');
+                }
+                return response.arrayBuffer();
+            });
+        }
+        return templateContentPromise;
+    }
+
+    async function makeDocx(plan) {
+        if (typeof window.PizZip === 'undefined' || typeof window.docxtemplater === 'undefined') {
+            throw new Error('No cargaron las librerías necesarias para crear el Word.');
+        }
+        const zip = new window.PizZip(await getTemplateContent());
+        const documentTemplate = new window.docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+            nullGetter: () => '',
+        });
+        documentTemplate.render(getDocumentData(plan));
+        return documentTemplate.getZip().generate({
+            type: 'blob',
+            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        });
+    }
+
+    async function getPlanForExport(idPlan) {
+        const response = await fetch(`../apps/PlanMind/index.php?action=get&id=${encodeURIComponent(idPlan)}`, { cache: 'no-store' });
+        const result = await response.json().catch(() => null);
+        if (!response.ok || !result?.ok || !result.plan) {
+            throw new Error(result?.message || 'No fue posible obtener la planeación.');
+        }
+        return result.plan;
+    }
+
+    async function saveDocxToConfiguredPath(blob, filename) {
+        const directory = localStorage.getItem('planmindOutputPath') || DEFAULT_OUTPUT_PATH;
+        const contentBase64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result).split(',')[1] || '');
+            reader.onerror = () => reject(reader.error || new Error('No se pudo preparar el archivo Word.'));
+            reader.readAsDataURL(blob);
+        });
+        const response = await fetch('../apps/PlanMind/save_docx.php', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ directory, filename, contentBase64 }),
+        });
+        const result = await response.json().catch(() => null);
+        if (!response.ok || !result?.ok) {
+            throw new Error(result?.message || 'No fue posible guardar el archivo en la ruta configurada.');
+        }
+        return result.path;
+    }
+
+    async function exportOnePlan(idPlan, mode, button) {
+        const previous = button.textContent;
+        button.disabled = true;
+        button.textContent = mode === 'save' ? 'Guardando…' : 'Generando…';
+        try {
+            const plan = await getPlanForExport(idPlan);
+            const filename = documentFilename(plan);
+            const docx = await makeDocx(plan);
+            if (mode === 'save') {
+                const savedPath = await saveDocxToConfiguredPath(docx, filename);
+                button.textContent = 'Guardado ✓';
+                button.title = savedPath;
+            } else {
+                window.saveAs(docx, filename);
+                button.textContent = 'Descargado ✓';
+            }
+        } catch (error) {
+            console.error('Error exportando planeación:', error);
+            alert(`No se pudo exportar la planeación: ${error.message}`);
+            button.textContent = previous;
+        } finally {
+            button.disabled = false;
+            setTimeout(() => { if (button.textContent !== previous) button.textContent = previous; }, 2500);
+        }
+    }
 
     async function fetchResults(page = 1) {
         if (isLoading) return;
@@ -763,10 +1246,12 @@ document.addEventListener('DOMContentLoaded', function () {
             grado:      gradoFilter.value,
             startDate:  startDateFilter.value,
             endDate:    endDateFilter.value,
+            createdDate: createdDateSearchFilter.value,
         });
 
         try {
-            const res  = await fetch(`?${params}`);
+            const res  = await fetch(apiUrl(Object.fromEntries(params)));
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const json = await res.json();
             const planes = json.data || [];
             const total  = json.total || 0;
@@ -777,16 +1262,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     const obj = plan.objetivo ? plan.objetivo.replace(/<[^>]*>/g, '').trim() : '';
                     const eje = plan.eje_tematico ? plan.eje_tematico.replace(/<[^>]*>/g, '').trim() : '';
                     li.innerHTML = `
-                        <a href="../apps/PlanMind/index.php?id=${encodeURIComponent(plan.id_plan)}"
-                           target="_blank" class="result-item">
-                            <strong>${plan.title}</strong>
+                        <div class="result-item">
+                            <strong>${escapeHtml(plan.title)}</strong>
                             <div class="result-meta">
-                                Grado: <b>${plan.grado}</b> &nbsp;|&nbsp;
-                                ${plan.start} al ${plan.end}
+                                Grado: <b>${escapeHtml(plan.grado)}</b> &nbsp;|&nbsp;
+                                ${escapeHtml(plan.start)} al ${escapeHtml(plan.end)} &nbsp;|&nbsp;
+                                Creada: ${escapeHtml(plan.fecha_creacion || 'Sin dato')}
                             </div>
-                            ${obj ? `<div class="result-objetivo">${obj}</div>` : ''}
-                            ${eje ? `<div class="result-objetivo" style="color:#718096;font-style:italic">${eje}</div>` : ''}
-                        </a>`;
+                            ${obj ? `<div class="result-objetivo">${escapeHtml(obj)}</div>` : ''}
+                            ${eje ? `<div class="result-objetivo" style="color:#718096;font-style:italic">${escapeHtml(eje)}</div>` : ''}
+                            <div class="result-actions">
+                                <a href="../apps/PlanMind/index.php?id=${encodeURIComponent(plan.id_plan)}" target="_blank" class="result-action">Abrir</a>
+                                <button type="button" class="result-action download" data-export-plan="${Number(plan.id_plan)}" data-export-mode="download">Descargar Word</button>
+                                <button type="button" class="result-action save" data-export-plan="${Number(plan.id_plan)}" data-export-mode="save">Guardar en ruta</button>
+                            </div>
+                        </div>`;
                     searchResults.appendChild(li);
                 });
                 renderPagination(total, page);
@@ -859,8 +1349,53 @@ document.addEventListener('DOMContentLoaded', function () {
         fetchResults(1);
     });
 
-    [materiaFilter, gradoFilter, startDateFilter, endDateFilter, limitFilter].forEach(el => {
+    [materiaFilter, gradoFilter, startDateFilter, endDateFilter, createdDateSearchFilter, limitFilter].forEach(el => {
         el.addEventListener('change', () => fetchResults(1));
+    });
+
+    searchResults.addEventListener('click', event => {
+        const button = event.target.closest('[data-export-plan]');
+        if (!button) return;
+        exportOnePlan(Number(button.dataset.exportPlan), button.dataset.exportMode, button);
+    });
+
+    createdDateFilter.addEventListener('change', () => {
+        if (createdDateFilter.value) createdDateSearchFilter.value = createdDateFilter.value;
+    });
+
+    bulkDownloadBtn.addEventListener('click', async () => {
+        const fechaCreacion = createdDateFilter.value || createdDateSearchFilter.value;
+        if (!fechaCreacion) {
+            bulkExportStatus.textContent = 'Selecciona la fecha de creación que deseas exportar.';
+            createdDateFilter.focus();
+            return;
+        }
+        bulkDownloadBtn.disabled = true;
+        bulkExportStatus.textContent = 'Consultando planeaciones…';
+        try {
+            const response = await fetch(apiUrl({ action: 'planeaciones_por_fecha_creacion', fechaCreacion }));
+            const result = await response.json().catch(() => null);
+            const plans = result?.data || [];
+            if (!response.ok) throw new Error(result?.error || 'No fue posible consultar las planeaciones.');
+            if (!plans.length) {
+                bulkExportStatus.textContent = 'No hay planeaciones creadas en la fecha seleccionada.';
+                return;
+            }
+            const archive = new window.PizZip();
+            for (let index = 0; index < plans.length; index++) {
+                bulkExportStatus.textContent = `Generando ${index + 1} de ${plans.length} planeaciones…`;
+                const docx = await makeDocx(plans[index]);
+                archive.file(documentFilename(plans[index]), await docx.arrayBuffer());
+            }
+            const archiveBlob = archive.generate({ type: 'blob', compression: 'DEFLATE' });
+            window.saveAs(archiveBlob, `planeaciones_${fechaCreacion}.zip`);
+            bulkExportStatus.textContent = `${plans.length} planeación(es) descargada(s) en un archivo ZIP.`;
+        } catch (error) {
+            console.error('Error exportando planeaciones por fecha:', error);
+            bulkExportStatus.textContent = `No se pudieron descargar las planeaciones: ${error.message}`;
+        } finally {
+            bulkDownloadBtn.disabled = false;
+        }
     });
 
     // ===================== INICIO =====================

@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador SISGA V8 - Procesador de Notas con Autoguardado Secuencial y CSV</title>
+    <title>Generador SISGA V9 - Procesador de Notas para la nueva planilla</title>
     <!-- SheetJS para procesar CSV/Excel -->
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <script src="/guagua/comun/vendor/xlsx.full.min.js"></script>
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
+    <link rel="stylesheet" href="indicadores.css?v=1">
+    <link rel="stylesheet" href="capturas.css?v=2">
+    <link rel="stylesheet" href="periodos.css?v=1">
     <!-- Inter Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
         .drag-area { transition: all 0.3s ease; }
@@ -21,6 +23,13 @@
 <body class="bg-slate-50 min-h-screen p-4 md:p-12 text-slate-800">
 
     <div class="max-w-4xl mx-auto space-y-6">
+        <nav class="sg-tabs" role="tablist" aria-label="Herramientas SISGA">
+            <button id="sg-tab-notas" role="tab" aria-selected="true" aria-controls="sg-notas">Notas y archivos CSV</button>
+            <button id="sg-tab-indicadores" role="tab" aria-selected="false" aria-controls="sg-indicadores" tabindex="-1">Fortalezas y dificultades <span>Nuevo</span></button>
+            <button id="sg-tab-capturas" role="tab" aria-selected="false" aria-controls="si-capturas" tabindex="-1">Indicadores</button>
+            <button id="sg-tab-periodos" role="tab" aria-selected="false" aria-controls="sp-periodos" tabindex="-1">Períodos</button>
+        </nav>
+        <section id="sg-notas" role="tabpanel" aria-labelledby="sg-tab-notas" class="space-y-6">
         
         <!-- Tarjeta de Control Principal -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
@@ -31,7 +40,7 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Generador SISGA V8</h1>
+                    <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Generador SISGA V9</h1>
                     <p class="text-sm text-slate-500">Inyección Directa de Notas y Conversor a CSV Estándar</p>
                 </div>
             </div>
@@ -109,11 +118,64 @@
             <textarea id="outputScript" class="w-full h-96 p-4 bg-slate-900 text-teal-400 font-mono text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500" readonly></textarea>
         </div>
 
+        </section>
+        <section id="sg-indicadores" class="sg-workspace" role="tabpanel" aria-labelledby="sg-tab-indicadores" hidden>
+            <header class="sg-heading"><div><p class="sg-eyebrow">SISGA / INDICADORES</p><h1>Una configuración.<br>Lista para tu grupo.</h1><p>Prepara fortalezas y dificultades, encuentra coincidencias y reutiliza tus selecciones.</p></div><span class="sg-badge">Perfiles en este navegador</span></header>
+            <div class="sg-toolbar"><label>Mis configuraciones<select id="sg-profiles"><option value="">Nueva configuración</option></select></label><button id="sg-load" type="button">Cargar</button><button id="sg-new" type="button">Nueva</button><button id="sg-import" type="button">Importar JSON</button><input id="sg-file" type="file" accept=".json,application/json" hidden></div>
+            <form id="sg-form">
+                <div class="sg-card"><div class="sg-card-title"><span class="sg-step">01</span><div><h2>Materia y grupo</h2><p>Estos datos acompañan tu perfil y el script.</p></div></div>
+                    <div class="sg-link-row"><label>Enlace de la planilla SISGA (opcional)<input id="sg-source-url" type="url" placeholder="https://www.sisga.com.co/Saga/…"></label><button id="sg-from-url" type="button">Tomar datos del enlace</button></div>
+                    <div class="sg-fields"><label class="sg-wide">Nombre de la configuración<input id="sg-name" required maxlength="120" placeholder="Ej. Ciencias · 6A · Segundo período"></label><label>Materia<input id="sg-subject" required maxlength="120" placeholder="Ciencias naturales"></label><label>Grupo<input id="sg-group" maxlength="80" placeholder="6A"></label><label>Período<input id="sg-period" maxlength="40" placeholder="2"></label><label>Año<input id="sg-year" type="number" min="2000" max="2200"></label></div>
+                </div>
+                <div class="sg-card"><div class="sg-card-title"><span class="sg-step">02</span><div><h2>Estudiantes</h2><p>Selecciona a quién se aplicarán los indicadores.</p></div></div>
+                    <div class="sg-choice"><label><input type="radio" name="sg-students" value="all" checked> Todos los estudiantes</label><label><input type="radio" name="sg-students" value="list"> Una lista específica</label></div>
+                    <label id="sg-student-list-wrap" hidden>Nombres o identificadores, uno por línea<textarea id="sg-student-list" rows="4" placeholder="Un estudiante por línea"></textarea></label><p class="sg-hint">«Todos» marca la opción general y las casillas de estudiantes detectadas en la pantalla. En listas paginadas, revisa cada página.</p>
+                </div>
+                <div class="sg-card"><div class="sg-card-title"><span class="sg-step">03</span><div><h2>¿Qué indicadores buscas?</h2><p>Escribe uno por línea. Puedes preparar una o ambas categorías.</p></div></div>
+                    <div class="sg-indicator-columns"><label class="sg-indicator-field sg-strength"><span>Fortalezas</span><textarea id="sg-strengths" rows="5" placeholder="Ej. Identifica las partes de la célula y explica sus funciones."></textarea></label><label class="sg-indicator-field sg-difficulty"><span>Dificultades</span><textarea id="sg-difficulties" rows="5" placeholder="Ej. Presenta dificultad para diferenciar células animales y vegetales."></textarea></label></div>
+                    <div class="sg-match-settings"><label>Tipo de coincidencia<select id="sg-mode"><option value="similar">Exacta o similar</option><option value="exact">Solo texto exacto</option></select></label><label>Similitud mínima <output id="sg-threshold-label">75%</output><input id="sg-threshold" type="range" min="50" max="100" value="75" step="5"></label></div><p class="sg-hint">La similitud compara palabras y escritura; no interpreta el significado. El script permite revisar y cambiar las coincidencias.</p>
+                    <details class="sg-details"><summary>Probar con un catálogo de indicadores</summary><p>Pega los indicadores disponibles, uno por línea, o importa el JSON exportado desde SISGA.</p><div class="sg-indicator-columns"><label>Catálogo de fortalezas<textarea id="sg-catalog-strengths" rows="4"></textarea></label><label>Catálogo de dificultades<textarea id="sg-catalog-difficulties" rows="4"></textarea></label></div><button id="sg-preview" type="button">Buscar coincidencias</button><div id="sg-matches" aria-live="polite"></div></details>
+                </div>
+                <details class="sg-card sg-details"><summary>Adaptar a mi pantalla de SISGA</summary><p>La detección automática usa etiquetas y encabezados. Si tu pantalla tiene otros nombres, indica selectores CSS de los controles o sus contenedores.</p><div class="sg-fields"><label>Opción «Todos»<input id="sg-selector-all" placeholder="Automático"></label><label>Estudiantes<input id="sg-selector-students" placeholder="Automático"></label><label>Fortalezas<input id="sg-selector-strengths" placeholder="Automático"></label><label>Dificultades<input id="sg-selector-difficulties" placeholder="Automático"></label></div><p class="sg-hint">El script trabaja en la pantalla o marco donde lo ejecutas. Abre primero los indicadores y espera a que carguen.</p></details>
+                <div class="sg-actions"><button type="button" id="sg-save">Guardar perfil</button><button type="button" id="sg-export">Exportar JSON</button><button type="submit" class="sg-primary">Generar script <span aria-hidden="true">↗</span></button></div>
+            </form>
+            <p id="sg-status" class="sg-status" role="status" aria-live="polite">Configura los indicadores o importa un perfil para comenzar.</p>
+            <section id="sg-result" class="sg-card sg-result" hidden><div class="sg-card-title"><div><p class="sg-eyebrow">LISTO PARA SISGA</p><h2>Tu asistente de selección</h2></div><button id="sg-copy" class="sg-primary">Copiar script</button><button id="sg-download">Descargar .js</button></div><ol><li>Abre la pantalla de fortalezas y dificultades de la materia en SISGA.</li><li>Pega el script en la consola (F12). Usa «Analizar pantalla» y revisa las coincidencias.</li><li>Pulsa «Aplicar selección». Revisa el resultado y guarda desde SISGA.</li></ol><p id="sg-script-summary" class="sg-hint"></p><textarea id="sg-script" readonly aria-label="Script generado" spellcheck="false"></textarea></section>
+        </section>
+        <section id="si-capturas" class="sg-workspace" role="tabpanel" aria-labelledby="sg-tab-capturas" hidden>
+            <header class="sg-heading"><div><p class="sg-eyebrow">SISGA / CAPTURAS GUARDADAS</p><h1>Tus indicadores,<br>listos para asignar.</h1><p>Elige la materia, el grado y el período. Genera un script con los indicadores que ya capturaste en SISGA.</p></div><span class="sg-badge">Guardados en la base de datos</span></header>
+            <div class="si-toolbar"><p id="si-summary">Consulta tus combinaciones guardadas.</p><div><button id="si-capture-copy" class="sg-primary" type="button">Copiar capturador</button><button id="si-capture" type="button">Descargar capturador</button></div></div>
+            <div id="si-import-zone" class="si-dropzone" role="region" aria-label="Importar capturas de indicadores" aria-describedby="si-import-help"><div><h2>Arrastra aquí los archivos que generaste</h2><p id="si-import-help">Puedes soltar varios scripts .js o archivos .json. Se guardarán en la base de datos por materia, grado y período, incluidos los grados 9, 10 y 11.</p></div><button id="si-import" type="button">Importar scripts</button><input id="si-files" type="file" accept=".js,.json,text/javascript,application/json" multiple hidden></div>
+            <section id="si-capture-fallback" class="sg-card" hidden><label>Código del capturador<textarea id="si-capture-script" readonly spellcheck="false" rows="7" aria-label="Código del capturador"></textarea></label><p class="sg-hint">Usa Ctrl+C para copiarlo y pégalo en la consola de SISGA antes de asignar los indicadores.</p></section>
+            <p id="si-status" class="sg-status" role="status" aria-live="polite">Abre esta pestaña para consultar los indicadores.</p>
+            <form id="si-form" class="sg-card">
+                <div class="sg-card-title"><div><h2>Generar por materia, grado y período</h2><p>Filtra las capturas y revisa la selección que vas a reutilizar.</p></div></div>
+                <div class="si-filters"><label>Materia<select id="si-subject"><option value="">Todas las materias</option></select></label><label>Grado<select id="si-grade"><option value="">Todos los grados</option></select></label><label>Período<select id="si-period"><option value="">Todos los períodos</option></select></label></div>
+                <div class="si-generate"><p id="si-selection-label">Selecciona una combinación de la lista.</p><button id="si-generate" class="sg-primary" type="submit" disabled>Generar script</button></div>
+            </form>
+            <section class="sg-card si-library" aria-labelledby="si-library-title"><div class="sg-card-title"><div><h2 id="si-library-title">Combinaciones disponibles</h2><p id="si-count">Sin consultar</p></div><button id="si-refresh" type="button">Actualizar</button></div><div class="si-table-scroll"><table class="si-table"><thead><tr><th scope="col">Materia</th><th scope="col">Grado</th><th scope="col">Período</th><th scope="col">Indicadores</th><th scope="col"><span class="si-sr-only">Selección</span></th></tr></thead><tbody id="si-rows"></tbody></table></div><p id="si-empty" class="sg-hint" hidden>No hay capturas para estos filtros. Importa los scripts que descargaste de SISGA.</p></section>
+            <section id="si-preview" class="sg-card" aria-labelledby="si-preview-title" hidden><div class="sg-card-title"><div><p class="sg-eyebrow">INDICADORES DE LA SELECCIÓN</p><h2 id="si-preview-title"></h2><p id="si-preview-date"></p></div></div><div id="si-indicators" class="sg-indicator-columns"></div></section>
+            <section id="si-result" class="sg-card sg-result" hidden><div class="sg-card-title"><div><p class="sg-eyebrow">LISTO PARA SISGA</p><h2>Script de asignación</h2></div><button id="si-copy" class="sg-primary" type="button">Copiar script</button><button id="si-download" type="button">Descargar .js</button></div><p id="si-filename" class="si-filename"></p><ol><li>Abre la planilla de la materia, grado y período seleccionados.</li><li>Abre «Gestionar Indicadores» y pega el script en la consola (F12).</li><li>El script marcará los indicadores guardados y todos los estudiantes disponibles, y pulsará «Asignar seleccionados».</li></ol><textarea id="si-script" readonly spellcheck="false" aria-label="Script de asignación generado"></textarea></section>
+            <details class="sg-card sg-details"><summary>Guardar nuevas selecciones</summary><p>Copia o descarga el capturador, abre «Gestionar Indicadores» en SISGA y marca las fortalezas y dificultades. Pega el capturador en la consola antes de asignar. Después arrastra aquí los archivos generados o usa «Importar scripts»: se guardará cada combinación de cualquier grado y se conservará la captura más reciente.</p></details>
+        </section>
+        <section id="sp-periodos" class="sg-workspace" role="tabpanel" aria-labelledby="sg-tab-periodos" hidden>
+            <header class="sg-heading"><div><p class="sg-eyebrow">SISGA / LISTA DE MATERIAS</p><h1>Un período para<br>todas tus materias.</h1><p>Genera un script que seleccione el período elegido en toda la lista de «Evaluaciones parciales», incluidas las materias de otras páginas.</p></div></header>
+            <form id="sp-form" class="sg-card"><div class="sg-card-title"><div><h2>¿Qué período deseas seleccionar?</h2><p>Se aplicará a todas las materias que ofrezcan ese período.</p></div></div><div class="sp-config"><label>Período<input id="sp-periodo" type="number" min="1" step="1" value="4" required inputmode="numeric"></label><button class="sg-primary" type="submit">Generar script</button></div><p class="sp-scope">Incluye todas las páginas y las materias ocultas por la búsqueda. Conserva el filtro y la página que estás viendo, y mantiene la selección al paginar. Si una materia no ofrece el período o tiene el selector deshabilitado, aparecerá en el informe de la consola.</p></form>
+            <p id="sp-status" class="sg-status" role="status" aria-live="polite">Elige el período y genera el script para la lista de materias.</p>
+            <section id="sp-result" class="sg-card sg-result" hidden><div class="sg-card-title"><div><p class="sg-eyebrow">LISTO PARA SISGA</p><h2>Seleccionar período en todas</h2></div><button id="sp-copy" class="sg-primary" type="button">Copiar script</button><button id="sp-download" type="button">Descargar .js</button></div><p id="sp-summary" class="sg-hint"></p><p id="sp-filename" class="sp-filename"></p><ol><li>En SISGA abre «Evaluaciones parciales», donde aparece la lista de materias con el período de cada una.</li><li>Abre la consola del navegador (F12), pega el script y ejecútalo.</li><li>La consola indicará cuántas materias quedaron en el período elegido. Puedes cambiar de página y abrir la planilla que necesites.</li></ol><textarea id="sp-script" readonly spellcheck="false" aria-label="Script generado para seleccionar período"></textarea></section>
+        </section>
         <!-- Contenedor para Notificaciones In-App -->
         <div id="notificationArea" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
 
     </div>
 
+    <script src="indicadores-core.js?v=1"></script>
+    <script src="indicadores-runtime.js?v=1"></script>
+    <script src="indicadores-ui.js?v=3" defer></script>
+    <script src="indicadores-consola.js?v=1"></script>
+    <script src="capturas-ui.js?v=2" defer></script>
+    <script src="periodos-runtime.js?v=1"></script>
+    <script src="periodos-ui.js?v=1" defer></script>
     <script>
         // Elementos DOM compartidos
         const dropZone = document.getElementById('dropZone');
@@ -126,6 +188,7 @@
         const outputScript = document.getElementById('outputScript');
         const btnCopy = document.getElementById('btnCopy');
         let lastRawData = null; 
+        let faltasPorMateria = [];
 
         // Elementos Conversor CSV
         const csvResultsContainer = document.getElementById('csvResultsContainer');
@@ -177,7 +240,7 @@
                 });
             });
 
-            Promise.allSettled(promesasDeLectura).then(resultados => {
+            Promise.allSettled(promesasDeLectura).then(async resultados => {
                 let datosCombinadosScript = [];
 
                 resultados.forEach(resultado => {
@@ -197,6 +260,17 @@
 
                 if (datosCombinadosScript.length > 0) {
                     lastRawData = datosCombinadosScript;
+                    try {
+                        const respuesta = await fetch('api_inasistencias.php', { cache: 'no-store', headers: { Accept: 'application/json' } });
+                        const datosFaltas = await respuesta.json();
+                        if (!respuesta.ok || !datosFaltas.ok || !Array.isArray(datosFaltas.faltas)) {
+                            throw new Error(datosFaltas.mensaje || 'No fue posible consultar las inasistencias.');
+                        }
+                        faltasPorMateria = datosFaltas.faltas;
+                    } catch (_) {
+                        faltasPorMateria = [];
+                        showToast('No se pudieron consultar las inasistencias; se generarán solo las notas.', 'error');
+                    }
                     generarJSONyScript(lastRawData);
                     showToast("Archivos procesados y script actualizado con éxito.", "success");
                 }
@@ -385,7 +459,166 @@
                 };
             }).filter(est => est !== null);
 
-            construirScript(estudiantesProcesados);
+            construirScriptV9(estudiantesProcesados);
+        }
+
+        // SISGA renovó su planilla: ahora la información se edita con
+        // jspreadsheet y se guarda mediante GuardarBatch, no con inputs HTML.
+        function construirScriptV9(estudiantesJSON) {
+            const scriptCode = `
+// --- SCRIPT GENERADOR SISGA V9 (PLANILLA NUEVA) ---
+const datosEstudiantes = ${JSON.stringify(estudiantesJSON, null, 4)};
+const faltasGuagua = ${JSON.stringify(faltasPorMateria)};
+
+(async function inyectarNotasPlanillaNueva() {
+    const crearConsola = () => {
+        let panel = document.getElementById('sisga-logger');
+        if (!panel) {
+            panel = document.createElement('div');
+            panel.id = 'sisga-logger';
+            Object.assign(panel.style, {
+                position: 'fixed', bottom: '20px', right: '20px', zIndex: '999999',
+                width: '390px', maxHeight: '280px', overflowY: 'auto', padding: '16px',
+                borderRadius: '14px', background: '#0f172a', color: '#e2e8f0',
+                border: '1px solid #334155', boxShadow: '0 12px 30px rgba(0,0,0,.35)',
+                font: '12px/1.45 monospace'
+            });
+            document.body.appendChild(panel);
+        }
+        panel.innerHTML = '<strong>🚀 Inyector SISGA v9 — nueva planilla</strong><hr style="border-color:#334155;margin:8px 0">';
+        return panel;
+    };
+
+    const logger = crearConsola();
+    const log = (mensaje, color = '#93c5fd') => {
+        const linea = document.createElement('div');
+        linea.style.color = color;
+        linea.textContent = '[' + new Date().toLocaleTimeString() + '] ' + mensaje;
+        logger.appendChild(linea);
+        logger.scrollTop = logger.scrollHeight;
+    };
+    const normalizar = valor => String(valor || '').normalize('NFD')
+        .replace(/[\\u0300-\\u036f]/g, '').toUpperCase().replace(/[^A-Z0-9]+/g, ' ').trim();
+    const mismoEstudiante = (a, b) => {
+        const uno = normalizar(a), dos = normalizar(b);
+        if (!uno || !dos) return false;
+        if (uno === dos || uno.includes(dos) || dos.includes(uno)) return true;
+        const partes = dos.split(' ').filter(p => p.length > 2);
+        return partes.length > 1 && partes.filter(p => uno.includes(p)).length >= Math.ceil(partes.length * 0.7);
+    };
+    const claveEvaluacion = descripcion => {
+        const texto = normalizar(descripcion);
+        if (texto.includes('COGNIT')) return 'cognitivo';
+        if (texto.includes('ACTITUD')) return 'actitudinal';
+        if (texto.includes('COMPORT')) return 'comportamental';
+        if (texto.includes('AUTO')) return 'auto';
+        if (texto.includes('COEVALU') || texto.includes('CO EVALU')) return 'co';
+        return null;
+    };
+    const formatearNota = valor => {
+        if (valor === null || valor === undefined || valor === '') return null;
+        const numero = Number(String(valor).trim().replace(',', '.'));
+        return Number.isFinite(numero) ? String(numero) : null;
+    };
+    const coincidenciaMateria = (materiaGuagua, asignaturaSisga) => {
+        const a = normalizar(materiaGuagua).split(' ').filter(p => p.length > 3);
+        const b = normalizar(asignaturaSisga).split(' ').filter(p => p.length > 3);
+        // "Económicas" y "Economía" deben considerarse la misma materia.
+        return a.filter(x => b.some(y => x.slice(0, 6) === y.slice(0, 6))).length;
+    };
+    const faltasDelEstudiante = (nombre, asignatura) => {
+        const coincidencias = faltasGuagua.filter(item => mismoEstudiante(item.estudiante, nombre) && coincidenciaMateria(item.materia, asignatura) > 0);
+        if (!coincidencias.length) return null;
+        return coincidencias.reduce((total, item) => total + Number(item.faltas || 0), 0);
+    };
+
+    try {
+        // Estas variables pertenecen a la nueva planilla de SISGA.
+        if (typeof spreadsheet === 'undefined' || !spreadsheet ||
+            typeof config === 'undefined' || !config ||
+            typeof colMeta === 'undefined' || !Array.isArray(colMeta)) {
+            throw new Error('No se encontró la nueva planilla SISGA. Abra la pantalla de calificaciones y espere a que cargue por completo.');
+        }
+        if (typeof marcarCambioEvpar !== 'function' || typeof recalcularFila !== 'function' ||
+            typeof ejecutarGuardado !== 'function') {
+            throw new Error('La página no expone las funciones de guardado de la nueva planilla.');
+        }
+
+        const evaluaciones = config.EvaluacionesParciales || [];
+        const camposDisponibles = evaluaciones.map((evaluacion, indice) => ({
+            indice,
+            clave: claveEvaluacion(evaluacion.Descripcion),
+            descripcion: evaluacion.Descripcion,
+            columnas: colMeta.map((meta, columna) => ({ meta, columna }))
+                .filter(item => item.meta.tipo === 'nota' && item.meta.evparIdx === indice)
+                .map(item => item.columna)
+        })).filter(item => item.clave && item.columnas.length);
+
+        if (!camposDisponibles.length) {
+            throw new Error('No se reconocieron columnas de evaluación editables en la planilla.');
+        }
+
+        log('Planilla detectada: ' + (config.NombreAsignatura || 'asignatura') + '.');
+        log('Evaluaciones reconocidas: ' + camposDisponibles.map(c => c.descripcion).join(', '), '#a7f3d0');
+
+        let estudiantesActualizados = 0;
+        let notasActualizadas = 0;
+        let inasistenciasActualizadas = 0;
+        const noEncontrados = [];
+        const columnaInasistencias = colMeta.findIndex(meta => meta.tipo === 'ina');
+
+        for (const datos of datosEstudiantes) {
+            const fila = (config.Estudiantes || []).findIndex(est => mismoEstudiante(est.NombreCompleto, datos.nombre));
+            if (fila < 0) {
+                noEncontrados.push(datos.nombre);
+                continue;
+            }
+
+            let tuvoCambios = false;
+            for (const campo of camposDisponibles) {
+                const valor = formatearNota(datos.notas && datos.notas[campo.clave]);
+                if (valor === null) continue;
+
+                // Cuando una evaluación tiene varias divisiones, la nota importada
+                // corresponde a N1; las demás divisiones se conservan intactas.
+                const columna = campo.columnas[0];
+                spreadsheet.setValueFromCoords(columna, fila, valor, true);
+                recalcularFila(fila, campo.indice);
+                marcarCambioEvpar(fila, campo.indice);
+                notasActualizadas++;
+                tuvoCambios = true;
+            }
+            const faltas = faltasDelEstudiante(datos.nombre, config.NombreAsignatura || '');
+            if (columnaInasistencias >= 0 && faltas !== null && faltas >= 0) {
+                spreadsheet.setValueFromCoords(columnaInasistencias, fila, String(faltas), true);
+                if (typeof marcarCambioCalNum === 'function') marcarCambioCalNum(fila);
+                inasistenciasActualizadas++;
+                tuvoCambios = true;
+            }
+            if (tuvoCambios) estudiantesActualizados++;
+        }
+
+        if (!notasActualizadas) {
+            throw new Error('No hubo notas válidas para cargar. Verifique los nombres y las columnas del archivo.');
+        }
+
+        log('Se cargaron ' + notasActualizadas + ' notas de ' + estudiantesActualizados + ' estudiantes.', '#34d399');
+        log('Inasistencias de ' + (config.NombreAsignatura || 'la asignatura') + ': ' + inasistenciasActualizadas + ' estudiantes.', '#a7f3d0');
+        if (noEncontrados.length) {
+            log('No encontrados (' + noEncontrados.length + '): ' + noEncontrados.slice(0, 6).join(', ') + (noEncontrados.length > 6 ? '…' : ''), '#fbbf24');
+        }
+
+        // Usa el guardado oficial de SISGA y envía un solo lote con todos los cambios.
+        ejecutarGuardado();
+        log('💾 Guardado por lote iniciado. Espere el estado “Guardado” de SISGA antes de salir.', '#60a5fa');
+    } catch (error) {
+        log('❌ Error: ' + error.message, '#f87171');
+        console.error('Inyector SISGA v9:', error);
+    }
+})();
+`;
+            outputScript.value = scriptCode.trim();
+            resultContainer.classList.remove('hidden');
         }
 
         function construirScript(estudiantesJSON) {

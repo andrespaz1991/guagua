@@ -6,14 +6,14 @@
     <title>Creador de Collages Pro</title>
     
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
     
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/guagua/comun/vendor/fontawesome/css/all.min.css">
     
     <!-- Librerías de Exportación -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="/guagua/comun/js/html2canvas.js"></script>
+    <script src="/guagua/comun/vendor/jspdf.umd.min.js"></script>
 
     <style>
         /* Estilos personalizados para Drag & Drop y UI */
@@ -50,6 +50,11 @@
 
         .collage-cell img:active {
             cursor: grabbing;
+        }
+
+        /* El ancho y alto configurados ya incluyen el margen exterior. */
+        #exportWrapper {
+            box-sizing: border-box;
         }
 
         /* Ocultar scrollbar visualmente pero mantener funcionalidad */
@@ -584,48 +589,70 @@
             updateCustomGrid(); // Limpia las celdas
         }
 
-        // --- Funciones de Exportación (¡SIN RECORTES!) ---
+        // --- Funciones de Exportación ---
         async function captureCanvasElement() {
             const wrapper = document.getElementById('exportWrapper');
+            const grid = document.getElementById('collageContainer');
+            const exportWidth = wrapper.offsetWidth;
+            const exportHeight = wrapper.offsetHeight;
             
-            // 1. Guardar el estado actual del zoom y el scroll
+            // El zoom es solo una ayuda visual. Antes de capturar se elimina sin
+            // animación: html2canvas no debe tomar un fotograma intermedio de la
+            // transición CSS, porque ese fotograma puede alterar el lienzo final.
             const currentZoom = zoomWrapper.style.transform;
-            const currentScrollX = window.scrollX;
-            const currentScrollY = window.scrollY;
+            const currentTransition = zoomWrapper.style.transition;
 
-            // 2. Resetear el zoom a 1 para asegurar dimensiones reales absolutas
-            zoomWrapper.style.transform = 'scale(1)';
+            zoomWrapper.style.transition = 'none';
+            zoomWrapper.style.transform = 'none';
             
-            // 3. Forzar el scroll a la parte superior izquierda temporalmente
-            // CRUCIAL: Esto evita que html2canvas recorte imágenes grandes basándose en lo visible de la pantalla
-            window.scrollTo(0, 0);
+            // Espera dos cuadros de render para que se apliquen las dimensiones
+            // reales del wrapper, sin depender de un tiempo arbitrario.
+            await new Promise(requestAnimationFrame);
+            await new Promise(requestAnimationFrame);
 
-            // 4. Pequeño delay para que el navegador aplique los cambios visuales
-            await new Promise(r => setTimeout(r, 200));
+            // Al clonar la página, html2canvas puede recalcular los tamaños
+            // porcentuales del grid. Se conservan aquí las medidas ya resueltas
+            // del lienzo para que nunca se comprima en sentido vertical.
+            const gridWidth = grid.offsetWidth;
+            const gridHeight = grid.offsetHeight;
+            const gridColumns = grid.style.gridTemplateColumns;
+            const gridRows = grid.style.gridTemplateRows;
 
             try {
-                // 5. Configurar html2canvas
+                // Se captura el elemento completo con sus dimensiones explícitas.
+                // No se usan x/y: en html2canvas son coordenadas de recorte del
+                // documento y desplazan el área capturada cuando el lienzo está
+                // centrado o la página tiene scroll.
                 const canvas = await html2canvas(wrapper, {
-                    scale: 1.5, // 1.5x de 600px por celda = Alta Calidad
+                    scale: 1.5,
                     useCORS: true,
                     backgroundColor: null,
                     logging: false,
-                    // Forzar a usar coordenadas del elemento
-                    x: wrapper.offsetLeft,
-                    y: wrapper.offsetTop,
-                    width: wrapper.offsetWidth,
-                    height: wrapper.offsetHeight,
-                    // Desvincular de la posición del scroll de la ventana
-                    scrollX: 0,
-                    scrollY: 0,
-                    windowWidth: document.documentElement.scrollWidth,
-                    windowHeight: document.documentElement.scrollHeight
+                    width: exportWidth,
+                    height: exportHeight,
+                    scrollX: -window.scrollX,
+                    scrollY: -window.scrollY,
+                    onclone: (clonedDocument) => {
+                        const clonedWrapper = clonedDocument.getElementById('exportWrapper');
+                        const clonedGrid = clonedDocument.getElementById('collageContainer');
+                        if (!clonedWrapper || !clonedGrid) return;
+
+                        clonedWrapper.style.width = `${exportWidth}px`;
+                        clonedWrapper.style.height = `${exportHeight}px`;
+                        clonedWrapper.style.boxSizing = 'border-box';
+                        clonedGrid.style.width = `${gridWidth}px`;
+                        clonedGrid.style.height = `${gridHeight}px`;
+                        clonedGrid.style.gridTemplateColumns = gridColumns;
+                        clonedGrid.style.gridTemplateRows = gridRows;
+                    },
                 });
                 return canvas;
             } finally {
-                // 6. Restaurar el estado al usuario, incluso si falla
+                // Restaurar el zoom que eligió el usuario, incluso si falla.
+                zoomWrapper.style.transition = 'none';
                 zoomWrapper.style.transform = currentZoom;
-                window.scrollTo(currentScrollX, currentScrollY);
+                await new Promise(requestAnimationFrame);
+                zoomWrapper.style.transition = currentTransition;
             }
         }
 
@@ -660,9 +687,11 @@
                 const canvas = await captureCanvasElement();
                 const imgData = canvas.toDataURL('image/jpeg', 0.95); 
                 
-                const wrapper = document.getElementById('exportWrapper');
-                const pdfWidth = wrapper.offsetWidth;
-                const pdfHeight = wrapper.offsetHeight;
+                // El PDF usa las dimensiones del canvas ya capturado. Así se
+                // conserva la misma relación de aspecto que el PNG, incluso
+                // cuando la exportación se haya generado a mayor resolución.
+                const pdfWidth = canvas.width;
+                const pdfHeight = canvas.height;
 
                 const { jsPDF } = window.jspdf;
 

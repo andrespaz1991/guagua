@@ -1,4 +1,10 @@
+<?php
+require_once __DIR__ . '/../comun/seguridad.php';
+guagua_exigir_rol(['admin','directivo']);
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') guagua_exigir_csrf();
+?>
 <form action ="importar.php" ENCTYPE="multipart/form-data" method="POST">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(guagua_csrf_token(),ENT_QUOTES,'UTF-8') ?>">
     <td><input type="file" name="datos"/>
     	<input name="enviar" type="submit" value="importar"/>
     </td>

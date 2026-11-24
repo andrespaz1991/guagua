@@ -1,21 +1,23 @@
 
 <?php
+require_once __DIR__ . '/../../comun/database.php';
+
+$sieCatalog = require __DIR__ . '/rubricas_sie.php';
 // =========================================================================
 // BACKEND PHP - CONEXIÓN A MYSQL Y API REST (AJAX)
 // =========================================================================
-$db_host = 'localhost';
-$db_user = 'root'; // Cambiar si es necesario
-$db_pass = '';     // Cambiar si es necesario
-$db_name = 'guagua'; // Asegúrate de crear esta base de datos en MySQL o phpMyAdmin
 
 // Suprimir warnings en el preview, reportar de forma controlada
 mysqli_report(MYSQLI_REPORT_OFF);
 
 // Intentar conexión (solo si se ejecuta en un servidor web real, no en el preview estático)
-$mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_name,"7000");
+try {
+    $mysqli = guagua_db_mysqli();
+} catch (mysqli_sql_exception $error) {
+    $mysqli = null;
+}
 
-if (!$mysqli->connect_error) {
-    $mysqli->set_charset("utf8mb4");
+if ($mysqli instanceof mysqli) {
 
     // Creación automática de la tabla si no existe
     $sql_create_table = "CREATE TABLE IF NOT EXISTS evaluations (
@@ -28,9 +30,15 @@ if (!$mysqli->connect_error) {
         final_score DECIMAL(3,1) NOT NULL,
         final_level VARCHAR(50),
         observations TEXT,
+        criterion_scores JSON NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
     $mysqli->query($sql_create_table);
+    // Compatibilidad con evaluaciones creadas antes del detalle por criterio.
+    $detailColumn = $mysqli->query("SHOW COLUMNS FROM evaluations LIKE 'criterion_scores'");
+    if ($detailColumn && $detailColumn->num_rows === 0) {
+        $mysqli->query("ALTER TABLE evaluations ADD COLUMN criterion_scores JSON NULL");
+    }
 
     // Tabla para rúbricas personalizadas
     $sql_custom_rubrics = "CREATE TABLE IF NOT EXISTS custom_rubrics (
@@ -50,8 +58,8 @@ if (!$mysqli->connect_error) {
 if (isset($_GET['action'])) {
     header('Content-Type: application/json');
     
-    if ($mysqli->connect_error) {
-        echo json_encode(['error' => 'Error de conexión MySQL: ' . $mysqli->connect_error]);
+    if (!($mysqli instanceof mysqli)) {
+        echo json_encode(['error' => 'No fue posible conectar con la base de datos central.']);
         exit;
     }
 
@@ -59,11 +67,50 @@ if (isset($_GET['action'])) {
     if ($_GET['action'] == 'save' && $_SERVER['REQUEST_METHOD'] == 'POST') {
         $data = json_decode(file_get_contents("php://input"), true);
         
-        $stmt = $mysqli->prepare("INSERT INTO evaluations (student_name, student_grade, subject, eval_date, rubric_type, final_score, final_level, observations) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssdss", 
+        $details = $data['criterionScores'] ?? null;
+        if ($details !== null) {
+            if (!is_array($details) || count($details) > 100) {
+                http_response_code(400); echo json_encode(['error' => 'Detalle de criterios inválido.']); exit;
+            }
+            foreach ($details as $detail) {
+                if (!is_array($detail) || !isset($detail['id'], $detail['title']) ||
+                    !is_string($detail['id']) || !is_string($detail['title']) ||
+                    (isset($detail['score']) && (!is_numeric($detail['score']) || $detail['score'] < 1 || $detail['score'] > 5)) ||
+                    (isset($detail['weight']) && (!is_numeric($detail['weight']) || $detail['weight'] < 0 || $detail['weight'] > 100))) {
+                    http_response_code(400); echo json_encode(['error' => 'Nota o criterio inválido.']); exit;
+                }
+            }
+        }
+        // Las rúbricas institucionales se validan contra el catálogo del SIE.
+        $officialCriteria = $sieCatalog['criteria'][$data['rubricType'] ?? ''] ?? null;
+        if ($officialCriteria !== null) {
+            $byId = is_array($details) ? array_column($details, null, 'id') : [];
+            if (count($byId) !== count($officialCriteria)) {
+                http_response_code(400); echo json_encode(['error' => 'Evalúa todos los criterios de la rúbrica SIE antes de guardar.']); exit;
+            }
+            $details = []; $sum = 0;
+            foreach ($officialCriteria as $criterion) {
+                $score = $byId[$criterion['id']]['score'] ?? null;
+                if (!is_numeric($score) || $score < 1 || $score > 5) {
+                    http_response_code(400); echo json_encode(['error' => 'Cada criterio debe tener una nota entre 1,0 y 5,0.']); exit;
+                }
+                $score = round((float) $score, 1); $sum += $score;
+                $levelIndex = $score >= 4.6 ? 0 : ($score >= 4.0 ? 1 : ($score >= 3.0 ? 2 : 3));
+                $details[] = ['id' => $criterion['id'], 'title' => $criterion['title'], 'competence' => $criterion['competence'],
+                    'weight' => 100 / count($officialCriteria), 'score' => $score,
+                    'level' => $criterion['levels'][$levelIndex]['name'], 'description' => $criterion['levels'][$levelIndex]['desc'],
+                    'rubric_version' => $sieCatalog['version'], 'source' => $sieCatalog['source'],
+                    'source_pages' => $sieCatalog['pages'][$data['rubricType']]];
+            }
+            $data['finalScore'] = round($sum / count($officialCriteria), 1);
+            $data['finalLevel'] = $data['finalScore'] >= 4.6 ? 'Desempeño Superior' : ($data['finalScore'] >= 4 ? 'Desempeño Alto' : ($data['finalScore'] >= 3 ? 'Desempeño Básico' : 'Desempeño Bajo'));
+        }
+        $detailsJson = $details === null ? null : json_encode($details, JSON_UNESCAPED_UNICODE);
+        $stmt = $mysqli->prepare("INSERT INTO evaluations (student_name, student_grade, subject, eval_date, rubric_type, final_score, final_level, observations, criterion_scores) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssdsss", 
             $data['studentName'], $data['studentGrade'], $data['subject'], 
             $data['evalDate'], $data['rubricType'], $data['finalScore'], 
-            $data['finalLevel'], $data['observations']
+            $data['finalLevel'], $data['observations'], $detailsJson
         );
         
         if ($stmt->execute()) {
@@ -162,10 +209,9 @@ if (isset($_GET['action'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Evaluación y Registros - IER La Josefina</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
+    <link href="/guagua/comun/vendor/fontawesome/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         
         .level-card { transition: all 0.2s ease-in-out; cursor: pointer; border: 2px solid transparent; }
@@ -391,6 +437,12 @@ if (isset($_GET['action'])) {
                 <i class="fa-solid fa-person-chalkboard mr-2"></i> Exposiciones
             </button>
             <!-- Custom rubric tabs injected here -->
+            <button onclick="setRubricType('autoevaluacion')" id="tab-autoevaluacion" class="px-4 md:px-6 py-3 font-semibold text-gray-500 border-b-2 border-transparent hover:bg-gray-50 transition-colors whitespace-nowrap">
+                <i class="fa-solid fa-user-check mr-2"></i> Autoevaluación
+            </button>
+            <button onclick="setRubricType('coevaluacion')" id="tab-coevaluacion" class="px-4 md:px-6 py-3 font-semibold text-gray-500 border-b-2 border-transparent hover:bg-gray-50 transition-colors whitespace-nowrap">
+                <i class="fa-solid fa-people-arrows mr-2"></i> Coevaluación
+            </button>
             <span id="custom-tabs-container" class="contents"></span>
             <!-- Add new rubric button -->
             <button onclick="openRubricBuilder()" id="btn-new-rubric" class="new-rubric-btn px-4 py-3 font-semibold rounded-lg whitespace-nowrap flex items-center gap-2" title="Crear nueva rúbrica">
@@ -404,6 +456,7 @@ if (isset($_GET['action'])) {
         <h3 id="current-rubric-title" class="text-2xl font-bold text-gray-800 mb-4 print-only hidden">Evaluación Oral</h3>
 
         <!-- Contenedor de la Rúbrica -->
+        <div id="rubric-source" class="mb-5 p-4 bg-blue-50 border border-blue-100 rounded-lg text-sm text-gray-700"></div>
         <div id="rubric-content" class="space-y-6"></div>
 
         <!-- Resultados y Acciones -->
@@ -466,9 +519,14 @@ if (isset($_GET['action'])) {
                     <h3 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-database text-blue-600 mr-2"></i>Registros Guardados</h3>
                     <p class="text-sm text-gray-500 mt-1">Historial de evaluaciones de la base de datos MySQL</p>
                 </div>
+                <div class="flex flex-wrap gap-2">
+                <button onclick="exportEvaluations()" class="text-sm text-white bg-indigo-600 hover:bg-indigo-700 p-2 rounded-md">
+                    <i class="fa-solid fa-file-export mr-1"></i> Exportar toda la categoría
+                </button>
                 <button onclick="fetchRecords()" class="text-sm text-gray-600 hover:text-blue-600 border p-2 rounded-md bg-gray-50">
                     <i class="fa-solid fa-sync-alt"></i> Recargar
                 </button>
+                </div>
             </div>
 
             <!-- Filtros y Búsqueda -->
@@ -496,10 +554,11 @@ if (isset($_GET['action'])) {
                                 <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Nota</th>
                                 <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Desempeño</th>
                                 <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Fecha</th>
+                                <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Reporte</th>
                             </tr>
                         </thead>
                         <tbody id="recordsTableBody" class="bg-white divide-y divide-gray-200">
-                            <tr><td colspan="5" class="px-6 py-8 text-center text-gray-500">Cargando registros... o el servidor PHP no está activo.</td></tr>
+                            <tr><td colspan="6" class="px-6 py-8 text-center text-gray-500">Cargando registros... o el servidor PHP no está activo.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -713,38 +772,9 @@ if (isset($_GET['action'])) {
         // ================================================================
         // DATOS DE RÚBRICAS PREDEFINIDAS (SIN CAMBIOS)
         // ================================================================
-        const rubricData = {
-            oral: [
-                { id: 'o_fluidez', title: 'Fluidez y Pronunciación', levels: [ { name: 'Superior', score: 5.0, class: 'selected-superior', desc: 'Habla con fluidez natural. Pronunciación clara.' }, { name: 'Alto', score: 4.2, class: 'selected-alto', desc: 'Buena fluidez con pausas ocasionales.' }, { name: 'Básico', score: 3.5, class: 'selected-basico', desc: 'Fluidez limitada, pausas frecuentes.' }, { name: 'Bajo', score: 2.5, class: 'selected-bajo', desc: 'Lectura o habla entrecortada.' } ] },
-                { id: 'o_dominio', title: 'Dominio del Tema', levels: [ { name: 'Superior', score: 5.0, class: 'selected-superior', desc: 'Conocimiento profundo, responde con seguridad.' }, { name: 'Alto', score: 4.2, class: 'selected-alto', desc: 'Conoce bien el tema principal.' }, { name: 'Básico', score: 3.5, class: 'selected-basico', desc: 'Conocimiento superficial, depende de notas.' }, { name: 'Bajo', score: 2.5, class: 'selected-bajo', desc: 'No demuestra conocimiento del tema.' } ] }
-            ],
-            escrita: [
-                { id: 'e_estructura', title: 'Estructura y Organización', levels: [ { name: 'Superior', score: 5.0, class: 'selected-superior', desc: 'Introducción, desarrollo y conclusión contundente.' }, { name: 'Alto', score: 4.2, class: 'selected-alto', desc: 'Estructura general evidente.' }, { name: 'Básico', score: 3.5, class: 'selected-basico', desc: 'Falta introducción o conclusión.' }, { name: 'Bajo', score: 2.5, class: 'selected-bajo', desc: 'No hay estructura evidente.' } ] },
-                { id: 'e_contenido', title: 'Profundidad del Contenido', levels: [ { name: 'Superior', score: 5.0, class: 'selected-superior', desc: 'Argumentos sólidos y sustentados.' }, { name: 'Alto', score: 4.2, class: 'selected-alto', desc: 'Ideas claras con soporte adecuado.' }, { name: 'Básico', score: 3.5, class: 'selected-basico', desc: 'Ideas superficiales y poca argumentación.' }, { name: 'Bajo', score: 2.5, class: 'selected-bajo', desc: 'Contenido no responde al propósito.' } ] }
-            ],
-            equipo: [
-                { id: 'eq_participacion', title: 'Contribución y Participación', levels: [ { name: 'Superior', score: 5.0, class: 'selected-superior', desc: 'Aporta ideas significativas y lidera.' }, { name: 'Alto', score: 4.2, class: 'selected-alto', desc: 'Participa de manera constante.' }, { name: 'Básico', score: 3.5, class: 'selected-basico', desc: 'Participa lo mínimo necesario.' }, { name: 'Bajo', score: 2.5, class: 'selected-bajo', desc: 'Rara vez aporta ideas.' } ] },
-                { id: 'eq_actitud', title: 'Actitud y Colaboración', levels: [ { name: 'Superior', score: 5.0, class: 'selected-superior', desc: 'Escucha activamente y fomenta respeto.' }, { name: 'Alto', score: 4.2, class: 'selected-alto', desc: 'Trabaja bien con los demás.' }, { name: 'Básico', score: 3.5, class: 'selected-basico', desc: 'Le cuesta escuchar a otros.' }, { name: 'Bajo', score: 2.5, class: 'selected-bajo', desc: 'Actitud negativa o conflictiva.' } ] }
-            ],
-            tertulia: [
-                { id: 'ter_argumentacion', title: 'Argumentación', levels: [ { name: 'Superior', score: 5.0, class: 'selected-superior', desc: 'Argumentos claros basados en evidencia.' }, { name: 'Alto', score: 4.2, class: 'selected-alto', desc: 'Argumentos con soporte adecuado.' }, { name: 'Básico', score: 3.5, class: 'selected-basico', desc: 'Opiniones con poca evidencia.' }, { name: 'Bajo', score: 2.5, class: 'selected-bajo', desc: 'No presenta argumentos coherentes.' } ] },
-                { id: 'ter_escucha', title: 'Escucha Activa', levels: [ { name: 'Superior', score: 5.0, class: 'selected-superior', desc: 'Respeta turnos y valora opiniones.' }, { name: 'Alto', score: 4.2, class: 'selected-alto', desc: 'Mantiene el respeto en general.' }, { name: 'Básico', score: 3.5, class: 'selected-basico', desc: 'Interrumpe con frecuencia.' }, { name: 'Bajo', score: 2.5, class: 'selected-bajo', desc: 'Falta de respeto evidente.' } ] }
-            ],
-            tarea: [
-                { id: 'tar_puntualidad', title: 'Puntualidad', levels: [ { name: 'Superior', score: 5.0, class: 'selected-superior', desc: 'Entrega en fecha y hora.' }, { name: 'Alto', score: 4.2, class: 'selected-alto', desc: 'Retraso mínimo justificado.' }, { name: 'Básico', score: 3.5, class: 'selected-basico', desc: 'Retraso considerable.' }, { name: 'Bajo', score: 2.5, class: 'selected-bajo', desc: 'No entrega la tarea.' } ] },
-                { id: 'tar_desarrollo', title: 'Desarrollo', levels: [ { name: 'Superior', score: 5.0, class: 'selected-superior', desc: 'Resuelve todo exhaustivamente.' }, { name: 'Alto', score: 4.2, class: 'selected-alto', desc: 'Resuelve la mayoría de puntos.' }, { name: 'Básico', score: 3.5, class: 'selected-basico', desc: 'Trabajo incompleto.' }, { name: 'Bajo', score: 2.5, class: 'selected-bajo', desc: 'Trabajo insuficiente.' } ] }
-            ],
-            exposicion: [
-                { id: 'exp_dominio', title: 'Dominio', levels: [ { name: 'Superior', score: 5.0, class: 'selected-superior', desc: 'Conocimiento profundo, sin leer.' }, { name: 'Alto', score: 4.2, class: 'selected-alto', desc: 'Buen conocimiento, apoyo ocasional.' }, { name: 'Básico', score: 3.5, class: 'selected-basico', desc: 'Lee constantemente el material.' }, { name: 'Bajo', score: 2.5, class: 'selected-bajo', desc: 'Se limita a leer sin comprender.' } ] },
-                { id: 'exp_expresion', title: 'Manejo del Público', levels: [ { name: 'Superior', score: 5.0, class: 'selected-superior', desc: 'Excelente contacto visual y voz.' }, { name: 'Alto', score: 4.2, class: 'selected-alto', desc: 'Buen tono, contacto intermitente.' }, { name: 'Básico', score: 3.5, class: 'selected-basico', desc: 'Voz baja, sin contacto visual.' }, { name: 'Bajo', score: 2.5, class: 'selected-bajo', desc: 'Inaudible o da la espalda.' } ] }
-            ]
-        };
-
-        // Etiquetas para las rúbricas predefinidas (inmutables)
-        const predefinedLabels = {
-            'oral': 'Oral', 'escrita': 'Escrita', 'equipo': 'Equipo', 
-            'tertulia': 'Tertulias', 'tarea': 'Tareas', 'exposicion': 'Exposición'
-        };
+        const sieCatalog = <?php echo json_encode($sieCatalog, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+        const rubricData = { ...sieCatalog.criteria };
+        const predefinedLabels = { ...sieCatalog.labels };
         // Etiquetas dinámicas (predefinidas + custom)
         let rubricLabels = { ...predefinedLabels };
 
@@ -761,6 +791,18 @@ if (isset($_GET['action'])) {
         let studentList = [];
 
         document.getElementById('evalDate').valueAsDate = new Date();
+
+        // Los módulos se muestran dentro de /comun/modulo.php. Al conservar
+        // este parámetro las llamadas AJAX no son redirigidas nuevamente al
+        // contenedor y reciben la respuesta JSON de esta misma aplicación.
+        function apiUrl(action, params = {}) {
+            const query = new URLSearchParams({
+                action: action,
+                guagua_embedded: '1',
+                ...params
+            });
+            return window.location.pathname + '?' + query.toString();
+        }
 
         // ================================================================
         // LÓGICA DE LA RÚBRICA FRONTEND (EXISTENTE - MODIFICADA)
@@ -809,6 +851,10 @@ if (isset($_GET['action'])) {
             container.innerHTML = ''; 
             const data = rubricData[currentType];
             if (!data) return;
+            const official = Object.hasOwn(sieCatalog.criteria, currentType);
+            document.getElementById('rubric-source').textContent = official
+                ? `${sieCatalog.source} · páginas ${sieCatalog.pages[currentType]} (numeración impresa). ${data.length} criterios con igual peso: promedio aritmético (el SIE no asigna porcentajes por ítem). ${currentType === 'autoevaluacion' ? 'La autoevaluación corresponde al 10 % de la evaluación del periodo; la heteroevaluación al 90 %. Esta nota es la de esta rúbrica, no el consolidado del periodo.' : ''}`
+                : 'Rúbrica personalizada del docente, permitida por el anexo 1 del SIE. Sus ítems y pesos son una adaptación y no una transcripción del anexo.';
 
             data.forEach(criterion => {
                 const critDiv = document.createElement('div');
@@ -825,11 +871,12 @@ if (isset($_GET['action'])) {
                         <div class="flex items-center gap-2">
                             <h4 class="font-bold text-gray-800 text-lg">${criterion.title}</h4>
                             ${weightBadge}
+                            ${criterion.competence ? `<span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">${escapeRecord(criterion.competence)}</span>` : ''}
                         </div>
                         <div class="flex items-center space-x-2">
                             <input type="number" step="0.1" min="1.0" max="5.0" id="input-${criterion.id}" 
                                 class="w-20 p-1 border rounded text-center font-bold text-blue-600 focus:ring-blue-500" 
-                                placeholder="--" onchange="manualScoreUpdate('${criterion.id}', this.value)">
+                                placeholder="--" oninput="manualScoreInput('${criterion.id}', this.value)" onchange="manualScoreUpdate('${criterion.id}', this.value)">
                         </div>
                     </div>
                 `;
@@ -842,9 +889,10 @@ if (isset($_GET['action'])) {
                              class="level-card bg-gray-50 p-4 rounded-md border-t-4 ${bColor} flex flex-col h-full">
                             <div class="flex justify-between items-center mb-2">
                                 <span class="font-bold text-gray-800">${level.name}</span>
-                                <span class="text-xs bg-gray-200 px-2 py-1 rounded-full font-semibold">Max ${level.score.toFixed(1)}</span>
+                                <span class="text-xs bg-gray-200 px-2 py-1 rounded-full font-semibold">${level.range || ['4,6 - 5,0', '4,0 - 4,5', '3,0 - 3,9', '1,0 - 2,9'][index]}</span>
                             </div>
                             <p class="text-sm text-gray-600 flex-grow">${level.desc}</p>
+                            <p class="text-xs text-gray-500 mt-2">Seleccionar ${level.score.toFixed(1)} · Puedes ajustar la nota en el campo superior.</p>
                         </div>
                     `;
                 });
@@ -864,8 +912,19 @@ if (isset($_GET['action'])) {
             calculateFinalScore();
         }
 
+        function manualScoreInput(critId, value) {
+            const number = parseFloat(value);
+            if (Number.isFinite(number) && number >= 1 && number <= 5) scores[critId] = Math.round(number * 10) / 10;
+            else delete scores[critId];
+            const criterion = rubricData[currentType].find(c => c.id === critId);
+            criterion.levels.forEach((lvl, idx) => document.getElementById(`card-${critId}-${idx}`).classList.remove('selected-superior', 'selected-alto', 'selected-basico', 'selected-bajo'));
+            calculateFinalScore();
+        }
+
         function manualScoreUpdate(critId, value) {
+            if (value === '') { delete scores[critId]; calculateFinalScore(); return; }
             let numValue = Math.min(Math.max(parseFloat(value) || 1.0, 1.0), 5.0);
+            numValue = Math.round(numValue * 10) / 10;
             document.getElementById(`input-${critId}`).value = numValue.toFixed(1);
             scores[critId] = numValue;
             const criterion = rubricData[currentType].find(c => c.id === critId);
@@ -876,6 +935,14 @@ if (isset($_GET['action'])) {
         function calculateFinalScore() {
             const data = rubricData[currentType];
             if (!data) { updateScoreUI(0); return; }
+            if (Object.hasOwn(sieCatalog.criteria, currentType)) {
+                const completed = data.filter(criterion => Number.isFinite(scores[criterion.id])).length;
+                if (completed < data.length) {
+                    updateScoreUI(0);
+                    document.getElementById('final-level').textContent = `Pendiente: ${completed} de ${data.length} criterios evaluados`;
+                    return;
+                }
+            }
 
             const isCustom = customRubricKeys.has(currentType);
             let finalScore = 0;
@@ -900,6 +967,7 @@ if (isset($_GET['action'])) {
         }
 
         function updateScoreUI(score) {
+            score = Math.round((score + Number.EPSILON) * 10) / 10;
             const scoreEl = document.getElementById('final-score');
             const levelEl = document.getElementById('final-level');
             const barEl = document.getElementById('score-bar');
@@ -933,6 +1001,9 @@ if (isset($_GET['action'])) {
         async function saveEvaluation() {
             const finalScore = parseFloat(document.getElementById('final-score').innerText);
             if(finalScore === 0) { alert("Debes evaluar al menos un criterio antes de guardar."); return; }
+            if (Object.hasOwn(sieCatalog.criteria, currentType) && rubricData[currentType].some(criterion => !Number.isFinite(scores[criterion.id]))) {
+                alert('Evalúa todos los criterios de la rúbrica SIE antes de guardar.'); return;
+            }
             
             const payload = {
                 studentName: document.getElementById('studentName').value.trim(),
@@ -942,14 +1013,23 @@ if (isset($_GET['action'])) {
                 rubricType: currentType,
                 finalScore: finalScore,
                 finalLevel: document.getElementById('final-level').innerText,
-                observations: document.getElementById('observations').value.trim()
+                observations: document.getElementById('observations').value.trim(),
+                criterionScores: rubricData[currentType].map(criterion => ({
+                    id: criterion.id,
+                    title: criterion.title,
+                    competence: criterion.competence || null,
+                    weight: customRubricKeys.has(currentType) ? Number(criterion.weight || 0) : 100 / rubricData[currentType].length,
+                    score: scores[criterion.id] ?? null,
+                    level: scores[criterion.id] == null ? null : criterion.levels[scores[criterion.id] >= 4.6 ? 0 : scores[criterion.id] >= 4 ? 1 : scores[criterion.id] >= 3 ? 2 : 3].name,
+                    description: scores[criterion.id] == null ? null : criterion.levels[scores[criterion.id] >= 4.6 ? 0 : scores[criterion.id] >= 4 ? 1 : scores[criterion.id] >= 3 ? 2 : 3].desc
+                }))
             };
 
             if(!payload.studentName) { alert("El nombre del estudiante es obligatorio."); return; }
 
             try {
                 // Al ejecutarse como archivo local, el fetch a PHP fallará. Lo capturamos para evitar ruptura en UI visual.
-                const response = await fetch(window.location.pathname + '?action=save', {
+                const response = await fetch(apiUrl('save'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -997,13 +1077,30 @@ if (isset($_GET['action'])) {
             }, 400); // 400ms delay para no saturar BD
         }
 
+        function exportEvaluations(id = null) {
+            const url = new URL('reporte.php', window.location.href);
+            url.searchParams.set('type', historyType);
+            if (id !== null) url.searchParams.set('id', id);
+            window.open(url.toString(), '_blank', 'noopener');
+        }
+
+        function escapeRecord(value) {
+            const element = document.createElement('span');
+            element.textContent = value ?? '';
+            return element.innerHTML;
+        }
+
         async function fetchRecords(page = currentPage) {
             currentPage = page;
             const query = document.getElementById('searchInput').value.trim();
             const tbody = document.getElementById('recordsTableBody');
             
             try {
-                const response = await fetch(`${window.location.pathname}?action=get_records&type=${historyType}&search=${encodeURIComponent(query)}&page=${page}`);
+                const response = await fetch(apiUrl('get_records', {
+                    type: historyType,
+                    search: query,
+                    page: page
+                }));
                 if (!response.ok) throw new Error("Network response not ok");
                 const result = await response.json();
                 
@@ -1011,7 +1108,7 @@ if (isset($_GET['action'])) {
 
                 tbody.innerHTML = '';
                 if(result.data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500">No se encontraron registros para esta categoría.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-gray-500">No se encontraron registros para esta categoría.</td></tr>`;
                     document.getElementById('paginationInfo').innerText = 'Mostrando 0 resultados';
                     document.getElementById('paginationControls').innerHTML = '';
                     return;
@@ -1024,13 +1121,17 @@ if (isset($_GET['action'])) {
 
                     const tr = document.createElement('tr');
                     tr.className = 'hover:bg-gray-50 transition-colors';
+                    let estimated = false;
+                    try { estimated = (JSON.parse(row.criterion_scores || '[]') || []).some(item => item.estimated === true); } catch (_) {}
                     tr.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${row.student_name}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${row.subject || '-'} <span class="text-xs text-gray-400">(${row.student_grade || '-'})</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${escapeRecord(row.student_name)}${estimated ? '<span class="block text-xs text-yellow-700">Ítems con notas estimadas</span>' : ''}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${escapeRecord(row.subject || '-')} <span class="text-xs text-gray-400">(${escapeRecord(row.student_grade || '-')})</span></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800">${row.final_score}</td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${badgeClass}">${row.final_level}</span></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${row.eval_date}</td>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${badgeClass}">${escapeRecord(row.final_level)}</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${escapeRecord(row.eval_date)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap"><button type="button" class="text-indigo-700 hover:underline font-semibold">Exportar evaluación</button></td>
                     `;
+                    tr.querySelector('button').addEventListener('click', () => exportEvaluations(row.id));
                     tbody.appendChild(tr);
                 });
 
@@ -1048,7 +1149,7 @@ if (isset($_GET['action'])) {
 
             } catch (error) {
                 // Silenciamos en consola pero avisamos visualmente si falla por falta de PHP
-                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-red-500 bg-red-50"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Para consultar la base de datos debes ejecutar este archivo en un servidor PHP (XAMPP/Hosting).</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-red-500 bg-red-50"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Para consultar la base de datos debes ejecutar este archivo en un servidor PHP (XAMPP/Hosting).</td></tr>`;
                 document.getElementById('paginationInfo').innerText = '';
                 document.getElementById('paginationControls').innerHTML = '';
             }
@@ -1084,7 +1185,7 @@ if (isset($_GET['action'])) {
 
         async function loadCustomRubrics() {
             try {
-                const res = await fetch(window.location.pathname + '?action=get_custom_rubrics');
+                const res = await fetch(apiUrl('get_custom_rubrics'));
                 const result = await res.json();
                 if (result.success && result.data) {
                     // Clear previous custom data
@@ -1606,7 +1707,7 @@ if (isset($_GET['action'])) {
             };
 
             try {
-                const res = await fetch(window.location.pathname + '?action=save_custom_rubric', {
+                const res = await fetch(apiUrl('save_custom_rubric'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -1667,7 +1768,7 @@ if (isset($_GET['action'])) {
             const key = pendingDeleteKey;
 
             try {
-                const res = await fetch(window.location.pathname + '?action=delete_custom_rubric', {
+                const res = await fetch(apiUrl('delete_custom_rubric'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ rubricKey: key })
@@ -1742,15 +1843,15 @@ if (isset($_GET['action'])) {
             let html = '<table>';
             html += '<thead><tr><th style="width:20%">Criterio</th>';
             if (isCustom) html += '<th style="width:8%">Peso</th>';
-            html += '<th style="width:18%; background:#f0fdf4;">Superior (5.0)</th>';
-            html += '<th style="width:18%; background:#eff6ff;">Alto (4.2)</th>';
-            html += '<th style="width:18%; background:#fefce8;">Básico (3.5)</th>';
-            html += '<th style="width:18%; background:#fef2f2;">Bajo (2.5)</th>';
+            html += '<th style="width:18%; background:#f0fdf4;">Superior (4,6 - 5,0)</th>';
+            html += '<th style="width:18%; background:#eff6ff;">Alto (4,0 - 4,5)</th>';
+            html += '<th style="width:18%; background:#fefce8;">Básico (3,0 - 3,9)</th>';
+            html += '<th style="width:18%; background:#fef2f2;">Bajo (1,0 - 2,9)</th>';
             html += '<th style="width:8%">Nota</th></tr></thead><tbody>';
 
             data.forEach(crit => {
                 html += '<tr>';
-                html += `<td style="font-weight:600">${crit.title}</td>`;
+                html += `<td style="font-weight:600">${escapeRecord(crit.title)}${crit.competence ? '<br><small>' + escapeRecord(crit.competence) + '</small>' : ''}</td>`;
                 if (isCustom) html += `<td style="text-align:center">${crit.weight || ''}%</td>`;
                 crit.levels.forEach(lvl => {
                     html += `<td>${lvl.desc}</td>`;
@@ -1760,7 +1861,7 @@ if (isset($_GET['action'])) {
             });
 
             html += '</tbody></table>';
-            document.getElementById('print-rubric-table').innerHTML = html;
+            document.getElementById('print-rubric-table').innerHTML = '<p style="font-size:11px">' + escapeRecord(document.getElementById('rubric-source').textContent) + '</p>' + html;
 
             window.print();
         }
@@ -1858,10 +1959,18 @@ if (isset($_GET['action'])) {
 
             const tabsContainer = document.getElementById('main-tabs');
             const newRubricBtn = document.getElementById('btn-new-rubric');
+            const allKeys = getAllTabKeys();
+            // El orden guardado puede ser anterior a una rúbrica recién creada.
+            // Se conservan sus preferencias y se agregan al final las pestañas
+            // que aún no existían cuando guardó el orden.
+            const orderedKeys = [
+                ...savedOrder.filter(key => allKeys.includes(key)),
+                ...allKeys.filter(key => !savedOrder.includes(key))
+            ];
 
             // Collect all tab elements
             const tabEls = {};
-            savedOrder.forEach(key => {
+            orderedKeys.forEach(key => {
                 const el = document.getElementById('tab-' + key);
                 if (el) {
                     const wrapper = el.closest('.custom-tab');
@@ -1879,7 +1988,7 @@ if (isset($_GET['action'])) {
             customContainer.innerHTML = '';
 
             // Re-insert all tabs in saved order
-            savedOrder.forEach(key => {
+            orderedKeys.forEach(key => {
                 if (customRubricKeys.has(key)) {
                     const meta = customRubricMeta[key] || {};
                     const label = rubricLabels[key] || key;

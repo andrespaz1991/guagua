@@ -1,5 +1,6 @@
 <?php
-@session_start();
+require_once __DIR__ . '/../../comun/seguridad.php';
+guagua_iniciar_sesion_segura();
 if (!isset($_SESSION['id_usuario'])) {
     header('Location: ../../usuario/login.php');
     exit();
@@ -12,10 +13,7 @@ if (!isset($_SESSION['id_usuario'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#171b35">
     <title>DaVinci · Cuadernos digitales</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="/guagua/comun/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css?v=<?php echo filemtime(__DIR__ . '/css/styles.css'); ?>">
 </head>
 <body>
@@ -268,7 +266,7 @@ if (!isset($_SESSION['id_usuario'])) {
 
     <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="/guagua/comun/vendor/jspdf.umd.min.js"></script>
     <script src="js/app.js?v=<?php echo filemtime(__DIR__ . '/js/app.js'); ?>"></script>
 </body>
 </html>

@@ -1,0 +1,1395 @@
+{
+  "registros": [
+    {
+      "area": "emprendimiento",
+      "materia": 9,
+      "nombre_materia": "Emprendimiento",
+      "grado": 6,
+      "periodo": 1,
+      "estandar": "Reconozco características culturales, sociales y biofísicas de mi entorno y organizo información para construir un diagnóstico.",
+      "descripcion_estandar": "Estándar contextualizado a partir de los referentes interdisciplinarios de la cartilla PPP de Postprimaria del MEN. Grado 6, periodo 1: caracterización y formulación; módulos 1, guías 1, 2, 3. Diez semanas: desarrollo aplicado en 1-8, integración en 9 y evaluación y refuerzo en 10. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf. La distribución anual es institucional y conserva la continuidad entre grados de la cartilla compartida.",
+      "source": "C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf",
+      "dbas": [
+        {
+          "nombre": "Elabora un diagnóstico inicial de la vereda relacionando territorio, cultura, condiciones biofísicas y actividades de sus habitantes.",
+          "descripcion": "Aprendizaje derivado de la cartilla de Proyectos Pedagógicos Productivos, grado 6, periodo 1. Formulación contextualizada; no se presenta como DBA oficial específico de Emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf. Cada cartilla tiene seis módulos y dieciocho guías. Los grados 6 y 8 trabajan guías 1-9; los grados 7 y 9 continúan con 10-18. La gestión utiliza el proyecto formulado en el grado anterior; al iniciar el año se recupera y ajusta ese insumo.",
+          "palabras_clave": "Territorio, cultura y entorno escolar, Características biofísicas: clima, suelo, agua y seres vivos, Actividades productivas, sociales y culturales de la vereda, Diagnóstico veredal inicial y fuentes de información",
+          "evidencias": [
+            "Representa su entorno en un croquis y describe rasgos culturales con respeto por la diversidad.",
+            "Registra observaciones de la vereda y relaciona sus condiciones biofísicas con usos del territorio.",
+            "Organiza información sobre actividades de la comunidad e identifica recursos y necesidades.",
+            "Presenta un diagnóstico inicial que diferencia observaciones, información consultada y preguntas por resolver."
+          ],
+          "ejes": [
+            {
+              "nombre": "Bloque 1: Territorio, cultura y entorno escolar",
+              "descripcion": "Periodo 1. Semanas 1-2 del periodo (semanas 1-2 del año). módulo 1, guía 1: ¿Cómo es mi entorno? (p. impresa 12, PDF 13). Trabajo aplicado: Territorio, cultura y entorno escolar. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 1,
+              "fin": 2,
+              "temas": [
+                "Territorio, cultura y entorno escolar"
+              ],
+              "guias": [
+                1
+              ]
+            },
+            {
+              "nombre": "Bloque 2: Características biofísicas: clima, suelo, agua y seres vivos",
+              "descripcion": "Periodo 1. Semanas 3-4 del periodo (semanas 3-4 del año). módulo 1, guía 2: ¿Cuáles son las características biofísicas de mi vereda? (p. impresa 20, PDF 21). Trabajo aplicado: Características biofísicas: clima, suelo, agua y seres vivos. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 3,
+              "fin": 4,
+              "temas": [
+                "Características biofísicas: clima, suelo, agua y seres vivos"
+              ],
+              "guias": [
+                2
+              ]
+            },
+            {
+              "nombre": "Bloque 3: Actividades productivas, sociales y culturales de la vereda",
+              "descripcion": "Periodo 1. Semanas 5-6 del periodo (semanas 5-6 del año). módulo 1, guía 3: ¿Qué actividades desarrollan los habitantes de mi vereda? (p. impresa 32, PDF 33). Trabajo aplicado: Actividades productivas, sociales y culturales de la vereda. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 5,
+              "fin": 6,
+              "temas": [
+                "Actividades productivas, sociales y culturales de la vereda"
+              ],
+              "guias": [
+                3
+              ]
+            },
+            {
+              "nombre": "Bloque 4: Diagnóstico veredal inicial y fuentes de información",
+              "descripcion": "Periodo 1. Semanas 7-8 del periodo (semanas 7-8 del año). módulo 1, guía 1: ¿Cómo es mi entorno? (p. impresa 12, PDF 13); módulo 1, guía 2: ¿Cuáles son las características biofísicas de mi vereda? (p. impresa 20, PDF 21); módulo 1, guía 3: ¿Qué actividades desarrollan los habitantes de mi vereda? (p. impresa 32, PDF 33). Trabajo aplicado: Diagnóstico veredal inicial y fuentes de información. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 7,
+              "fin": 8,
+              "temas": [
+                "Diagnóstico veredal inicial y fuentes de información"
+              ],
+              "guias": [
+                1,
+                2,
+                3
+              ]
+            },
+            {
+              "nombre": "Aplicación e integración del PPP",
+              "descripcion": "Periodo 1. Semana 9 (semana 9 del año). Elaboración o revisión del producto del periodo, socialización y retroalimentación. Retoma las guías 1, 2, 3 de PPP_6_7.pdf.",
+              "inicio": 9,
+              "fin": 9
+            },
+            {
+              "nombre": "Evaluación, autoevaluación y refuerzo",
+              "descripcion": "Periodo 1. Semana 10 (semana 10 del año). Revisión del producto, evidencias y diario de campo; autoevaluación, coevaluación y refuerzo de los aprendizajes del periodo.",
+              "inicio": 10,
+              "fin": 10
+            }
+          ],
+          "referencia_men": null
+        }
+      ]
+    },
+    {
+      "area": "emprendimiento",
+      "materia": 9,
+      "nombre_materia": "Emprendimiento",
+      "grado": 6,
+      "periodo": 2,
+      "estandar": "Relaciono actividades humanas, recursos y necesidades y argumento oportunidades de emprendimiento con beneficios colectivos.",
+      "descripcion_estandar": "Estándar contextualizado a partir de los referentes interdisciplinarios de la cartilla PPP de Postprimaria del MEN. Grado 6, periodo 2: caracterización y formulación; módulos 2, guías 4, 5, 6. Diez semanas: desarrollo aplicado en 1-8, integración en 9 y evaluación y refuerzo en 10. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf. La distribución anual es institucional y conserva la continuidad entre grados de la cartilla compartida.",
+      "source": "C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf",
+      "dbas": [
+        {
+          "nombre": "Analiza la información del diagnóstico, reconoce fines sociales y económicos del emprendimiento y prioriza una necesidad.",
+          "descripcion": "Aprendizaje derivado de la cartilla de Proyectos Pedagógicos Productivos, grado 6, periodo 2. Formulación contextualizada; no se presenta como DBA oficial específico de Emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf. Cada cartilla tiene seis módulos y dieciocho guías. Los grados 6 y 8 trabajan guías 1-9; los grados 7 y 9 continúan con 10-18. La gestión utiliza el proyecto formulado en el grado anterior; al iniciar el año se recupera y ajusta ese insumo.",
+          "palabras_clave": "Relaciones entre actividades humanas y ambiente, Emprendimientos económicos, sociales y culturales, Organización y análisis de la información recolectada, Diagnóstico argumentado y priorización de necesidades",
+          "evidencias": [
+            "Explica un impacto ambiental de una actividad local y propone una alternativa de cuidado.",
+            "Compara iniciativas y argumenta por qué sus beneficios no se reducen a obtener dinero.",
+            "Clasifica datos del diagnóstico y explica una relación entre necesidad, recursos y oportunidad.",
+            "Prioriza una necesidad de la vereda sustentándola con información y criterios acordados."
+          ],
+          "ejes": [
+            {
+              "nombre": "Bloque 1: Relaciones entre actividades humanas y ambiente",
+              "descripcion": "Periodo 2. Semanas 1-2 del periodo (semanas 11-12 del año). módulo 2, guía 4: ¿Cómo ha sido la relación de los seres humanos con el entorno? (p. impresa 50, PDF 51). Trabajo aplicado: Relaciones entre actividades humanas y ambiente. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 1,
+              "fin": 2,
+              "temas": [
+                "Relaciones entre actividades humanas y ambiente"
+              ],
+              "guias": [
+                4
+              ]
+            },
+            {
+              "nombre": "Bloque 2: Emprendimientos económicos, sociales y culturales",
+              "descripcion": "Periodo 2. Semanas 3-4 del periodo (semanas 13-14 del año). módulo 2, guía 5: ¿El único fin de un emprendimiento es ganar dinero? (p. impresa 56, PDF 57). Trabajo aplicado: Emprendimientos económicos, sociales y culturales. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 3,
+              "fin": 4,
+              "temas": [
+                "Emprendimientos económicos, sociales y culturales"
+              ],
+              "guias": [
+                5
+              ]
+            },
+            {
+              "nombre": "Bloque 3: Organización y análisis de la información recolectada",
+              "descripcion": "Periodo 2. Semanas 5-6 del periodo (semanas 15-16 del año). módulo 2, guía 6: ¿Cómo analizo la información? (p. impresa 64, PDF 65). Trabajo aplicado: Organización y análisis de la información recolectada. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 5,
+              "fin": 6,
+              "temas": [
+                "Organización y análisis de la información recolectada"
+              ],
+              "guias": [
+                6
+              ]
+            },
+            {
+              "nombre": "Bloque 4: Diagnóstico argumentado y priorización de necesidades",
+              "descripcion": "Periodo 2. Semanas 7-8 del periodo (semanas 17-18 del año). módulo 2, guía 4: ¿Cómo ha sido la relación de los seres humanos con el entorno? (p. impresa 50, PDF 51); módulo 2, guía 5: ¿El único fin de un emprendimiento es ganar dinero? (p. impresa 56, PDF 57); módulo 2, guía 6: ¿Cómo analizo la información? (p. impresa 64, PDF 65). Trabajo aplicado: Diagnóstico argumentado y priorización de necesidades. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 7,
+              "fin": 8,
+              "temas": [
+                "Diagnóstico argumentado y priorización de necesidades"
+              ],
+              "guias": [
+                4,
+                5,
+                6
+              ]
+            },
+            {
+              "nombre": "Aplicación e integración del PPP",
+              "descripcion": "Periodo 2. Semana 9 (semana 19 del año). Elaboración o revisión del producto del periodo, socialización y retroalimentación. Retoma las guías 4, 5, 6 de PPP_6_7.pdf.",
+              "inicio": 9,
+              "fin": 9
+            },
+            {
+              "nombre": "Evaluación, autoevaluación y refuerzo",
+              "descripcion": "Periodo 2. Semana 10 (semana 20 del año). Revisión del producto, evidencias y diario de campo; autoevaluación, coevaluación y refuerzo de los aprendizajes del periodo.",
+              "inicio": 10,
+              "fin": 10
+            }
+          ],
+          "referencia_men": null
+        }
+      ]
+    },
+    {
+      "area": "emprendimiento",
+      "materia": 9,
+      "nombre_materia": "Emprendimiento",
+      "grado": 6,
+      "periodo": 3,
+      "estandar": "Identifico problemas y comparo alternativas para formular una idea de proyecto con objetivos pertinentes.",
+      "descripcion_estandar": "Estándar contextualizado a partir de los referentes interdisciplinarios de la cartilla PPP de Postprimaria del MEN. Grado 6, periodo 3: caracterización y formulación; módulos 3, guías 7, 8. Diez semanas: desarrollo aplicado en 1-8, integración en 9 y evaluación y refuerzo en 10. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf. La distribución anual es institucional y conserva la continuidad entre grados de la cartilla compartida.",
+      "source": "C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf",
+      "dbas": [
+        {
+          "nombre": "Selecciona una idea de PPP y formula objetivos coherentes con un problema identificado y sus alternativas de solución.",
+          "descripcion": "Aprendizaje derivado de la cartilla de Proyectos Pedagógicos Productivos, grado 6, periodo 3. Formulación contextualizada; no se presenta como DBA oficial específico de Emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf. Cada cartilla tiene seis módulos y dieciocho guías. Los grados 6 y 8 trabajan guías 1-9; los grados 7 y 9 continúan con 10-18. La gestión utiliza el proyecto formulado en el grado anterior; al iniciar el año se recupera y ajusta ese insumo.",
+          "palabras_clave": "Problema, causas y alternativas de solución, Selección de la idea de proyecto, Propósito, objetivo general y objetivos específicos, Coherencia entre problema, idea y propósito del PPP",
+          "evidencias": [
+            "Construye un árbol de problemas que diferencie causas, problema central y efectos.",
+            "Compara alternativas usando criterios de pertinencia, recursos y beneficio comunitario.",
+            "Formula objetivos coherentes con el problema e identifica resultados que permitirían evaluar su logro.",
+            "Sustenta una idea de proyecto y revisa sus objetivos a partir de observaciones de sus compañeros."
+          ],
+          "ejes": [
+            {
+              "nombre": "Bloque 1: Problema, causas y alternativas de solución",
+              "descripcion": "Periodo 3. Semanas 1-2 del periodo (semanas 21-22 del año). módulo 3, guía 7: ¿Cómo identifico la idea del proyecto? (p. impresa 78, PDF 79). Trabajo aplicado: Problema, causas y alternativas de solución. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 1,
+              "fin": 2,
+              "temas": [
+                "Problema, causas y alternativas de solución"
+              ],
+              "guias": [
+                7
+              ]
+            },
+            {
+              "nombre": "Bloque 2: Selección de la idea de proyecto",
+              "descripcion": "Periodo 3. Semanas 3-4 del periodo (semanas 23-24 del año). módulo 3, guía 7: ¿Cómo identifico la idea del proyecto? (p. impresa 78, PDF 79). Trabajo aplicado: Selección de la idea de proyecto. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 3,
+              "fin": 4,
+              "temas": [
+                "Selección de la idea de proyecto"
+              ],
+              "guias": [
+                7
+              ]
+            },
+            {
+              "nombre": "Bloque 3: Propósito, objetivo general y objetivos específicos",
+              "descripcion": "Periodo 3. Semanas 5-6 del periodo (semanas 25-26 del año). módulo 3, guía 8: ¿Cuál es el propósito del proyecto? (p. impresa 88, PDF 89). Trabajo aplicado: Propósito, objetivo general y objetivos específicos. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 5,
+              "fin": 6,
+              "temas": [
+                "Propósito, objetivo general y objetivos específicos"
+              ],
+              "guias": [
+                8
+              ]
+            },
+            {
+              "nombre": "Bloque 4: Coherencia entre problema, idea y propósito del PPP",
+              "descripcion": "Periodo 3. Semanas 7-8 del periodo (semanas 27-28 del año). módulo 3, guía 7: ¿Cómo identifico la idea del proyecto? (p. impresa 78, PDF 79); módulo 3, guía 8: ¿Cuál es el propósito del proyecto? (p. impresa 88, PDF 89). Trabajo aplicado: Coherencia entre problema, idea y propósito del PPP. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 7,
+              "fin": 8,
+              "temas": [
+                "Coherencia entre problema, idea y propósito del PPP"
+              ],
+              "guias": [
+                7,
+                8
+              ]
+            },
+            {
+              "nombre": "Aplicación e integración del PPP",
+              "descripcion": "Periodo 3. Semana 9 (semana 29 del año). Elaboración o revisión del producto del periodo, socialización y retroalimentación. Retoma las guías 7, 8 de PPP_6_7.pdf.",
+              "inicio": 9,
+              "fin": 9
+            },
+            {
+              "nombre": "Evaluación, autoevaluación y refuerzo",
+              "descripcion": "Periodo 3. Semana 10 (semana 30 del año). Revisión del producto, evidencias y diario de campo; autoevaluación, coevaluación y refuerzo de los aprendizajes del periodo.",
+              "inicio": 10,
+              "fin": 10
+            }
+          ],
+          "referencia_men": null
+        }
+      ]
+    },
+    {
+      "area": "emprendimiento",
+      "materia": 9,
+      "nombre_materia": "Emprendimiento",
+      "grado": 6,
+      "periodo": 4,
+      "estandar": "Integro y comunico información para formular un proyecto coherente con las necesidades y recursos de mi comunidad.",
+      "descripcion_estandar": "Estándar contextualizado a partir de los referentes interdisciplinarios de la cartilla PPP de Postprimaria del MEN. Grado 6, periodo 4: caracterización y formulación; módulos 3, guías 9. Diez semanas: desarrollo aplicado en 1-8, integración en 9 y evaluación y refuerzo en 10. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf. La distribución anual es institucional y conserva la continuidad entre grados de la cartilla compartida.",
+      "source": "C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf",
+      "dbas": [
+        {
+          "nombre": "Formula el perfil de un PPP con identificación, objetivos, justificación, beneficiarios, actividades y recursos iniciales.",
+          "descripcion": "Aprendizaje derivado de la cartilla de Proyectos Pedagógicos Productivos, grado 6, periodo 4. Formulación contextualizada; no se presenta como DBA oficial específico de Emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf. Cada cartilla tiene seis módulos y dieciocho guías. Los grados 6 y 8 trabajan guías 1-9; los grados 7 y 9 continúan con 10-18. La gestión utiliza el proyecto formulado en el grado anterior; al iniciar el año se recupera y ajusta ese insumo.",
+          "palabras_clave": "Perfil del proyecto: identificación, integrantes y localización, Justificación, beneficiarios y resultados esperados, Actividades, recursos y organización inicial, Integración y revisión del perfil del PPP",
+          "evidencias": [
+            "Redacta la identificación del PPP vinculando título, producto o servicio, integrantes y territorio.",
+            "Explica a quién beneficia el proyecto y por qué responde al diagnóstico construido.",
+            "Organiza una propuesta inicial de actividades y recursos consistente con los objetivos.",
+            "Presenta un perfil de proyecto coherente y registra ajustes para continuar su gestión en el grado siguiente."
+          ],
+          "ejes": [
+            {
+              "nombre": "Bloque 1: Perfil del proyecto: identificación, integrantes y localización",
+              "descripcion": "Periodo 4. Semanas 1-2 del periodo (semanas 31-32 del año). módulo 3, guía 9: ¿Cómo diseñar el proyecto? (p. impresa 96, PDF 97). Trabajo aplicado: Perfil del proyecto: identificación, integrantes y localización. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 1,
+              "fin": 2,
+              "temas": [
+                "Perfil del proyecto: identificación, integrantes y localización"
+              ],
+              "guias": [
+                9
+              ]
+            },
+            {
+              "nombre": "Bloque 2: Justificación, beneficiarios y resultados esperados",
+              "descripcion": "Periodo 4. Semanas 3-4 del periodo (semanas 33-34 del año). módulo 3, guía 9: ¿Cómo diseñar el proyecto? (p. impresa 96, PDF 97). Trabajo aplicado: Justificación, beneficiarios y resultados esperados. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 3,
+              "fin": 4,
+              "temas": [
+                "Justificación, beneficiarios y resultados esperados"
+              ],
+              "guias": [
+                9
+              ]
+            },
+            {
+              "nombre": "Bloque 3: Actividades, recursos y organización inicial",
+              "descripcion": "Periodo 4. Semanas 5-6 del periodo (semanas 35-36 del año). módulo 3, guía 9: ¿Cómo diseñar el proyecto? (p. impresa 96, PDF 97). Trabajo aplicado: Actividades, recursos y organización inicial. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 5,
+              "fin": 6,
+              "temas": [
+                "Actividades, recursos y organización inicial"
+              ],
+              "guias": [
+                9
+              ]
+            },
+            {
+              "nombre": "Bloque 4: Integración y revisión del perfil del PPP",
+              "descripcion": "Periodo 4. Semanas 7-8 del periodo (semanas 37-38 del año). módulo 3, guía 9: ¿Cómo diseñar el proyecto? (p. impresa 96, PDF 97). Trabajo aplicado: Integración y revisión del perfil del PPP. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 7,
+              "fin": 8,
+              "temas": [
+                "Integración y revisión del perfil del PPP"
+              ],
+              "guias": [
+                9
+              ]
+            },
+            {
+              "nombre": "Aplicación e integración del PPP",
+              "descripcion": "Periodo 4. Semana 9 (semana 39 del año). Elaboración o revisión del producto del periodo, socialización y retroalimentación. Retoma las guías 9 de PPP_6_7.pdf.",
+              "inicio": 9,
+              "fin": 9
+            },
+            {
+              "nombre": "Evaluación, autoevaluación y refuerzo",
+              "descripcion": "Periodo 4. Semana 10 (semana 40 del año). Revisión del producto, evidencias y diario de campo; autoevaluación, coevaluación y refuerzo de los aprendizajes del periodo.",
+              "inicio": 10,
+              "fin": 10
+            }
+          ],
+          "referencia_men": null
+        }
+      ]
+    },
+    {
+      "area": "emprendimiento",
+      "materia": 9,
+      "nombre_materia": "Emprendimiento",
+      "grado": 7,
+      "periodo": 1,
+      "estandar": "Organizo actividades y responsabilidades para gestionar un proyecto mediante buenas prácticas y uso responsable de recursos.",
+      "descripcion_estandar": "Estándar contextualizado a partir de los referentes interdisciplinarios de la cartilla PPP de Postprimaria del MEN. Grado 7, periodo 1: gestión, evaluación y proyección del proyecto formulado; módulos 4, guías 10, 11, 12. Diez semanas: desarrollo aplicado en 1-8, integración en 9 y evaluación y refuerzo en 10. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf. La distribución anual es institucional y conserva la continuidad entre grados de la cartilla compartida.",
+      "source": "C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf",
+      "dbas": [
+        {
+          "nombre": "Organiza y aplica un plan de acción del PPP con responsabilidades y criterios de producción responsable.",
+          "descripcion": "Aprendizaje derivado de la cartilla de Proyectos Pedagógicos Productivos, grado 7, periodo 1. Formulación contextualizada; no se presenta como DBA oficial específico de Emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf. Cada cartilla tiene seis módulos y dieciocho guías. Los grados 6 y 8 trabajan guías 1-9; los grados 7 y 9 continúan con 10-18. La gestión utiliza el proyecto formulado en el grado anterior; al iniciar el año se recupera y ajusta ese insumo.",
+          "palabras_clave": "Recuperación del perfil y selección de actividades, Plan de acción, responsabilidades y recursos, Buenas prácticas agrícolas y de manufactura aplicables, Producción responsable y puesta en práctica del plan",
+          "evidencias": [
+            "Revisa el perfil formulado y selecciona actividades necesarias para alcanzar sus objetivos.",
+            "Elabora un plan de acción con tareas, responsables, recursos y criterios de cumplimiento.",
+            "Identifica buenas prácticas pertinentes al proyecto y explica cómo favorecen calidad y cuidado del entorno.",
+            "Aplica o simula una actividad del plan y registra decisiones de uso responsable de recursos."
+          ],
+          "ejes": [
+            {
+              "nombre": "Bloque 1: Recuperación del perfil y selección de actividades",
+              "descripcion": "Periodo 1. Semanas 1-2 del periodo (semanas 1-2 del año). módulo 4, guía 10: ¿Cómo selecciono las actividades del proyecto? (p. impresa 116, PDF 117). Trabajo aplicado: Recuperación del perfil y selección de actividades. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 1,
+              "fin": 2,
+              "temas": [
+                "Recuperación del perfil y selección de actividades"
+              ],
+              "guias": [
+                10
+              ]
+            },
+            {
+              "nombre": "Bloque 2: Plan de acción, responsabilidades y recursos",
+              "descripcion": "Periodo 1. Semanas 3-4 del periodo (semanas 3-4 del año). módulo 4, guía 10: ¿Cómo selecciono las actividades del proyecto? (p. impresa 116, PDF 117). Trabajo aplicado: Plan de acción, responsabilidades y recursos. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 3,
+              "fin": 4,
+              "temas": [
+                "Plan de acción, responsabilidades y recursos"
+              ],
+              "guias": [
+                10
+              ]
+            },
+            {
+              "nombre": "Bloque 3: Buenas prácticas agrícolas y de manufactura aplicables",
+              "descripcion": "Periodo 1. Semanas 5-6 del periodo (semanas 5-6 del año). módulo 4, guía 11: ¿Qué aspectos pueden orientar las actividades del plan de acción? (p. impresa 124, PDF 125). Trabajo aplicado: Buenas prácticas agrícolas y de manufactura aplicables. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 5,
+              "fin": 6,
+              "temas": [
+                "Buenas prácticas agrícolas y de manufactura aplicables"
+              ],
+              "guias": [
+                11
+              ]
+            },
+            {
+              "nombre": "Bloque 4: Producción responsable y puesta en práctica del plan",
+              "descripcion": "Periodo 1. Semanas 7-8 del periodo (semanas 7-8 del año). módulo 4, guía 12: ¿Qué significa producir con responsabilidad? (p. impresa 130, PDF 131). Trabajo aplicado: Producción responsable y puesta en práctica del plan. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 7,
+              "fin": 8,
+              "temas": [
+                "Producción responsable y puesta en práctica del plan"
+              ],
+              "guias": [
+                12
+              ]
+            },
+            {
+              "nombre": "Aplicación e integración del PPP",
+              "descripcion": "Periodo 1. Semana 9 (semana 9 del año). Elaboración o revisión del producto del periodo, socialización y retroalimentación. Retoma las guías 10, 11, 12 de PPP_6_7.pdf.",
+              "inicio": 9,
+              "fin": 9
+            },
+            {
+              "nombre": "Evaluación, autoevaluación y refuerzo",
+              "descripcion": "Periodo 1. Semana 10 (semana 10 del año). Revisión del producto, evidencias y diario de campo; autoevaluación, coevaluación y refuerzo de los aprendizajes del periodo.",
+              "inicio": 10,
+              "fin": 10
+            }
+          ],
+          "referencia_men": null
+        }
+      ]
+    },
+    {
+      "area": "emprendimiento",
+      "materia": 9,
+      "nombre_materia": "Emprendimiento",
+      "grado": 7,
+      "periodo": 2,
+      "estandar": "Registro y verifico compromisos, actividades y cuentas para tomar decisiones durante el desarrollo de un proyecto.",
+      "descripcion_estandar": "Estándar contextualizado a partir de los referentes interdisciplinarios de la cartilla PPP de Postprimaria del MEN. Grado 7, periodo 2: gestión, evaluación y proyección del proyecto formulado; módulos 5, guías 13, 14. Diez semanas: desarrollo aplicado en 1-8, integración en 9 y evaluación y refuerzo en 10. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf. La distribución anual es institucional y conserva la continuidad entre grados de la cartilla compartida.",
+      "source": "C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf",
+      "dbas": [
+        {
+          "nombre": "Verifica compromisos y registra costos, gastos e ingresos para ajustar la gestión del PPP.",
+          "descripcion": "Aprendizaje derivado de la cartilla de Proyectos Pedagógicos Productivos, grado 7, periodo 2. Formulación contextualizada; no se presenta como DBA oficial específico de Emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf. Cada cartilla tiene seis módulos y dieciocho guías. Los grados 6 y 8 trabajan guías 1-9; los grados 7 y 9 continúan con 10-18. La gestión utiliza el proyecto formulado en el grado anterior; al iniciar el año se recupera y ajusta ese insumo.",
+          "palabras_clave": "Compromisos, tiempos y control de actividades, Desviaciones y acciones de ajuste, Costos, gastos e ingresos del PPP, Registro y comprobación de las cuentas",
+          "evidencias": [
+            "Construye un registro de seguimiento que permita contrastar compromisos y avances.",
+            "Identifica una dificultad del proyecto y propone un ajuste con responsables y plazo.",
+            "Clasifica movimientos del proyecto como costos, gastos o ingresos y justifica su decisión.",
+            "Elabora un registro sencillo de cuentas y verifica operaciones y soportes de los datos utilizados."
+          ],
+          "ejes": [
+            {
+              "nombre": "Bloque 1: Compromisos, tiempos y control de actividades",
+              "descripcion": "Periodo 2. Semanas 1-2 del periodo (semanas 11-12 del año). módulo 5, guía 13: ¿Cómo verifico el cumplimiento de los compromisos del proyecto? (p. impresa 144, PDF 145). Trabajo aplicado: Compromisos, tiempos y control de actividades. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 1,
+              "fin": 2,
+              "temas": [
+                "Compromisos, tiempos y control de actividades"
+              ],
+              "guias": [
+                13
+              ]
+            },
+            {
+              "nombre": "Bloque 2: Desviaciones y acciones de ajuste",
+              "descripcion": "Periodo 2. Semanas 3-4 del periodo (semanas 13-14 del año). módulo 5, guía 13: ¿Cómo verifico el cumplimiento de los compromisos del proyecto? (p. impresa 144, PDF 145). Trabajo aplicado: Desviaciones y acciones de ajuste. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 3,
+              "fin": 4,
+              "temas": [
+                "Desviaciones y acciones de ajuste"
+              ],
+              "guias": [
+                13
+              ]
+            },
+            {
+              "nombre": "Bloque 3: Costos, gastos e ingresos del PPP",
+              "descripcion": "Periodo 2. Semanas 5-6 del periodo (semanas 15-16 del año). módulo 5, guía 14: ¿Cómo registrar las cuentas del PPP? (p. impresa 152, PDF 153). Trabajo aplicado: Costos, gastos e ingresos del PPP. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 5,
+              "fin": 6,
+              "temas": [
+                "Costos, gastos e ingresos del PPP"
+              ],
+              "guias": [
+                14
+              ]
+            },
+            {
+              "nombre": "Bloque 4: Registro y comprobación de las cuentas",
+              "descripcion": "Periodo 2. Semanas 7-8 del periodo (semanas 17-18 del año). módulo 5, guía 14: ¿Cómo registrar las cuentas del PPP? (p. impresa 152, PDF 153). Trabajo aplicado: Registro y comprobación de las cuentas. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 7,
+              "fin": 8,
+              "temas": [
+                "Registro y comprobación de las cuentas"
+              ],
+              "guias": [
+                14
+              ]
+            },
+            {
+              "nombre": "Aplicación e integración del PPP",
+              "descripcion": "Periodo 2. Semana 9 (semana 19 del año). Elaboración o revisión del producto del periodo, socialización y retroalimentación. Retoma las guías 13, 14 de PPP_6_7.pdf.",
+              "inicio": 9,
+              "fin": 9
+            },
+            {
+              "nombre": "Evaluación, autoevaluación y refuerzo",
+              "descripcion": "Periodo 2. Semana 10 (semana 20 del año). Revisión del producto, evidencias y diario de campo; autoevaluación, coevaluación y refuerzo de los aprendizajes del periodo.",
+              "inicio": 10,
+              "fin": 10
+            }
+          ],
+          "referencia_men": null
+        }
+      ]
+    },
+    {
+      "area": "emprendimiento",
+      "materia": 9,
+      "nombre_materia": "Emprendimiento",
+      "grado": 7,
+      "periodo": 3,
+      "estandar": "Comparo resultados con objetivos y evalúo efectos sociales, ambientales y económicos para proponer mejoras.",
+      "descripcion_estandar": "Estándar contextualizado a partir de los referentes interdisciplinarios de la cartilla PPP de Postprimaria del MEN. Grado 7, periodo 3: gestión, evaluación y proyección del proyecto formulado; módulos 5, guías 15. Diez semanas: desarrollo aplicado en 1-8, integración en 9 y evaluación y refuerzo en 10. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf. La distribución anual es institucional y conserva la continuidad entre grados de la cartilla compartida.",
+      "source": "C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf",
+      "dbas": [
+        {
+          "nombre": "Evalúa si el PPP cumplió lo previsto y propone mejoras a partir de resultados e impactos documentados.",
+          "descripcion": "Aprendizaje derivado de la cartilla de Proyectos Pedagógicos Productivos, grado 7, periodo 3. Formulación contextualizada; no se presenta como DBA oficial específico de Emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf. Cada cartilla tiene seis módulos y dieciocho guías. Los grados 6 y 8 trabajan guías 1-9; los grados 7 y 9 continúan con 10-18. La gestión utiliza el proyecto formulado en el grado anterior; al iniciar el año se recupera y ajusta ese insumo.",
+          "palabras_clave": "Objetivos y criterios de evaluación del proyecto, Resultados y cumplimiento de lo previsto, Balance social, ambiental y económico, Mejoras y decisiones de continuidad",
+          "evidencias": [
+            "Define criterios para evaluar formulación, ejecución y resultados del PPP.",
+            "Compara resultados registrados con los objetivos y explica diferencias usando evidencias.",
+            "Elabora un balance que relacione beneficios, costos e impactos del proyecto.",
+            "Propone mejoras o decisiones de continuidad sustentadas en la evaluación del proyecto."
+          ],
+          "ejes": [
+            {
+              "nombre": "Bloque 1: Objetivos y criterios de evaluación del proyecto",
+              "descripcion": "Periodo 3. Semanas 1-2 del periodo (semanas 21-22 del año). módulo 5, guía 15: ¿El proyecto cumplió lo previsto? (p. impresa 160, PDF 161). Trabajo aplicado: Objetivos y criterios de evaluación del proyecto. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 1,
+              "fin": 2,
+              "temas": [
+                "Objetivos y criterios de evaluación del proyecto"
+              ],
+              "guias": [
+                15
+              ]
+            },
+            {
+              "nombre": "Bloque 2: Resultados y cumplimiento de lo previsto",
+              "descripcion": "Periodo 3. Semanas 3-4 del periodo (semanas 23-24 del año). módulo 5, guía 15: ¿El proyecto cumplió lo previsto? (p. impresa 160, PDF 161). Trabajo aplicado: Resultados y cumplimiento de lo previsto. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 3,
+              "fin": 4,
+              "temas": [
+                "Resultados y cumplimiento de lo previsto"
+              ],
+              "guias": [
+                15
+              ]
+            },
+            {
+              "nombre": "Bloque 3: Balance social, ambiental y económico",
+              "descripcion": "Periodo 3. Semanas 5-6 del periodo (semanas 25-26 del año). módulo 5, guía 15: ¿El proyecto cumplió lo previsto? (p. impresa 160, PDF 161). Trabajo aplicado: Balance social, ambiental y económico. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 5,
+              "fin": 6,
+              "temas": [
+                "Balance social, ambiental y económico"
+              ],
+              "guias": [
+                15
+              ]
+            },
+            {
+              "nombre": "Bloque 4: Mejoras y decisiones de continuidad",
+              "descripcion": "Periodo 3. Semanas 7-8 del periodo (semanas 27-28 del año). módulo 5, guía 15: ¿El proyecto cumplió lo previsto? (p. impresa 160, PDF 161). Trabajo aplicado: Mejoras y decisiones de continuidad. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 7,
+              "fin": 8,
+              "temas": [
+                "Mejoras y decisiones de continuidad"
+              ],
+              "guias": [
+                15
+              ]
+            },
+            {
+              "nombre": "Aplicación e integración del PPP",
+              "descripcion": "Periodo 3. Semana 9 (semana 29 del año). Elaboración o revisión del producto del periodo, socialización y retroalimentación. Retoma las guías 15 de PPP_6_7.pdf.",
+              "inicio": 9,
+              "fin": 9
+            },
+            {
+              "nombre": "Evaluación, autoevaluación y refuerzo",
+              "descripcion": "Periodo 3. Semana 10 (semana 30 del año). Revisión del producto, evidencias y diario de campo; autoevaluación, coevaluación y refuerzo de los aprendizajes del periodo.",
+              "inicio": 10,
+              "fin": 10
+            }
+          ],
+          "referencia_men": null
+        }
+      ]
+    },
+    {
+      "area": "emprendimiento",
+      "materia": 9,
+      "nombre_materia": "Emprendimiento",
+      "grado": 7,
+      "periodo": 4,
+      "estandar": "Comunico resultados y construyo propuestas de proyección comunitaria mediante participación y argumentación.",
+      "descripcion_estandar": "Estándar contextualizado a partir de los referentes interdisciplinarios de la cartilla PPP de Postprimaria del MEN. Grado 7, periodo 4: gestión, evaluación y proyección del proyecto formulado; módulos 6, guías 16, 17, 18. Diez semanas: desarrollo aplicado en 1-8, integración en 9 y evaluación y refuerzo en 10. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf. La distribución anual es institucional y conserva la continuidad entre grados de la cartilla compartida.",
+      "source": "C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf",
+      "dbas": [
+        {
+          "nombre": "Organiza la socialización y la proyección comunitaria del PPP y evalúa sus beneficios para la comunidad.",
+          "descripcion": "Aprendizaje derivado de la cartilla de Proyectos Pedagógicos Productivos, grado 7, periodo 4. Formulación contextualizada; no se presenta como DBA oficial específico de Emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf. Cada cartilla tiene seis módulos y dieciocho guías. Los grados 6 y 8 trabajan guías 1-9; los grados 7 y 9 continúan con 10-18. La gestión utiliza el proyecto formulado en el grado anterior; al iniciar el año se recupera y ajusta ese insumo.",
+          "palabras_clave": "Alternativas de proyección comunitaria, Organización de una feria escolar de proyectos, Beneficios del PPP para la comunidad, Socialización, retroalimentación y memoria del PPP",
+          "evidencias": [
+            "Selecciona una actividad de proyección y explica su relación con necesidades de la comunidad.",
+            "Diseña una feria con propósito, responsables, recursos y una forma de comunicar los resultados.",
+            "Explica beneficios y posibles límites del proyecto desde las perspectivas de sus participantes.",
+            "Presenta resultados del proyecto y documenta aportes de la comunidad y recomendaciones para un nuevo ciclo."
+          ],
+          "ejes": [
+            {
+              "nombre": "Bloque 1: Alternativas de proyección comunitaria",
+              "descripcion": "Periodo 4. Semanas 1-2 del periodo (semanas 31-32 del año). módulo 6, guía 16: ¿Qué alternativas de proyección comunitaria existen? (p. impresa 176, PDF 177). Trabajo aplicado: Alternativas de proyección comunitaria. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 1,
+              "fin": 2,
+              "temas": [
+                "Alternativas de proyección comunitaria"
+              ],
+              "guias": [
+                16
+              ]
+            },
+            {
+              "nombre": "Bloque 2: Organización de una feria escolar de proyectos",
+              "descripcion": "Periodo 4. Semanas 3-4 del periodo (semanas 33-34 del año). módulo 6, guía 17: ¿Cómo se organiza la feria de proyectos? (p. impresa 180, PDF 181). Trabajo aplicado: Organización de una feria escolar de proyectos. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 3,
+              "fin": 4,
+              "temas": [
+                "Organización de una feria escolar de proyectos"
+              ],
+              "guias": [
+                17
+              ]
+            },
+            {
+              "nombre": "Bloque 3: Beneficios del PPP para la comunidad",
+              "descripcion": "Periodo 4. Semanas 5-6 del periodo (semanas 35-36 del año). módulo 6, guía 18: ¿Cómo se beneficia la comunidad con los PPP? (p. impresa 186, PDF 187). Trabajo aplicado: Beneficios del PPP para la comunidad. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 5,
+              "fin": 6,
+              "temas": [
+                "Beneficios del PPP para la comunidad"
+              ],
+              "guias": [
+                18
+              ]
+            },
+            {
+              "nombre": "Bloque 4: Socialización, retroalimentación y memoria del PPP",
+              "descripcion": "Periodo 4. Semanas 7-8 del periodo (semanas 37-38 del año). módulo 6, guía 16: ¿Qué alternativas de proyección comunitaria existen? (p. impresa 176, PDF 177); módulo 6, guía 17: ¿Cómo se organiza la feria de proyectos? (p. impresa 180, PDF 181); módulo 6, guía 18: ¿Cómo se beneficia la comunidad con los PPP? (p. impresa 186, PDF 187). Trabajo aplicado: Socialización, retroalimentación y memoria del PPP. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_6_7.pdf.",
+              "inicio": 7,
+              "fin": 8,
+              "temas": [
+                "Socialización, retroalimentación y memoria del PPP"
+              ],
+              "guias": [
+                16,
+                17,
+                18
+              ]
+            },
+            {
+              "nombre": "Aplicación e integración del PPP",
+              "descripcion": "Periodo 4. Semana 9 (semana 39 del año). Elaboración o revisión del producto del periodo, socialización y retroalimentación. Retoma las guías 16, 17, 18 de PPP_6_7.pdf.",
+              "inicio": 9,
+              "fin": 9
+            },
+            {
+              "nombre": "Evaluación, autoevaluación y refuerzo",
+              "descripcion": "Periodo 4. Semana 10 (semana 40 del año). Revisión del producto, evidencias y diario de campo; autoevaluación, coevaluación y refuerzo de los aprendizajes del periodo.",
+              "inicio": 10,
+              "fin": 10
+            }
+          ],
+          "referencia_men": null
+        }
+      ]
+    },
+    {
+      "area": "emprendimiento",
+      "materia": 9,
+      "nombre_materia": "Emprendimiento",
+      "grado": 8,
+      "periodo": 1,
+      "estandar": "Analizo características del municipio y relaciono actores, actividades y condiciones territoriales con oportunidades de emprendimiento.",
+      "descripcion_estandar": "Estándar contextualizado a partir de los referentes interdisciplinarios de la cartilla PPP de Postprimaria del MEN. Grado 8, periodo 1: caracterización y formulación; módulos 1, guías 1, 2, 3. Diez semanas: desarrollo aplicado en 1-8, integración en 9 y evaluación y refuerzo en 10. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf. La distribución anual es institucional y conserva la continuidad entre grados de la cartilla compartida.",
+      "source": "C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf",
+      "dbas": [
+        {
+          "nombre": "Construye un diagnóstico municipal que relacione organización, oferta climática, actores y sectores productivos.",
+          "descripcion": "Aprendizaje derivado de la cartilla de Proyectos Pedagógicos Productivos, grado 8, periodo 1. Formulación contextualizada; no se presenta como DBA oficial específico de Emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf. Cada cartilla tiene seis módulos y dieciocho guías. Los grados 6 y 8 trabajan guías 1-9; los grados 7 y 9 continúan con 10-18. La gestión utiliza el proyecto formulado en el grado anterior; al iniciar el año se recupera y ajusta ese insumo.",
+          "palabras_clave": "Organización y funcionamiento del municipio, Oferta climática y condiciones del territorio municipal, Actores sociales, cultura y sectores productivos, Diagnóstico municipal para identificar oportunidades",
+          "evidencias": [
+            "Representa actores e instituciones del municipio y explica su relación con actividades productivas.",
+            "Interpreta información climática y territorial e identifica posibilidades y restricciones para un emprendimiento.",
+            "Caracteriza actores y actividades del municipio con información de fuentes identificadas.",
+            "Integra información territorial y social en un diagnóstico que sustente oportunidades de emprendimiento."
+          ],
+          "ejes": [
+            {
+              "nombre": "Bloque 1: Organización y funcionamiento del municipio",
+              "descripcion": "Periodo 1. Semanas 1-2 del periodo (semanas 1-2 del año). módulo 1, guía 1: ¿Cómo funciona mi municipio? (p. impresa 12, PDF 13). Trabajo aplicado: Organización y funcionamiento del municipio. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 1,
+              "fin": 2,
+              "temas": [
+                "Organización y funcionamiento del municipio"
+              ],
+              "guias": [
+                1
+              ]
+            },
+            {
+              "nombre": "Bloque 2: Oferta climática y condiciones del territorio municipal",
+              "descripcion": "Periodo 1. Semanas 3-4 del periodo (semanas 3-4 del año). módulo 1, guía 2: ¿Cómo es la oferta climática del municipio? (p. impresa 20, PDF 21). Trabajo aplicado: Oferta climática y condiciones del territorio municipal. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 3,
+              "fin": 4,
+              "temas": [
+                "Oferta climática y condiciones del territorio municipal"
+              ],
+              "guias": [
+                2
+              ]
+            },
+            {
+              "nombre": "Bloque 3: Actores sociales, cultura y sectores productivos",
+              "descripcion": "Periodo 1. Semanas 5-6 del periodo (semanas 5-6 del año). módulo 1, guía 3: ¿Quiénes conforman mi municipio? (p. impresa 28, PDF 29). Trabajo aplicado: Actores sociales, cultura y sectores productivos. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 5,
+              "fin": 6,
+              "temas": [
+                "Actores sociales, cultura y sectores productivos"
+              ],
+              "guias": [
+                3
+              ]
+            },
+            {
+              "nombre": "Bloque 4: Diagnóstico municipal para identificar oportunidades",
+              "descripcion": "Periodo 1. Semanas 7-8 del periodo (semanas 7-8 del año). módulo 1, guía 1: ¿Cómo funciona mi municipio? (p. impresa 12, PDF 13); módulo 1, guía 2: ¿Cómo es la oferta climática del municipio? (p. impresa 20, PDF 21); módulo 1, guía 3: ¿Quiénes conforman mi municipio? (p. impresa 28, PDF 29). Trabajo aplicado: Diagnóstico municipal para identificar oportunidades. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 7,
+              "fin": 8,
+              "temas": [
+                "Diagnóstico municipal para identificar oportunidades"
+              ],
+              "guias": [
+                1,
+                2,
+                3
+              ]
+            },
+            {
+              "nombre": "Aplicación e integración del PPP",
+              "descripcion": "Periodo 1. Semana 9 (semana 9 del año). Elaboración o revisión del producto del periodo, socialización y retroalimentación. Retoma las guías 1, 2, 3 de PPP_8_9.pdf.",
+              "inicio": 9,
+              "fin": 9
+            },
+            {
+              "nombre": "Evaluación, autoevaluación y refuerzo",
+              "descripcion": "Periodo 1. Semana 10 (semana 10 del año). Revisión del producto, evidencias y diario de campo; autoevaluación, coevaluación y refuerzo de los aprendizajes del periodo.",
+              "inicio": 10,
+              "fin": 10
+            }
+          ],
+          "referencia_men": null
+        }
+      ]
+    },
+    {
+      "area": "emprendimiento",
+      "materia": 9,
+      "nombre_materia": "Emprendimiento",
+      "grado": 8,
+      "periodo": 2,
+      "estandar": "Uso información del entorno y criterios explícitos para seleccionar alternativas de solución a un problema.",
+      "descripcion_estandar": "Estándar contextualizado a partir de los referentes interdisciplinarios de la cartilla PPP de Postprimaria del MEN. Grado 8, periodo 2: caracterización y formulación; módulos 2, guías 4, 5, 6. Diez semanas: desarrollo aplicado en 1-8, integración en 9 y evaluación y refuerzo en 10. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf. La distribución anual es institucional y conserva la continuidad entre grados de la cartilla compartida.",
+      "source": "C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf",
+      "dbas": [
+        {
+          "nombre": "Selecciona un emprendimiento mediante análisis de información, identificación de problemas y evaluación de alternativas.",
+          "descripcion": "Aprendizaje derivado de la cartilla de Proyectos Pedagógicos Productivos, grado 8, periodo 2. Formulación contextualizada; no se presenta como DBA oficial específico de Emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf. Cada cartilla tiene seis módulos y dieciocho guías. Los grados 6 y 8 trabajan guías 1-9; los grados 7 y 9 continúan con 10-18. La gestión utiliza el proyecto formulado en el grado anterior; al iniciar el año se recupera y ajusta ese insumo.",
+          "palabras_clave": "Posibilidades de emprendimiento municipal, Uso de información y árbol de problemas, Alternativas y criterios de selección, Selección argumentada del emprendimiento",
+          "evidencias": [
+            "Compara iniciativas locales e identifica necesidades, recursos y posibles beneficiarios.",
+            "Construye un árbol de problemas apoyado en datos y diferencia causas y efectos.",
+            "Evalúa alternativas de solución considerando recursos, pertinencia y efectos sociales y ambientales.",
+            "Sustenta la selección de una iniciativa y explica por qué responde al diagnóstico municipal."
+          ],
+          "ejes": [
+            {
+              "nombre": "Bloque 1: Posibilidades de emprendimiento municipal",
+              "descripcion": "Periodo 2. Semanas 1-2 del periodo (semanas 11-12 del año). módulo 2, guía 4: ¿Cómo identifico las posibilidades de emprendimiento en mi municipio? (p. impresa 40, PDF 41). Trabajo aplicado: Posibilidades de emprendimiento municipal. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 1,
+              "fin": 2,
+              "temas": [
+                "Posibilidades de emprendimiento municipal"
+              ],
+              "guias": [
+                4
+              ]
+            },
+            {
+              "nombre": "Bloque 2: Uso de información y árbol de problemas",
+              "descripcion": "Periodo 2. Semanas 3-4 del periodo (semanas 13-14 del año). módulo 2, guía 5: ¿Cómo utilizo la información del entorno? (p. impresa 46, PDF 47). Trabajo aplicado: Uso de información y árbol de problemas. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 3,
+              "fin": 4,
+              "temas": [
+                "Uso de información y árbol de problemas"
+              ],
+              "guias": [
+                5
+              ]
+            },
+            {
+              "nombre": "Bloque 3: Alternativas y criterios de selección",
+              "descripcion": "Periodo 2. Semanas 5-6 del periodo (semanas 15-16 del año). módulo 2, guía 6: ¿Cómo identifico las alternativas de solución del problema? (p. impresa 52, PDF 53). Trabajo aplicado: Alternativas y criterios de selección. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 5,
+              "fin": 6,
+              "temas": [
+                "Alternativas y criterios de selección"
+              ],
+              "guias": [
+                6
+              ]
+            },
+            {
+              "nombre": "Bloque 4: Selección argumentada del emprendimiento",
+              "descripcion": "Periodo 2. Semanas 7-8 del periodo (semanas 17-18 del año). módulo 2, guía 4: ¿Cómo identifico las posibilidades de emprendimiento en mi municipio? (p. impresa 40, PDF 41); módulo 2, guía 5: ¿Cómo utilizo la información del entorno? (p. impresa 46, PDF 47); módulo 2, guía 6: ¿Cómo identifico las alternativas de solución del problema? (p. impresa 52, PDF 53). Trabajo aplicado: Selección argumentada del emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 7,
+              "fin": 8,
+              "temas": [
+                "Selección argumentada del emprendimiento"
+              ],
+              "guias": [
+                4,
+                5,
+                6
+              ]
+            },
+            {
+              "nombre": "Aplicación e integración del PPP",
+              "descripcion": "Periodo 2. Semana 9 (semana 19 del año). Elaboración o revisión del producto del periodo, socialización y retroalimentación. Retoma las guías 4, 5, 6 de PPP_8_9.pdf.",
+              "inicio": 9,
+              "fin": 9
+            },
+            {
+              "nombre": "Evaluación, autoevaluación y refuerzo",
+              "descripcion": "Periodo 2. Semana 10 (semana 20 del año). Revisión del producto, evidencias y diario de campo; autoevaluación, coevaluación y refuerzo de los aprendizajes del periodo.",
+              "inicio": 10,
+              "fin": 10
+            }
+          ],
+          "referencia_men": null
+        }
+      ]
+    },
+    {
+      "area": "emprendimiento",
+      "materia": 9,
+      "nombre_materia": "Emprendimiento",
+      "grado": 8,
+      "periodo": 3,
+      "estandar": "Organizo información operativa, de mercado y financiera para estructurar un plan de negocios pertinente.",
+      "descripcion_estandar": "Estándar contextualizado a partir de los referentes interdisciplinarios de la cartilla PPP de Postprimaria del MEN. Grado 8, periodo 3: caracterización y formulación; módulos 3, guías 7, 8. Diez semanas: desarrollo aplicado en 1-8, integración en 9 y evaluación y refuerzo en 10. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf. La distribución anual es institucional y conserva la continuidad entre grados de la cartilla compartida.",
+      "source": "C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf",
+      "dbas": [
+        {
+          "nombre": "Estructura componentes de mercado, operación, organización y recursos financieros de un plan de negocios escolar.",
+          "descripcion": "Aprendizaje derivado de la cartilla de Proyectos Pedagógicos Productivos, grado 8, periodo 3. Formulación contextualizada; no se presenta como DBA oficial específico de Emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf. Cada cartilla tiene seis módulos y dieciocho guías. Los grados 6 y 8 trabajan guías 1-9; los grados 7 y 9 continúan con 10-18. La gestión utiliza el proyecto formulado en el grado anterior; al iniciar el año se recupera y ajusta ese insumo.",
+          "palabras_clave": "Plan de negocios: resumen ejecutivo y mercadeo, Operación y organización del emprendimiento, Recursos, inversión y presupuesto de operación, Ingresos, costos y proyecciones financieras básicas",
+          "evidencias": [
+            "Elabora un resumen de la iniciativa y caracteriza destinatarios, oferta y necesidades del mercado.",
+            "Representa actividades operativas, responsabilidades y recursos necesarios para ofrecer el producto o servicio.",
+            "Calcula un presupuesto didáctico de inversión y operación con datos y supuestos explícitos.",
+            "Organiza una proyección sencilla de ingresos, costos y flujo de dinero y explica sus supuestos."
+          ],
+          "ejes": [
+            {
+              "nombre": "Bloque 1: Plan de negocios: resumen ejecutivo y mercadeo",
+              "descripcion": "Periodo 3. Semanas 1-2 del periodo (semanas 21-22 del año). módulo 3, guía 7: ¿Cómo organizo mi emprendimiento? (p. impresa 64, PDF 65). Trabajo aplicado: Plan de negocios: resumen ejecutivo y mercadeo. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 1,
+              "fin": 2,
+              "temas": [
+                "Plan de negocios: resumen ejecutivo y mercadeo"
+              ],
+              "guias": [
+                7
+              ]
+            },
+            {
+              "nombre": "Bloque 2: Operación y organización del emprendimiento",
+              "descripcion": "Periodo 3. Semanas 3-4 del periodo (semanas 23-24 del año). módulo 3, guía 7: ¿Cómo organizo mi emprendimiento? (p. impresa 64, PDF 65). Trabajo aplicado: Operación y organización del emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 3,
+              "fin": 4,
+              "temas": [
+                "Operación y organización del emprendimiento"
+              ],
+              "guias": [
+                7
+              ]
+            },
+            {
+              "nombre": "Bloque 3: Recursos, inversión y presupuesto de operación",
+              "descripcion": "Periodo 3. Semanas 5-6 del periodo (semanas 25-26 del año). módulo 3, guía 8: ¿Qué recursos necesito para llevar a cabo el emprendimiento? (p. impresa 72, PDF 73). Trabajo aplicado: Recursos, inversión y presupuesto de operación. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 5,
+              "fin": 6,
+              "temas": [
+                "Recursos, inversión y presupuesto de operación"
+              ],
+              "guias": [
+                8
+              ]
+            },
+            {
+              "nombre": "Bloque 4: Ingresos, costos y proyecciones financieras básicas",
+              "descripcion": "Periodo 3. Semanas 7-8 del periodo (semanas 27-28 del año). módulo 3, guía 8: ¿Qué recursos necesito para llevar a cabo el emprendimiento? (p. impresa 72, PDF 73). Trabajo aplicado: Ingresos, costos y proyecciones financieras básicas. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 7,
+              "fin": 8,
+              "temas": [
+                "Ingresos, costos y proyecciones financieras básicas"
+              ],
+              "guias": [
+                8
+              ]
+            },
+            {
+              "nombre": "Aplicación e integración del PPP",
+              "descripcion": "Periodo 3. Semana 9 (semana 29 del año). Elaboración o revisión del producto del periodo, socialización y retroalimentación. Retoma las guías 7, 8 de PPP_8_9.pdf.",
+              "inicio": 9,
+              "fin": 9
+            },
+            {
+              "nombre": "Evaluación, autoevaluación y refuerzo",
+              "descripcion": "Periodo 3. Semana 10 (semana 30 del año). Revisión del producto, evidencias y diario de campo; autoevaluación, coevaluación y refuerzo de los aprendizajes del periodo.",
+              "inicio": 10,
+              "fin": 10
+            }
+          ],
+          "referencia_men": null
+        }
+      ]
+    },
+    {
+      "area": "emprendimiento",
+      "materia": 9,
+      "nombre_materia": "Emprendimiento",
+      "grado": 8,
+      "periodo": 4,
+      "estandar": "Relaciono decisiones económicas, ambientales y sociales y sustento la sostenibilidad de un plan de negocios.",
+      "descripcion_estandar": "Estándar contextualizado a partir de los referentes interdisciplinarios de la cartilla PPP de Postprimaria del MEN. Grado 8, periodo 4: caracterización y formulación; módulos 3, guías 9. Diez semanas: desarrollo aplicado en 1-8, integración en 9 y evaluación y refuerzo en 10. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf. La distribución anual es institucional y conserva la continuidad entre grados de la cartilla compartida.",
+      "source": "C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf",
+      "dbas": [
+        {
+          "nombre": "Integra criterios de sostenibilidad ambiental y social y consolida un plan de negocios con proyecciones y cronograma.",
+          "descripcion": "Aprendizaje derivado de la cartilla de Proyectos Pedagógicos Productivos, grado 8, periodo 4. Formulación contextualizada; no se presenta como DBA oficial específico de Emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf. Cada cartilla tiene seis módulos y dieciocho guías. Los grados 6 y 8 trabajan guías 1-9; los grados 7 y 9 continúan con 10-18. La gestión utiliza el proyecto formulado en el grado anterior; al iniciar el año se recupera y ajusta ese insumo.",
+          "palabras_clave": "Impactos ambientales y uso de recursos, Sostenibilidad social y beneficios comunitarios, Cronograma y articulación de componentes del plan, Revisión y sustentación del plan de negocios",
+          "evidencias": [
+            "Construye una matriz sencilla de impactos y propone medidas preventivas o de mejora.",
+            "Analiza efectos sobre participantes y comunidad e identifica condiciones para una participación responsable.",
+            "Integra cronograma, operación, presupuesto y sostenibilidad en una versión coherente del plan de negocios.",
+            "Sustenta el plan y registra ajustes para continuar su gestión e implementación en el grado siguiente."
+          ],
+          "ejes": [
+            {
+              "nombre": "Bloque 1: Impactos ambientales y uso de recursos",
+              "descripcion": "Periodo 4. Semanas 1-2 del periodo (semanas 31-32 del año). módulo 3, guía 9: ¿Cómo diseño emprendimientos sostenibles? (p. impresa 80, PDF 81). Trabajo aplicado: Impactos ambientales y uso de recursos. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 1,
+              "fin": 2,
+              "temas": [
+                "Impactos ambientales y uso de recursos"
+              ],
+              "guias": [
+                9
+              ]
+            },
+            {
+              "nombre": "Bloque 2: Sostenibilidad social y beneficios comunitarios",
+              "descripcion": "Periodo 4. Semanas 3-4 del periodo (semanas 33-34 del año). módulo 3, guía 9: ¿Cómo diseño emprendimientos sostenibles? (p. impresa 80, PDF 81). Trabajo aplicado: Sostenibilidad social y beneficios comunitarios. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 3,
+              "fin": 4,
+              "temas": [
+                "Sostenibilidad social y beneficios comunitarios"
+              ],
+              "guias": [
+                9
+              ]
+            },
+            {
+              "nombre": "Bloque 3: Cronograma y articulación de componentes del plan",
+              "descripcion": "Periodo 4. Semanas 5-6 del periodo (semanas 35-36 del año). módulo 3, guía 9: ¿Cómo diseño emprendimientos sostenibles? (p. impresa 80, PDF 81). Trabajo aplicado: Cronograma y articulación de componentes del plan. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 5,
+              "fin": 6,
+              "temas": [
+                "Cronograma y articulación de componentes del plan"
+              ],
+              "guias": [
+                9
+              ]
+            },
+            {
+              "nombre": "Bloque 4: Revisión y sustentación del plan de negocios",
+              "descripcion": "Periodo 4. Semanas 7-8 del periodo (semanas 37-38 del año). módulo 3, guía 9: ¿Cómo diseño emprendimientos sostenibles? (p. impresa 80, PDF 81). Trabajo aplicado: Revisión y sustentación del plan de negocios. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 7,
+              "fin": 8,
+              "temas": [
+                "Revisión y sustentación del plan de negocios"
+              ],
+              "guias": [
+                9
+              ]
+            },
+            {
+              "nombre": "Aplicación e integración del PPP",
+              "descripcion": "Periodo 4. Semana 9 (semana 39 del año). Elaboración o revisión del producto del periodo, socialización y retroalimentación. Retoma las guías 9 de PPP_8_9.pdf.",
+              "inicio": 9,
+              "fin": 9
+            },
+            {
+              "nombre": "Evaluación, autoevaluación y refuerzo",
+              "descripcion": "Periodo 4. Semana 10 (semana 40 del año). Revisión del producto, evidencias y diario de campo; autoevaluación, coevaluación y refuerzo de los aprendizajes del periodo.",
+              "inicio": 10,
+              "fin": 10
+            }
+          ],
+          "referencia_men": null
+        }
+      ]
+    },
+    {
+      "area": "emprendimiento",
+      "materia": 9,
+      "nombre_materia": "Emprendimiento",
+      "grado": 9,
+      "periodo": 1,
+      "estandar": "Organizo y verifico actividades, tiempos y responsabilidades para implementar un proyecto y ajustar su desarrollo.",
+      "descripcion_estandar": "Estándar contextualizado a partir de los referentes interdisciplinarios de la cartilla PPP de Postprimaria del MEN. Grado 9, periodo 1: gestión, evaluación y proyección del proyecto formulado; módulos 4, guías 10, 11, 12. Diez semanas: desarrollo aplicado en 1-8, integración en 9 y evaluación y refuerzo en 10. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf. La distribución anual es institucional y conserva la continuidad entre grados de la cartilla compartida.",
+      "source": "C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf",
+      "dbas": [
+        {
+          "nombre": "Gestiona la implementación del proyecto mediante un plan de trabajo, cronograma y registros de cumplimiento.",
+          "descripcion": "Aprendizaje derivado de la cartilla de Proyectos Pedagógicos Productivos, grado 9, periodo 1. Formulación contextualizada; no se presenta como DBA oficial específico de Emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf. Cada cartilla tiene seis módulos y dieciocho guías. Los grados 6 y 8 trabajan guías 1-9; los grados 7 y 9 continúan con 10-18. La gestión utiliza el proyecto formulado en el grado anterior; al iniciar el año se recupera y ajusta ese insumo.",
+          "palabras_clave": "Recuperación del plan de negocios y tareas del proyecto, Secuencia, responsables y cronograma, Instrumentos para verificar el cumplimiento, Ejecución o simulación y seguimiento inicial",
+          "evidencias": [
+            "Revisa el plan formulado y define tareas necesarias para lograr sus resultados.",
+            "Elabora un cronograma que establezca orden, duración y responsables de las actividades.",
+            "Diseña una lista o registro que permita verificar cada actividad sin confundir ejecución y resultado.",
+            "Ejecuta o simula una etapa del plan y documenta avances, dificultades y ajustes acordados."
+          ],
+          "ejes": [
+            {
+              "nombre": "Bloque 1: Recuperación del plan de negocios y tareas del proyecto",
+              "descripcion": "Periodo 1. Semanas 1-2 del periodo (semanas 1-2 del año). módulo 4, guía 10: ¿Cómo establezco mi plan de trabajo para el proyecto? (p. impresa 94, PDF 95). Trabajo aplicado: Recuperación del plan de negocios y tareas del proyecto. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 1,
+              "fin": 2,
+              "temas": [
+                "Recuperación del plan de negocios y tareas del proyecto"
+              ],
+              "guias": [
+                10
+              ]
+            },
+            {
+              "nombre": "Bloque 2: Secuencia, responsables y cronograma",
+              "descripcion": "Periodo 1. Semanas 3-4 del periodo (semanas 3-4 del año). módulo 4, guía 11: ¿Cómo y en qué periodo de tiempo debo realizar las actividades del proyecto? (p. impresa 100, PDF 101). Trabajo aplicado: Secuencia, responsables y cronograma. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 3,
+              "fin": 4,
+              "temas": [
+                "Secuencia, responsables y cronograma"
+              ],
+              "guias": [
+                11
+              ]
+            },
+            {
+              "nombre": "Bloque 3: Instrumentos para verificar el cumplimiento",
+              "descripcion": "Periodo 1. Semanas 5-6 del periodo (semanas 5-6 del año). módulo 4, guía 12: ¿Cómo verifico el cumplimiento de todas las actividades planteadas? (p. impresa 106, PDF 107). Trabajo aplicado: Instrumentos para verificar el cumplimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 5,
+              "fin": 6,
+              "temas": [
+                "Instrumentos para verificar el cumplimiento"
+              ],
+              "guias": [
+                12
+              ]
+            },
+            {
+              "nombre": "Bloque 4: Ejecución o simulación y seguimiento inicial",
+              "descripcion": "Periodo 1. Semanas 7-8 del periodo (semanas 7-8 del año). módulo 4, guía 10: ¿Cómo establezco mi plan de trabajo para el proyecto? (p. impresa 94, PDF 95); módulo 4, guía 11: ¿Cómo y en qué periodo de tiempo debo realizar las actividades del proyecto? (p. impresa 100, PDF 101); módulo 4, guía 12: ¿Cómo verifico el cumplimiento de todas las actividades planteadas? (p. impresa 106, PDF 107). Trabajo aplicado: Ejecución o simulación y seguimiento inicial. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 7,
+              "fin": 8,
+              "temas": [
+                "Ejecución o simulación y seguimiento inicial"
+              ],
+              "guias": [
+                10,
+                11,
+                12
+              ]
+            },
+            {
+              "nombre": "Aplicación e integración del PPP",
+              "descripcion": "Periodo 1. Semana 9 (semana 9 del año). Elaboración o revisión del producto del periodo, socialización y retroalimentación. Retoma las guías 10, 11, 12 de PPP_8_9.pdf.",
+              "inicio": 9,
+              "fin": 9
+            },
+            {
+              "nombre": "Evaluación, autoevaluación y refuerzo",
+              "descripcion": "Periodo 1. Semana 10 (semana 10 del año). Revisión del producto, evidencias y diario de campo; autoevaluación, coevaluación y refuerzo de los aprendizajes del periodo.",
+              "inicio": 10,
+              "fin": 10
+            }
+          ],
+          "referencia_men": null
+        }
+      ]
+    },
+    {
+      "area": "emprendimiento",
+      "materia": 9,
+      "nombre_materia": "Emprendimiento",
+      "grado": 9,
+      "periodo": 2,
+      "estandar": "Construyo indicadores y registros para evaluar avances y orientar decisiones de seguimiento de un proyecto.",
+      "descripcion_estandar": "Estándar contextualizado a partir de los referentes interdisciplinarios de la cartilla PPP de Postprimaria del MEN. Grado 9, periodo 2: gestión, evaluación y proyección del proyecto formulado; módulos 5, guías 13, 14. Diez semanas: desarrollo aplicado en 1-8, integración en 9 y evaluación y refuerzo en 10. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf. La distribución anual es institucional y conserva la continuidad entre grados de la cartilla compartida.",
+      "source": "C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf",
+      "dbas": [
+        {
+          "nombre": "Diseña indicadores y momentos de evaluación y utiliza sus resultados para orientar el seguimiento del emprendimiento.",
+          "descripcion": "Aprendizaje derivado de la cartilla de Proyectos Pedagógicos Productivos, grado 9, periodo 2. Formulación contextualizada; no se presenta como DBA oficial específico de Emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf. Cada cartilla tiene seis módulos y dieciocho guías. Los grados 6 y 8 trabajan guías 1-9; los grados 7 y 9 continúan con 10-18. La gestión utiliza el proyecto formulado en el grado anterior; al iniciar el año se recupera y ajusta ese insumo.",
+          "palabras_clave": "Parámetros, indicadores y unidades de medida, Registros y contraste de avances, Momentos y clases de evaluación, Plan de evaluación y decisiones oportunas",
+          "evidencias": [
+            "Define indicadores con criterios de medida y metas coherentes con los objetivos del emprendimiento.",
+            "Organiza datos del seguimiento e interpreta diferencias entre resultados y metas.",
+            "Distingue evaluación inicial, de proceso y final y explica su utilidad para el proyecto.",
+            "Organiza momentos, responsables e instrumentos de evaluación y propone ajustes a partir de sus resultados."
+          ],
+          "ejes": [
+            {
+              "nombre": "Bloque 1: Parámetros, indicadores y unidades de medida",
+              "descripcion": "Periodo 2. Semanas 1-2 del periodo (semanas 11-12 del año). módulo 5, guía 13: Parámetros para medir proyectos (p. impresa 120, PDF 121). Trabajo aplicado: Parámetros, indicadores y unidades de medida. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 1,
+              "fin": 2,
+              "temas": [
+                "Parámetros, indicadores y unidades de medida"
+              ],
+              "guias": [
+                13
+              ]
+            },
+            {
+              "nombre": "Bloque 2: Registros y contraste de avances",
+              "descripcion": "Periodo 2. Semanas 3-4 del periodo (semanas 13-14 del año). módulo 5, guía 13: Parámetros para medir proyectos (p. impresa 120, PDF 121). Trabajo aplicado: Registros y contraste de avances. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 3,
+              "fin": 4,
+              "temas": [
+                "Registros y contraste de avances"
+              ],
+              "guias": [
+                13
+              ]
+            },
+            {
+              "nombre": "Bloque 3: Momentos y clases de evaluación",
+              "descripcion": "Periodo 2. Semanas 5-6 del periodo (semanas 15-16 del año). módulo 5, guía 14: ¿En qué momento evalúo el emprendimiento? (p. impresa 126, PDF 127). Trabajo aplicado: Momentos y clases de evaluación. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 5,
+              "fin": 6,
+              "temas": [
+                "Momentos y clases de evaluación"
+              ],
+              "guias": [
+                14
+              ]
+            },
+            {
+              "nombre": "Bloque 4: Plan de evaluación y decisiones oportunas",
+              "descripcion": "Periodo 2. Semanas 7-8 del periodo (semanas 17-18 del año). módulo 5, guía 14: ¿En qué momento evalúo el emprendimiento? (p. impresa 126, PDF 127). Trabajo aplicado: Plan de evaluación y decisiones oportunas. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 7,
+              "fin": 8,
+              "temas": [
+                "Plan de evaluación y decisiones oportunas"
+              ],
+              "guias": [
+                14
+              ]
+            },
+            {
+              "nombre": "Aplicación e integración del PPP",
+              "descripcion": "Periodo 2. Semana 9 (semana 19 del año). Elaboración o revisión del producto del periodo, socialización y retroalimentación. Retoma las guías 13, 14 de PPP_8_9.pdf.",
+              "inicio": 9,
+              "fin": 9
+            },
+            {
+              "nombre": "Evaluación, autoevaluación y refuerzo",
+              "descripcion": "Periodo 2. Semana 10 (semana 20 del año). Revisión del producto, evidencias y diario de campo; autoevaluación, coevaluación y refuerzo de los aprendizajes del periodo.",
+              "inicio": 10,
+              "fin": 10
+            }
+          ],
+          "referencia_men": null
+        }
+      ]
+    },
+    {
+      "area": "emprendimiento",
+      "materia": 9,
+      "nombre_materia": "Emprendimiento",
+      "grado": 9,
+      "periodo": 3,
+      "estandar": "Interpreto evidencias de evaluación social, ambiental y financiera para sustentar resultados y acciones de mejora.",
+      "descripcion_estandar": "Estándar contextualizado a partir de los referentes interdisciplinarios de la cartilla PPP de Postprimaria del MEN. Grado 9, periodo 3: gestión, evaluación y proyección del proyecto formulado; módulos 5, guías 15. Diez semanas: desarrollo aplicado en 1-8, integración en 9 y evaluación y refuerzo en 10. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf. La distribución anual es institucional y conserva la continuidad entre grados de la cartilla compartida.",
+      "source": "C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf",
+      "dbas": [
+        {
+          "nombre": "Evalúa aspectos sociales, ambientales y financieros del emprendimiento y sustenta un plan de mejora.",
+          "descripcion": "Aprendizaje derivado de la cartilla de Proyectos Pedagógicos Productivos, grado 9, periodo 3. Formulación contextualizada; no se presenta como DBA oficial específico de Emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf. Cada cartilla tiene seis módulos y dieciocho guías. Los grados 6 y 8 trabajan guías 1-9; los grados 7 y 9 continúan con 10-18. La gestión utiliza el proyecto formulado en el grado anterior; al iniciar el año se recupera y ajusta ese insumo.",
+          "palabras_clave": "Aspectos sociales de la evaluación, Aspectos ambientales de la evaluación, Aspectos financieros y uso de recursos, Síntesis evaluativa y mejoramiento",
+          "evidencias": [
+            "Analiza participación, cooperación y efectos comunitarios usando criterios y evidencias explícitos.",
+            "Evalúa impactos y medidas de cuidado comparando lo previsto con información del proyecto.",
+            "Interpreta registros o escenarios financieros y explica qué muestran sobre el uso de recursos.",
+            "Presenta un informe con resultados, límites y acciones de mejora sustentadas en las evaluaciones realizadas."
+          ],
+          "ejes": [
+            {
+              "nombre": "Bloque 1: Aspectos sociales de la evaluación",
+              "descripcion": "Periodo 3. Semanas 1-2 del periodo (semanas 21-22 del año). módulo 5, guía 15: ¿Qué aspectos evalúo? (p. impresa 132, PDF 133). Trabajo aplicado: Aspectos sociales de la evaluación. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 1,
+              "fin": 2,
+              "temas": [
+                "Aspectos sociales de la evaluación"
+              ],
+              "guias": [
+                15
+              ]
+            },
+            {
+              "nombre": "Bloque 2: Aspectos ambientales de la evaluación",
+              "descripcion": "Periodo 3. Semanas 3-4 del periodo (semanas 23-24 del año). módulo 5, guía 15: ¿Qué aspectos evalúo? (p. impresa 132, PDF 133). Trabajo aplicado: Aspectos ambientales de la evaluación. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 3,
+              "fin": 4,
+              "temas": [
+                "Aspectos ambientales de la evaluación"
+              ],
+              "guias": [
+                15
+              ]
+            },
+            {
+              "nombre": "Bloque 3: Aspectos financieros y uso de recursos",
+              "descripcion": "Periodo 3. Semanas 5-6 del periodo (semanas 25-26 del año). módulo 5, guía 15: ¿Qué aspectos evalúo? (p. impresa 132, PDF 133). Trabajo aplicado: Aspectos financieros y uso de recursos. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 5,
+              "fin": 6,
+              "temas": [
+                "Aspectos financieros y uso de recursos"
+              ],
+              "guias": [
+                15
+              ]
+            },
+            {
+              "nombre": "Bloque 4: Síntesis evaluativa y mejoramiento",
+              "descripcion": "Periodo 3. Semanas 7-8 del periodo (semanas 27-28 del año). módulo 5, guía 15: ¿Qué aspectos evalúo? (p. impresa 132, PDF 133). Trabajo aplicado: Síntesis evaluativa y mejoramiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 7,
+              "fin": 8,
+              "temas": [
+                "Síntesis evaluativa y mejoramiento"
+              ],
+              "guias": [
+                15
+              ]
+            },
+            {
+              "nombre": "Aplicación e integración del PPP",
+              "descripcion": "Periodo 3. Semana 9 (semana 29 del año). Elaboración o revisión del producto del periodo, socialización y retroalimentación. Retoma las guías 15 de PPP_8_9.pdf.",
+              "inicio": 9,
+              "fin": 9
+            },
+            {
+              "nombre": "Evaluación, autoevaluación y refuerzo",
+              "descripcion": "Periodo 3. Semana 10 (semana 30 del año). Revisión del producto, evidencias y diario de campo; autoevaluación, coevaluación y refuerzo de los aprendizajes del periodo.",
+              "inicio": 10,
+              "fin": 10
+            }
+          ],
+          "referencia_men": null
+        }
+      ]
+    },
+    {
+      "area": "emprendimiento",
+      "materia": 9,
+      "nombre_materia": "Emprendimiento",
+      "grado": 9,
+      "periodo": 4,
+      "estandar": "Comunico resultados y evalúo alternativas de proyección y apoyo con criterios de responsabilidad comunitaria.",
+      "descripcion_estandar": "Estándar contextualizado a partir de los referentes interdisciplinarios de la cartilla PPP de Postprimaria del MEN. Grado 9, periodo 4: gestión, evaluación y proyección del proyecto formulado; módulos 6, guías 16, 17, 18. Diez semanas: desarrollo aplicado en 1-8, integración en 9 y evaluación y refuerzo en 10. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf. La distribución anual es institucional y conserva la continuidad entre grados de la cartilla compartida.",
+      "source": "C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf",
+      "dbas": [
+        {
+          "nombre": "Proyecta el emprendimiento hacia la comunidad mediante una feria y el análisis de posibles mecanismos de apoyo.",
+          "descripcion": "Aprendizaje derivado de la cartilla de Proyectos Pedagógicos Productivos, grado 9, periodo 4. Formulación contextualizada; no se presenta como DBA oficial específico de Emprendimiento. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf. Cada cartilla tiene seis módulos y dieciocho guías. Los grados 6 y 8 trabajan guías 1-9; los grados 7 y 9 continúan con 10-18. La gestión utiliza el proyecto formulado en el grado anterior; al iniciar el año se recupera y ajusta ese insumo.",
+          "palabras_clave": "Planeación de la proyección comunitaria, Feria de emprendimiento y comunicación de resultados, Fondos concursables y mecanismos de apoyo, Responsabilidad, retroalimentación y continuidad",
+          "evidencias": [
+            "Selecciona una actividad de proyección con objetivos, destinatarios y resultados esperados.",
+            "Prepara una muestra o feria con una presentación argumentada del proyecto y sus resultados.",
+            "Compara requisitos de mecanismos de apoyo descritos en una lectura o convocatoria suministrada sin asumir que estén vigentes o disponibles.",
+            "Sustenta una propuesta de continuidad identificando responsabilidades, recursos y aportes de la comunidad."
+          ],
+          "ejes": [
+            {
+              "nombre": "Bloque 1: Planeación de la proyección comunitaria",
+              "descripcion": "Periodo 4. Semanas 1-2 del periodo (semanas 31-32 del año). módulo 6, guía 16: ¿Qué actividad de proyección se planea? (p. impresa 148, PDF 149). Trabajo aplicado: Planeación de la proyección comunitaria. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 1,
+              "fin": 2,
+              "temas": [
+                "Planeación de la proyección comunitaria"
+              ],
+              "guias": [
+                16
+              ]
+            },
+            {
+              "nombre": "Bloque 2: Feria de emprendimiento y comunicación de resultados",
+              "descripcion": "Periodo 4. Semanas 3-4 del periodo (semanas 33-34 del año). módulo 6, guía 17: Feria de emprendimiento (p. impresa 156, PDF 157). Trabajo aplicado: Feria de emprendimiento y comunicación de resultados. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 3,
+              "fin": 4,
+              "temas": [
+                "Feria de emprendimiento y comunicación de resultados"
+              ],
+              "guias": [
+                17
+              ]
+            },
+            {
+              "nombre": "Bloque 3: Fondos concursables y mecanismos de apoyo",
+              "descripcion": "Periodo 4. Semanas 5-6 del periodo (semanas 35-36 del año). módulo 6, guía 18: ¿Participación en fondos concursables? (p. impresa 164, PDF 165). Trabajo aplicado: Fondos concursables y mecanismos de apoyo. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 5,
+              "fin": 6,
+              "temas": [
+                "Fondos concursables y mecanismos de apoyo"
+              ],
+              "guias": [
+                18
+              ]
+            },
+            {
+              "nombre": "Bloque 4: Responsabilidad, retroalimentación y continuidad",
+              "descripcion": "Periodo 4. Semanas 7-8 del periodo (semanas 37-38 del año). módulo 6, guía 16: ¿Qué actividad de proyección se planea? (p. impresa 148, PDF 149); módulo 6, guía 17: Feria de emprendimiento (p. impresa 156, PDF 157); módulo 6, guía 18: ¿Participación en fondos concursables? (p. impresa 164, PDF 165). Trabajo aplicado: Responsabilidad, retroalimentación y continuidad. Fuente: C:\\Users\\Andres\\OneDrive - UNIVERSIDAD DE SANTANDER - UDES\\SEDUCA\\La Josefina\\Vallesol\\Formatos Frecuentes\\GUIAS DE POSTPRIMARIA\\Proyectos productivos\\PPP_8_9.pdf.",
+              "inicio": 7,
+              "fin": 8,
+              "temas": [
+                "Responsabilidad, retroalimentación y continuidad"
+              ],
+              "guias": [
+                16,
+                17,
+                18
+              ]
+            },
+            {
+              "nombre": "Aplicación e integración del PPP",
+              "descripcion": "Periodo 4. Semana 9 (semana 39 del año). Elaboración o revisión del producto del periodo, socialización y retroalimentación. Retoma las guías 16, 17, 18 de PPP_8_9.pdf.",
+              "inicio": 9,
+              "fin": 9
+            },
+            {
+              "nombre": "Evaluación, autoevaluación y refuerzo",
+              "descripcion": "Periodo 4. Semana 10 (semana 40 del año). Revisión del producto, evidencias y diario de campo; autoevaluación, coevaluación y refuerzo de los aprendizajes del periodo.",
+              "inicio": 10,
+              "fin": 10
+            }
+          ],
+          "referencia_men": null
+        }
+      ]
+    }
+  ]
+}

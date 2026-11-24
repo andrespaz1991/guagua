@@ -1,0 +1,26 @@
+{
+  "error": null,
+  "result": {
+    "folder": "D:\\xampp\\htdocs\\whisper\\input",
+    "outputFolder": "D:\\xampp\\htdocs\\whisper\\input",
+    "manifestPath": "D:\\xampp\\htdocs\\whisper\\input\\manifiesto_2026-11-02T02-31-16-206Z.json",
+    "relativeFolder": "..\\whisper\\input",
+    "chatsProcessed": 1,
+    "scannedMessages": 9,
+    "textCount": 0,
+    "savedAudio": 9,
+    "savedMedia": 0,
+    "failedFiles": 0,
+    "partial": false,
+    "errors": [],
+    "historyLimit": 2000,
+    "archives": [
+      {
+        "folder": "D:\\xampp\\htdocs\\whisper\\input",
+        "archive": "D:\\xampp\\htdocs\\whisper\\input\\archivo_2026-11-01_21-31-19_76e83133",
+        "count": 12
+      }
+    ]
+  },
+  "durationMs": 5989
+}

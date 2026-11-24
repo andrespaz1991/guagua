@@ -1,4 +1,32 @@
-Planeador/lib/dompdf/vendor/
+# Dependencias instaladas localmente (se restauran con Composer o npm)
 vendor/
-vendor/
-vendor/
+.env
+!comun/vendor/
+!comun/vendor/**
+node_modules/
+
+# Salidas, cachés y metadatos generados por herramientas
+.next/
+.vinext/
+.wrangler/
+dist/
+__pycache__/
+*.py[cod]
+*.tsbuildinfo
+
+# Copias automáticas de la base de datos: conservarlas fuera del repositorio
+/reportes/bd/automatico/*.sql
+/reportes/bd/automatico/moodle/*.sql
+/reportes/bd/automatico/old/
+/reportes/bd/automatico/*.log
+/reportes/bd/automatico/moodle/*.log
+
+# Imágenes generadas por el resumen de WhatsApp
+/ia/salidas_whatsapp/*.png
+
+# Datos académicos importados en tiempo de ejecución (no versionar información estudiantil)
+/apps/balance_anual/data/*.xlsx
+/apps/balance_anual/data/*.json
+
+# Catálogo de instalación, paquetes privados y respaldos de aplicaciones
+/sga-data/tienda/

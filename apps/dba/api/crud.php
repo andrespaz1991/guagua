@@ -3,6 +3,9 @@ ini_set('display_errors', '0');
 header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/../../../comun/conexion.php';
+guagua_exigir_rol(guagua_roles_gestion_curricular());
+guagua_exigir_csrf();
+require_once __DIR__ . '/../lib/evidencias.php';
 
 function dba_api_respond(array $data, int $statusCode = 200): void
 {
@@ -110,8 +113,9 @@ try {
         $idEstandar = dba_api_required_id($data, 'id_estandar', 'El estándar');
         dba_api_assert_exists($mysqli, 'estandar', 'id_estandar', $idEstandar, 'El estándar');
 
-        $statement = dba_api_prepare($mysqli, 'INSERT INTO dba (nombre_dba, descripcion_dba, id_estandar) VALUES (?, ?, ?)');
-        $statement->bind_param('ssi', $nombre, $descripcion, $idEstandar);
+        $palabras = dba_palabras($data['palabras_clave'] ?? '');
+        $statement = dba_api_prepare($mysqli, 'INSERT INTO dba (nombre_dba, descripcion_dba, id_estandar, palabras_clave) VALUES (?, ?, ?, ?)');
+        $statement->bind_param('ssis', $nombre, $descripcion, $idEstandar, $palabras);
         $statement->execute();
         $response['id'] = $mysqli->insert_id;
         $response['message'] = 'DBA creado correctamente.';
@@ -145,8 +149,9 @@ try {
         $descripcion = dba_api_optional_text($data, 'descripcion_dba');
         dba_api_assert_exists($mysqli, 'dba', 'id_dba', $id, 'El DBA');
 
-        $statement = dba_api_prepare($mysqli, 'UPDATE dba SET nombre_dba = ?, descripcion_dba = ? WHERE id_dba = ?');
-        $statement->bind_param('ssi', $nombre, $descripcion, $id);
+        $palabras = array_key_exists('palabras_clave', $data) ? dba_palabras($data['palabras_clave']) : null;
+        $statement = dba_api_prepare($mysqli, 'UPDATE dba SET nombre_dba = ?, descripcion_dba = ?, palabras_clave = COALESCE(?, palabras_clave) WHERE id_dba = ?');
+        $statement->bind_param('sssi', $nombre, $descripcion, $palabras, $id);
         $statement->execute();
         $response['message'] = 'DBA actualizado correctamente.';
         $statement->close();
@@ -165,6 +170,8 @@ try {
         $id = dba_api_required_id($data, 'id_estandar', 'El estándar');
         dba_api_assert_exists($mysqli, 'estandar', 'id_estandar', $id, 'El estándar');
 
+        $statement = dba_api_prepare($mysqli, 'DELETE FROM evidencia_de_aprendizaje WHERE id_dba IN (SELECT id_dba FROM dba WHERE id_estandar = ?)');
+        $statement->bind_param('i', $id); $statement->execute(); $statement->close();
         $statement = dba_api_prepare($mysqli, 'DELETE FROM eje_tematico WHERE id_dba IN (SELECT id_dba FROM dba WHERE id_estandar = ?)');
         $statement->bind_param('i', $id);
         $statement->execute();
@@ -184,6 +191,8 @@ try {
         $id = dba_api_required_id($data, 'id_dba', 'El DBA');
         dba_api_assert_exists($mysqli, 'dba', 'id_dba', $id, 'El DBA');
 
+        $statement = dba_api_prepare($mysqli, 'DELETE FROM evidencia_de_aprendizaje WHERE id_dba = ?');
+        $statement->bind_param('i', $id); $statement->execute(); $statement->close();
         $statement = dba_api_prepare($mysqli, 'DELETE FROM eje_tematico WHERE id_dba = ?');
         $statement->bind_param('i', $id);
         $statement->execute();

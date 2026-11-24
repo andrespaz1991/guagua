@@ -15,6 +15,8 @@ if (session_status() == PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/../comun/conexion.php';
 require_once __DIR__ . '/../comun/funciones.php';
+require_once __DIR__ . '/tienda_estado.php';
+$tiendaFiltro = guagua_tienda_filtro_menu($mysqli);
 
 // =================================================================
 // 2. ENDPOINT AJAX (LÓGICA INTACTA, AUMENTO DE LÍMITE)
@@ -33,18 +35,22 @@ if (isset($_GET['action']) && $_GET['action'] == 'get_dashboard_data') {
         // A. FAVORITOS
         $sqlFav = "SELECT menu_item_id, menu_item_name, menu_description, menu_url, icono, url_target, fav 
                    FROM menu_items2 
-                   WHERE fav = 1 
+                   WHERE fav = 1 $tiendaFiltro
                    ORDER BY menu_item_name ASC";
         
         $stmtFav = $mysqli->prepare($sqlFav);
         $stmtFav->execute();
         $favorites = $stmtFav->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmtFav->close();
+        foreach ($favorites as &$item) {
+            $item['menu_open_url'] = rtrim(SGA_URL, '/') . '/comun/modulo.php?id=' . (int)$item['menu_item_id'];
+        }
+        unset($item);
 
         // B. RESULTADOS GENERALES
         $countSql = "SELECT COUNT(menu_item_id) as total 
                      FROM menu_items2 
-                     WHERE fav = 0 AND LOWER(menu_item_name) LIKE LOWER(?)";
+                     WHERE fav = 0 AND LOWER(menu_item_name) LIKE LOWER(?) $tiendaFiltro";
         
         $stmtCount = $mysqli->prepare($countSql);
         $stmtCount->bind_param('s', $searchTerm);
@@ -55,7 +61,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'get_dashboard_data') {
 
         $dataSql = "SELECT menu_item_id, menu_item_name, menu_description, menu_url, icono, url_target, fav 
                     FROM menu_items2 
-                    WHERE fav = 0 AND LOWER(menu_item_name) LIKE LOWER(?) 
+                    WHERE fav = 0 AND LOWER(menu_item_name) LIKE LOWER(?) $tiendaFiltro
                     ORDER BY menu_item_name ASC 
                     LIMIT ? OFFSET ?";
         
@@ -64,6 +70,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'get_dashboard_data') {
         $stmtData->execute();
         $results = $stmtData->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmtData->close();
+        foreach ($results as &$item) {
+            $item['menu_open_url'] = rtrim(SGA_URL, '/') . '/comun/modulo.php?id=' . (int)$item['menu_item_id'];
+        }
+        unset($item);
 
         echo json_encode([
             'status' => 'success',
@@ -95,10 +105,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'get_dashboard_data') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestor de Menú</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/guagua/comun/vendor/fontawesome/css/all.min.css">
     <style>
         :root {
             /* Minimalist SaaS Palette (Linear / Vercel style) */
@@ -602,7 +609,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'get_dashboard_data') {
             <div class="logo-icon"><i class="fa-solid fa-layer-group"></i></div>
             <h1>Vallesol</h1>
         </a>
-        <a href="gestor_menu.php" class="admin-btn">
+        <a href="tienda.php?vista=menu" class="admin-btn">
             Administrar Menú
         </a>
     </header>
@@ -749,7 +756,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function createFavChipHTML(item, index) {
         const delay = index * 0.03;
         return `
-            <a href="${item.menu_url}" target="${item.url_target}" class="fav-chip" title="${item.menu_description || ''}" style="animation-delay: ${delay}s">
+            <a href="${item.menu_open_url || item.menu_url}" target="${item.url_target}" class="fav-chip" title="${item.menu_description || ''}" style="animation-delay: ${delay}s">
                 <div class="icon">${renderIcon(item.icono)}</div>
                 <span>${item.menu_item_name}</span>
             </a>
@@ -759,7 +766,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function createMainCardHTML(item, index) {
         const delay = index * 0.03;
         return `
-            <a href="${item.menu_url}" target="${item.url_target}" class="card" style="animation-delay: ${delay}s">
+            <a href="${item.menu_open_url || item.menu_url}" target="${item.url_target}" class="card" style="animation-delay: ${delay}s">
                 <div class="card-icon">
                     ${renderIcon(item.icono)}
                 </div>

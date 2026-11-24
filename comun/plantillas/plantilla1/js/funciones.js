@@ -1600,25 +1600,22 @@ function alert3(texto,tipo="success",tiempo="5000"){
 		document.getElementById("txt_alertas").innerHTML='';
 		}, tiempo);
 }
-function buscarcurso(texto=""){
-/*
-* Objetivo: permitir realizar la búsqueda de los cursos dentro del modulo de cursos
-* Uso: Se utiliza en la barra de menu en el archivo comun/menu.php
-*/
-
-ajax=nuevoAjax();
-ajax.open("POST","../../cursos/fn_ajax.php?",true);
-ajax.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-	ajax.onreadystatechange=function() {
-		if (ajax.readyState==4) {
-		    $('.anos').show();
-            $('.cats').show();
-		//document.getElementById('txtresultados').innerHTML = "";
-alert2(ajax.responseText);
-		eval(ajax.responseText);
-		}
-	}
-ajax.send("texto="+texto);
+function buscarcurso(texto="") {
+    if (buscarcurso.controller) buscarcurso.controller.abort();
+    buscarcurso.controller = new AbortController();
+    const sequence = buscarcurso.sequence = (buscarcurso.sequence || 0) + 1;
+    const source = Array.from(document.scripts).find(script => /\/comun\/.*funciones\.js/.test(script.src));
+    const root = source ? source.src.split('/comun/')[0] + '/' : new URL('.', location.href).href;
+    fetch(new URL('cursos/fn_ajax.php', root), {
+        method: 'POST', signal: buscarcurso.controller.signal,
+        body: new URLSearchParams({ texto })
+    }).then(response => { if (!response.ok) throw new Error('No se pudo buscar'); return response.json(); })
+      .then(data => {
+          if (sequence !== buscarcurso.sequence) return;
+          $('.anos, .cats').hide();
+          data.anos.forEach(id => document.getElementById('id_' + id)?.style.setProperty('display','block'));
+          data.categorias.forEach(id => document.getElementById('cat_' + id)?.style.setProperty('display','block'));
+      }).catch(error => { if (error.name !== 'AbortError') console.error(error.message); });
 }
 function MostrarTodosLosRed(estado){
 if(estado=="false"){

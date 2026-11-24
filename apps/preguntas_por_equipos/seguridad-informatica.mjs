@@ -1,0 +1,153 @@
+// Casos originales para secundaria. Fuentes y alcance en GUIA_SEGURIDAD.md.
+// El documental se consulta mediante sus subtítulos automáticos: no se reproduce
+// material de abuso ni se ofrecen enlaces a los sitios de la presentación.
+export const seguridadInformatica = {
+    title: 'Navegación segura y protección de jóvenes', seconds: 45, points: 10, penalty: 0,
+    teams: [{ name: 'Exploradores' }, { name: 'Visionarios' }, { name: 'Creadores' }],
+    questions: [
+        {
+            question: 'Tu correo privado y las notas de una plataforma escolar no aparecen en Google. ¿Cómo se llama esa parte de la web?',
+            answer: 'Deep web: contenido no indexado por los buscadores comunes, como páginas privadas que requieren iniciar sesión. No es sinónimo de actividad ilegal.', seconds: 45
+        },
+        {
+            question: '¿Cuál es la diferencia entre deep web y dark web?',
+            answer: 'La deep web es contenido no indexado. La dark web es una parte deliberadamente oculta, accesible mediante redes o herramientas específicas. Ambos conceptos no son equivalentes.', seconds: 60
+        },
+        {
+            question: 'Un compañero afirma que todos los sitios que aparecen en Google son confiables. ¿Es correcto?',
+            answer: 'No. Estar indexado no garantiza seguridad ni veracidad. Hay que verificar la dirección, la fuente y la finalidad del sitio antes de compartir información.', seconds: 45
+        },
+        {
+            question: 'Alguien dice: «Con Tor soy totalmente anónimo y nadie puede engañarme». ¿Qué error comete?',
+            answer: 'Confunde privacidad con seguridad absoluta. Tor reduce ciertos rastreos, pero no garantiza anonimato perfecto ni evita estafas, malware o la exposición voluntaria de datos.', seconds: 45
+        },
+        {
+            question: 'Cambias tu dirección IP, pero inicias sesión con tu cuenta personal. ¿El sitio puede reconocer tu identidad?',
+            answer: 'Sí. El inicio de sesión identifica tu cuenta ante ese sitio. Ocultar o cambiar la IP no elimina los datos que tú entregas.', seconds: 45
+        },
+        {
+            question: 'Te ofrecen una VPN de pago como garantía de que cualquier enlace o descarga será seguro. ¿Es cierto?',
+            answer: 'No. Una VPN protege ciertos aspectos de la conexión, pero no verifica la honestidad de una persona ni vuelve inofensivo un archivo malicioso.', seconds: 45
+        },
+        {
+            question: 'La presentación afirma que los pagos con Bitcoin son prácticamente imposibles de rastrear. ¿Qué debes corregir?',
+            answer: 'Bitcoin no ofrece anonimato absoluto. Sus transacciones quedan en un registro público y pueden analizarse; una dirección puede llegar a vincularse con una persona.', seconds: 45
+        },
+        {
+            question: 'Un amigo te invita a abrir un enlace desconocido como «reto de valentía». ¿Cuál es la decisión segura?',
+            answer: 'Rechazar el reto y no abrir ni reenviar el enlace. Si hay amenazas o posible abuso, avisar a un adulto de confianza y usar un canal de reporte.', seconds: 45
+        },
+        {
+            question: '¿Usar modo incógnito impide que una página o el administrador de una red vea toda tu actividad?',
+            answer: 'No. El modo incógnito limita lo que se guarda en el navegador al cerrar la sesión; no proporciona anonimato frente a los sitios, la red o el proveedor de internet.', seconds: 45
+        },
+        {
+            question: 'Una página tiene HTTPS. ¿Eso demuestra que pertenece a una entidad legítima?',
+            answer: 'No. HTTPS cifra la conexión, pero una página fraudulenta también puede usarlo. Debes verificar el dominio y la identidad de la entidad por una vía independiente.', seconds: 45
+        },
+        {
+            question: 'Recibes «Tu cuenta será eliminada hoy» y un enlace que pide tu contraseña. ¿Cómo se llama el engaño y cómo lo verificas?',
+            answer: 'Phishing: suplantación para robar información. No uses el enlace; entra por la aplicación o dirección oficial y comprueba allí el aviso.', seconds: 60
+        },
+        {
+            question: 'Un programa espía registra lo que escribes en el teclado para robar contraseñas. ¿Cuál es su nombre exacto?',
+            answer: 'Keylogger: herramienta que registra pulsaciones del teclado. Para recuperar una cuenta comprometida, utiliza un dispositivo confiable y solicita ayuda para revisar el equipo afectado.', seconds: 45
+        },
+        {
+            question: 'Usas la misma contraseña en el correo y en un juego. El juego sufre una filtración. ¿Qué práctica reduce el riesgo para el correo?',
+            answer: 'Usar contraseñas largas y únicas en cada servicio, administradas con un gestor confiable. Si una se filtra, cambiarla y reemplazarla en los servicios donde se haya reutilizado.', seconds: 45
+        },
+        {
+            question: 'Un supuesto soporte técnico te pide el código de verificación que acabas de recibir. ¿Debes enviarlo?',
+            answer: 'No. El código de autenticación es privado y puede permitir el acceso a tu cuenta. No lo compartas y contacta al soporte por el canal oficial.', seconds: 45
+        },
+        {
+            question: 'Además de una contraseña única, ¿qué protección añade un segundo factor para entrar en una cuenta?',
+            answer: 'Autenticación multifactor, también llamada MFA o verificación en dos pasos cuando hay dos factores. Exige otra prueba de identidad y dificulta accesos con una contraseña robada.', seconds: 45
+        },
+        {
+            question: 'Una linterna para el celular exige acceso permanente a cámara, micrófono y contactos. ¿Qué medida corresponde?',
+            answer: 'Aplicar el principio de mínimo privilegio: conceder solo los permisos necesarios. Rechazar los permisos injustificados y elegir una aplicación confiable.', seconds: 45
+        },
+        {
+            question: 'Un sitio te obliga a instalar un «reproductor especial» para ver un video desconocido. ¿Cómo actúas?',
+            answer: 'No instalarlo ni ejecutarlo y cerrar el sitio. Las descargas inesperadas pueden contener malware; obtener programas únicamente de fuentes oficiales y verificadas.', seconds: 45
+        },
+        {
+            question: 'Tu equipo muestra que los archivos fueron cifrados y exige dinero para recuperarlos. ¿Qué amenaza es y qué haces primero?',
+            answer: 'Ransomware. Desconectar el equipo de la red y pedir ayuda técnica a un adulto o al responsable del centro. No pagar ni seguir usando el equipo para acceder a tus cuentas.', seconds: 60
+        },
+        {
+            question: 'Una persona adulta gana la confianza de un menor con regalos y luego lo presiona para conversaciones o imágenes íntimas. ¿Cómo se llama esa conducta?',
+            answer: 'Grooming: manipulación de una persona menor de edad con fines de abuso o explotación sexual. Cortar el contacto y buscar apoyo de un adulto de confianza.', seconds: 60
+        },
+        {
+            question: 'Una persona conocida solo por internet te pide mantener su relación en secreto y alejarte de tus amigos. ¿Qué señal de riesgo aparece?',
+            answer: 'Aislamiento y secreto impuestos: señales de manipulación. No aceptar la presión; contar lo ocurrido a un adulto de confianza y reportar la cuenta.', seconds: 45
+        },
+        {
+            question: 'Un perfil usa fotos de alguien de tu edad y lleva meses hablándote. ¿Eso prueba que la persona es quien dice ser?',
+            answer: 'No. Las fotos, el tiempo de contacto y los amigos en común no verifican la identidad. Evitar compartir datos sensibles o concertar encuentros secretos.', seconds: 45
+        },
+        {
+            question: 'Alguien amenaza con difundir una imagen íntima tuya si no pagas. ¿Qué nombre tiene y cuál es la respuesta segura?',
+            answer: 'Sextorsión. No pagar ni enviar más imágenes; cortar el contacto, buscar apoyo de un adulto y reportar. La responsabilidad del chantaje es de quien amenaza.', seconds: 60
+        },
+        {
+            question: 'Una amistad te cuenta que está siendo chantajeada y teme que la culpen. ¿Cómo la ayudas?',
+            answer: 'Escuchar sin juzgar, decirle que no es culpable del abuso y acompañarla a buscar a un adulto de confianza o al orientador escolar. No pedirle que muestre imágenes íntimas.', seconds: 60
+        },
+        {
+            question: 'Para denunciar amenazas, ¿qué información puedes anotar sin guardar imágenes íntimas de menores?',
+            answer: 'El usuario o identificador de la cuenta, la plataforma, la URL si ya está disponible, fechas y mensajes de amenaza que no contengan material íntimo. No descargar, capturar ni reenviar imágenes de abuso.', seconds: 60
+        },
+        {
+            question: 'Un desconocido pide una foto del uniforme, el nombre del colegio y la hora a la que sales. ¿Qué riesgo debes reconocer?',
+            answer: 'Exposición de datos de ubicación y rutinas. No compartirlos, revisar quién puede ver tus publicaciones y avisar a un adulto de confianza si existe presión o seguimiento.', seconds: 45
+        },
+        {
+            question: 'En Colombia, ¿qué línea nacional gratuita del ICBF orienta y recibe reportes sobre riesgos para niñas, niños y adolescentes las 24 horas?',
+            answer: 'Línea 141 del ICBF. Puede solicitarse orientación y protección ante situaciones que amenacen o vulneren los derechos de una persona menor de edad.', seconds: 45
+        },
+        {
+            question: 'En Colombia, ¿qué canal especializado permite reportar en línea contenido de abuso o explotación sexual de menores?',
+            answer: 'Te Protejo Colombia, en teprotejocolombia.org. También debe usarse el reporte de la plataforma y buscar apoyo de un adulto; no adjuntar ni reenviar material de abuso por cuenta propia.', seconds: 45
+        },
+        {
+            question: 'En el caso de Peter Scully, conocido por el material llamado «Daisy Destruction», ¿por qué hablar de «material de abuso sexual infantil» y no de un simple «video perturbador»?',
+            answer: 'Porque documenta abuso y explotación de víctimas reales. El término reconoce la violencia y centra la atención en su protección; no es entretenimiento ni un reto para buscarlo.', seconds: 60
+        },
+        {
+            question: 'Al analizar el caso Scully, alguien dice que las víctimas fueron responsables por confiar en otras personas. ¿Qué principio debes defender?',
+            answer: 'No culpabilizar a las víctimas. La responsabilidad es de quienes abusan, explotan o facilitan el abuso; la manipulación o vulnerabilidad de un menor no justifican la violencia.', seconds: 60
+        },
+        {
+            question: '¿Qué enseñanza sobre el supuesto anonimato absoluto deja que las autoridades localizaran y detuvieran a Peter Scully?',
+            answer: 'Que usar espacios ocultos no garantiza impunidad. La investigación puede relacionar información digital, testimonios y otras pruebas; ocultar una IP no borra toda evidencia.', seconds: 60
+        },
+        {
+            question: 'El video relata una investigación de varios países y el NBI confirma esa colaboración. ¿Qué forma de trabajo fue clave en el caso?',
+            answer: 'Cooperación internacional entre autoridades, junto con investigación y análisis forense digital. La protección de las víctimas requiere coordinación, no investigaciones improvisadas de estudiantes.', seconds: 60
+        },
+        {
+            question: '¿Quién debe investigar profesionalmente y examinar el material probatorio de un caso como el de Scully?',
+            answer: 'Las autoridades competentes y sus especialistas autorizados. Un estudiante debe reportar lo que ya encontró y pedir ayuda, sin buscar más material, infiltrarse ni contactar a los responsables.', seconds: 45
+        },
+        {
+            question: 'Después de conocer el caso, un compañero propone reenviar el archivo original para «crear conciencia». ¿Cuál es la respuesta correcta?',
+            answer: 'No compartirlo: amplía la circulación del abuso y revictimiza. Informar mediante explicaciones no gráficas y fuentes confiables; reportar el contenido por los canales adecuados.', seconds: 60
+        },
+        {
+            question: 'Un resumen de redes afirma hechos del caso que no coinciden con una fuente oficial. ¿Cómo verificas sin buscar el material de abuso?',
+            answer: 'Comparar la afirmación con comunicados oficiales y fuentes periodísticas verificables, revisar la fecha y distinguir hechos de rumores. Un relato o sus subtítulos automáticos pueden contener errores.', seconds: 60
+        },
+        {
+            question: 'Durante el análisis del caso, una persona se siente angustiada y pide salir. ¿Cómo debe actuar el grupo?',
+            answer: 'Respetar la pausa y ofrecer acompañamiento del docente u orientador. Nadie debe ser obligado a ver contenido gráfico ni a contar experiencias personales para participar.', seconds: 45
+        },
+        {
+            question: 'Tras estudiar el caso, ¿qué plan de protección puedes aplicar si recibes un mensaje que ofrece contenido de abuso de menores?',
+            answer: 'No abrir ni descargar el contenido ni reenviarlo. Anotar solo los datos de la cuenta o enlace ya disponibles, reportar, bloquear el contacto y pedir apoyo a un adulto de confianza.', seconds: 60
+        }
+    ]
+};

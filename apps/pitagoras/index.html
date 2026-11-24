@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#172554">
+  <title>Laboratorio de Pitágoras</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#inicio" aria-label="Laboratorio de Pitágoras, inicio">
+        <span class="brand-mark" aria-hidden="true">△</span>
+        <span>Laboratorio de <strong>Pitágoras</strong></span>
+      </a>
+      <div class="lesson-chip"><span aria-hidden="true">💧</span> Aprende mirando</div>
+    </header>
+
+    <section class="hero" id="inicio">
+      <div class="hero-copy">
+        <p class="eyebrow">GEOMETRÍA EN MOVIMIENTO</p>
+        <h1>¿A dónde va el <span>agua</span>?</h1>
+        <p class="intro">Mira cómo el agua de los cuadrados pequeños llena exactamente el cuadrado grande. Así funciona el teorema de Pitágoras.</p>
+        <div class="hero-actions">
+          <button class="button primary" id="animateBtn" type="button"><span aria-hidden="true">▶</span> Ver el agua moverse</button>
+          <button class="button secondary" id="rotateBtn" type="button"><span aria-hidden="true">↻</span> Girar recipiente</button>
+        </div>
+      </div>
+      <aside class="equation-card" aria-label="Fórmula del teorema de Pitágoras">
+        <p>La gran idea</p>
+        <div class="equation"><span>a²</span><b>+</b><span>b²</span><b>=</b><span class="c-term">c²</span></div>
+        <small>Los dos cuadrados pequeños juntan la misma área que el cuadrado de la hipotenusa.</small>
+      </aside>
+    </section>
+
+    <section class="lab-section" aria-labelledby="lab-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">EXPERIMENTO</p>
+          <h2 id="lab-title">El tanque de los tres cuadrados</h2>
+        </div>
+        <p class="live-explanation" id="liveExplanation" aria-live="polite">Listo: presiona “Ver el agua moverse”.</p>
+      </div>
+
+      <div class="lab-layout">
+        <section class="visual-stage" aria-label="Modelo visual del teorema de Pitágoras">
+          <div class="sky-decor cloud-one" aria-hidden="true"></div>
+          <div class="sky-decor cloud-two" aria-hidden="true"></div>
+          <div class="rotate-space" id="rotateSpace">
+            <svg id="pitagorasSvg" viewBox="0 0 760 690" role="img" aria-labelledby="svgTitle svgDesc">
+              <title id="svgTitle">Triángulo rectángulo con tres recipientes cuadrados</title>
+              <desc id="svgDesc">Dos recipientes sobre los catetos contienen agua. Durante la animación, sus áreas se transfieren al recipiente de la hipotenusa.</desc>
+              <defs>
+                <pattern id="gridSmall" width="22" height="22" patternUnits="userSpaceOnUse">
+                  <path d="M 22 0 L 0 0 0 22" fill="none" stroke="rgba(255,255,255,.42)" stroke-width="1"/>
+                </pattern>
+                <pattern id="gridLarge" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,.42)" stroke-width="1"/>
+                </pattern>
+                <clipPath id="clipA"><polygon id="clipShapeA" points="415,280 255,400 135,240 295,120"/></clipPath>
+                <clipPath id="clipB"><polygon id="clipShapeB" points="415,280 505,400 625,310 535,190"/></clipPath>
+                <clipPath id="clipC"><rect x="255" y="400" width="250" height="250" rx="8"/></clipPath>
+                <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#172554" flood-opacity=".16"/>
+                </filter>
+              </defs>
+
+              <g filter="url(#softShadow)">
+                <polygon class="tank base-a" id="tankA" points="415,280 255,400 135,240 295,120"/>
+                <g clip-path="url(#clipA)"><rect class="water water-a" id="waterA" x="0" y="0" width="760" height="690"/></g>
+                <polygon class="water-grid" id="gridA" points="415,280 255,400 135,240 295,120" fill="url(#gridSmall)" clip-path="url(#clipA)"/>
+                <polygon class="tank-outline" id="outlineA" points="415,280 255,400 135,240 295,120"/>
+
+                <polygon class="tank base-b" id="tankB" points="415,280 505,400 625,310 535,190"/>
+                <g clip-path="url(#clipB)"><rect class="water water-b" id="waterB" x="0" y="0" width="760" height="690"/></g>
+                <polygon class="water-grid" id="gridB" points="415,280 505,400 625,310 535,190" fill="url(#gridSmall)" clip-path="url(#clipB)"/>
+                <polygon class="tank-outline" id="outlineB" points="415,280 505,400 625,310 535,190"/>
+
+                <rect class="tank base-c" x="255" y="400" width="250" height="250" rx="8"/>
+                <g clip-path="url(#clipC)"><rect class="water water-c" id="waterC" x="195" y="400" width="370" height="250"/></g>
+                <rect class="water-grid" x="255" y="400" width="250" height="250" fill="url(#gridLarge)" clip-path="url(#clipC)"/>
+                <rect class="tank-outline" x="255" y="400" width="250" height="250" rx="8"/>
+              </g>
+
+              <path class="triangle" id="centerTriangle" d="M415 280 L255 400 L505 400 Z"/>
+              <path class="right-angle" id="rightAngle" d="M395.8 294.4 L410.2 313.6 L429.4 299.2"/>
+              <path class="hypotenuse-line" id="hypotenuseLine" d="M255 400 L505 400"/>
+              <circle class="pivot-ring" id="pivotRing" cx="415" cy="280" r="16"/>
+              <circle class="pivot-core" id="pivotCore" cx="415" cy="280" r="7"/>
+              <g class="labels" aria-hidden="true">
+                <text id="labelA" x="246" y="232" text-anchor="middle" transform="rotate(-36.9 246 232)">a = 4</text>
+                <text id="areaA" x="225" y="257" text-anchor="middle" transform="rotate(-36.9 225 257)">a² = 16</text>
+                <text id="labelB" x="554" y="267" text-anchor="middle" transform="rotate(53.1 554 267)">b = 3</text>
+                <text id="areaB" x="535" y="285" text-anchor="middle" transform="rotate(53.1 535 285)">b² = 9</text>
+                <text id="labelC" x="380" y="505" text-anchor="middle">c = 5</text>
+                <text id="areaC" x="380" y="533" text-anchor="middle">c² = 25</text>
+              </g>
+              <g class="dimension-labels" aria-hidden="true">
+                <text x="325" y="328" text-anchor="middle" id="sideLabelA">cateto a</text>
+                <text x="484" y="331" text-anchor="middle" id="sideLabelB">cateto b</text>
+                <text x="380" y="389" text-anchor="middle" id="sideLabelC">hipotenusa c</text>
+              </g>
+              <g id="waterStreams" class="water-streams" aria-hidden="true">
+                <path class="liquid-stream stream-a" id="streamA" d="M241 272 C267 350, 320 430, 358 492"/>
+                <path class="liquid-stream stream-b" id="streamB" d="M557 289 C525 362, 465 440, 404 492"/>
+              </g>
+              <g id="droplets" class="droplets" aria-hidden="true"></g>
+            </svg>
+          </div>
+          <div class="legend"><span><i class="dot a-dot"></i> cuadrado de a</span><span><i class="dot b-dot"></i> cuadrado de b</span><span><i class="dot c-dot"></i> cuadrado de c</span></div>
+        </section>
+
+        <aside class="control-panel">
+          <div class="panel-head"><span class="panel-icon" aria-hidden="true">⚙</span><h3>Construye tu triángulo</h3></div>
+          <p class="panel-copy">Elige una pareja de catetos y mira cómo cambia el experimento.</p>
+          <label class="field-label" for="triangleSelect">Medidas del triángulo</label>
+          <select id="triangleSelect" class="select-control">
+            <option value="3,4">3 · 4 · 5 &nbsp; (clásico)</option>
+            <option value="5,12">5 · 12 · 13</option>
+            <option value="6,8">6 · 8 · 10</option>
+            <option value="8,15">8 · 15 · 17</option>
+          </select>
+          <div class="measurements" aria-live="polite">
+            <div class="measure a-measure"><span>Cateto a</span><strong id="measureA">4</strong><small>unidades</small></div>
+            <div class="measure b-measure"><span>Cateto b</span><strong id="measureB">3</strong><small>unidades</small></div>
+            <div class="measure c-measure"><span>Hipotenusa c</span><strong id="measureC">5</strong><small>unidades</small></div>
+          </div>
+          <div class="area-summary">
+            <span>Área azul + área naranja</span>
+            <strong id="sumArea">16 + 9 = 25</strong>
+            <b id="areaResult">¡Igual al área verde!</b>
+          </div>
+          <button class="button primary full-width" id="fillBtn" type="button"><span aria-hidden="true">💧</span> Pasar agua al cuadrado verde</button>
+          <button class="text-button" id="resetBtn" type="button">↺ Reiniciar experimento</button>
+        </aside>
+      </div>
+    </section>
+
+    <section class="why-section" aria-labelledby="why-title">
+      <div class="why-number">1</div>
+      <div>
+        <p class="eyebrow">¿QUÉ ACABA DE PASAR?</p>
+        <h2 id="why-title">No importa cómo gires el triángulo</h2>
+        <p>El agua siempre conserva su cantidad. Por eso, al juntar las áreas de los dos cuadrados pequeños, llenamos el cuadrado construido sobre el lado más largo.</p>
+      </div>
+      <div class="mini-formula"><span>a² + b²</span><i>=</i><strong>c²</strong></div>
+    </section>
+  </main>
+  <footer>Hecho para explorar, girar y descubrir ✦</footer>
+  <script src="script.js"></script>
+</body>
+</html>

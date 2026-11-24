@@ -38,16 +38,11 @@ class NotasAuditoriaService
         }
     }
 
-    /** Solo devuelve el período marcado como actual y vigente en la fecha actual. */
+    /** Devuelve el período configurado como activo para el año lectivo activo. */
     public function obtenerPeriodoActual()
     {
-        $sql = "SELECT id_periodo, nombre_periodo, fecha_inicio, fecha_fin, ano_lectivo
-                FROM periodo
-                WHERE estado_periodo = '1'
-                  AND fecha_inicio <> '0000-00-00'
-                  AND fecha_fin <> '0000-00-00'
-                  AND CURDATE() BETWEEN fecha_inicio AND fecha_fin
-                ORDER BY id_periodo DESC LIMIT 1";
+        require_once __DIR__ . '/../../../comun/academico.php';
+        $sql = guagua_periodos_sql(true);
         $resultado = $this->mysqli->query($sql);
         return $resultado ? $resultado->fetch_assoc() : null;
     }
@@ -57,10 +52,11 @@ class NotasAuditoriaService
         $this->asegurarTabla();
         $periodo = $this->obtenerPeriodoActual();
         if (!$periodo) {
-            return ['ok' => false, 'guardadas' => 0, 'omitidas' => 0, 'mensaje' => 'No hay un período activo cuya fecha incluya hoy; no se guardaron notas.'];
+            return ['ok' => false, 'guardadas' => 0, 'omitidas' => 0, 'mensaje' => 'No hay un período activo del año lectivo configurado; no se guardaron notas.'];
         }
 
-        $mapaAsignaciones = $this->obtenerMapaAsignaciones((string)$periodo['ano_lectivo']);
+        $ano = guagua_ano_activo($this->mysqli);
+        $mapaAsignaciones = $this->obtenerMapaAsignaciones((string)$ano['id_ano_lectivo']);
         $mapaEstudiantes = $this->obtenerMapaEstudiantesActivos();
         $sql = "INSERT IGNORE INTO notas_auditoria
                     (id_estudiante, id_asignacion, id_materia, id_periodo, nombre_periodo, grado, materia, nota, fecha_nota, origen, hash_registro)

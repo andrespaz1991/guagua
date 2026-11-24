@@ -1,0 +1,1 @@
+<?xml version="1.0"?><manifest xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"><resources><resource href="lesson/index.html"/><resource href="javascript:alert(1)"/><resource href="../outside.html"/><resource href="%2e%2e/outside.html"/></resources></manifest>

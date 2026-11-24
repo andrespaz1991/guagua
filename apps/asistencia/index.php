@@ -6,8 +6,8 @@
  * Stack: PHP 8 + TailwindCSS + Vanilla JS + MySQLi
  */
 
-require '../../comun/lib/vendor/autoload.php';
-require '../../comun/conexion.php'; // Conexión a Base de Datos ($mysqli)
+require_once dirname(__DIR__, 2) . '/asistencia/vendor/autoload.php';
+require_once dirname(__DIR__, 2) . '/comun/conexion.php'; // Conexión a Base de Datos ($mysqli)
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
@@ -17,8 +17,8 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 // =================================================================
 
 $config = [
-    'archivo'     =>  'G:/Mi unidad/Vallesol2026/Planeaciones/Asistencia Josefina-Vallesol2026.xlsx',
-    'anio'        =>  2026,
+    'archivo'     =>  RUTA_EXCEL_SINCRONIZACION,
+    'anio'        =>  (int)guagua_ano_configurado($mysqli),
     'meses'       => [
         'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
         'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre'
@@ -382,6 +382,10 @@ if (isset($_GET['sync_bd']) && $_GET['sync_bd'] === '1') {
                 }
             }
 
+            // Sin documento no hay una clave segura: usar 0 sobrescribe las
+            // faltas de otros alumnos no identificados en la misma materia/día.
+            if (!$idUsuarioReal) continue;
+
             // 4. Inserción de la Inasistencia
             foreach ($est['detalle_anual'] as $faltaDia) {
                 $fechaSQL = sprintf('%04d-%02d-%02d', $config['anio'], $mesesNumeros[$faltaDia['mes']], $faltaDia['dia']);
@@ -440,9 +444,8 @@ if (isset($_GET['sync_bd']) && $_GET['sync_bd'] === '1') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>S.I. Asistencia Vallesol <?php echo $config['anio']; ?></title>
-    <script src="../../comun/css/tailwindcss.css"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../../comun/js/tailwindcss.js"></script>
+    <link rel="stylesheet" href="/guagua/comun/vendor/fontawesome/css/all.min.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
@@ -567,7 +570,7 @@ if (isset($_GET['sync_bd']) && $_GET['sync_bd'] === '1') {
                                     <i class="fa-solid fa-database group-hover:fa-bounce" id="sync-icon"></i>
                                     Sincronizar BD
                                 </button>
-                                <a href="?exportar=csv" class="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
+                                <a href="?guagua_embedded=1&amp;exportar=csv" class="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                                     <i class="fa-solid fa-file-csv text-lg"></i> Exportar
                                 </a>
                             </div>
@@ -874,8 +877,16 @@ if (isset($_GET['sync_bd']) && $_GET['sync_bd'] === '1') {
             
             showToast('Sincronizando BD', 'Comparando nombres de Excel con BD y guardando inasistencias...', 'fa-cloud-arrow-up', 'text-indigo-500', true);
             
-            fetch('?sync_bd=1')
-                .then(res => res.json())
+            const url = new URL(window.location.href);
+            url.searchParams.delete('exportar');
+            url.searchParams.set('sync_bd', '1');
+            url.searchParams.set('guagua_embedded', '1');
+            fetch(url, { headers: { Accept: 'application/json' }, cache: 'no-store' })
+                .then(async res => {
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.message || 'No fue posible sincronizar las inasistencias.');
+                    return data;
+                })
                 .then(data => {
                     if (syncIcon) syncIcon.classList.remove('fa-spin', 'fa-rotate');
                     if(data.success) {

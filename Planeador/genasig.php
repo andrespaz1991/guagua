@@ -14,12 +14,11 @@ function genasig_escapar(string $valor): string
 
 function genasig_conectar(): mysqli
 {
-    $conexion = new mysqli(SERVIDORBD, USUARIOBD, CLAVEBD, BASEDEDATOS);
+    $conexion = guagua_db_mysqli();
     if ($conexion->connect_errno) {
         throw new RuntimeException('No fue posible conectar con la base de datos.');
     }
 
-    $conexion->set_charset('utf8mb4');
     return $conexion;
 }
 
@@ -83,7 +82,7 @@ try {
         }
     }
 
-    $anoActual = (string)date('Y');
+    $anoActual = guagua_ano_configurado($mysqli);
     $idAnoPredeterminado = 0;
     foreach ($anosLectivos as $idAno => $ano) {
         if ($ano['nombre'] === $anoActual) {
@@ -111,7 +110,7 @@ try {
     }
 
     $idDocente = trim((string)($_SESSION['id_usuario'] ?? $_SESSION['identificacion_usu'] ?? ''));
-    $idInstitucion = max(1, (int)($_SESSION['id_institucion'] ?? $_SESSION['institucion'] ?? 1));
+    $idInstitucion = max(0, (int)($_SESSION['id_institucion'] ?? $_SESSION['institucion'] ?? 0));
     $consultaInstitucion = $mysqli->prepare(
         'SELECT nombre_institucion FROM institucion_educativa WHERE id_institucion_educativa = ? LIMIT 1'
     );

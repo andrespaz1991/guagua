@@ -1,10 +1,15 @@
+﻿. (Join-Path $PSScriptRoot '../../comun/database_client.ps1')
+$guaguaConnectionSettings = Get-GuaguaDatabaseSettings -Profile 'default'
+$guaguaPreviousMysqlPassword = [Environment]::GetEnvironmentVariable('MYSQL_PWD', 'Process')
+$env:MYSQL_PWD = $guaguaConnectionSettings.password
+try {
 # Configuración
 $RUTA_RESPALDO = "D:/xampp/htdocs/guagua/reportes/bd/automatico/"
 $MYSQL_PATH = "D:/xampp/mysql/bin/mysql.exe"
-$USUARIO = "root"
-$MYSQL_HOST = "127.0.0.1"  # Cambiado de $HOST a $MYSQL_HOST
-$PUERTO = "7000"  # Puerto por defecto de MySQL
-$BASE_DATOS = "guagua"
+$USUARIO = $guaguaConnectionSettings.user
+$MYSQL_HOST = $guaguaConnectionSettings.host
+$PUERTO = $guaguaConnectionSettings.port
+$BASE_DATOS = $guaguaConnectionSettings.database
 $MOSTRAR_MENSAJES = $true  # Bandera para mostrar mensajes y pausar ($true o $false)
 
 # Función para mostrar mensajes (si está habilitado)
@@ -54,7 +59,7 @@ if (-Not $archivoSQL) {
 
 # Crear la base de datos si no existe
 Mostrar-Mensaje "Verificando si la base de datos $BASE_DATOS existe..."
-& $MYSQL_PATH --user=$USUARIO --host=$MYSQL_HOST --port=$PUERTO -e "CREATE DATABASE IF NOT EXISTS $BASE_DATOS;"
+& $MYSQL_PATH --user=$USUARIO --host=$MYSQL_HOST --port=$PUERTO --default-character-set=$($guaguaConnectionSettings.charset) -e "CREATE DATABASE IF NOT EXISTS $BASE_DATOS;"
 
 # Verificar si la creación de la base de datos fue exitosa
 if ($LASTEXITCODE -ne 0) {
@@ -65,7 +70,7 @@ if ($LASTEXITCODE -ne 0) {
 
 # Importar el archivo .sql más reciente
 Mostrar-Mensaje "Importando el archivo $($archivoSQL.Name) en la base de datos $BASE_DATOS..."
-Get-Content -Path $archivoSQL.FullName | & $MYSQL_PATH --user=$USUARIO --host=$MYSQL_HOST --port=$PUERTO --database=$BASE_DATOS
+Get-Content -Path $archivoSQL.FullName | & $MYSQL_PATH --user=$USUARIO --host=$MYSQL_HOST --port=$PUERTO --default-character-set=$($guaguaConnectionSettings.charset) --database=$BASE_DATOS
 
 # Verificar si la importación fue exitosa
 if ($LASTEXITCODE -eq 0) {
@@ -81,3 +86,6 @@ if ($MOSTRAR_MENSAJES) {
     Read-Host "Presiona Enter para cerrar..."
 }
 exit 0
+} finally {
+    [Environment]::SetEnvironmentVariable('MYSQL_PWD', $guaguaPreviousMysqlPassword, 'Process')
+}

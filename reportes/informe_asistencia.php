@@ -1,129 +1,145 @@
 <?php
-// --- CONFIGURACIÓN Y CONEXIÓN A LA BASE DE DATOS ---
-require_once "../comun/config.php";
+require_once __DIR__ . '/../comun/seguridad.php';
+guagua_exigir_rol(['admin', 'directivo', 'docente']);
+require_once __DIR__ . '/../comun/database.php';
+require_once __DIR__ . '/../asistencia/lib/registros.php';
+
+require_once __DIR__ . "/../comun/config.php";
 date_default_timezone_set('America/Bogota');
+$periodoConfigurado = guagua_periodo_activo(guagua_db_request());
+$anoConfigurado = guagua_ano_configurado(guagua_db_request());
+$inicioConfigurado = $periodoConfigurado['fecha_inicio'] ?? $anoConfigurado . '-01-01';
+$finConfigurado = $periodoConfigurado['fecha_fin'] ?? $anoConfigurado . '-12-31';
 
-$db_host = SERVIDORBD;
-$db_name = BASEDEDATOS;
-$db_user = USUARIOBD;
-$db_pass = CLAVEBD;
 
-// --- LÓGICA DE BACKEND (MANEJO DE AJAX PARA OBTENER DATOS) ---
-if (isset($_GET['action']) && $_GET['action'] == 'fetch_report_data') {
-    header('Content-Type: application/json');
-    $response = [
-        'students' => [],
-        'subjects' => [],
-        'analytics' => []
-    ];
+function informe_asistencia_fecha($fecha, $predeterminada)
+{
+    $fecha = is_string($fecha) ? trim($fecha) : '';
+    $objetoFecha = DateTime::createFromFormat('Y-m-d', $fecha);
+    return $objetoFecha && $objetoFecha->format('Y-m-d') === $fecha ? $fecha : $predeterminada;
+}
+
+if (isset($_GET['action']) && $_GET['action'] === 'fetch_report_data') {
+    header('Content-Type: application/json; charset=utf-8');
+    $inicio = informe_asistencia_fecha($_GET['start_date'] ?? '', $inicioConfigurado);
+    $fin = informe_asistencia_fecha($_GET['end_date'] ?? '', $finConfigurado);
+    $materiaFiltro = isset($_GET['subject']) ? trim((string) $_GET['subject']) : '';
+
+    if ($inicio > $fin) {
+        echo json_encode(['success' => false, 'message' => 'La fecha inicial no puede ser posterior a la fecha final.']);
+        exit;
+    }
 
     try {
-        $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        // --- Filtro de Fechas ---
-        $start_date = $_GET['start_date'] ?? date('Y-m-01');
-        $end_date = $_GET['end_date'] ?? date('Y-m-t');
-        $params = [':start_date' => $start_date, ':end_date' => $end_date];
-
-        // 1. Obtener lista de materias (asignaturas)
-        $stmt_subjects = $pdo->query("SELECT DISTINCT materia FROM asistencias ORDER BY materia ASC");
-        $response['subjects'] = $stmt_subjects->fetchAll(PDO::FETCH_COLUMN);
-
-        // 2. Obtener lista de estudiantes activos
-        $sql_students = "SELECT DISTINCT u.id_usuario, u.nombre, u.apellido, u.observaciones as grado
-                         FROM usuario u
-                         JOIN inscripcion i ON u.id_usuario = i.id_estudiante
-                         WHERE i.estado_inscripcion = 'En curso'
-                         ORDER BY CAST(u.observaciones AS UNSIGNED) ASC, u.apellido ASC, u.nombre ASC";
-        $stmt_students = $pdo->query($sql_students);
-        $students_raw = $stmt_students->fetchAll(PDO::FETCH_ASSOC);
-
-        // 3. Obtener inasistencias
-        $sql_absences = "SELECT documento, materia, fechas_clase
-                         FROM asistencias
-                         WHERE asistencias = 'NO' 
-                         AND STR_TO_DATE(TRIM(fechas_clase), '%d/%m/%Y') BETWEEN :start_date AND :end_date";
-        $stmt_absences = $pdo->prepare($sql_absences);
-        $stmt_absences->execute($params);
-        $absences_raw = $stmt_absences->fetchAll(PDO::FETCH_ASSOC);
-        
-        // --- PROCESAMIENTO PARA LA MATRIZ PRINCIPAL ---
-        $absences_map = [];
-        foreach ($absences_raw as $absence) {
-            $doc = $absence['documento'];
-            $mat = $absence['materia'];
-            if (!isset($absences_map[$doc])) $absences_map[$doc] = [];
-            if (!isset($absences_map[$doc][$mat])) $absences_map[$doc][$mat] = 0;
-            $absences_map[$doc][$mat]++;
+        $pdo = guagua_db_pdo('default', [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_EMULATE_PREPARES => false
+        ]);
+        $fechaSql = guagua_asistencia_fecha_sql();
+        $condicionFecha = "($fechaSql) BETWEEN :fecha_inicio AND :fecha_fin";
+        $parametros = [':fecha_inicio' => $inicio, ':fecha_fin' => $fin];
+        $condicionMateria = '';
+        if ($materiaFiltro !== '') {
+            $condicionMateria = ' AND TRIM(a.materia) = :materia';
+            $parametros[':materia'] = $materiaFiltro;
         }
 
-        foreach ($students_raw as $student) {
-            $student_id = $student['id_usuario'];
-            $student_absences = [];
-            foreach ($response['subjects'] as $subject) {
-                $student_absences[$subject] = $absences_map[$student_id][$subject] ?? 0;
+        // Fuente única: asistencias, la misma tabla escrita por asistencia/index.php.
+        $sql = "SELECT
+                    a.id, a.fecha_actualizacion,
+                    TRIM(a.documento) AS documento,
+                    CAST(u.id_usuario AS CHAR) AS documento_real,
+                    CONCAT_WS(' ', TRIM(u.apellido), TRIM(u.nombre)) AS nombre_usuario,
+                    COALESCE(NULLIF(TRIM(a.estudiante), ''), CONCAT_WS(' ', NULLIF(TRIM(u.apellido), ''), NULLIF(TRIM(u.nombre), '')), 'Estudiante sin identificar') AS estudiante,
+                    COALESCE(NULLIF(TRIM(u.observaciones), ''), 'Sin grado') AS grado,
+                    TRIM(a.materia) AS materia,
+                    UPPER(TRIM(a.asistencias)) AS estado,
+                    $fechaSql AS fecha
+                FROM asistencias a
+                LEFT JOIN usuario u ON CAST(u.id_usuario AS CHAR) = TRIM(a.documento)
+                WHERE $condicionFecha $condicionMateria
+                ORDER BY a.fecha_actualizacion DESC, a.id DESC";
+        $sentencia = $pdo->prepare($sql);
+        $sentencia->execute($parametros);
+        $registros = guagua_asistencia_registros_unicos($sentencia->fetchAll(PDO::FETCH_ASSOC));
+
+        $sqlMaterias = "SELECT DISTINCT TRIM(a.materia) AS materia FROM asistencias a WHERE $condicionFecha AND TRIM(a.materia) <> '' ORDER BY materia ASC";
+        $sentenciaMaterias = $pdo->prepare($sqlMaterias);
+        $sentenciaMaterias->execute([':fecha_inicio' => $inicio, ':fecha_fin' => $fin]);
+        $materias = $sentenciaMaterias->fetchAll(PDO::FETCH_COLUMN);
+
+        $dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+        $mapaDias = ['Monday' => 'Lunes', 'Tuesday' => 'Martes', 'Wednesday' => 'Miércoles', 'Thursday' => 'Jueves', 'Friday' => 'Viernes', 'Saturday' => 'Sábado', 'Sunday' => 'Domingo'];
+        $analitica = [
+            'totalRecords' => 0, 'totalPresences' => 0, 'totalAbsences' => 0, 'totalPermissions' => 0, 'totalLates' => 0,
+            'studentsWithAttendance' => 0, 'absencesBySubject' => [], 'absencesByDay' => array_fill_keys($dias, 0), 'topStudents' => []
+        ];
+        $estudiantes = [];
+        $etiquetasMaterias = [];
+
+        foreach ($registros as $registro) {
+            $documento = $registro['documento'] !== '' ? $registro['documento'] : 'sin-documento-' . count($estudiantes);
+            $claveEstudiante = $registro['clave_estudiante'];
+            $estado = in_array($registro['estado'], ['SI', 'NO', 'P', 'R'], true) ? $registro['estado'] : 'SI';
+            if (!isset($estudiantes[$claveEstudiante])) {
+                $estudiantes[$claveEstudiante] = [
+                    'id' => $documento, 'name' => $registro['estudiante'], 'grade' => $registro['grado'],
+                    'records' => 0, 'presences' => 0, 'absences' => 0, 'permissions' => 0, 'lates' => 0
+                ];
+            } elseif ($estudiantes[$claveEstudiante]['grade'] === 'Sin grado' && $registro['grado'] !== 'Sin grado') {
+                $estudiantes[$claveEstudiante]['grade'] = $registro['grado'];
             }
-            $response['students'][] = [
-                'id' => $student_id,
-                'name' => $student['apellido'] . ' ' . $student['nombre'],
-                'grade' => $student['grado'],
-                'absences' => $student_absences
-            ];
-        }
-
-        // --- CÁLCULO DE MÉTRICAS PARA EL DASHBOARD DE ANÁLISIS ---
-        
-        // Total Inasistencias
-        $response['analytics']['totalAbsences'] = count($absences_raw);
-
-        // Inasistencias por Materia
-        $absences_by_subject = [];
-        foreach ($absences_raw as $absence) {
-            $subject = $absence['materia'];
-            if (!isset($absences_by_subject[$subject])) $absences_by_subject[$subject] = 0;
-            $absences_by_subject[$subject]++;
-        }
-        arsort($absences_by_subject);
-        $response['analytics']['absencesBySubject'] = $absences_by_subject;
-        
-        // Inasistencias por Día de la Semana
-        $day_map_es = ['Monday' => 'Lunes', 'Tuesday' => 'Martes', 'Wednesday' => 'Miércoles', 'Thursday' => 'Jueves', 'Friday' => 'Viernes', 'Saturday' => 'Sábado', 'Sunday' => 'Domingo'];
-        $absences_by_day = array_fill_keys(array_values($day_map_es), 0);
-        foreach ($absences_raw as $absence) {
-            try {
-                $date = DateTime::createFromFormat('d/m/Y', trim($absence['fechas_clase']));
-                if ($date) {
-                    $day_en = $date->format('l');
-                    $day_es = $day_map_es[$day_en];
-                    $absences_by_day[$day_es]++;
-                }
-            } catch (Exception $e) { /* Ignorar fechas con formato inválido */ }
-        }
-        $response['analytics']['absencesByDay'] = $absences_by_day;
-
-        // Top Estudiantes con Inasistencias
-        $absences_by_student = [];
-        foreach ($absences_raw as $absence) {
-            $doc = $absence['documento'];
-            if (!isset($absences_by_student[$doc])) $absences_by_student[$doc] = 0;
-            $absences_by_student[$doc]++;
-        }
-        arsort($absences_by_student);
-        $top_students = [];
-        foreach($absences_by_student as $doc => $count) {
-            foreach($students_raw as $student) {
-                if ($student['id_usuario'] == $doc) {
-                    $top_students[] = ['name' => $student['apellido'] . ' ' . $student['nombre'], 'grade' => $student['grado'], 'count' => $count];
-                    break;
-                }
+            $estudiantes[$claveEstudiante]['records']++;
+            $analitica['totalRecords']++;
+            if ($estado === 'NO') {
+                $estudiantes[$claveEstudiante]['absences']++;
+                $analitica['totalAbsences']++;
+                $claveMateria = guagua_asistencia_clave_texto($registro['materia']) ?: 'sin-asignatura';
+                $etiquetasMaterias[$claveMateria] = $etiquetasMaterias[$claveMateria] ?? ($registro['materia'] ?: 'Sin asignatura');
+                $analitica['absencesBySubject'][$claveMateria] = ($analitica['absencesBySubject'][$claveMateria] ?? 0) + 1;
+                $fecha = DateTime::createFromFormat('Y-m-d', $registro['fecha']);
+                if ($fecha) $analitica['absencesByDay'][$mapaDias[$fecha->format('l')]]++;
+            } elseif ($estado === 'P') {
+                $estudiantes[$claveEstudiante]['permissions']++;
+                $analitica['totalPermissions']++;
+            } elseif ($estado === 'R') {
+                $estudiantes[$claveEstudiante]['lates']++;
+                $analitica['totalLates']++;
+            } else {
+                $estudiantes[$claveEstudiante]['presences']++;
+                $analitica['totalPresences']++;
             }
         }
-        $response['analytics']['topStudents'] = $top_students;
 
-        echo json_encode(['success' => true, 'data' => $response]);
-    } catch (PDOException $e) {
-        echo json_encode(['success' => false, 'message' => 'Error de base de datos: ' . $e->getMessage()]);
+        $estudiantes = array_values($estudiantes);
+        foreach ($estudiantes as &$estudiante) {
+            $estudiante['attendanceRate'] = $estudiante['records'] > 0 ? round((($estudiante['presences'] + $estudiante['lates']) / $estudiante['records']) * 100, 1) : 0;
+        }
+        unset($estudiante);
+        usort($estudiantes, static function ($a, $b) {
+            $gradoA = is_numeric($a['grade']) ? (int) $a['grade'] : PHP_INT_MAX;
+            $gradoB = is_numeric($b['grade']) ? (int) $b['grade'] : PHP_INT_MAX;
+            return $gradoA === $gradoB ? strcasecmp($a['name'], $b['name']) : $gradoA <=> $gradoB;
+        });
+        $estudiantesPorFaltas = $estudiantes;
+        usort($estudiantesPorFaltas, static function ($a, $b) {
+            return $b['absences'] === $a['absences'] ? strcasecmp($a['name'], $b['name']) : $b['absences'] <=> $a['absences'];
+        });
+        foreach ($estudiantesPorFaltas as $estudiante) {
+            if ($estudiante['absences'] > 0) $analitica['topStudents'][] = ['name' => $estudiante['name'], 'grade' => $estudiante['grade'], 'count' => $estudiante['absences']];
+        }
+        $ausenciasPorMateria = [];
+        foreach ($analitica['absencesBySubject'] as $claveMateria => $cantidad) {
+            $ausenciasPorMateria[$etiquetasMaterias[$claveMateria]] = $cantidad;
+        }
+        arsort($ausenciasPorMateria);
+        $analitica['absencesBySubject'] = $ausenciasPorMateria;
+        $analitica['studentsWithAttendance'] = count($estudiantes);
+
+        echo json_encode(['success' => true, 'data' => ['students' => $estudiantes, 'subjects' => $materias, 'analytics' => $analitica, 'period' => ['start' => $inicio, 'end' => $fin]]], JSON_UNESCAPED_UNICODE);
+    } catch (PDOException $error) {
+        error_log('Informe de asistencia: ' . $error->getMessage());
+        echo json_encode(['success' => false, 'message' => 'No fue posible consultar la información de asistencia.']);
     }
     exit;
 }
@@ -133,304 +149,80 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch_report_data') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reporte de Inasistencias</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Informe de asistencia</title>
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
+    <script src="/guagua/comun/js/chart.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .loader { border-top-color: #3498db; animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        
-        .table-container { max-height: 70vh; overflow-y: auto; }
-        thead th { position: sticky; top: 0; z-index: 10; }
-        .chart-card { background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); padding: 1.5rem; }
+        body { font-family: Inter, sans-serif; background: #f4f7fb; color: #172033; }
+        .loader { border-top-color: #2563eb; animation: spin .8s linear infinite; } @keyframes spin { to { transform: rotate(360deg); } }
+        .table-container { max-height: 66vh; overflow: auto; } thead th { position: sticky; top: 0; z-index: 10; }
+        .chart-card { background: #fff; border: 1px solid #e7edf6; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 12px 28px rgba(30, 41, 59, .05); }
     </style>
 </head>
 <body class="p-4 md:p-8">
-
-    <div class="max-w-7xl mx-auto space-y-8">
-        <!-- CABECERA Y FILTROS -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div class="p-6 bg-gradient-to-r from-teal-500 to-cyan-600">
-                <h1 class="text-2xl md:text-3xl font-bold text-white">Reporte de Inasistencias por Materia</h1>
-                <p class="text-cyan-100 mt-1">Matriz de inasistencias de estudiantes activos.</p>
+    <main class="max-w-7xl mx-auto space-y-6">
+        <section class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+            <div class="bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-700 px-6 py-7 md:px-8">
+                <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between"><div><p class="text-xs font-bold uppercase tracking-[.18em] text-blue-200">Seguimiento académico</p><h1 class="mt-2 text-2xl font-extrabold text-white md:text-3xl">Informe de asistencia</h1><p class="mt-2 max-w-2xl text-sm text-blue-100">Información consolidada desde el registro de asistencia vigente: presentes, ausencias, permisos y retardos.</p></div><a href="../asistencia/index.php" class="inline-flex shrink-0 items-center justify-center rounded-lg bg-white/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-inset ring-white/25 transition hover:bg-white/20">Ir a tomar asistencia</a></div>
             </div>
-            <div class="p-6">
-                <div class="p-4 bg-gray-50 rounded-lg flex flex-col md:flex-row justify-between items-center gap-4 border">
-                     <div class="flex flex-wrap items-center gap-4 w-full md:w-auto">
-                        <div>
-                            <label for="start_date" class="text-sm font-medium text-gray-700">Desde:</label>
-                            <input type="date" id="start_date" value="<?php echo date('Y-m-01'); ?>" class="mt-1 block w-full md:w-auto border-gray-300 rounded-md shadow-sm text-sm">
-                        </div>
-                        <div>
-                            <label for="end_date" class="text-sm font-medium text-gray-700">Hasta:</label>
-                            <input type="date" id="end_date" value="<?php echo date('Y-m-t'); ?>" class="mt-1 block w-full md:w-auto border-gray-300 rounded-md shadow-sm text-sm">
-                        </div>
-                        <button id="filter_btn" class="self-end bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 text-sm shadow-sm">
-                            Aplicar Filtro
-                        </button>
-                    </div>
-                    <div class="relative w-full md:w-auto">
-                        <input type="text" id="search-student" placeholder="🔍 Buscar estudiante..." class="w-full md:w-64 pl-8 pr-2 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                    </div>
-                </div>
-            </div>
+            <div class="p-5 md:p-6"><div class="grid gap-4 lg:grid-cols-[1fr_1fr_1.35fr_auto] lg:items-end">
+                <label class="block text-sm font-semibold text-slate-700">Desde<input type="date" id="start_date" value="<?php echo htmlspecialchars($inicioConfigurado, ENT_QUOTES, 'UTF-8'); ?>" class="mt-1.5 block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"></label>
+                <label class="block text-sm font-semibold text-slate-700">Hasta<input type="date" id="end_date" value="<?php echo htmlspecialchars($finConfigurado, ENT_QUOTES, 'UTF-8'); ?>" class="mt-1.5 block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"></label>
+                <label class="block text-sm font-semibold text-slate-700">Asignatura<select id="subject" class="mt-1.5 block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"><option value="">Todas las asignaturas con registros</option></select></label>
+                <button id="filter_btn" class="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700">Actualizar informe</button>
+            </div><div class="mt-4 flex flex-col gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between"><p id="period-label" class="text-sm text-slate-500">Seleccione un período para consultar.</p><input type="search" id="search-student" placeholder="Buscar estudiante…" class="block w-full rounded-lg border-slate-300 py-2 px-3 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:w-72"></div></div>
+        </section>
+        <div id="loader-container" class="hidden py-12 text-center"><div class="loader mx-auto h-12 w-12 rounded-full border-4 border-slate-200"></div><p class="mt-4 text-sm font-medium text-slate-600">Actualizando información de asistencia…</p></div>
+        <div id="feedback" class="hidden rounded-xl border px-4 py-3 text-sm" role="status"></div>
+        <div id="main-content" class="hidden space-y-6">
+            <section class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+                <article class="chart-card"><p class="text-xs font-bold uppercase tracking-wide text-slate-500">Registros</p><p id="total-records-kpi" class="mt-2 text-3xl font-extrabold text-slate-900">0</p></article><article class="chart-card"><p class="text-xs font-bold uppercase tracking-wide text-slate-500">Estudiantes</p><p id="students-kpi" class="mt-2 text-3xl font-extrabold text-slate-900">0</p></article><article class="chart-card"><p class="text-xs font-bold uppercase tracking-wide text-emerald-600">Presentes</p><p id="presences-kpi" class="mt-2 text-3xl font-extrabold text-emerald-600">0</p></article><article class="chart-card"><p class="text-xs font-bold uppercase tracking-wide text-rose-600">Ausencias</p><p id="absences-kpi" class="mt-2 text-3xl font-extrabold text-rose-600">0</p></article><article class="chart-card"><p class="text-xs font-bold uppercase tracking-wide text-amber-600">Permisos</p><p id="permissions-kpi" class="mt-2 text-3xl font-extrabold text-amber-600">0</p></article><article class="chart-card"><p class="text-xs font-bold uppercase tracking-wide text-blue-600">Retardos</p><p id="lates-kpi" class="mt-2 text-3xl font-extrabold text-blue-600">0</p></article>
+            </section>
+            <section class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200"><div class="flex flex-col gap-3 border-b border-slate-100 px-5 py-5 sm:flex-row sm:items-center sm:justify-between"><div><h2 class="text-lg font-extrabold text-slate-900">Resumen por estudiante</h2><p class="mt-1 text-sm text-slate-500">Cada fila proviene de los registros guardados en el módulo de asistencia.</p></div><span id="student-count-container" class="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700"></span></div><div class="table-container"><table class="min-w-full divide-y divide-slate-200"><thead id="report-thead" class="bg-slate-50"></thead><tbody id="report-tbody" class="divide-y divide-slate-100 bg-white"></tbody></table><div id="empty-state" class="hidden px-6 py-16 text-center"><h3 class="text-base font-bold text-slate-800">No hay registros para este período</h3><p class="mt-1 text-sm text-slate-500">Ajuste las fechas o registre asistencia desde el módulo correspondiente.</p></div></div></section>
+            <section class="grid gap-6 lg:grid-cols-2"><article class="chart-card"><h2 class="text-base font-extrabold text-slate-900">Ausencias por asignatura</h2><div class="mt-4 h-72"><canvas id="subjectsChart"></canvas></div></article><article class="chart-card"><h2 class="text-base font-extrabold text-slate-900">Ausencias por día de la semana</h2><div class="mt-4 h-72"><canvas id="daysChart"></canvas></div></article></section>
+            <section class="chart-card"><div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><h2 class="text-base font-extrabold text-slate-900">Estudiantes con más ausencias</h2><label class="text-sm font-medium text-slate-600">Mostrar <input type="number" id="top-n-students" value="5" min="1" max="50" class="ml-2 w-16 rounded-md border-slate-300 text-sm"></label></div><div id="top-students-list" class="mt-3"></div></section>
         </div>
-
-        <!-- ESTADO DE CARGA PRINCIPAL -->
-        <div id="loader-container" class="text-center py-10 hidden">
-            <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24 mx-auto"></div>
-            <p class="mt-4 text-gray-600 font-semibold">Cargando datos del reporte...</p>
-        </div>
-
-        <!-- CONTENIDO PRINCIPAL: TABLA Y DASHBOARD -->
-        <div id="main-content" class="space-y-8 hidden">
-             <!-- MATRIZ DE INASISTENCIAS -->
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                 <div class="p-6">
-                    <div id="student-count-container" class="px-4 py-2 mb-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 font-semibold text-sm hidden"></div>
-                    <div id="report-container" class="table-container border rounded-lg">
-                        <table id="report-table" class="min-w-full divide-y divide-gray-200">
-                            <thead id="report-thead" class="bg-gray-100"></thead>
-                            <tbody id="report-tbody" class="bg-white divide-y divide-gray-200"></tbody>
-                        </table>
-                        <div id="empty-state" class="text-center py-16 hidden">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" /></svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">No se encontraron estudiantes</h3>
-                            <p class="mt-1 text-sm text-gray-500">Verifica los filtros o el rango de fechas seleccionado.</p>
-                        </div>
-                    </div>
-                 </div>
-            </div>
-
-            <!-- DASHBOARD DE ANÁLISIS -->
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                 <div class="p-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-6 border-b pb-3">Análisis de Inasistencias</h2>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                        
-                        <!-- Card: Total Inasistencias -->
-                        <div class="chart-card col-span-1 xl:col-span-1 flex flex-col items-center justify-center text-center">
-                            <h3 class="text-lg font-semibold text-gray-500 uppercase">Total de Inasistencias</h3>
-                            <p id="total-absences-kpi" class="text-6xl font-bold text-red-500 mt-2">0</p>
-                            <p class="text-sm text-gray-500">en el período seleccionado</p>
-                        </div>
-
-                        <!-- Card: Top Estudiantes -->
-                        <div class="chart-card col-span-1 lg:col-span-2 xl:col-span-2">
-                             <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4">
-                                <h3 class="text-lg font-semibold text-gray-700">Top Estudiantes con Inasistencias</h3>
-                                <div class="flex items-center gap-2 mt-2 sm:mt-0">
-                                    <label for="top-n-students" class="text-sm font-medium">Mostrar Top:</label>
-                                    <input type="number" id="top-n-students" value="5" class="w-20 border-gray-300 rounded-md shadow-sm text-sm">
-                                </div>
-                            </div>
-                            <div id="top-students-list" class="max-h-64 overflow-y-auto pr-2"></div>
-                        </div>
-
-                        <!-- Card: Gráfico Materias -->
-                        <div class="chart-card col-span-1 lg:col-span-1">
-                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Inasistencias por Materia</h3>
-                            <canvas id="subjectsChart"></canvas>
-                        </div>
-
-                        <!-- Card: Gráfico Días -->
-                        <div class="chart-card col-span-1 lg:col-span-1">
-                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Inasistencias por Día de la Semana</h3>
-                            <canvas id="daysChart"></canvas>
-                        </div>
-
-                    </div>
-                 </div>
-            </div>
-        </div>
-    </div>
-
+    </main>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Elementos del DOM
-    const filterBtn = document.getElementById('filter_btn');
-    const searchInput = document.getElementById('search-student');
-    const loaderContainer = document.getElementById('loader-container');
-    const mainContent = document.getElementById('main-content');
-    
-    // Elementos de la tabla
-    const tableThead = document.getElementById('report-thead');
-    const tableTbody = document.getElementById('report-tbody');
-    const studentCountContainer = document.getElementById('student-count-container');
-    const emptyStateContainer = document.getElementById('empty-state');
-
-    // Elementos del Dashboard
-    const totalAbsencesKPI = document.getElementById('total-absences-kpi');
-    const topNStudentsInput = document.getElementById('top-n-students');
-    const topStudentsList = document.getElementById('top-students-list');
-
-    // Instancias de los gráficos
-    let subjectsChart, daysChart;
-    let fullAnalyticsData = {};
-
-    async function fetchReportData() {
-        loaderContainer.classList.remove('hidden');
-        mainContent.classList.add('hidden');
-        
-        const startDate = document.getElementById('start_date').value;
-        const endDate = document.getElementById('end_date').value;
-        
+    const e = { start: document.getElementById('start_date'), end: document.getElementById('end_date'), subject: document.getElementById('subject'), filter: document.getElementById('filter_btn'), search: document.getElementById('search-student'), loader: document.getElementById('loader-container'), content: document.getElementById('main-content'), feedback: document.getElementById('feedback'), period: document.getElementById('period-label'), thead: document.getElementById('report-thead'), tbody: document.getElementById('report-tbody'), empty: document.getElementById('empty-state'), count: document.getElementById('student-count-container'), topN: document.getElementById('top-n-students'), topList: document.getElementById('top-students-list') };
+    let subjectsChart, daysChart, analytics = { topStudents: [] };
+    const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[char]));
+    const number = value => new Intl.NumberFormat('es-CO').format(value || 0);
+    function feedback(message) { e.feedback.textContent = message; e.feedback.className = 'rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700'; e.feedback.classList.remove('hidden'); }
+    function setKpi(id, value) { document.getElementById(id).textContent = number(value); }
+    function updateSubjects(subjects) { const selected = e.subject.value; e.subject.innerHTML = '<option value="">Todas las asignaturas con registros</option>' + subjects.map(subject => `<option value="${escapeHtml(subject)}">${escapeHtml(subject)}</option>`).join(''); if (subjects.includes(selected)) e.subject.value = selected; }
+    function renderTable(students) {
+        e.thead.innerHTML = '<tr><th class="px-5 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Estudiante</th><th class="px-4 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500">Registros</th><th class="px-4 py-3 text-center text-xs font-bold uppercase tracking-wide text-emerald-600">Presente</th><th class="px-4 py-3 text-center text-xs font-bold uppercase tracking-wide text-rose-600">Ausente</th><th class="px-4 py-3 text-center text-xs font-bold uppercase tracking-wide text-amber-600">Permiso</th><th class="px-4 py-3 text-center text-xs font-bold uppercase tracking-wide text-blue-600">Retardo</th><th class="px-5 py-3 text-right text-xs font-bold uppercase tracking-wide text-slate-500">Asistencia</th></tr>';
+        if (!students.length) { e.tbody.innerHTML = ''; e.empty.classList.remove('hidden'); e.count.textContent = '0 estudiantes'; return; }
+        e.empty.classList.add('hidden'); e.count.textContent = `${number(students.length)} estudiante${students.length === 1 ? '' : 's'}`;
+        e.tbody.innerHTML = students.map(student => `<tr class="student-row transition hover:bg-slate-50" data-name="${escapeHtml(student.name.toLowerCase())}"><td class="px-5 py-3"><p class="text-sm font-bold text-slate-800">${escapeHtml(student.name)}</p><p class="mt-0.5 text-xs text-slate-500">Grado: ${escapeHtml(student.grade)}</p></td><td class="px-4 py-3 text-center text-sm font-semibold text-slate-700">${number(student.records)}</td><td class="px-4 py-3 text-center text-sm font-bold text-emerald-600">${number(student.presences)}</td><td class="px-4 py-3 text-center text-sm font-bold text-rose-600">${number(student.absences)}</td><td class="px-4 py-3 text-center text-sm font-bold text-amber-600">${number(student.permissions)}</td><td class="px-4 py-3 text-center text-sm font-bold text-blue-600">${number(student.lates)}</td><td class="px-5 py-3 text-right"><span class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-extrabold text-slate-700">${student.attendanceRate}%</span></td></tr>`).join('');
+    }
+    function renderCharts(data) {
+        if (subjectsChart) subjectsChart.destroy(); if (daysChart) daysChart.destroy();
+        const options = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { precision: 0 }, grid: { display: false } }, y: { beginAtZero: true, ticks: { precision: 0 } } } };
+        subjectsChart = new Chart(document.getElementById('subjectsChart'), { type: 'bar', data: { labels: Object.keys(data.absencesBySubject), datasets: [{ data: Object.values(data.absencesBySubject), backgroundColor: '#fb7185', borderRadius: 6, maxBarThickness: 42 }] }, options: { ...options, indexAxis: 'y' } });
+        daysChart = new Chart(document.getElementById('daysChart'), { type: 'bar', data: { labels: Object.keys(data.absencesByDay), datasets: [{ data: Object.values(data.absencesByDay), backgroundColor: '#60a5fa', borderRadius: 6, maxBarThickness: 42 }] }, options });
+    }
+    function renderTop() { const maximum = Math.max(1, parseInt(e.topN.value, 10) || 5), students = (analytics.topStudents || []).slice(0, maximum); e.topList.innerHTML = students.length ? `<ol class="divide-y divide-slate-100">${students.map((student, index) => `<li class="flex items-center justify-between gap-4 py-3"><div class="flex items-center gap-3"><span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-extrabold text-slate-600">${index + 1}</span><div><p class="text-sm font-bold text-slate-800">${escapeHtml(student.name)}</p><p class="text-xs text-slate-500">Grado: ${escapeHtml(student.grade)}</p></div></div><span class="rounded-full bg-rose-50 px-3 py-1 text-xs font-extrabold text-rose-700">${number(student.count)} falta${student.count === 1 ? '' : 's'}</span></li>`).join('')}</ol>` : '<p class="py-4 text-center text-sm text-slate-500">No hay ausencias en el período seleccionado.</p>'; }
+    function render(data) { analytics = data.analytics; updateSubjects(data.subjects); renderTable(data.students); setKpi('total-records-kpi', analytics.totalRecords); setKpi('students-kpi', analytics.studentsWithAttendance); setKpi('presences-kpi', analytics.totalPresences); setKpi('absences-kpi', analytics.totalAbsences); setKpi('permissions-kpi', analytics.totalPermissions); setKpi('lates-kpi', analytics.totalLates); e.period.textContent = `Período consultado: ${data.period.start} a ${data.period.end}.`; renderCharts(analytics); renderTop(); }
+    async function load() {
+        if (e.start.value > e.end.value) { feedback('La fecha inicial no puede ser posterior a la fecha final.'); return; }
+        e.loader.classList.remove('hidden'); e.content.classList.add('hidden'); e.feedback.classList.add('hidden');
+        const url = new URL(window.location.href);
+        url.searchParams.set('guagua_embedded', '1');
+        url.searchParams.set('action', 'fetch_report_data');
+        url.searchParams.set('start_date', e.start.value); url.searchParams.set('end_date', e.end.value);
+        if (e.subject.value) url.searchParams.set('subject', e.subject.value); else url.searchParams.delete('subject');
         try {
-            const response = await fetch(`?action=fetch_report_data&start_date=${startDate}&end_date=${endDate}`);
-            const result = await response.json();
-
-            if (result.success) {
-                fullAnalyticsData = result.data.analytics;
-                renderTable(result.data);
-                renderAnalytics(result.data.analytics);
-                mainContent.classList.remove('hidden');
-            } else {
-                 emptyStateContainer.innerHTML = `<p class="text-red-500">${result.message}</p>`;
-                 emptyStateContainer.classList.remove('hidden');
-            }
-        } catch (error) {
-            emptyStateContainer.innerHTML = `<p class="text-red-500">Error de conexión. No se pudieron cargar los datos.</p>`;
-            emptyStateContainer.classList.remove('hidden');
-        } finally {
-            loaderContainer.classList.add('hidden');
-        }
+            const response = await fetch(url, { headers: { Accept: 'application/json' }, cache: 'no-store' }), result = await response.json();
+            if (!response.ok || !result.success) throw new Error(result.message || 'No fue posible actualizar el informe.');
+            render(result.data); e.content.classList.remove('hidden');
+        } catch (error) { feedback(error.message || 'Error de conexión al actualizar el informe.'); }
+        finally { e.loader.classList.add('hidden'); }
     }
-
-    function renderTable(data) {
-        let theadHTML = '<tr><th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">#</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Estudiante</th>';
-        data.subjects.forEach(subject => {
-            theadHTML += `<th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">${subject}</th>`;
-        });
-        theadHTML += '</tr>';
-        tableThead.innerHTML = theadHTML;
-
-        let tbodyHTML = '';
-        if (data.students.length === 0) {
-            tableTbody.innerHTML = '';
-            emptyStateContainer.classList.remove('hidden');
-            studentCountContainer.classList.add('hidden');
-        } else {
-            emptyStateContainer.classList.add('hidden');
-            let counter = 1;
-            data.students.forEach(student => {
-                tbodyHTML += `<tr class="student-row even:bg-gray-50 hover:bg-indigo-50 transition-colors duration-150" data-name="${student.name.toLowerCase()}">`;
-                tbodyHTML += `<td class="px-4 py-3 text-center text-sm font-medium text-gray-500">${counter++}</td>`;
-                tbodyHTML += `<td class="px-4 py-3 whitespace-nowrap"><div class="text-sm font-medium text-gray-900">${student.name}</div><div class="text-xs text-gray-500">Grado: ${student.grade}</div></td>`;
-                data.subjects.forEach(subject => {
-                    const absenceCount = student.absences[subject] || 0;
-                    const textColor = absenceCount > 0 ? 'text-red-600 font-bold' : 'text-gray-400';
-                    tbodyHTML += `<td class="px-4 py-3 text-center text-sm ${textColor}">${absenceCount}</td>`;
-                });
-                tbodyHTML += `</tr>`;
-            });
-            tableTbody.innerHTML = tbodyHTML;
-            studentCountContainer.textContent = `Total de Estudiantes: ${data.students.length}`;
-            studentCountContainer.classList.remove('hidden');
-        }
-    }
-
-    function renderAnalytics(analytics) {
-        // KPI
-        totalAbsencesKPI.textContent = analytics.totalAbsences || 0;
-
-        // Gráfico de Materias
-        if (subjectsChart) subjectsChart.destroy();
-        const subjectsCtx = document.getElementById('subjectsChart').getContext('2d');
-        subjectsChart = new Chart(subjectsCtx, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(analytics.absencesBySubject),
-                datasets: [{
-                    label: 'Inasistencias',
-                    data: Object.values(analytics.absencesBySubject),
-                    backgroundColor: 'rgba(29, 78, 216, 0.7)',
-                    borderColor: 'rgba(29, 78, 216, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } } }
-        });
-
-        // Gráfico de Días
-        if (daysChart) daysChart.destroy();
-        const daysCtx = document.getElementById('daysChart').getContext('2d');
-        daysChart = new Chart(daysCtx, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(analytics.absencesByDay),
-                datasets: [{
-                    label: 'Inasistencias',
-                    data: Object.values(analytics.absencesByDay),
-                    backgroundColor: 'rgba(20, 184, 166, 0.7)',
-                    borderColor: 'rgba(20, 184, 166, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: { responsive: true, plugins: { legend: { display: false } } }
-        });
-
-        // Renderizar lista de Top N
-        renderTopStudents();
-    }
-    
-    function renderTopStudents() {
-        if (!fullAnalyticsData.topStudents) return;
-        const topN = parseInt(topNStudentsInput.value) || 5;
-        const studentsToRender = fullAnalyticsData.topStudents.slice(0, topN);
-
-        if (studentsToRender.length === 0) {
-            topStudentsList.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">No hay inasistencias en el período seleccionado.</p>';
-            return;
-        }
-
-        let listHTML = '<ol class="divide-y divide-gray-200">';
-        studentsToRender.forEach((student, index) => {
-            listHTML += `
-                <li class="p-3 flex justify-between items-center">
-                    <div class="flex items-center">
-                        <span class="text-sm font-bold text-gray-600 w-8">${index + 1}.</span>
-                        <div>
-                            <p class="text-sm font-medium text-gray-900">${student.name}</p>
-                            <p class="text-xs text-gray-500">Grado: ${student.grade}</p>
-                        </div>
-                    </div>
-                    <span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">${student.count} faltas</span>
-                </li>`;
-        });
-        listHTML += '</ol>';
-        topStudentsList.innerHTML = listHTML;
-    }
-
-
-    // --- Event Listeners ---
-    filterBtn.addEventListener('click', fetchReportData);
-    topNStudentsInput.addEventListener('input', renderTopStudents);
-    
-    searchInput.addEventListener('input', () => {
-        const searchTerm = searchInput.value.toLowerCase();
-        let visibleCount = 0;
-        document.querySelectorAll('.student-row').forEach(row => {
-            const studentName = row.dataset.name;
-            if (studentName.includes(searchTerm)) {
-                row.style.display = '';
-                visibleCount++;
-            } else {
-                row.style.display = 'none';
-            }
-        });
-        const total = document.querySelectorAll('.student-row').length;
-        studentCountContainer.textContent = `Mostrando ${visibleCount} de ${total} estudiantes`;
-    });
-
-    // Carga inicial
-    fetchReportData();
+    e.filter.addEventListener('click', load); e.subject.addEventListener('change', load); e.topN.addEventListener('input', renderTop); e.search.addEventListener('input', () => { const term = e.search.value.trim().toLowerCase(); let visible = 0; document.querySelectorAll('.student-row').forEach(row => { const show = row.dataset.name.includes(term); row.classList.toggle('hidden', !show); if (show) visible++; }); const total = document.querySelectorAll('.student-row').length; if (total) e.count.textContent = `Mostrando ${visible} de ${total} estudiantes`; }); load();
 });
 </script>
-
 </body>
 </html>
-

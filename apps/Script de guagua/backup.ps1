@@ -1,11 +1,16 @@
+﻿. (Join-Path $PSScriptRoot '../../comun/database_client.ps1')
+$guaguaConnectionSettings = Get-GuaguaDatabaseSettings -Profile 'default'
+$guaguaPreviousMysqlPassword = [Environment]::GetEnvironmentVariable('MYSQL_PWD', 'Process')
+$env:MYSQL_PWD = $guaguaConnectionSettings.password
+try {
 # Configuración
 $RUTA_RESPALDO = "D:/xampp/htdocs/guagua/reportes/bd/automatico/"
 $NOMBRE_BASE = "backup_automatico_guagua"
 $MYSQLDUMP_PATH = "D:/xampp/mysql/bin/mysqldump.exe"
-$USUARIO = "root"
-$MYSQL_HOST = "127.0.0.1"  # Cambiado de $HOST a $MYSQL_HOST
-$PUERTO = "7000"  # Puerto por defecto de MySQL
-$BASE_DATOS = "guagua"
+$USUARIO = $guaguaConnectionSettings.user
+$MYSQL_HOST = $guaguaConnectionSettings.host
+$PUERTO = $guaguaConnectionSettings.port
+$BASE_DATOS = $guaguaConnectionSettings.database
 $MAX_ARCHIVOS = 10  # Cantidad máxima de archivos .sql que se conservan
 $MOSTRAR_MENSAJES = $false  # Bandera para mostrar mensajes y pausar ($true o $false)
 
@@ -48,7 +53,7 @@ if (-Not (Test-Path $MYSQLDUMP_PATH)) {
 
 # Ejecutar mysqldump con manejo de errores
 Mostrar-Mensaje "Realizando respaldo de la base de datos $BASE_DATOS..."
-& $MYSQLDUMP_PATH --user=$USUARIO --host=$MYSQL_HOST --port=$PUERTO --routines --events --triggers --single-transaction --databases $BASE_DATOS 2>&1 | Out-File -FilePath $RUTA_COMPLETA
+& $MYSQLDUMP_PATH --user=$USUARIO --host=$MYSQL_HOST --port=$PUERTO --default-character-set=$($guaguaConnectionSettings.charset) --routines --events --triggers --single-transaction --databases $BASE_DATOS 2>&1 | Out-File -FilePath $RUTA_COMPLETA
 
 # Verificar si el archivo de respaldo está vacío
 if ((Get-Item $RUTA_COMPLETA).Length -eq 0) {
@@ -82,3 +87,6 @@ if ($MOSTRAR_MENSAJES) {
     Read-Host "Presiona Enter para cerrar..."
 }
 exit 0
+} finally {
+    [Environment]::SetEnvironmentVariable('MYSQL_PWD', $guaguaPreviousMysqlPassword, 'Process')
+}

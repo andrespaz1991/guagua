@@ -16,6 +16,30 @@ if (!is_array($payload)) {
     exit;
 }
 
+session_start();
+if (($payload['action'] ?? '') === 'open_folder') {
+    $token = (string)($payload['token'] ?? '');
+    $path = $_SESSION['planmind_saved_files'][$token] ?? null;
+    if (!in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true) || PHP_OS_FAMILY !== 'Windows' || !$path || !is_file($path)) {
+        http_response_code(403);
+        echo json_encode(['ok' => false, 'message' => 'Abrir carpeta solo está disponible en el equipo local para un archivo recién guardado.']);
+        exit;
+    }
+    session_write_close();
+    // Abrir la carpeta directamente: /select, separado de la ruta puede
+    // hacer que Explorer ignore el destino y abra su ubicación predeterminada.
+    $folder = str_replace('/', '\\', dirname($path));
+    $process = proc_open(['explorer.exe', $folder], [], $pipes, null, null, ['bypass_shell' => true]);
+    if (!is_resource($process)) {
+        http_response_code(500);
+        echo json_encode(['ok' => false, 'message' => 'No se pudo abrir el Explorador de archivos.']);
+        exit;
+    }
+    proc_close($process);
+    echo json_encode(['ok' => true]);
+    exit;
+}
+
 $directory = trim((string)($payload['directory'] ?? ''));
 $filename = trim((string)($payload['filename'] ?? ''));
 $contentBase64 = (string)($payload['contentBase64'] ?? '');
@@ -64,4 +88,7 @@ if (file_put_contents($fullPath, $content) === false) {
     exit;
 }
 
-echo json_encode(['ok' => true, 'path' => $fullPath]);
+$token = bin2hex(random_bytes(24));
+$_SESSION['planmind_saved_files'] = [$token => realpath($fullPath)];
+echo json_encode(['ok' => true, 'path' => $fullPath, 'folderToken' => $token,
+    'canOpenFolder' => PHP_OS_FAMILY === 'Windows' && in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true)]);

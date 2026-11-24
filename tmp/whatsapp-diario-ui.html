@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen Rural Pro | IER Josefina</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .modal-overlay { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); }
+        .group-chip.active { background: #10b981; color: white; border-color: #059669; }
+        .tab-btn.active { background: white; color: #0f172a; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.9); }
+        .pulse-emerald { animation: pulseEmerald 2s infinite; }
+        @keyframes pulseEmerald { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    </style>
+</head>
+<body class="bg-[#f1f5f9] min-h-screen text-slate-800 selection:bg-emerald-100">
+
+    <!-- Header Institucional -->
+    <header class="bg-slate-900 text-white px-8 py-4 sticky top-0 z-40 shadow-2xl">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div class="bg-emerald-500 p-2.5 rounded-2xl shadow-lg shadow-emerald-500/30">
+                    <i class="fa-brands fa-whatsapp text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-xl tracking-tighter italic flex items-center gap-2">
+                        Resumen Rural Pro 
+                        <span class="text-emerald-400 not-italic text-xs uppercase bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 font-bold">v6.0 - Exportador + LMStudio</span>
+                    </h1>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Sede Vallesol - IER Josefina (San Luis)</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <!-- Estado WhatsApp -->
+                <button onclick="checkOrShowQR()" id="statusBadge" class="flex items-center px-4 py-2 rounded-full border border-slate-700 text-[10px] font-black uppercase bg-slate-800 hover:bg-slate-700 transition-all cursor-pointer">
+                    <span id="statusDot" class="w-2.5 h-2.5 bg-amber-500 rounded-full mr-2"></span> 
+                    <span id="statusText">Conectando...</span>
+                </button>
+
+                <!-- Botón Forzar QR -->
+                <button onclick="forceQR()" title="Forzar nuevo código QR" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-full text-white text-[10px] font-extrabold uppercase transition-all flex items-center gap-1.5 shadow-md">
+                    <i class="fa-solid fa-qrcode"></i> <span>Ver / Generar QR</span>
+                </button>
+
+                <!-- Botón Reiniciar WhatsApp -->
+                <button onclick="restartWhatsApp()" title="Reiniciar cliente WhatsApp" class="p-2.5 bg-slate-800 hover:bg-slate-700 rounded-full text-slate-400 hover:text-white transition-all">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div id="systemAlerts" class="fixed right-4 top-24 z-50 w-[min(24rem,calc(100vw-2rem))] space-y-2 pointer-events-none"></div>
+
+    <main class="max-w-7xl mx-auto p-6 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-10">
+        
+        <!-- Sidebar de Controles (4/12) -->
+        <aside class="lg:col-span-4 space-y-6">
+            
+            <!-- Selector de Contexto (Tabs) -->
+            <div class="bg-slate-200/60 p-1.5 rounded-2xl flex items-center space-x-1 shadow-inner">
+                <button onclick="switchContext('groups')" id="tabGroups" class="tab-btn active flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all">
+                    <i class="fa-solid fa-users mr-1"></i> Grupos
+                </button>
+                <button onclick="switchContext('individuals')" id="tabIndividuals" class="tab-btn flex-1 py-2.5 rounded-xl text-slate-500 text-[10px] font-black uppercase tracking-wider transition-all">
+                    <i class="fa-solid fa-user mr-1"></i> Individual
+                </button>
+            </div>
+
+            <div class="glass-card p-6 rounded-[2.5rem] shadow-sm">
+                <!-- Banner de Alerta por Demora en Conexión -->
+                <div id="slowConnectBanner" class="hidden mb-4 p-3 bg-amber-50 rounded-2xl border border-amber-200 text-amber-800 text-xs flex justify-between items-center">
+                    <span class="font-medium text-[11px]"><i class="fa-solid fa-clock-rotate-left mr-1"></i> Conexión lenta: <span id="slowConnectElapsed">0 s</span></span>
+                    <button onclick="forceQR()" class="px-2.5 py-1 bg-amber-600 text-white rounded-lg font-bold text-[10px] uppercase">Generar QR</button>
+                </div>
+
+                <div class="space-y-3">
+                    <button onclick="openModal('modalGroups')" class="w-full bg-slate-50 text-slate-700 py-3.5 rounded-2xl font-bold text-xs hover:bg-slate-100 transition-all border border-slate-200/60 flex items-center justify-center group shadow-sm">
+                        <i class="fa-solid fa-users-viewfinder mr-2 text-emerald-500 group-hover:scale-110 transition-transform"></i> 
+                        <span id="btnManageText">Gestionar Grupos</span>
+                    </button>
+                    
+                    <button onclick="openModal('modalSettings')" class="w-full bg-slate-50 text-slate-700 py-3.5 rounded-2xl font-bold text-xs hover:bg-slate-100 transition-all border border-slate-200/60 flex items-center justify-center group shadow-sm">
+                        <i class="fa-solid fa-brain mr-2 text-purple-500 group-hover:scale-110 transition-transform"></i>
+                        <span>Configurar LMStudio / IA</span>
+                    </button>
+                </div>
+
+                <div class="mt-6 pt-6 border-t border-slate-100">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 italic">Filtros & Prompts</p>
+                    
+                    <div class="space-y-3.5">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label class="text-[9px] font-black text-slate-500 ml-1 uppercase">Desde</label>
+                                <input type="date" id="dateStart" class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[9px] font-black text-slate-500 ml-1 uppercase">Hasta</label>
+                                <input type="date" id="dateEnd" class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+                            </div>
+                        </div>
+
+                        <div class="py-2">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <p class="text-[9px] font-black text-slate-400 uppercase">Favoritos <span id="contextLabel">Grupos</span>:</p>
+                                <span id="favCount" class="text-[9px] font-black text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">0</span>
+                            </div>
+                            <div id="selectedSummary" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto custom-scrollbar p-1">
+                                <span class="text-[10px] text-slate-300 italic">Sin elementos seleccionados</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-100 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Extraer y guardar</p>
+                                <span id="audioOutputPreview" title="Ruta de salida de audios" class="max-w-48 truncate text-[9px] font-bold text-amber-600"><i class="fa-solid fa-folder-open mr-1"></i>Cargando ruta...</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 text-[10px] font-bold text-slate-600">
+                                <label class="flex items-center gap-1.5 cursor-pointer"><input id="extractAudio" type="checkbox" checked class="accent-emerald-600"> Audios</label>
+                                <label class="flex items-center gap-1.5 cursor-pointer"><input id="extractText" type="checkbox" class="accent-emerald-600"> Textos</label>
+                                <label class="flex items-center gap-1.5 cursor-pointer"><input id="extractMedia" type="checkbox" class="accent-emerald-600"> Multimedia</label>
+                            </div>
+                            <p class="text-[9px] text-slate-400 leading-relaxed">Paso 1. Usa el mismo rango y los chats seleccionados. Los audios OGG se guardan directamente en la ruta configurada.</p>
+                            <button id="btnExtract" onclick="extractContent()" class="w-full bg-amber-500 hover:bg-amber-600 text-white py-3.5 rounded-2xl font-black text-xs uppercase shadow-lg shadow-amber-500/20 transition-all active:scale-95 flex items-center justify-center tracking-wider">
+                                <i class="fa-solid fa-file-arrow-down mr-2"></i> Extraer contenido
+                            </button>
+                            <div id="extractionProgress" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200 text-[10px] text-amber-900 space-y-1">
+                                <div class="flex justify-between gap-3"><span id="extractionProgressMessage">Preparando extracción...</span><strong id="extractionProgressPercent">0%</strong></div>
+                                <div class="h-1.5 bg-amber-100 rounded-full overflow-hidden"><div id="extractionProgressBar" class="h-full bg-amber-500 transition-all" style="width:0%"></div></div>
+                                <div id="extractionProgressTime" class="text-[9px] text-amber-700">Tiempo restante: calculando…</div>
+                            </div>
+                            <div id="extractionResult" class="hidden p-3 rounded-xl text-[10px] leading-relaxed"></div>
+                            <div class="pt-2 grid grid-cols-2 gap-2">
+                                <button id="btnStartWhisper" onclick="startWhisper()" class="bg-sky-600 hover:bg-sky-700 text-white py-3 rounded-xl font-black text-[10px] uppercase transition-all disabled:opacity-60">
+                                    <i class="fa-solid fa-microphone-lines mr-1"></i> 2. Iniciar Whisper
+                                </button>
+                                <button id="btnConsolidateWhisper" onclick="consolidateWhisperTsv()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 py-3 rounded-xl font-black text-[10px] uppercase transition-all">
+                                    <i class="fa-solid fa-file-lines mr-1"></i> 3. Consolidar TSV
+                                </button>
+                            </div>
+                            <div id="consolidationProgress" class="hidden p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-[10px] text-indigo-900 space-y-1">
+                                <div class="flex justify-between gap-3"><span id="consolidationProgressMessage">Preparando consolidación...</span><strong id="consolidationProgressPercent">0%</strong></div>
+                                <div class="h-1.5 bg-indigo-100 rounded-full overflow-hidden"><div id="consolidationProgressBar" class="h-full bg-indigo-600 transition-all" style="width:0%"></div></div>
+                                <div id="consolidationProgressTime" class="text-[9px] text-indigo-700">Tiempo restante: calculando…</div>
+                            </div>
+                            <div id="whisperStatusBox" class="hidden p-3 rounded-xl text-[10px] leading-relaxed"></div>
+                        </div>
+                        
+                        <!--button id="btnGen" onclick="generate()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-4 rounded-2xl font-black text-xs uppercase shadow-xl shadow-emerald-500/20 hover:from-emerald-600 hover:to-teal-700 transition-all active:scale-95 flex items-center justify-center tracking-wider">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Generar Resumen
+                        </button-->
+
+                        <div class="pt-5 mt-5 border-t border-slate-100 space-y-3">
+                            <div class="flex items-center justify-between gap-3">
+                                <p class="text-[9px] font-black text-indigo-600 uppercase tracking-widest">Instrucción para el resumen IA</p>
+                                <span class="text-[9px] text-slate-400">Después de consolidar</span>
+                            </div>
+                            <textarea id="whisperInstructionInput" rows="4" placeholder="Ej.: Elabora un resumen pedagógico, identifica compromisos, responsables y fechas relevantes..." class="w-full p-3 bg-indigo-50/60 rounded-xl border border-indigo-100 text-xs outline-none focus:ring-2 focus:ring-indigo-500 transition-all custom-scrollbar resize-none"></textarea>
+                            <button id="btnAnalyzeWhisper" onclick="analyzeWhisperTranscript()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-2xl font-black text-xs uppercase shadow-lg shadow-indigo-500/20 transition-all active:scale-95">
+                                <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Enviar transcripción a LM Studio
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terminal de Logs -->
+            <div class="bg-slate-900 p-5 rounded-[2.5rem] shadow-xl overflow-hidden">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Telemetría de Sistema</span>
+                    <i class="fa-solid fa-terminal text-emerald-700 text-[10px]"></i>
+                </div>
+                <div id="logs" class="h-36 overflow-y-auto font-mono text-[10px] text-emerald-400/80 custom-scrollbar space-y-1"></div>
+            </div>
+        </aside>
+
+        <!-- Área del Resumen y Consultas (8/12) -->
+        <section class="lg:col-span-8">
+            <!-- Pantalla de Bienvenida -->
+            <div id="welcomeView" class="glass-card h-[680px] rounded-[3.5rem] border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center p-12 transition-all">
+                <div class="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mb-6 shadow-md border border-slate-100">
+                    <i class="fa-solid fa-robot text-4xl text-emerald-500"></i>
+                </div>
+                <h2 class="text-3xl font-black text-slate-800 mb-3 tracking-tighter italic">Hola, Andres Paz</h2>
+                <p class="text-slate-500 max-w-md text-sm leading-relaxed mb-6">Selecciona tus chats de la IER Josefina y analiza el contenido utilizando modelos locales Gemma-2 con LMStudio.</p>
+                <div class="flex items-center space-x-2 text-[11px] bg-slate-100 px-4 py-2 rounded-full font-semibold text-slate-600 border border-slate-200">
+                    <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                    <span>LMStudio Endpoint: <strong id="welcomeEndpoint" class="font-mono text-purple-700">http://169.254.173.61:1234/v1</strong></span>
+                </div>
+            </div>
+
+            <!-- Vista previa de la transcripción que Whisper consolidó -->
+            <div id="whisperView" class="hidden glass-card rounded-[3.5rem] shadow-sm overflow-hidden fade-in min-h-[680px] flex flex-col">
+                <div class="bg-indigo-50/70 px-8 py-6 border-b border-indigo-100 flex flex-wrap justify-between items-center gap-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-indigo-600 text-white text-[9px] font-black px-3.5 py-1.5 rounded-full uppercase tracking-widest shadow-md shadow-indigo-600/20">Transcripción consolidada</span>
+                        <p id="whisperTranscriptMeta" class="text-xs text-slate-500 font-bold"></p>
+                    </div>
+                    <button onclick="copyText('whisperTranscriptPreview')" class="px-4 py-2.5 bg-white rounded-xl text-slate-600 hover:text-indigo-600 shadow-sm border border-slate-200 transition-all hover:scale-105 flex items-center gap-2 text-xs font-bold">
+                        <i class="fa-solid fa-copy"></i> Copiar vista previa
+                    </button>
+                </div>
+                <div class="p-8 lg:p-10 flex-1 overflow-y-auto custom-scrollbar space-y-4">
+                    <p id="whisperTranscriptNotice" class="hidden p-3 rounded-xl text-xs bg-amber-50 border border-amber-200 text-amber-800"></p>
+                    <pre id="whisperTranscriptPreview" class="whitespace-pre-wrap p-6 bg-slate-50/70 rounded-3xl border border-slate-200/60 text-slate-800 leading-relaxed text-sm font-medium font-sans"></pre>
+                </div>
+            </div>
+
+            <!-- Pantalla de Resultados e Interacción -->
+            <div id="resultView" class="hidden glass-card rounded-[3.5rem] shadow-sm overflow-hidden fade-in min-h-[680px] flex flex-col">
+                <!-- Header de Resultados -->
+                <div class="bg-white/70 px-8 py-6 border-b border-slate-100 flex flex-wrap justify-between items-center gap-4">
+                    <div class="flex items-center space-x-3">
+                        <span id="typeBadge" class="bg-emerald-500 text-white text-[9px] font-black px-3.5 py-1.5 rounded-full uppercase tracking-widest shadow-md shadow-emerald-500/20">Análisis IA</span>
+                        <p id="resultMeta" class="text-xs text-slate-500 font-bold uppercase tracking-tight"></p>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <button onclick="copyActiveResult()" class="px-4 py-2.5 bg-white rounded-xl text-slate-600 hover:text-emerald-600 shadow-sm border border-slate-200 transition-all hover:scale-105 flex items-center gap-2 text-xs font-bold">
+                            <i class="fa-solid fa-copy"></i> Copiar
+                        </button>
+                        <button onclick="downloadActiveResult()" class="px-4 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all hover:scale-105 flex items-center gap-2 text-xs font-bold">
+                            <i class="fa-solid fa-download"></i> Descargar Reporte
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contenido del Resumen Principal -->
+                <div class="p-8 lg:p-10 flex-1 overflow-y-auto custom-scrollbar space-y-8">
+                    <div id="resultTabs" class="hidden flex flex-wrap gap-2 border-b border-slate-200 pb-4">
+                        <button id="tabConsolidated" onclick="switchResultTab('consolidated')" class="px-4 py-2.5 rounded-xl text-xs font-black transition-all">
+                            <i class="fa-solid fa-file-lines mr-1.5"></i> Consolidado
+                        </button>
+                        <button id="tabAiSummary" onclick="switchResultTab('summary')" class="px-4 py-2.5 rounded-xl text-xs font-black transition-all">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i> Resumen IA
+                        </button>
+                    </div>
+
+                    <div id="consolidatedResultPanel" class="hidden space-y-4">
+                        <p id="consolidatedResultMeta" class="text-xs font-bold text-slate-500"></p>
+                        <p id="consolidatedResultNotice" class="hidden p-3 rounded-xl text-xs bg-amber-50 border border-amber-200 text-amber-800"></p>
+                        <pre id="consolidatedResultText" class="whitespace-pre-wrap p-6 bg-slate-50/70 rounded-3xl border border-slate-200/60 text-slate-800 leading-relaxed text-sm font-medium font-sans"></pre>
+                    </div>
+
+                    <div id="summaryResultPanel">
+                        <div id="summaryText" class="p-6 bg-slate-50/70 rounded-3xl border border-slate-200/60 text-slate-800 leading-relaxed text-sm font-medium space-y-4">
+                            <!-- Contenido generado por la IA -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL: CÓDIGO QR Y ESTADO WHATSAPP -->
+    <div id="modalQR" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden fade-in text-center p-8 space-y-6">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
+                <div class="flex items-center space-x-2 text-emerald-600 font-extrabold text-lg">
+                    <i class="fa-brands fa-whatsapp text-2xl"></i>
+                    <span>Vincular WhatsApp</span>
+                </div>
+                <button onclick="closeModal('modalQR')" class="w-10 h-10 rounded-full hover:bg-slate-100 text-slate-400 transition-all flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div id="qrContainer" class="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-3xl border border-slate-200 min-h-[260px]">
+                <div id="qrSpinner" class="space-y-3">
+                    <i class="fa-solid fa-circle-notch animate-spin text-4xl text-emerald-500"></i>
+                    <p id="qrStatusMsg" class="text-xs text-slate-500 font-medium">Generando código QR para WhatsApp...</p>
+                </div>
+                <img id="qrImage" class="hidden w-64 h-64 rounded-2xl shadow-md border-4 border-white">
+            </div>
+
+            <p class="text-xs text-slate-500 leading-relaxed">
+                Abre WhatsApp en tu teléfono, ve a <strong>Dispositivos vinculados</strong> y escanea el código QR para autorizar el acceso.
+            </p>
+
+            <div class="flex gap-3 pt-2">
+                <button onclick="forceQR()" class="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-2xl transition-all shadow-md">
+                    <i class="fa-solid fa-qrcode mr-1"></i> Generar Nuevo QR
+                </button>
+                <button onclick="logoutWhatsApp()" class="flex-1 py-3.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-2xl transition-all">
+                    <i class="fa-solid fa-power-off mr-1"></i> Desvincular
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: GESTOR DE CHATS -->
+    <div id="modalGroups" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-4xl rounded-[3.5rem] shadow-2xl overflow-hidden fade-in">
+            <div class="p-10 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                <div>
+                    <h3 id="modalTitle" class="text-2xl font-black text-slate-800 tracking-tighter italic">Gestor de Grupos</h3>
+                    <p class="text-[11px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Sincronización de Favoritos</p>
+                </div>
+                <button onclick="closeModal('modalGroups')" class="w-12 h-12 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-all">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div class="p-8">
+                <div class="flex gap-4 mb-6">
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-magnifying-glass absolute left-5 top-4.5 text-slate-400"></i>
+                        <input type="text" id="searchGroups" oninput="renderGroups()" placeholder="Buscar chat por nombre..." 
+                            class="w-full pl-14 pr-8 py-4 bg-slate-50 rounded-2xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none text-sm transition-all">
+                    </div>
+                    <button onclick="toggleAllFiltered()" class="px-6 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-black transition-all">
+                        Seleccionar Filtrados
+                    </button>
+                </div>
+                
+                <div id="groupsContainer" class="flex flex-wrap gap-2.5 max-h-[380px] overflow-y-auto p-4 bg-slate-50/70 rounded-2xl border border-slate-200 custom-scrollbar content-start">
+                    <div class="w-full py-12 text-center text-slate-400 italic text-sm">Cargando lista de chats...</div>
+                </div>
+            </div>
+            <div class="p-8 bg-slate-50 border-t border-slate-100 flex justify-end space-x-4">
+                <button onclick="closeModal('modalGroups')" class="px-8 py-4 text-slate-500 font-bold text-xs">Cancelar</button>
+                <button onclick="saveGroupsToDB()" class="px-10 py-4 bg-emerald-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20">
+                    Guardar Seleccionados
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIGURACIÓN LMSTUDIO & IA -->
+    <div id="modalSettings" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-[3.5rem] shadow-2xl overflow-hidden fade-in">
+            <div class="p-8 bg-slate-900 text-white flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <i class="fa-solid fa-microchip text-purple-400 text-xl"></i>
+                    <h3 class="text-lg font-black italic tracking-tight">Configuración IA y salida de audios</h3>
+                </div>
+                <button onclick="closeModal('modalSettings')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="p-8 space-y-6">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">LM Studio Endpoint URL</label>
+                    <input type="text" id="lmUrl" placeholder="http://169.254.173.61:1234/v1" class="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:ring-2 focus:ring-purple-500 text-xs font-mono outline-none">
+                    <p class="text-[10px] text-slate-400">Dirección donde está corriendo la API de LMStudio (ej. http://169.254.173.61:1234/v1)</p>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Nombre del Modelo</label>
+                    <input type="text" id="lmModel" placeholder="gemma-2-2b-it" class="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:ring-2 focus:ring-purple-500 text-xs font-mono outline-none">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Ruta de salida de audios</label>
+                    <input type="text" id="audioOutputPath" placeholder="D:\xampp\htdocs\whisper\input" class="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:ring-2 focus:ring-sky-500 text-xs font-mono outline-none">
+                    <p class="text-[10px] text-slate-400">Por defecto: <span class="font-mono">D:\xampp\htdocs\whisper\input</span>. Los audios se guardan directamente allí.</p>
+                </div>
+
+                <div id="testResultBox" class="hidden p-4 rounded-2xl text-xs font-mono"></div>
+
+                <div class="flex gap-3 pt-2">
+                    <button onclick="testLMStudioConnection()" class="flex-1 py-4 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-2xl font-bold text-xs transition-all border border-purple-200">
+                        <i class="fa-solid fa-plug mr-1"></i> Probar Conexión
+                    </button>
+                    <button onclick="saveSystemConfig()" class="flex-1 bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase hover:bg-black transition-all shadow-lg">
+                        Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let availableGroups = [];
+        let selectedGroups = new Set();
+        let currentContext = 'groups'; // 'groups' o 'individuals'
+        let currentBotState = 'INITIALIZING';
+        let currentTranscript = '';
+        let whisperTranscript = { preview: '', meta: '', previewTruncated: false };
+        let activeResultTab = 'summary';
+        let connectionTimer = null;
+        let reportedConnectionSeconds = 0;
+        let hasReceivedStatus = false;
+        let lastStatusReceivedAt = 0;
+
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('dateStart').value = today;
+        document.getElementById('dateEnd').value = today;
+
+        // --- Navegación de Contexto ---
+        function switchContext(ctx) {
+            currentContext = ctx;
+            document.getElementById('tabGroups').classList.toggle('active', ctx === 'groups');
+            document.getElementById('tabIndividuals').classList.toggle('active', ctx === 'individuals');
+            document.getElementById('tabGroups').classList.toggle('text-slate-500', ctx !== 'groups');
+            document.getElementById('tabIndividuals').classList.toggle('text-slate-500', ctx !== 'individuals');
+            
+            document.getElementById('btnManageText').innerText = ctx === 'groups' ? 'Gestionar Grupos' : 'Gestionar Contactos';
+            document.getElementById('contextLabel').innerText = ctx === 'groups' ? 'Grupos' : 'Personas';
+            document.getElementById('modalTitle').innerText = ctx === 'groups' ? 'Gestor de Grupos' : 'Gestor de Contactos';
+            
+            updateSelectedSummary();
+            if(availableGroups.length > 0) renderGroups();
+            log(`Filtro cambiado a vista de ${ctx === 'groups' ? 'Grupos' : 'Contactos Individuales'}`, 'info');
+        }
+
+        function monitorConnectionSpeed() {
+            if (connectionTimer) clearInterval(connectionTimer);
+            
+            connectionTimer = setInterval(() => {
+                const slowBanner = document.getElementById('slowConnectBanner');
+                const slowElapsed = document.getElementById('slowConnectElapsed');
+                // No se debe diagnosticar una conexión lenta antes de recibir el
+                // estado del servidor. El contador anterior empezaba al abrir el panel.
+                if (!hasReceivedStatus) {
+                    if (slowBanner) slowBanner.classList.add('hidden');
+                    return;
+                }
+
+                const elapsedSeconds = currentBotState === 'READY'
+                    ? reportedConnectionSeconds
+                    : reportedConnectionSeconds + Math.max(0, Math.floor((Date.now() - lastStatusReceivedAt) / 1000));
+                if (slowElapsed) slowElapsed.innerText = `${elapsedSeconds} s`;
+                
+                if ((currentBotState === 'AUTHENTICATED' || currentBotState === 'LOADING') && elapsedSeconds > 45) {
+                    if (slowBanner) slowBanner.classList.remove('hidden');
+                } else {
+                    if (slowBanner) slowBanner.classList.add('hidden');
+                }
+            }, 3000);
+        }
+
+        // --- Manejo de Sockets ---
+        socket.on('status', d => {
+            currentBotState = d.status;
+            reportedConnectionSeconds = Number.isFinite(d.connectionElapsedSeconds) ? d.connectionElapsedSeconds : reportedConnectionSeconds;
+            hasReceivedStatus = true;
+            lastStatusReceivedAt = Date.now();
+            const badge = document.getElementById('statusBadge');
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            
+            const qrImg = document.getElementById('qrImage');
+            const qrSpinner = document.getElementById('qrSpinner');
+            const qrMsg = document.getElementById('qrStatusMsg');
+            const slowBanner = document.getElementById('slowConnectBanner');
+
+            if (d.qrData) {
+                qrImg.src = d.qrData;
+                qrImg.classList.remove('hidden');
+                qrSpinner.classList.add('hidden');
+            }
+
+            if (d.status === 'READY') {
+                dot.className = 'w-2.5 h-2.5 bg-emerald-500 rounded-full mr-2 shadow-sm shadow-emerald-500/50';
+                text.innerText = `Conectado (${reportedConnectionSeconds} s)`;
+                badge.className = 'flex items-center px-4 py-2 rounded-full border border-emerald-500/30 text-[10px] font-black uppercase bg-slate-800 text-emerald-400 transition-all';
+                if(slowBanner) slowBanner.classList.add('hidden');
+                closeModal('modalQR');
+                socket.emit('fetch_groups');
+            } else if (d.status === 'WAITING_QR') {
+                dot.className = 'w-2.5 h-2.5 bg-amber-500 rounded-full mr-2 pulse-emerald';
+                text.innerText = 'Escanear QR';
+                badge.className = 'flex items-center px-4 py-2 rounded-full border border-amber-500/30 text-[10px] font-black uppercase bg-slate-800 text-amber-400 transition-all cursor-pointer';
+                if(qrMsg) qrMsg.innerText = "Código QR listo para escaneo.";
+                if(slowBanner) slowBanner.classList.add('hidden');
+                openModal('modalQR');
+            } else if (d.status === 'LOADING') {
+                dot.className = 'w-2.5 h-2.5 bg-blue-500 rounded-full mr-2 animate-ping';
+                text.innerText = `Cargando (${d.loadingPercent || 0}%)`;
+                badge.className = 'flex items-center px-4 py-2 rounded-full border border-blue-500/30 text-[10px] font-black uppercase bg-slate-800 text-blue-400 transition-all';
+                if(qrMsg) qrMsg.innerText = `Sincronizando chats: ${d.loadingPercent || 0}%`;
+            } else if (d.status === 'AUTHENTICATED') {
+                dot.className = 'w-2.5 h-2.5 bg-teal-500 rounded-full mr-2';
+                text.innerText = 'Autenticado';
+                badge.className = 'flex items-center px-4 py-2 rounded-full border border-teal-500/30 text-[10px] font-black uppercase bg-slate-800 text-teal-400 transition-all';
+            } else if (d.status === 'INITIALIZING') {
+                dot.className = 'w-2.5 h-2.5 bg-sky-500 rounded-full mr-2 animate-pulse';
+                text.innerText = 'Conectando...';
+                badge.className = 'flex items-center px-4 py-2 rounded-full border border-sky-500/30 text-[10px] font-black uppercase bg-slate-800 text-sky-400 transition-all';
+                if (slowBanner) slowBanner.classList.add('hidden');
+            } else {
+                dot.className = 'w-2.5 h-2.5 bg-red-500 rounded-full mr-2';
+                text.innerText = 'Desconectado';
+                badge.className = 'flex items-center px-4 py-2 rounded-full border border-red-500/30 text-[10px] font-black uppercase bg-slate-800 text-red-400 transition-all';
+            }
+        });
+
+        socket.on('qr', dataUrl => {
+            const qrImg = document.getElementById('qrImage');
+            const qrSpinner = document.getElementById('qrSpinner');
+            if (dataUrl) {
+                qrImg.src = dataUrl;
+                qrImg.classList.remove('hidden');
+                qrSpinner.classList.add('hidden');
+                openModal('modalQR');
+            }
+        });
+
+        socket.on('config_data', d => {
+            selectedGroups = new Set(d.selectedGroups || []);
+            const targetUrl = d.lmStudioUrl || 'http://169.254.173.61:1234/v1';
+            document.getElementById('lmUrl').value = targetUrl;
+            document.getElementById('lmModel').value = d.modelName || 'gemma-2-2b-it';
+            const outputPath = d.audioOutputPath || 'D:\\xampp\\htdocs\\whisper\\input';
+            document.getElementById('audioOutputPath').value = outputPath;
+            const outputPreview = document.getElementById('audioOutputPreview');
+            if (outputPreview) {
+                outputPreview.title = outputPath;
+                outputPreview.innerHTML = '<i class="fa-solid fa-folder-open mr-1"></i>';
+                outputPreview.appendChild(document.createTextNode(outputPath));
+            }
+            document.getElementById('welcomeEndpoint').innerText = targetUrl;
+            updateSelectedSummary();
+        });
+
+        socket.on('groups_list', list => {
+            availableGroups = list || [];
+            // Compatibilidad con configuraciones antiguas que guardaban el nombre
+            // del chat. Desde ahora se guarda su ID para evitar colisiones de nombres.
+            const ids = new Set(availableGroups.map(chat => chat.id));
+            for (const chat of availableGroups) {
+                if (selectedGroups.has(chat.name) && !ids.has(chat.name)) {
+                    selectedGroups.delete(chat.name);
+                    selectedGroups.add(chat.id);
+                }
+            }
+            updateSelectedSummary();
+            renderGroups();
+        });
+
+        socket.on('log', d => {
+            log(d.msg, d.type);
+        });
+
+        socket.on('system_alert', alertData => showSystemAlert(alertData));
+
+        function formatRemainingTime(milliseconds) {
+            const seconds = Math.max(0, Math.ceil((Number(milliseconds) || 0) / 1000));
+            if (seconds < 1) return 'menos de 1 s';
+            if (seconds < 60) return `~${seconds} s`;
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return remainingSeconds ? `~${minutes} min ${remainingSeconds} s` : `~${minutes} min`;
+        }
+
+        function progressTimeLabel(progress) {
+            if (Number(progress.percent) >= 100) return 'Proceso completado.';
+            if (!progress.etaMs || Number(progress.percent) <= 0) return 'Tiempo restante: calculando…';
+            return `Tiempo restante aproximado: ${formatRemainingTime(progress.etaMs)}`;
+        }
+
+        socket.on('extraction_progress', d => {
+            const progress = document.getElementById('extractionProgress');
+            progress.classList.remove('hidden');
+            document.getElementById('extractionProgressMessage').innerText = d.message || 'Procesando...';
+            const percent = Math.max(0, Math.min(100, Number(d.percent) || 0));
+            document.getElementById('extractionProgressPercent').innerText = `${percent}%`;
+            document.getElementById('extractionProgressBar').style.width = `${percent}%`;
+            document.getElementById('extractionProgressTime').innerText = progressTimeLabel(d);
+        });
+
+        socket.on('consolidation_progress', d => {
+            const progress = document.getElementById('consolidationProgress');
+            progress.classList.remove('hidden');
+            document.getElementById('consolidationProgressMessage').innerText = d.message || 'Consolidando...';
+            const percent = Math.max(0, Math.min(100, Number(d.percent) || 0));
+            document.getElementById('consolidationProgressPercent').innerText = `${percent}%`;
+            document.getElementById('consolidationProgressBar').style.width = `${percent}%`;
+            document.getElementById('consolidationProgressTime').innerText = progressTimeLabel(d);
+        });
+
+        socket.on('extraction_result', d => {
+            const button = document.getElementById('btnExtract');
+            button.disabled = false;
+            button.innerHTML = '<i class="fa-solid fa-file-arrow-down mr-2"></i> Extraer contenido';
+            const box = document.getElementById('extractionResult');
+            box.classList.remove('hidden');
+            if (d.error) {
+                box.className = 'p-3 rounded-xl text-[10px] leading-relaxed bg-red-50 border border-red-200 text-red-800';
+                box.innerText = d.error;
+                return;
+            }
+            const r = d.result;
+            box.className = 'p-3 rounded-xl text-[10px] leading-relaxed bg-emerald-50 border border-emerald-200 text-emerald-900';
+            const failureDetail = r.failedFiles
+                ? ` ${r.failedFiles} archivo(s) no se pudieron descargar.${r.errors?.length ? ` Detalle: ${r.errors.slice(0, 2).join(' | ')}` : ''}`
+                : '';
+            box.innerText = `Listo en ${(d.durationMs / 1000).toFixed(1)} s. ${r.savedAudio} audios, ${r.textCount} textos y ${r.savedMedia} archivos multimedia guardados en: ${r.outputFolder || r.relativeFolder}. Se revisaron ${r.scannedMessages} mensajes (hasta ${r.historyLimit} recientes por chat).${failureDetail}`;
+        });
+
+        socket.on('whisper_job_result', d => {
+            const button = document.getElementById('btnStartWhisper');
+            const isRunning = d.status === 'started' || d.status === 'running';
+            button.disabled = isRunning;
+            button.innerHTML = isRunning
+                ? '<i class="fa-solid fa-circle-notch animate-spin mr-1"></i> Whisper en proceso'
+                : '<i class="fa-solid fa-microphone-lines mr-1"></i> 2. Iniciar Whisper';
+            showWhisperStatus(d.message || 'Estado de Whisper actualizado.', d.status === 'error' ? 'error' : (d.status === 'completed' ? 'success' : 'info'));
+        });
+
+        socket.on('whisper_transcript_ready', d => {
+            const button = document.getElementById('btnConsolidateWhisper');
+            button.disabled = false;
+            button.innerHTML = '<i class="fa-solid fa-file-lines mr-1"></i> 3. Consolidar TSV';
+            if (d.error) {
+                showWhisperStatus(d.error, 'error');
+                return;
+            }
+
+            const meta = `${d.fileCount} archivo(s) TSV · ${Number(d.characterCount || 0).toLocaleString('es-CO')} caracteres · Archivo completo: ${d.filePath}`;
+            whisperTranscript = {
+                preview: d.preview || '',
+                meta,
+                previewTruncated: Boolean(d.previewTruncated)
+            };
+            document.getElementById('whisperTranscriptMeta').innerText = meta;
+            document.getElementById('whisperTranscriptPreview').innerText = whisperTranscript.preview;
+            const notice = document.getElementById('whisperTranscriptNotice');
+            if (d.previewTruncated) {
+                notice.innerText = 'La vista previa fue recortada. LM Studio usará el archivo consolidado completo cuando lo envíe a analizar.';
+                notice.classList.remove('hidden');
+            } else {
+                notice.classList.add('hidden');
+            }
+            document.getElementById('welcomeView').classList.add('hidden');
+            document.getElementById('resultView').classList.add('hidden');
+            document.getElementById('whisperView').classList.remove('hidden');
+            document.getElementById('whisperView').scrollIntoView({ behavior: 'smooth' });
+            showWhisperStatus(`Transcripción consolidada: ${d.fileCount} TSV listo(s) para analizar.`, 'success');
+        });
+
+        socket.on('whisper_analysis_result', d => {
+            const button = document.getElementById('btnAnalyzeWhisper');
+            button.disabled = false;
+            button.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Enviar transcripción a LM Studio';
+            if (d.error) {
+                showWhisperStatus(d.error, 'error');
+                return;
+            }
+
+            document.getElementById('welcomeView').classList.add('hidden');
+            document.getElementById('whisperView').classList.add('hidden');
+            document.getElementById('resultView').classList.remove('hidden');
+            document.getElementById('typeBadge').innerText = 'Resumen IA';
+            document.getElementById('resultMeta').innerText = `LM Studio · TSV consolidados${d.durationMs ? ` · IA: ${(d.durationMs / 1000).toFixed(1)} s` : ''}`;
+            document.getElementById('summaryText').innerHTML = formatMarkdown(d.result);
+            configureWhisperResultTabs();
+            switchResultTab('summary');
+            document.getElementById('resultView').scrollIntoView({ behavior: 'smooth' });
+            showWhisperStatus('Resumen IA completado.', 'success');
+        });
+
+        socket.on('summary_result', d => {
+            const btn = document.getElementById('btnGen');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Generar Resumen';
+            
+            if(d.error) return log(d.error, 'error');
+            
+            currentTranscript = d.transcript || '';
+
+            document.getElementById('welcomeView').classList.add('hidden');
+            document.getElementById('resultView').classList.remove('hidden');
+            const seconds = d.durationMs ? ` · IA: ${(d.durationMs / 1000).toFixed(1)} s` : '';
+            document.getElementById('resultMeta').innerText = `Periodo: ${document.getElementById('dateStart').value} al ${document.getElementById('dateEnd').value}${seconds}`;
+            document.getElementById('typeBadge').innerText = currentContext === 'groups' ? 'Análisis Grupal' : 'Análisis Individual';
+            document.getElementById('resultTabs').classList.add('hidden');
+            document.getElementById('consolidatedResultPanel').classList.add('hidden');
+            document.getElementById('summaryResultPanel').classList.remove('hidden');
+            activeResultTab = 'summary';
+            document.getElementById('summaryText').innerHTML = formatMarkdown(d.result);
+            document.getElementById('resultView').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        socket.on('test_lmstudio_result', d => {
+            const box = document.getElementById('testResultBox');
+            box.classList.remove('hidden');
+            if (d.success) {
+                box.className = 'p-4 rounded-2xl text-xs font-mono bg-emerald-50 text-emerald-800 border border-emerald-200';
+                box.innerText = d.msg;
+            } else {
+                box.className = 'p-4 rounded-2xl text-xs font-mono bg-red-50 text-red-800 border border-red-200';
+                box.innerText = d.msg;
+            }
+        });
+
+        function log(msg, type = 'info') {
+            const l = document.getElementById('logs');
+            const div = document.createElement('div');
+            const colors = { success: 'text-emerald-400', error: 'text-red-400', info: 'text-sky-300' };
+            div.className = `${colors[type] || 'text-slate-400'} flex items-start py-0.5 leading-tight`;
+            div.innerHTML = `<span class="opacity-40 mr-2 text-[8px] mt-0.5 font-mono">${new Date().toLocaleTimeString()}</span> <span>${msg}</span>`;
+            l.appendChild(div);
+            l.scrollTop = l.scrollHeight;
+        }
+
+        function showSystemAlert(alertData) {
+            const host = document.getElementById('systemAlerts');
+            const colors = {
+                error: 'bg-red-600 border-red-400',
+                warning: 'bg-amber-500 border-amber-300',
+                info: 'bg-sky-600 border-sky-400'
+            };
+            const card = document.createElement('div');
+            card.className = `${colors[alertData.level] || colors.info} pointer-events-auto text-white border shadow-xl rounded-2xl p-4 text-xs fade-in`;
+            const title = document.createElement('p');
+            title.className = 'font-black pr-4';
+            title.innerText = alertData.message || 'Aviso del sistema';
+            const details = document.createElement('p');
+            details.className = 'mt-1 text-white/85 leading-relaxed';
+            details.innerText = alertData.details || '';
+            card.append(title, details);
+            host.appendChild(card);
+            setTimeout(() => card.remove(), 12000);
+        }
+
+        // --- Renderizado de UI ---
+        function renderGroups() {
+            const container = document.getElementById('groupsContainer');
+            const search = document.getElementById('searchGroups').value.toLowerCase();
+            
+            const filtered = availableGroups.filter(g => {
+                const matchesSearch = g.name.toLowerCase().includes(search);
+                const isCorrectType = currentContext === 'groups' ? g.isGroup : !g.isGroup;
+                return matchesSearch && isCorrectType;
+            });
+            
+            if(filtered.length === 0) {
+                container.innerHTML = `<div class="w-full py-12 text-center text-slate-400 italic text-xs">No se encontraron ${currentContext === 'groups' ? 'grupos' : 'contactos'} disponibles.</div>`;
+                return;
+            }
+
+            // Construcción con DOM, no con atributos onclick: los nombres de chat pueden
+            // contener comillas, apóstrofes o caracteres HTML válidos.
+            container.replaceChildren();
+            for (const chat of filtered) {
+                const button = document.createElement('button');
+                const active = selectedGroups.has(chat.id);
+                button.className = `group-chip px-4 py-2.5 rounded-2xl border text-xs font-bold transition-all ${active ? 'active shadow-md shadow-emerald-500/20' : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-400'}`;
+                const icon = document.createElement('i');
+                icon.className = `fa-solid ${chat.isGroup ? 'fa-users' : 'fa-user'} mr-1.5 opacity-60`;
+                button.appendChild(icon);
+                button.appendChild(document.createTextNode(` ${chat.name || 'Sin nombre'}`));
+                button.addEventListener('click', () => toggleGroup(chat.id));
+                container.appendChild(button);
+            }
+        }
+
+        function toggleGroup(name) {
+            selectedGroups.has(name) ? selectedGroups.delete(name) : selectedGroups.add(name);
+            renderGroups();
+        }
+
+        function toggleAllFiltered() {
+            const search = document.getElementById('searchGroups').value.toLowerCase();
+            const filtered = availableGroups.filter(g => {
+                const isCorrectType = currentContext === 'groups' ? g.isGroup : !g.isGroup;
+                return g.name.toLowerCase().includes(search) && isCorrectType;
+            });
+            const allSelected = filtered.every(g => selectedGroups.has(g.name));
+            filtered.forEach(g => allSelected ? selectedGroups.delete(g.name) : selectedGroups.add(g.name));
+            renderGroups();
+        }
+
+        function updateSelectedSummary() {
+            const container = document.getElementById('selectedSummary');
+            const list = Array.from(selectedGroups);
+            document.getElementById('favCount').innerText = list.length;
+            
+            if(list.length === 0) {
+                container.innerHTML = '<span class="text-[10px] text-slate-300 italic">Ninguno</span>';
+                return;
+            }
+            container.replaceChildren();
+            for (const id of list) {
+                const chat = availableGroups.find(item => item.id === id);
+                const tag = document.createElement('span');
+                tag.className = 'bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-lg text-[9px] font-bold';
+                tag.innerText = chat?.name || id;
+                container.appendChild(tag);
+            }
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function checkOrShowQR() {
+            if (currentBotState === 'WAITING_QR') openModal('modalQR');
+            else {
+                socket.emit('get_status');
+                if (currentBotState === 'READY') socket.emit('fetch_groups');
+                log(currentBotState === 'READY' ? 'WhatsApp ya está conectado.' : 'Consultando el estado de WhatsApp...', 'info');
+            }
+        }
+
+        function forceQR() {
+            const qrImg = document.getElementById('qrImage');
+            const qrSpinner = document.getElementById('qrSpinner');
+            const qrMsg = document.getElementById('qrStatusMsg');
+            
+            qrImg.classList.add('hidden');
+            qrSpinner.classList.remove('hidden');
+            if(qrMsg) qrMsg.innerText = "Forzando generación de nuevo código QR...";
+
+            openModal('modalQR');
+            socket.emit('force_qr');
+            log('Solicitud enviada para forzar nuevo código QR.', 'info');
+        }
+
+        function restartWhatsApp() {
+            socket.emit('restart_whatsapp');
+            log('Iniciando reinicio de WhatsApp...', 'info');
+        }
+
+        function logoutWhatsApp() {
+            if(confirm("¿Estás seguro de desvincular la cuenta de WhatsApp? Deberás escanear el QR nuevamente.")) {
+                socket.emit('logout_whatsapp');
+            }
+        }
+
+        function saveGroupsToDB() {
+            socket.emit('update_config', { selectedGroups: Array.from(selectedGroups) });
+            updateSelectedSummary();
+            closeModal('modalGroups');
+        }
+
+        function saveSystemConfig() {
+            const targetUrl = document.getElementById('lmUrl').value;
+            const targetModel = document.getElementById('lmModel').value;
+            const outputPath = document.getElementById('audioOutputPath').value;
+            
+            socket.emit('update_config', { 
+                lmStudioUrl: targetUrl, 
+                modelName: targetModel,
+                audioOutputPath: outputPath
+            });
+            document.getElementById('welcomeEndpoint').innerText = targetUrl;
+            closeModal('modalSettings');
+        }
+
+        function testLMStudioConnection() {
+            socket.emit('test_lmstudio', {
+                lmStudioUrl: document.getElementById('lmUrl').value,
+                modelName: document.getElementById('lmModel').value
+            });
+        }
+
+        function showWhisperStatus(message, tone = 'info') {
+            const box = document.getElementById('whisperStatusBox');
+            const styles = {
+                info: 'bg-sky-50 border border-sky-200 text-sky-800',
+                success: 'bg-emerald-50 border border-emerald-200 text-emerald-800',
+                error: 'bg-red-50 border border-red-200 text-red-800'
+            };
+            box.className = `p-3 rounded-xl text-[10px] leading-relaxed ${styles[tone] || styles.info}`;
+            box.innerText = message;
+            box.classList.remove('hidden');
+        }
+
+        function configureWhisperResultTabs() {
+            const preview = whisperTranscript.preview || document.getElementById('whisperTranscriptPreview').innerText;
+            const meta = whisperTranscript.meta || document.getElementById('whisperTranscriptMeta').innerText;
+            document.getElementById('consolidatedResultText').innerText = preview;
+            document.getElementById('consolidatedResultMeta').innerText = meta;
+            const notice = document.getElementById('consolidatedResultNotice');
+            if (whisperTranscript.previewTruncated) {
+                notice.innerText = 'Esta es una vista previa. El archivo completo se conserva en la ruta indicada y fue el que se envió a LM Studio.';
+                notice.classList.remove('hidden');
+            } else {
+                notice.classList.add('hidden');
+            }
+            document.getElementById('resultTabs').classList.remove('hidden');
+        }
+
+        function switchResultTab(tab) {
+            activeResultTab = tab === 'consolidated' ? 'consolidated' : 'summary';
+            const isConsolidated = activeResultTab === 'consolidated';
+            document.getElementById('consolidatedResultPanel').classList.toggle('hidden', !isConsolidated);
+            document.getElementById('summaryResultPanel').classList.toggle('hidden', isConsolidated);
+            const activeStyle = 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20';
+            const inactiveStyle = 'bg-slate-100 text-slate-600 hover:bg-slate-200';
+            const consolidatedTab = document.getElementById('tabConsolidated');
+            const summaryTab = document.getElementById('tabAiSummary');
+            consolidatedTab.className = `px-4 py-2.5 rounded-xl text-xs font-black transition-all ${isConsolidated ? activeStyle : inactiveStyle}`;
+            summaryTab.className = `px-4 py-2.5 rounded-xl text-xs font-black transition-all ${isConsolidated ? inactiveStyle : activeStyle}`;
+        }
+
+        function copyActiveResult() {
+            copyText(activeResultTab === 'consolidated' ? 'consolidatedResultText' : 'summaryText');
+        }
+
+        function downloadActiveResult() {
+            const consolidated = activeResultTab === 'consolidated';
+            downloadTxt(consolidated ? 'consolidatedResultText' : 'summaryText', consolidated ? 'Transcripcion_consolidada' : 'Resumen_IA');
+        }
+
+        function startWhisper() {
+            const button = document.getElementById('btnStartWhisper');
+            button.disabled = true;
+            button.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin mr-1"></i> Iniciando Whisper...';
+            showWhisperStatus('Solicitando permisos de administrador para ejecutar D:\\xampp\\htdocs\\whisper\\run_script.bat...', 'info');
+            socket.emit('start_whisper');
+        }
+
+        function consolidateWhisperTsv() {
+            const button = document.getElementById('btnConsolidateWhisper');
+            button.disabled = true;
+            button.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin mr-1"></i> Consolidando...';
+            const progress = document.getElementById('consolidationProgress');
+            progress.classList.remove('hidden');
+            document.getElementById('consolidationProgressMessage').innerText = 'Preparando consolidación...';
+            document.getElementById('consolidationProgressPercent').innerText = '0%';
+            document.getElementById('consolidationProgressBar').style.width = '0%';
+            document.getElementById('consolidationProgressTime').innerText = 'Tiempo restante: calculando…';
+            showWhisperStatus('Leyendo los archivos TSV de D:\\xampp\\htdocs\\whisper\\output...', 'info');
+            socket.emit('consolidate_whisper_tsv');
+        }
+
+        function analyzeWhisperTranscript() {
+            const instruction = document.getElementById('whisperInstructionInput').value.trim();
+            if (!instruction) return alert('Escribe la instrucción que deseas aplicar a la transcripción.');
+
+            const button = document.getElementById('btnAnalyzeWhisper');
+            button.disabled = true;
+            button.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Analizando con IA...';
+            showWhisperStatus('Enviando la transcripción consolidada a LM Studio...', 'info');
+            socket.emit('analyze_whisper_transcript', { instruction });
+        }
+
+        function generate() {
+            if(selectedGroups.size === 0) return alert("Por favor selecciona al menos un grupo o contacto.");
+            
+            const btn = document.getElementById('btnGen');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Procesando con IA...';
+            
+            socket.emit('generate_summary', {
+                startDate: document.getElementById('dateStart').value,
+                endDate: document.getElementById('dateEnd').value,
+                selectedChats: Array.from(selectedGroups)
+            });
+        }
+
+        function extractContent() {
+            if (selectedGroups.size === 0) return alert('Selecciona al menos un grupo o chat individual.');
+            const includeAudio = document.getElementById('extractAudio').checked;
+            const includeText = document.getElementById('extractText').checked;
+            const includeMedia = document.getElementById('extractMedia').checked;
+            if (!includeAudio && !includeText && !includeMedia) return alert('Selecciona al menos un tipo de contenido para extraer.');
+
+            const button = document.getElementById('btnExtract');
+            button.disabled = true;
+            button.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Extrayendo...';
+            const progress = document.getElementById('extractionProgress');
+            progress.classList.remove('hidden');
+            document.getElementById('extractionProgressMessage').innerText = 'Preparando extracción...';
+            document.getElementById('extractionProgressPercent').innerText = '0%';
+            document.getElementById('extractionProgressBar').style.width = '0%';
+            document.getElementById('extractionProgressTime').innerText = 'Tiempo restante: calculando…';
+            document.getElementById('extractionResult').classList.add('hidden');
+
+            socket.emit('extract_content', {
+                startDate: document.getElementById('dateStart').value,
+                endDate: document.getElementById('dateEnd').value,
+                selectedChats: Array.from(selectedGroups),
+                includeAudio,
+                includeText,
+                includeMedia
+            });
+        }
+
+        function copyText(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => log('Texto copiado al portapapeles.', 'success'));
+        }
+
+        function downloadTxt(elementId, prefix = 'Reporte') {
+            const content = document.getElementById(elementId).innerText;
+            const start = document.getElementById('dateStart').value;
+            const banner = `================================================\n   REPORTE INSTITUCIONAL IER JOSEFINA\n   Modelo: Gemma-2-2b-it (LMStudio)\n   Fecha: ${new Date().toLocaleDateString()}\n================================================\n\n`;
+            const blob = new Blob([banner + content], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${prefix}_${start}.txt`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function escapeHtml(text) {
+            return String(text || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function formatMarkdown(text) {
+            if(!text) return '';
+            return escapeHtml(text)
+                .replace(/^### (.*$)/gim, '<h3 class="text-base font-extrabold text-slate-900 mt-4 mb-2">$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2 class="text-lg font-black text-slate-900 mt-5 mb-2 border-b pb-1">$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1 class="text-xl font-black text-slate-900 mt-6 mb-3">$1</h1>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-900 font-bold">$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
+                .replace(/^\- (.*$)/gim, '<li class="ml-4 list-disc text-slate-700">$1</li>')
+                .replace(/\n/g, '<br>');
+        }
+
+        // Cargar estado inicial y monitorear velocidad
+        socket.emit('get_status');
+        socket.emit('get_config');
+        monitorConnectionSpeed();
+    </script>
+</body>
+</html>

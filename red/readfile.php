@@ -1,90 +1,21 @@
 <?php
-@session_start();
-require_once("../comun/config.php");
-require_once("../comun/funciones.php");
-if (!isset($_SESSION['usuario'])) {
-if (!isset($_GET['token'])){
-	echo "Ingreso incorrecto";
-	exit();
-}else{
-    $token = encriptar($_GET['file']);
-    if($_GET['token']!=$token){
-        echo "Ingreso incorrecto";
-        exit();
-    }
-}
-}
-/*
-* el objetivo es que se pueda descargar o visualizar un archivo solo si esta autenticado
-* el input type="checkbox" name="descargar" permite descargar o visualizar
-* adicionalmente que no se pueda acceder explorando en el navegador
-* este parametro $_POST['file'] es el que nos permite enviar la ruta relativa
-* puede cambiar a $_GET, si pasa por login, no hay problema
-* ej si nosotros tenemos fuera de www
-* ../datos/ #OJO variable $directorio
-* dentro de datos tenemos la carpeta recursos
-* y el archivo ejemplo.doc
-* $_POST['file']="recursos/ejemplo.doc";
-*/
-function outputFile( $filePath, $fileName, $mimeType = '' , $contentdisposition = "inline") {
-    // Setup
-    $nopermitidas = array("php","js","css","sql");
-    if (in_array($mimeType,$nopermitidas)){
-    echo "No se puede leer archivos $mimeType";
-    exit();
-    }
-    $mimeTypes = array(
-        'pdf' => 'application/pdf',
-        'txt' => 'text/plain',
-        'html' => 'text/html',
-        'exe' => 'application/octet-stream',
-        'zip' => 'application/zip',
-        'doc' => 'application/msword',
-        'xls' => 'application/vnd.ms-excel',
-        'ppt' => 'application/vnd.ms-powerpoint',
-        'gif' => 'image/gif',
-        'png' => 'image/png',
-        'jpeg' => 'image/jpg',
-        'jpg' => 'image/jpg',
-        'php' => 'text/plain'
-    );
-
-    // Send Headers
-    //-- next line fixed as per suggestion --
-    header('Content-Type: ' . $mimeTypes[$mimeType]);
-    header('Content-Disposition: '.$contentdisposition.' ; filename="' . $fileName . '"');//inline -> en linea attachment -> forzar descarga
-    header('Content-Transfer-Encoding: binary');
-    header('Accept-Ranges: bytes');
-    header('Cache-Control: private');
-    header('Pragma: private');
-    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-    readfile($filePath);
-}
-if(isset($_GET['file']))
-$_POST['file'] = $_GET['file'];
-if(isset($_GET['file'])) $_GET['file'] = str_replace("..","",$_GET['file']);
-if(isset($_POST['file'])) $_POST['file'] = str_replace("..","",$_POST['file']);
-if (!isset($_POST['file'])){
-?>
-<form method="post" action="readfile.php">
-	<label><input type="checkbox" name="descargar"> Descargar</label><br>
-	<textarea name="file" cols="80" >fechasycookies.pdf</textarea><br>
-	<input type="submit" value= "Leer">
-</form>
-<?php
-}else{
-$directorio = READFILE_SERVER;//aqui el directorio de los datos
-$safe_filenamefile = $directorio .$_POST['file'];
-$file = str_replace("\\", "/", $_POST['file']);
-$file1 = explode("/",$file);
-$safe_filename = end($file1);
-if (isset($_POST['descargar']) or isset($_GET['descargar']))
-$cont_att = "attachment";
-else
-$cont_att = "inline";
-outputFile ( $safe_filenamefile, 
-             $safe_filename, 
-             substr($safe_filename, -3),
-             $cont_att);
-}
-?>
+require_once __DIR__ . '/../comun/seguridad.php';
+guagua_exigir_rol(['admin','directivo','docente','estudiante','acudiente']);
+require_once __DIR__ . '/../comun/config.php';
+require_once __DIR__ . '/../comun/files.php';
+$relative = $_GET['file'] ?? $_POST['file'] ?? '';
+if (!is_string($relative)) guagua_error_acceso(400, 'Ruta inválida.');
+$path = guagua_media_path(READFILE_SERVER, $relative);
+if ($path === null) guagua_error_acceso(404, 'Archivo no disponible.');
+$extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+$inline = ['pdf'=>'application/pdf','jpg'=>'image/jpeg','jpeg'=>'image/jpeg','png'=>'image/png','gif'=>'image/gif','webp'=>'image/webp','mp3'=>'audio/mpeg','mp4'=>'video/mp4','ogg'=>'audio/ogg','wav'=>'audio/wav'];
+$mime = $inline[$extension] ?? 'application/octet-stream';
+$disposition = isset($_GET['descargar']) || isset($_POST['descargar']) || !isset($inline[$extension]) ? 'attachment' : 'inline';
+header('X-Content-Type-Options: nosniff');
+header('Cache-Control: private, no-store');
+header('Content-Type: ' . $mime);
+header("Content-Disposition: " . $disposition . "; filename=\"archivo." . $extension . "\"; filename*=UTF-8''" . rawurlencode(basename($path)));
+header('Content-Length: ' . filesize($path));
+// Liberar el bloqueo de sesión permite cargar otros módulos durante la descarga.
+session_write_close();
+readfile($path);

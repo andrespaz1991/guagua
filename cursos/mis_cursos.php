@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 ob_start();
 
 require_once(__DIR__ . '/../comun/autoload.php');
@@ -15,14 +12,14 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $academico = new Academico();
 $persona = new Persona();
-$institucion = new Institucion($_SESSION['id_institucion'] ?? 7);
+$institucion = new Institucion($_SESSION['id_institucion'] ?? 0);
 
 if (isset($_SESSION['rol'])) {
     $persona->validar_acudiente();
 }
 
 $_SESSION['modulo'] = 'cursos';
-$_SESSION['barra_busqueda'] = 'cursos';
+$_SESSION['barra_busqueda'] = 'mis_cursos_local';
 
 function mis_cursos_e($valor)
 {
@@ -80,7 +77,7 @@ function mis_cursos_placeholders(array $items)
     return implode(',', array_fill(0, count($items), '?'));
 }
 
-function mis_cursos_obtener_anos(mysqli $mysqli, Academico $academico)
+function mis_cursos_obtener_anos(mysqli $mysqli)
 {
     $sql = "SELECT id_ano_lectivo, nombre_ano_lectivo, estado FROM ano_lectivo ORDER BY id_ano_lectivo DESC";
     $result = $mysqli->query($sql);
@@ -147,21 +144,14 @@ function mis_cursos_icono_url(array $iconos, $id_icono)
     return SGA_COMUN_URL . '/img/png/' . $imagen;
 }
 
-function mis_cursos_obtener_cursos(mysqli $mysqli, array $anos, array $categorias, $busqueda = '', $campo = 'nombre_materia')
+function mis_cursos_obtener_cursos(mysqli $mysqli, $busqueda = '', $campo = 'nombre_materia')
 {
-    if (empty($anos) || empty($categorias)) {
-        return ['ok' => true, 'error' => '', 'rows' => []];
-    }
-
     $rol = $_SESSION['rol'] ?? 'invitado';
     $id_usuario = $_SESSION['id_usuario'] ?? '';
     $id_hijo = $_SESSION['id_hijo_seleccionado'] ?? ($_SESSION['hijo'] ?? '');
     $id_institucion = $_SESSION['id_institucion'] ?? '';
-    $ano_ids = array_map('intval', array_column($anos, 'id_ano_lectivo'));
-    $cat_ids = array_map('intval', array_keys($categorias));
 
-    // Una asignación sigue siendo válida aunque todavía no tenga horario. Por eso la
-    // consulta no debe unir ni filtrar por la tabla horario.
+    // Una asignación es válida aunque aún no tenga horario; por eso no se consulta esa tabla.
     $sql = "SELECT DISTINCT
                 a.id_asignacion,
                 a.descripcion,
@@ -172,10 +162,14 @@ function mis_cursos_obtener_cursos(mysqli $mysqli, array $anos, array $categoria
                 mo.nombre_materia,
                 u.nombre AS nombre_docente,
                 u.apellido AS apellido_docente,
-                u.foto
+                u.foto,
+                cc.nombre_categoria_curso,
+                al.nombre_ano_lectivo
             FROM asignacion a
             INNER JOIN materia_oficial mo ON a.id_asignatura = mo.id_materia
-            INNER JOIN usuario u ON a.id_docente = u.id_usuario";
+            INNER JOIN usuario u ON a.id_docente = u.id_usuario
+            INNER JOIN categoria_curso cc ON a.id_categoria_curso = cc.id_categoria_curso
+            INNER JOIN ano_lectivo al ON a.ano_lectivo = al.id_ano_lectivo";
 
     $types = '';
     $params = [];
@@ -184,14 +178,7 @@ function mis_cursos_obtener_cursos(mysqli $mysqli, array $anos, array $categoria
         $sql .= ' INNER JOIN inscripcion i ON a.id_asignacion = i.id_asignacion';
     }
 
-    $conditions = [];
-    $conditions[] = 'a.ano_lectivo IN (' . mis_cursos_placeholders($ano_ids) . ')';
-    $types .= str_repeat('i', count($ano_ids));
-    $params = array_merge($params, $ano_ids);
-
-    $conditions[] = 'a.id_categoria_curso IN (' . mis_cursos_placeholders($cat_ids) . ')';
-    $types .= str_repeat('i', count($cat_ids));
-    $params = array_merge($params, $cat_ids);
+    $conditions = ["LOWER(TRIM(al.estado)) = 'activo'"];
 
     if ($id_institucion !== '') {
         $conditions[] = 'a.institucion_educativa = ?';
@@ -215,12 +202,17 @@ function mis_cursos_obtener_cursos(mysqli $mysqli, array $anos, array $categoria
         $conditions[] = "LOWER(TRIM(a.visible)) = 'si'";
     }
 
-    $busqueda = trim((string) $busqueda);
+    $busqueda = mb_substr(trim((string) $busqueda), 0, 100, 'UTF-8');
     if ($busqueda !== '') {
         $campos_permitidos = [
             'nombre_materia' => 'mo.nombre_materia',
-            'docente' => "CONCAT(u.nombre, ' ', u.apellido)",
+            'docente' => "CONCAT_WS(' ', u.nombre, u.apellido)",
+            'nombre_docente' => "CONCAT_WS(' ', u.nombre, u.apellido)",
             'descripcion' => 'a.descripcion',
+            'nombre_categoria' => 'cc.nombre_categoria_curso',
+            'categoria' => 'cc.nombre_categoria_curso',
+            'anio' => 'al.nombre_ano_lectivo',
+            'todos' => "CONCAT_WS(' ', mo.nombre_materia, u.nombre, u.apellido, a.descripcion, cc.nombre_categoria_curso, al.nombre_ano_lectivo)",
         ];
         $campo_sql = $campos_permitidos[$campo] ?? $campos_permitidos['nombre_materia'];
         $conditions[] = 'LOWER(' . $campo_sql . ') LIKE ?';
@@ -228,7 +220,9 @@ function mis_cursos_obtener_cursos(mysqli $mysqli, array $anos, array $categoria
         $params[] = '%' . mb_strtolower($busqueda, 'UTF-8') . '%';
     }
 
-    $sql .= ' WHERE ' . implode(' AND ', $conditions);
+    if (!empty($conditions)) {
+        $sql .= ' WHERE ' . implode(' AND ', $conditions);
+    }
     $sql .= ' ORDER BY a.ano_lectivo DESC, a.id_categoria_curso DESC, mo.nombre_materia ASC';
 
     return mis_cursos_fetch_all($mysqli, $sql, $types, $params);
@@ -282,171 +276,181 @@ function mis_cursos_context_menu($id_asignacion, $nombre_materia, $rol)
     return $html;
 }
 
-function buscar_mis_cursos_html($mysqli_conn, $parametro_buqueda = '', $campo = 'nombre_materia')
+function mis_cursos_renderizar_tarjeta(array $curso, array $iconos, $rol)
 {
-    $academico = new Academico();
-    $anos_data = mis_cursos_obtener_anos($mysqli_conn, $academico);
-    if (!$anos_data['ok']) {
-        return "<p class='text-danger'>Error al cargar los años académicos.</p>";
+    $id = (int) $curso['id_asignacion'];
+    $materia = $curso['nombre_materia'] ?? '';
+    $materia_html = mis_cursos_e($materia);
+    $docente = mis_cursos_e(trim(($curso['nombre_docente'] ?? '') . ' ' . ($curso['apellido_docente'] ?? '')));
+    $descripcion = mis_cursos_e($curso['descripcion'] ?? '');
+    $categoria = mis_cursos_e($curso['nombre_categoria_curso'] ?? 'Curso académico');
+    $icono = mis_cursos_e(mis_cursos_icono_url($iconos, $curso['icono_asignacion'] ?? 0));
+    $visible = strtolower(trim($curso['visible'] ?? 'si')) !== 'no';
+    $estado = $visible ? 'Disponible' : 'Oculto';
+    $clase_estado = $visible ? '' : 'oculto';
+    $url_curso = SGA_CURSOS_URL . '/curso.php?asignacion=' . $id;
+
+    $html = "<article id='curso-{$id}' id_asignacion='{$id}' contextmenu='menu_curso{$id}' class='menu_curso{$id} droppable curso-card {$clase_estado}'>";
+    $html .= "<a class='curso-card__link' href='{$url_curso}' aria-label='Abrir el curso {$materia_html}'>";
+    $html .= "<div class='curso-card__meta'><span class='curso-card__category'>{$categoria}</span><span class='curso-card__status'>{$estado}</span></div>";
+    $html .= "<div class='curso-card__icon'><img id='iconomateria_{$id}' src='{$icono}' title='Descripción: {$descripcion}' alt='' loading='lazy'></div>";
+    $html .= "<h3 class='materia_droppable' title='{$materia_html}'>{$materia_html}</h3>";
+    $html .= "<p class='curso-card__teacher'>Docente: <strong class='docente_droppable'>{$docente}</strong></p>";
+    if ($descripcion !== '') {
+        $html .= "<p class='curso-card__description'>{$descripcion}</p>";
+    }
+    $html .= "<span class='curso-card__open'>Entrar al curso <span aria-hidden='true'>&rarr;</span></span>";
+    $html .= '</a>';
+
+    if ($rol === 'admin' || $rol === 'docente') {
+        $html .= mis_cursos_context_menu($id, $materia, $rol);
+        $html .= "<footer class='curso-acciones'>";
+        $html .= "<a href='modificar_curso.php?asignacion={$id}' class='btn btn-default btn-xs'>Editar</a>";
+        $html .= "<button type='button' class='btn btn-default btn-xs control-visibilidad-btn' data-id='{$id}' data-visible='" . ($visible ? 'si' : 'no') . "'>" . ($visible ? 'Ocultar' : 'Mostrar') . '</button>';
+        $html .= "<details class='mc-actions'><summary>Más opciones</summary><nav class='mc-actions__links' aria-label='Acciones del curso {$materia_html}'>";
+        $acciones = [
+            'Planeaciones' => SGA_PLANEADOR_URL . '/planeador.php?idasignacion=',
+            'Nueva actividad' => SGA_CURSOS_URL . '/actividad.php?asignacion=',
+            'Edunotas' => SGA_CURSOS_URL . '/edunotas.php?asignacion=',
+            'Estudiantes' => SGA_CURSOS_URL . '/estudiante_curso.php?asignacion=',
+            'Asistencia' => SGA_URL . '/asistencia/index.php?asignacion=',
+            'Nuevo RED' => SGA_RED_URL . '/nuevo_red.php?asignacion=',
+            'Nueva planeación' => SGA_URL . '/apps/PlanMind/index2.php?asignacion=',
+            'Horario' => SGA_URL . '/asistencia/horario.php?asignacion=',
+            'Reporte valorativo' => SGA_REPORTES_URL . '/informe_valorativo.php?asignacion=',
+            'Estadísticas' => SGA_REPORTES_URL . '/cursos/usuarios.php?id_asignacion=',
+        ];
+        foreach ($acciones as $etiqueta => $ruta) {
+            $html .= '<a href="' . mis_cursos_e($ruta . $id) . '">' . mis_cursos_e($etiqueta) . '</a>';
+        }
+        $html .= '</nav></details></footer>';
     }
 
+    return $html . '</article>';
+}
+
+function buscar_mis_cursos_html($mysqli_conn, $parametro_buqueda = '', $campo = 'nombre_materia')
+{
+    $anos_data = mis_cursos_obtener_anos($mysqli_conn);
     $categorias_data = mis_cursos_obtener_categorias($mysqli_conn);
-    if (!$categorias_data['ok']) {
-        return "<p class='text-danger'>Error al cargar las categorías.</p>";
+    $cursos_data = mis_cursos_obtener_cursos($mysqli_conn, $parametro_buqueda, $campo);
+
+    if (!$anos_data['ok'] || !$categorias_data['ok'] || !$cursos_data['ok']) {
+        return "<div class='mis-cursos-empty mis-cursos-error'>No fue posible cargar los cursos. Actualice la página e inténtelo nuevamente.</div>";
     }
 
     $anos = $anos_data['rows'];
     $categorias = $categorias_data['rows'];
-    $cursos_data = mis_cursos_obtener_cursos($mysqli_conn, $anos, $categorias, $parametro_buqueda, $campo);
-    if (!$cursos_data['ok']) {
-        return "<p class='text-danger'>Error al cargar los cursos.</p>";
+    $cursos = $cursos_data['rows'];
+    $iconos = mis_cursos_obtener_iconos($mysqli_conn, $cursos);
+    [$cursos_por_ano_categoria, $conteos_por_ano] = mis_cursos_agrupar_cursos($cursos);
+    $rol = $_SESSION['rol'] ?? 'invitado';
+
+    if (empty($cursos)) {
+        return "<div class='mis-cursos-empty'><span aria-hidden='true'>⌕</span><h3>No encontramos cursos</h3><p>Pruebe con otro término o criterio de búsqueda.</p></div>";
     }
 
-    $iconos = mis_cursos_obtener_iconos($mysqli_conn, $cursos_data['rows']);
-    [$cursos_por_ano_categoria, $conteos_por_ano] = mis_cursos_agrupar_cursos($cursos_data['rows']);
+    $total_cursos = count($cursos);
+    $output = "<section class='mis-cursos-content' aria-live='polite'>";
+    $output .= "<header class='mis-cursos-library'>";
+    $output .= "<div class='mis-cursos-library__heading'><span class='mis-cursos-library__icon' aria-hidden='true'>▦</span><div><p>Organización académica</p><h2>Biblioteca de cursos</h2></div></div>";
+    $output .= "<div class='mis-cursos-summary'><strong>{$total_cursos}</strong><span>curso" . ($total_cursos === 1 ? '' : 's') . " en el listado" . '</span></div>';
+    $output .= '</header>';
 
-    $rol = $_SESSION['rol'] ?? 'invitado';
-    $cookie_col_class = (isset($_COOKIE['checked_lista_docentes']) && $_COOKIE['checked_lista_docentes'] === 'true') ? '10' : '12';
-    $output = '<div class="container-fluid bg-3 text-center"><div class="row">';
-    $output .= '<div class="col-md-' . $cookie_col_class . ' espacio_curso">';
+    foreach ($anos as $ano) {
+        $id_ano = (int) $ano['id_ano_lectivo'];
+        $cantidad_categorias = $conteos_por_ano[$id_ano] ?? 0;
+        if ($cantidad_categorias === 0) {
+            continue;
+        }
 
-    foreach ($anos as $row_ano) {
-        $id_ano_lectivo = (int) $row_ano['id_ano_lectivo'];
-        $nombre_ano_lectivo = mis_cursos_e($row_ano['nombre_ano_lectivo']);
-        $num_cat_ano = $conteos_por_ano[$id_ano_lectivo] ?? 0;
+        $nombre_ano = mis_cursos_e($ano['nombre_ano_lectivo']);
+        $output .= "<section class='curso-year'>";
+        $output .= "<button type='button' class='curso-year__toggle' aria-expanded='true' aria-controls='id_{$id_ano}'>";
+        $output .= "<span>{$nombre_ano}</span><small>{$cantidad_categorias} categoría" . ($cantidad_categorias === 1 ? '' : 's') . '</small></button>';
+        $output .= "<div class='anos' id='id_{$id_ano}'>";
 
-        $output .= "<div id='estilo_ano'></div>";
-        $output .= "<p id='pid_{$id_ano_lectivo}' onclick=\"mitoogle('#id_{$id_ano_lectivo}')\" style='cursor:pointer;'>";
-        $output .= "{$nombre_ano_lectivo}";
-        $output .= "<span id='estilo_categoria_curso'>Categorías en uso: {$num_cat_ano}</span></p>";
-        $output .= "<div class='anos' id='id_{$id_ano_lectivo}'>";
-
-        foreach ($categorias as $id_cat => $nombre_cat) {
-            $cursos_categoria = $cursos_por_ano_categoria[$id_ano_lectivo][$id_cat] ?? [];
+        foreach ($categorias as $id_categoria => $nombre_categoria) {
+            $cursos_categoria = $cursos_por_ano_categoria[$id_ano][$id_categoria] ?? [];
             if (empty($cursos_categoria)) {
                 continue;
             }
 
-            $id_cat_div = 'cat_' . $id_ano_lectivo . $id_cat;
-            $total_categoria = count($cursos_categoria);
-            $output .= '<div class="row"><div class="col-sm-11 col-sm-offset-1">';
-            $output .= '<div id="separador_cursos"></div>';
-            $output .= '<p onmouseup="ocultar_ano_cat(\'' . $id_cat_div . '\');" title="Total de Cursos: ' . $total_categoria . '" style="cursor:pointer;" class="Abckids">' . mis_cursos_e($nombre_cat) . '<span id="separador_cursos_encontrados"> Cursos Encontrados: ' . $total_categoria . '</span></p>';
-            $output .= '</div></div><div class="cats" id="' . $id_cat_div . '"><div class="row">';
+            $id_categoria_html = 'cat_' . $id_ano . '_' . (int) $id_categoria;
+            $total = count($cursos_categoria);
+            $output .= "<section class='curso-category'>";
+            $output .= "<button type='button' class='curso-category__toggle' aria-expanded='true' aria-controls='{$id_categoria_html}'>";
+            $output .= '<span>' . mis_cursos_e($nombre_categoria) . "</span><small>{$total} curso" . ($total === 1 ? '' : 's') . '</small></button>';
+            $output .= "<div class='cats' id='{$id_categoria_html}'><div class='curso-grid'>";
 
-            foreach ($cursos_categoria as $rowa) {
-                $id_asignacion = (int) $rowa['id_asignacion'];
-                $nombre_materia = $rowa['nombre_materia'] ?? '';
-                $nombre_materia_html = mis_cursos_e($nombre_materia);
-                $nombre_docente = mis_cursos_e(trim(($rowa['nombre_docente'] ?? '') . ' ' . ($rowa['apellido_docente'] ?? '')));
-                $descripcion = mis_cursos_e($rowa['descripcion'] ?? '');
-                $icono_url = mis_cursos_e(mis_cursos_icono_url($iconos, $rowa['icono_asignacion'] ?? 0));
-                $es_visible = (strtolower(trim($rowa['visible'] ?? 'si')) !== 'no');
-                $visible_class = $es_visible ? '' : 'oculto';
-                $link_modificar = 'modificar_curso.php?asignacion=' . $id_asignacion;
-
-                $output .= "<div id='curso-{$id_asignacion}' contextmenu='menu_curso{$id_asignacion}' class='col-sm-2 menu_curso{$id_asignacion} droppable curso-card {$visible_class}'>";
-                $output .= "<h4 class='Abckids'><strong><span title='{$nombre_materia_html}'>" . mis_cursos_e(mb_strtoupper(puntos_suspensivos($nombre_materia, 20), 'UTF-8')) . '</span></strong></h4>';
-                $output .= "<h5 class='Abckids'>Docente: {$nombre_docente}</h5>";
-                $output .= "<a href='" . SGA_CURSOS_URL . "/curso.php?asignacion={$id_asignacion}'>";
-                $output .= "<img id='iconomateria_{$id_asignacion}' width='70%' height='70%' src='{$icono_url}' title='Descripción: {$descripcion}' class='img-responsive' style='margin-left:30px!important' alt='Imagen del curso'>";
-                $output .= '</a>';
-
-                if ($rol === 'admin' || $rol === 'docente') {
-                    $output .= mis_cursos_context_menu($id_asignacion, $nombre_materia, $rol);
-                    $output .= "<div class='curso-acciones'>";
-                    $output .= "<a href='{$link_modificar}' class='btn btn-default btn-xs'>Modificar</a>";
-                    $texto_boton = $es_visible ? 'Ocultar' : 'Mostrar';
-                    $data_visible = $es_visible ? 'si' : 'no';
-                    $output .= "<button class='btn btn-default btn-xs control-visibilidad-btn' data-id='{$id_asignacion}' data-visible='{$data_visible}'>{$texto_boton}</button>";
-                    $output .= '</div>';
-                }
-
-                $output .= '</div>';
+            foreach ($cursos_categoria as $curso) {
+                $output .= mis_cursos_renderizar_tarjeta($curso, $iconos, $rol);
             }
 
-            $output .= '</div></div>';
+            $output .= '</div></div></section>';
         }
 
-        $output .= '</div>';
+        $output .= '</div></section>';
     }
 
-    $output .= '</div></div></div>';
-    return $output;
+    return $output . '</section>';
 }
 
 if (isset($_GET['buscar_mis_cursos'])) {
-    $datos = $_POST['datos'] ?? ($_GET['buscar_mis_cursos'] ?? '');
-    $campo = $_POST['campo'] ?? 'nombre_materia';
+    header('Content-Type: text/html; charset=utf-8');
+    $datos = $_POST['datos'] ?? '';
+    $campo = $_POST['campo'] ?? 'todos';
+    $datos = is_string($datos) ? $datos : '';
+    $campo = is_string($campo) ? $campo : 'todos';
 
     echo buscar_mis_cursos_html($mysqli, $datos, $campo);
     exit();
 }
 
-$anos_inactivos_json = json_encode($academico->consultar_anios());
+$anos_inactivos_json = json_encode($academico->consultar_anios() ?: [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 
 ob_start();
 ?>
-<style>
-    .curso-card {
-        position: relative;
-        text-align: center;
-        margin: 2% 5%;
-        border: 2px solid #ccc;
-        border-radius: 15px;
-        transition: all 0.3s ease-in-out;
-        padding: 15px 15px 10px 15px;
-    }
-    .curso-card.oculto {
-        opacity: 0.6;
-        filter: grayscale(80%);
-        border: 2px dashed #e74c3c;
-        background-color: #fdf5f5;
-    }
-    .curso-acciones {
-        margin-top: 10px;
-    }
-    .curso-acciones .btn {
-        margin: 0 3px;
-    }
-</style>
+<link rel="stylesheet" href="<?php echo mis_cursos_e(SGA_CURSOS_URL); ?>/assets/mis-cursos.css?v=<?php echo filemtime(__DIR__ . '/assets/mis-cursos.css'); ?>">
 <?php
 $estilos_y_scripts = ob_get_clean();
 ?>
-<script>
-    $(document).ready(function() {
-        if (typeof ocultar_anios_no_vigentes === "function") {
-            ocultar_anios_no_vigentes(<?php echo $anos_inactivos_json; ?>);
-        }
-    });
-</script>
 
-<div id="jumbotron" class="jumbotron"
+
+<section aria-label="Mis cursos" class="mis-cursos-page" id="mis-cursos-page" data-csrf="<?php echo mis_cursos_e(guagua_csrf_token()); ?>" data-inactive-years="<?php echo mis_cursos_e($anos_inactivos_json); ?>">
+<header id="jumbotron" class="jumbotron mis-cursos-hero"
     <?php if (!empty($institucion->BANNER_INSTITUCION)): ?>
-        style="background-size: contain; background-image: url('<?php echo mis_cursos_e(SGA_COMUN_SGA_DATA_BANNER . '/' . $institucion->BANNER_INSTITUCION); ?>')"
+        style="background-image: url('<?php echo mis_cursos_e(SGA_COMUN_SGA_DATA_BANNER . '/' . $institucion->BANNER_INSTITUCION); ?>')"
     <?php endif; ?>>
-    <div class="container text-center">
-        <?php if (empty($institucion->BANNER_INSTITUCION)): ?>
-            <h1 class="fip">MIS CURSOS</h1>
-        <?php endif; ?>
-
+    <div class="container">
+        <div class="mis-cursos-hero__content">
+            <div>
+                <p class="mis-cursos-hero__eyebrow">Espacio académico</p>
+                <h1 class="mis-cursos-hero__title">Mis cursos</h1>
+                <p class="mis-cursos-hero__subtitle">Acceda a sus asignaturas, recursos y actividades académicas desde un solo lugar.</p>
+            </div>
         <?php if (($_SESSION['rol'] ?? '') === 'admin' || ($_SESSION['rol'] ?? '') === 'docente'): ?>
-            <div class="btn-group" id="boton_opcion_curso">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Opciones <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="crear_curso.php">Nuevo Curso</a></li>
-                </ul>
+            <div class="mis-cursos-hero__action" id="boton_opcion_curso">
+                <a href="crear_curso.php" class="btn btn-default"><span aria-hidden="true">+</span> Crear nuevo curso</a>
             </div>
         <?php endif; ?>
+        </div>
     </div>
-</div>
+</header>
 
-<span id="span_buscar_mis_cursos">
+<form class="mc-toolbar" id="mc-search-form" role="search">
+    <label class="mc-search" for="mc-search"><span aria-hidden="true">⌕</span><span class="mc-sr">Buscar cursos</span><input id="mc-search" type="search" placeholder="Buscar una asignatura, docente o categoría…" autocomplete="off" maxlength="100"></label>
+    <label class="mc-sr" for="mc-field">Buscar por</label>
+    <select id="mc-field"><option value="todos">Todos los campos</option><option value="nombre_materia">Asignatura</option><option value="nombre_docente">Docente</option><option value="nombre_categoria">Categoría</option><option value="anio">Año lectivo</option></select>
+    <button class="mc-reset" type="button" id="mc-reset" title="Limpiar búsqueda">Limpiar</button>
+    <div class="mc-views" role="group" aria-label="Vista de cursos"><button type="button" data-view="grid" aria-label="Vista de cuadrícula" aria-pressed="true">▦</button><button type="button" data-view="list" aria-label="Vista de lista" aria-pressed="false">☰</button></div>
+</form>
+<div class="mc-feedback" role="status" id="mc-feedback"></div>
+<div id="span_buscar_mis_cursos" aria-live="polite" aria-busy="false">
     <?php echo buscar_mis_cursos_html($mysqli); ?>
-</span>
-<br>
+</div>
+<script defer src="<?php echo mis_cursos_e(SGA_CURSOS_URL); ?>/assets/mis-cursos.js?v=<?php echo filemtime(__DIR__ . '/assets/mis-cursos.js'); ?>"></script>
+</section>
 
 <?php
 $contenido = ob_get_contents();
@@ -454,86 +458,3 @@ ob_end_clean();
 $contenido = $estilos_y_scripts . $contenido;
 include('../comun/plantilla.php');
 ?>
-
-<script>
-    function inicializarControlVisibilidad() {
-        var container = $('#span_buscar_mis_cursos');
-
-        container.off('click', '.control-visibilidad-btn');
-
-        container.on('click', '.control-visibilidad-btn', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            var button = $(this);
-            var asignacionId = button.data('id');
-            var currentState = button.data('visible');
-            var newState = (currentState === 'si') ? 'no' : 'si';
-
-            $.ajax({
-                url: 'actualizar_visibilidad.php',
-                type: 'POST',
-                data: JSON.stringify({
-                    id_asignacion: asignacionId,
-                    visible: newState
-                }),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        var cursoCard = $('#curso-' + asignacionId);
-                        if (newState === 'no') {
-                            cursoCard.addClass('oculto');
-                            button.text('Mostrar');
-                            button.data('visible', 'no');
-                        } else {
-                            cursoCard.removeClass('oculto');
-                            button.text('Ocultar');
-                            button.data('visible', 'si');
-                        }
-                    } else {
-                        console.error('Error del servidor: ' + response.message);
-                        alert('Hubo un error al actualizar el curso. Revise la consola para más detalles.');
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Error de AJAX: ' + textStatus, errorThrown);
-                    alert('Hubo un error de comunicación con el servidor.');
-                }
-            });
-        });
-    }
-
-    function inicializarMenusContextuales() {
-        $('[contextmenu]').each(function() {
-            var menuId = $(this).attr('contextmenu');
-            var selector = '.' + menuId;
-
-            if (!$(this).data('contextMenu')) {
-                $.contextMenu({
-                    selector: selector,
-                    items: $.contextMenu.fromMenu($('#' + menuId))
-                });
-                $(this).data('contextMenu', true);
-            }
-        });
-    }
-
-    $(document).ready(function() {
-        inicializarMenusContextuales();
-        inicializarControlVisibilidad();
-
-        var observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.addedNodes.length) {
-                    inicializarMenusContextuales();
-                }
-            });
-        });
-
-        var container = document.getElementById('span_buscar_mis_cursos');
-        if (container) {
-            observer.observe(container, { childList: true, subtree: true });
-        }
-    });
-</script>

@@ -126,11 +126,11 @@ function renderizar_tabla_instituciones($busqueda, $pagina, $sort_by, $sort_orde
         echo '</thead><tbody class="divide-y divide-gray-200">';
         
         while ($fila = $resultado->fetch_assoc()) {
-            $logo = !empty($fila['logo_institucion']) ? $fila['logo_institucion'] : 'https://via.placeholder.com/40';
+            $logo = !empty($fila['logo_institucion']) ? $fila['logo_institucion'] : '/guagua/comun/img/user-icon2.png';
             
             echo '<tr class="bg-white hover:bg-blue-50 transition-colors duration-200 group">';
             echo '<td class="px-6 py-4 font-bold text-slate-900 whitespace-nowrap">#' . htmlspecialchars($fila['id_institucion_educativa']) . '</td>';
-            echo '<td class="px-6 py-4"><img src="' . htmlspecialchars($logo) . '" alt="Logo" class="w-10 h-10 rounded-full object-cover border border-slate-200 shadow-sm" onerror="this.src=\'https://via.placeholder.com/40\'"></td>';
+            echo '<td class="px-6 py-4"><img src="' . htmlspecialchars($logo) . '" alt="Logo" class="w-10 h-10 rounded-full object-cover border border-slate-200 shadow-sm" onerror="this.src=\'/guagua/comun/img/user-icon2.png\'"></td>';
             echo '<td class="px-6 py-4 font-semibold text-slate-800">' . htmlspecialchars($fila['nombre_institucion']) . '</td>';
             echo '<td class="px-6 py-4 text-slate-600 truncate max-w-[200px]" title="'.htmlspecialchars($fila['direccion_institucion']).'">' . htmlspecialchars($fila['direccion_institucion']) . '</td>';
             echo '<td class="px-6 py-4 text-slate-600">' . htmlspecialchars($fila['telefono_institucion']) . '</td>';
@@ -267,9 +267,8 @@ if (isset($_GET['Actualizar']) && !empty($_GET['Actualizar'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Instituciones - Vallesol</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
+    <script src="/guagua/comun/js/sweetalert2@11.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         .loader-line {

@@ -1,0 +1,4 @@
+Require local
+<FilesMatch "\.(py|bat|txt)$">
+  Require all denied
+</FilesMatch>

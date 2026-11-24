@@ -1,0 +1,64 @@
+- generic [active] [ref=f3e1]:
+  - generic [ref=f3e2]:
+    - complementary [ref=f3e3]:
+      - generic [ref=f3e4]:
+        - generic [ref=f3e5]: 
+        - heading "Malla viva" [level=2] [ref=f3e6]
+      - generic [ref=f3e7]:
+        - heading "Filtros Principales" [level=3] [ref=f3e8]
+        - generic [ref=f3e9]:
+          - generic [ref=f3e10]: Grado
+          - generic [ref=f3e11]:
+            - combobox "Grado" [ref=f3e12]:
+              - option "Seleccione un grado..." [selected]
+              - option "6"
+              - option "7"
+            - generic: 
+        - generic [ref=f3e13]:
+          - generic [ref=f3e14]: Materia
+          - generic [ref=f3e15]:
+            - combobox "Materia" [ref=f3e16]:
+              - option "Seleccione una materia..." [selected]
+              - option "Matemáticas"
+              - option "Emprendimiento"
+            - generic: 
+      - paragraph [ref=f3e18]:
+        - generic [aria-hidden] [ref=f3e19]: 
+        - generic [ref=f3e20]:
+          - text: Use los botones
+          - generic [aria-hidden] [ref=f3e21]: +
+          - text: ","
+          - generic [aria-hidden] [ref=f3e22]: 
+          - text: "y"
+          - generic [aria-hidden] [ref=f3e23]: 
+          - text: para crear, modificar o eliminar. Los cambios se guardan directamente.
+    - main [ref=f3e24]:
+      - generic [ref=f3e25]:
+        - generic [ref=f3e26]:
+          - heading "Configuración Curricular" [level=1] [ref=f3e27]
+          - paragraph [ref=f3e28]: Seleccione Grado y Materia en el panel lateral.
+        - button "" [ref=f3e30] [cursor=pointer]
+      - tablist "Vistas del módulo" [ref=f3e32]:
+        - tab "Editor curricular" [selected] [ref=f3e33] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f3e34]: 
+          - text: Editor curricular
+        - tab "Reporte de pendientes" [ref=f3e35] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f3e36]: 
+          - text: Reporte de pendientes
+        - tab "Evidencias de aprendizaje" [ref=f3e37] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f3e38]: 
+          - text: Evidencias de aprendizaje
+        - tab "Importar DBA" [ref=f3e39] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f3e40]: 
+          - text: Importar DBA
+        - tab "Exportar" [ref=f3e41] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f3e42]: 
+          - text: Exportar
+      - text:                +       +       +       +         +    +     +      +      +      +    +     +       
+      - tabpanel "Editor curricular" [ref=f3e43]:
+        - generic [ref=f3e45]:
+          - generic [ref=f3e46]: 
+          - paragraph [ref=f3e47]: Seleccione un Grado y Materia
+        - status [ref=f3e48]
+      - text:         
+  - text:   

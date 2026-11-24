@@ -1,0 +1,11 @@
+🗄️ Verificando estructura de la base de datos...
+🗄️ Conexión establecida con MySQL (guagua) en puerto 7000.
+📂 Configuración sincronizada desde MySQL.
+🚀 Servidor en http://localhost:3000 | LMStudio: http://localhost:1234/v1
+🖥️ Cliente conectado al panel.
+⏳ Store aún no disponible. Esperando... (1/15)
+⏳ Store aún no disponible. Esperando... (2/15)
+⏳ Store aún no disponible. Esperando... (3/15)
+🔑 Sesión autenticada.
+✅ Store de WhatsApp hidratado correctamente (intento 4/15).
+⏳ Evento 'ready' recibido. Esperando hidratación del Store...

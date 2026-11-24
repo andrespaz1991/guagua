@@ -1,0 +1,291 @@
+- generic [ref=f2e1]:
+  - navigation [ref=f2e2]:
+    - generic [ref=f2e3]:
+      - generic [ref=f2e4]:
+        - button "❮" [ref=f2e5] [cursor=pointer]
+        - list [ref=f2e7]:
+          - listitem [ref=f2e8]:
+            - link "INICIO" [ref=f2e9] [cursor=pointer]:
+              - /url: //localhost/guagua/index.php
+          - listitem [ref=f2e11]:
+            - link "ESPACIO" [ref=f2e12] [cursor=pointer]:
+              - /url: //localhost/guagua/apps/espacio/
+          - listitem [ref=f2e14]:
+            - link "PROMPTS" [ref=f2e15] [cursor=pointer]:
+              - /url: //localhost/guagua/apps/prompts/
+          - listitem [ref=f2e17]:
+            - link "CURSOS" [ref=f2e18] [cursor=pointer]:
+              - /url: //localhost/guagua/cursos
+          - listitem [ref=f2e20]:
+            - link "RED" [ref=f2e21] [cursor=pointer]:
+              - /url: //localhost/guagua/red
+          - listitem [ref=f2e23]:
+            - link "APPS" [ref=f2e24] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/gestor_menu.php
+          - listitem [ref=f2e26]:
+            - link "Datos" [ref=f2e27] [cursor=pointer]:
+              - /url: //localhost/guagua/reportes/informe_docente.php
+          - listitem [ref=f2e29]:
+            - link "CONFIG" [ref=f2e30] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/configuracion.php
+          - listitem [ref=f2e32]:
+            - link "Sisga" [ref=f2e33] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=59
+          - listitem [ref=f2e35]:
+            - link "UTEL" [ref=f2e36] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=79
+          - listitem [ref=f2e38]:
+            - link "Seguimiento" [ref=f2e39] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=87
+          - listitem [ref=f2e41]:
+            - link "Alerta" [ref=f2e42] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=88
+          - listitem [ref=f2e44]:
+            - link "PAE" [ref=f2e45] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=90
+          - listitem [ref=f2e47]:
+            - link "NOTI" [ref=f2e48] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=91
+          - listitem [ref=f2e50]:
+            - link "PlanIa" [ref=f2e51] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=92
+          - listitem [ref=f2e53]:
+            - link "Merca" [ref=f2e54] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=96
+          - listitem [ref=f2e56]:
+            - link "pdf" [ref=f2e57] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=101
+          - listitem [ref=f2e59]:
+            - link "rubrica" [ref=f2e60] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=102
+          - listitem [ref=f2e62]:
+            - link "Davinci" [ref=f2e63] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=104
+          - listitem [ref=f2e65]:
+            - link "dba" [ref=f2e66] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=105
+          - listitem [ref=f2e68]:
+            - link "Diario" [ref=f2e69] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=107
+          - listitem [ref=f2e71]:
+            - link "Plantilla" [ref=f2e72] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=108
+          - listitem [ref=f2e74]:
+            - link "evidencias" [ref=f2e75] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=109
+          - listitem [ref=f2e77]:
+            - link "Asignaciones" [ref=f2e78] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=110
+        - button "❯" [ref=f2e80] [cursor=pointer]
+      - list [ref=f2e81]:
+        - listitem [ref=f2e82]:
+          - generic "Cuenta actual" [ref=f2e83]:
+            - generic [ref=f2e84]:
+              - generic "Root App" [ref=f2e85]
+              - 'link "Cambiar perfil. Perfil actual: Docente" [ref=f2e86] [cursor=pointer]':
+                - /url: //localhost/guagua/usuario/login.php
+                - text: Docente
+            - link "Cerrar sesión en Guagua" [ref=f2e90] [cursor=pointer]:
+              - /url: //localhost/guagua/usuario/login.php?logout=1
+              - generic [ref=f2e93]: Cerrar sesión
+  - iframe [active] [ref=f2e94]:
+    - generic [active] [ref=f3e1]:
+      - complementary [ref=f3e2]:
+        - generic [ref=f3e3]:
+          - generic [ref=f3e4]:
+            - link "Ver Calendario" [ref=f3e5] [cursor=pointer]:
+              - /url: ../../Planeador/calendario.php
+            - link "Taxonomía Bloom" [ref=f3e8] [cursor=pointer]:
+              - /url: ../../Planeador/img/TAXONOMiA.jpg
+            - link "DBA" [ref=f3e13] [cursor=pointer]:
+              - /url: ../../apps/dba/index.php
+          - generic [ref=f3e18]:
+            - 'heading "Paso 1: Tus Datos Base" [level=1] [ref=f3e19]'
+            - generic [ref=f3e20]:
+              - button "Limpiar todo" [ref=f3e21] [cursor=pointer]
+              - button "Configurar IA" [ref=f3e22] [cursor=pointer]
+          - paragraph [ref=f3e23]: Diligencia tus aportes. La IA generará el resto.
+          - generic [ref=f3e25]:
+            - generic [ref=f3e26]:
+              - paragraph [ref=f3e27]: Nueva planeación
+              - paragraph [ref=f3e28]: Lista para guardar en la base de datos.
+            - generic [ref=f3e29]: BD
+          - generic [ref=f3e30]:
+            - generic [ref=f3e31]:
+              - generic [ref=f3e32]:
+                - generic [ref=f3e33]: Mes
+                - combobox [ref=f3e34]:
+                  - option "Enero"
+                  - option "Febrero"
+                  - option "Marzo"
+                  - option "Abril"
+                  - option "Mayo"
+                  - option "Junio"
+                  - option "Julio"
+                  - option "Agosto"
+                  - option "Septiembre"
+                  - option "Octubre" [selected]
+                  - option "Noviembre"
+                  - option "Diciembre"
+              - generic [ref=f3e35]:
+                - generic [ref=f3e36]: Periodo
+                - combobox [ref=f3e37]:
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4" [selected]
+            - generic [ref=f3e38]:
+              - generic [ref=f3e39]:
+                - generic [ref=f3e40]: Grado
+                - combobox [ref=f3e41]:
+                  - option "Sexto" [selected]
+                  - option "Séptimo"
+                  - option "Octavo"
+                  - option "Noveno"
+                  - option "Décimo"
+                  - option "Undécimo"
+              - generic [ref=f3e42]:
+                - generic [ref=f3e43]: Materia
+                - combobox [ref=f3e44]:
+                  - option "Ciencias Sociales" [selected]
+                  - option "Economia/politica"
+                  - option "Educación Física"
+                  - option "Emprendimiento"
+                  - option "Fisica"
+                  - option "Geometria"
+                  - option "matemáticas"
+                  - option "Tecnología e informática"
+                  - option "Urbanidad"
+              - generic [ref=f3e45]:
+                - generic [ref=f3e46]:
+                  - generic [ref=f3e47]: Tiempo
+                  - button "Limpiar" [ref=f3e48] [cursor=pointer]
+                - 'spinbutton "Ej: 2 horas" [ref=f3e49]': "2"
+                - paragraph [ref=f3e50]: "Horas semanales calculadas desde horario: 2 (1 bloque(s) programado(s))."
+            - generic [ref=f3e51]:
+              - generic [ref=f3e52]:
+                - generic [ref=f3e53]:
+                  - generic [ref=f3e54]: Fecha inicio
+                  - button "Limpiar" [ref=f3e55] [cursor=pointer]
+                - textbox [ref=f3e56]: 2026-10-01
+              - generic [ref=f3e57]:
+                - generic [ref=f3e58]:
+                  - generic [ref=f3e59]: Fecha fin
+                  - button "Limpiar" [ref=f3e60] [cursor=pointer]
+                - textbox [ref=f3e61]: 2026-10-31
+            - generic [ref=f3e62]:
+              - generic [ref=f3e63]:
+                - generic [ref=f3e64]: "Tú asignas: Referente de Calidad (DBA)"
+                - button "Limpiar" [ref=f3e65] [cursor=pointer]
+              - textbox [ref=f3e66]: "DBA 7: Participación activa en decisiones colectivas y democracia. DBA 8: No aceptabilidad de la discriminación en sociedades democráticas."
+            - generic [ref=f3e67]:
+              - generic [ref=f3e68]:
+                - generic [ref=f3e69]: "Tú asignas: Ejes temáticos"
+                - button "Limpiar" [ref=f3e70] [cursor=pointer]
+              - textbox [ref=f3e71]: Conflicto y relación con el Estado, Resolución pacífica y convivencia, Organización ciudadana y expresiones políticas
+              - paragraph [ref=f3e72]: "Referentes cargados: 1 DBA y 1 eje(s) temático(s)."
+            - generic [ref=f3e73]:
+              - generic [ref=f3e74]:
+                - generic [ref=f3e75]: "Tú asignas: Observaciones Adicionales"
+                - button "Limpiar" [ref=f3e76] [cursor=pointer]
+              - textbox [ref=f3e77]
+            - generic [ref=f3e78]:
+              - generic [ref=f3e79]:
+                - generic [ref=f3e80]:
+                  - generic [ref=f3e81]: Objetivo de Aprendizaje (opcional)
+                  - button "Limpiar" [ref=f3e82] [cursor=pointer]
+                - textbox [ref=f3e83]: Los estudiantes comprenderán la importancia de la resolución pacífica y la convivencia en la comunidad rural, reconociendo su rol en el desarrollo de una sociedad democrática.
+              - generic [ref=f3e84]:
+                - generic [ref=f3e85]: Reflexión pedagógica
+                - button "Limpiar" [ref=f3e86] [cursor=pointer]
+              - textbox [ref=f3e87]
+            - generic [ref=f3e88]:
+              - generic [ref=f3e89]:
+                - generic [ref=f3e90]: Estrategias
+                - button "Limpiar" [ref=f3e91] [cursor=pointer]
+              - textbox [ref=f3e92]: Se utilizarán actividades lúdicas y participativas que permitan a los estudiantes analizar situaciones cotidianas relacionadas con el conflicto y la resolución pacífica, promoviendo la reflexión crítica sobre la importancia de la participación ciudadana y la democracia en la vida rural.
+            - generic [ref=f3e93]:
+              - generic [ref=f3e94]:
+                - generic [ref=f3e95]: Observaciones / momentos de clase
+                - button "Limpiar" [ref=f3e96] [cursor=pointer]
+              - textbox [ref=f3e97]: "Inicio: Presentación del tema: Conflicto y relación con el Estado. Se utilizará un juego de roles para simular situaciones cotidianas que generen conflicto y se trabaje la resolución pacífica. Desarrollo: Tema: Organización ciudadana y expresiones políticas Actividad: Taller de debate sobre la participación ciudadana en la comunidad rural, con el objetivo de identificar las formas de participación y los derechos que se deben defender. Tema: Resolución pacífica y convivencia Actividad: Simulación de situaciones cotidianas donde se resuelva un conflicto de forma pacífica, utilizando estrategias de comunicación y negociación. Cierre: Presentación de conclusiones del proyecto. Se realizará una reflexión individual sobre la importancia de la resolución pacífica y la convivencia en la comunidad rural."
+            - generic [ref=f3e98]:
+              - generic [ref=f3e99]:
+                - generic [ref=f3e100]: Evaluación
+                - button "Limpiar" [ref=f3e101] [cursor=pointer]
+              - textbox [ref=f3e102]: "Observables: • Participación activa en las actividades • Capacidad de análisis crítico sobre situaciones cotidianas relacionadas con el conflicto y la resolución pacífica. • Desarrollo de estrategias de comunicación y negociación para resolver conflictos de forma pacífica. Formativos: • Reflexión individual sobre la importancia de la resolución pacífica y la convivencia en la comunidad rural • Presentación de conclusiones del proyecto"
+            - button "Generar con IA" [ref=f3e103] [cursor=pointer]
+            - button "Guardar planeación" [ref=f3e104] [cursor=pointer]
+            - button "Descargar Planeador Word" [ref=f3e105] [cursor=pointer]
+            - generic [ref=f3e159]:
+              - button "▶ Prompt enviado a la IA" [ref=f3e160] [cursor=pointer]:
+                - generic [ref=f3e161]: ▶
+                - text: Prompt enviado a la IA
+              - button "📋 Copiar" [ref=f3e162] [cursor=pointer]
+            - generic [ref=f3e157]: Planeador generado con éxito.
+      - main [ref=f3e107]:
+        - generic [ref=f3e108]:
+          - generic [ref=f3e109]:
+            - 'heading "Paso 2: Vista Previa del Documento Completo ¡Completado!" [level=2] [ref=f3e163]':
+              - text: "Paso 2: Vista Previa del Documento Completo"
+              - generic [ref=f3e111]: ¡Completado!
+            - generic [ref=f3e112]:
+              - generic [ref=f3e113]:
+                - generic [ref=f3e114]: Mes
+                - text: Octubre
+              - generic [ref=f3e115]:
+                - generic [ref=f3e116]: Periodo
+                - text: "4"
+              - generic [ref=f3e117]:
+                - generic [ref=f3e118]: Inicio
+                - text: 01/10/2026
+              - generic [ref=f3e119]:
+                - generic [ref=f3e120]: Fin
+                - text: 31/10/2026
+              - generic [ref=f3e121]:
+                - generic [ref=f3e122]: Docente
+                - text: Root App
+              - generic [ref=f3e123]:
+                - generic [ref=f3e124]: Grado
+                - text: Sexto
+              - generic [ref=f3e125]:
+                - generic [ref=f3e126]: Tiempo
+                - text: "2"
+              - generic [ref=f3e127]:
+                - generic [ref=f3e128]: Materia
+                - text: Ciencias Sociales
+            - generic [ref=f3e129]:
+              - generic [ref=f3e130]:
+                - heading "DBA:" [level=3] [ref=f3e131]
+                - paragraph [ref=f3e132]: "DBA 7: Participación activa en decisiones colectivas y democracia. DBA 8: No aceptabilidad de la discriminación en sociedades democráticas."
+              - generic [ref=f3e133]:
+                - heading "Ejes temáticos:" [level=3] [ref=f3e134]
+                - paragraph [ref=f3e135]: Conflicto y relación con el Estado, Resolución pacífica y convivencia, Organización ciudadana y expresiones políticas
+              - generic [ref=f3e136]:
+                - heading "✨ Objetivo:" [level=3] [ref=f3e137]
+                - paragraph [ref=f3e138]: Los estudiantes comprenderán la importancia de la resolución pacífica y la convivencia en la comunidad rural, reconociendo su rol en el desarrollo de una sociedad democrática.
+              - generic [ref=f3e139]:
+                - heading "Observaciones:" [level=3] [ref=f3e140]
+                - paragraph [ref=f3e141]: Pendiente...
+              - generic [ref=f3e142]:
+                - heading "Reflexión pedagógica:" [level=3] [ref=f3e143]
+                - paragraph [ref=f3e144]: Pendiente...
+              - generic [ref=f3e145]:
+                - heading "✨ Estrategia Educativa:" [level=3] [ref=f3e146]
+                - paragraph [ref=f3e147]: Se utilizarán actividades lúdicas y participativas que permitan a los estudiantes analizar situaciones cotidianas relacionadas con el conflicto y la resolución pacífica, promoviendo la reflexión crítica sobre la importancia de la participación ciudadana y la democracia en la vida rural.
+              - generic [ref=f3e148]:
+                - heading "✨ Momentos de Clase:" [level=3] [ref=f3e149]
+                - paragraph [ref=f3e150]: "Inicio: Presentación del tema: Conflicto y relación con el Estado. Se utilizará un juego de roles para simular situaciones cotidianas que generen conflicto y se trabaje la resolución pacífica. Desarrollo: Tema: Organización ciudadana y expresiones políticas Actividad: Taller de debate sobre la participación ciudadana en la comunidad rural, con el objetivo de identificar las formas de participación y los derechos que se deben defender. Tema: Resolución pacífica y convivencia Actividad: Simulación de situaciones cotidianas donde se resuelva un conflicto de forma pacífica, utilizando estrategias de comunicación y negociación. Cierre: Presentación de conclusiones del proyecto. Se realizará una reflexión individual sobre la importancia de la resolución pacífica y la convivencia en la comunidad rural."
+              - generic [ref=f3e151]:
+                - heading "✨ Evaluación:" [level=3] [ref=f3e152]
+                - paragraph [ref=f3e153]: "Observables: • Participación activa en las actividades • Capacidad de análisis crítico sobre situaciones cotidianas relacionadas con el conflicto y la resolución pacífica. • Desarrollo de estrategias de comunicación y negociación para resolver conflictos de forma pacífica. Formativos: • Reflexión individual sobre la importancia de la resolución pacífica y la convivencia en la comunidad rural • Presentación de conclusiones del proyecto"
+          - generic [ref=f3e164]:
+            - generic [ref=f3e165]:
+              - generic [ref=f3e166]:
+                - generic [ref=f3e167]: ✏️ ¿Qué quieres ajustar?
+                - 'textbox "Ej: Cambia los momentos para incluir trabajo colaborativo. Mantén la estrategia y evaluación como están." [ref=f3e168]': Añade una pregunta de reflexión al cierre de los momentos de clase.
+              - button "🔄 Actualizar" [disabled] [ref=f3e169]
+            - paragraph [ref=f3e175]: La IA está actualizando...
+          - generic [ref=f3e170]:
+            - paragraph [ref=f3e171]: El planeador está completo. Verifica y descarga.
+            - button "Descargar Planeador Word" [ref=f3e172] [cursor=pointer]

@@ -1,11 +1,14 @@
 <?php 
 ob_start();
+require_once __DIR__ . '/vista_modulo.php';
+$urlMascotas = guagua_url_integrada('Mascotas.php');
  ?>
 <center>
 <?php 
 require("conexion.php");
  /*require_once("funciones.php");*/ 
 function buscar_figuras($datos="",$reporte=""){
+$urlMascotas = guagua_url_integrada('Mascotas.php');
 if ($reporte=="xls"){
 header("Content-type: application/vnd.ms-excel");
 header("Content-Disposition: attachment; Filename=figuras.xls");
@@ -65,12 +68,12 @@ echo "<p>Resultados de $minimo_figuras a $maximo_figuras del total de ".$total_f
 <th <?php  if(isset($_COOKIE['orderbyfiguras']) and $_COOKIE['orderbyfiguras']== "figura"){ echo " style='text-decoration:underline' ";} ?>  onclick="grabarcookie('orderbyfiguras','figura');buscar();" >Figura</th>
 <th <?php  if(isset($_COOKIE['orderbyfiguras']) and $_COOKIE['orderbyfiguras']== "imagen_figura"){ echo " style='text-decoration:underline' ";} ?>  onclick="grabarcookie('orderbyfiguras','imagen_figura');buscar();" >Imagen Figura</th>
 <?php if ($reporte==""){ ?>
-<th data-label="Nuevo"><form id="formNuevo" name="formNuevo" method="post"  action="Mascotas.php" ENCTYPE="multipart/form-data">
+<th data-label="Nuevo"><form id="formNuevo" name="formNuevo" method="post"  action="<?php echo $urlMascotas; ?>" ENCTYPE="multipart/form-data">
 <input name="cod" type="hidden" id="cod" value="0">
 <input type="hidden" name="submit" id="submit" value="Nuevo"><button type="submit" class="btn btn-primary">Nuevo</button>
 </form>
 </th>
-<th data-label="XLS"><form id="formNuevo" name="formNuevo" method="post" action="Mascotas.php?xls" ENCTYPE="multipart/form-data">
+<th data-label="XLS"><form id="formNuevo" name="formNuevo" method="post" action="<?php echo htmlspecialchars(guagua_url_integrada('Mascotas.php?xls'), ENT_QUOTES, 'UTF-8'); ?>" ENCTYPE="multipart/form-data">
 <input name="cod" type="hidden" id="cod" value="0">
 <input type="submit" name="submit" id="submit" value="XLS">
 </form>
@@ -88,13 +91,13 @@ while($row=$consulta->fetch_assoc()){
  <?php #echo $row['imagen_figura']?></td>
 <?php if ($reporte==""){ ?>
 <td data-label="Modificar">
-<form id="formModificar" name="formModificar" method="post" action="Mascotas.php" ENCTYPE="multipart/form-data">
+<form id="formModificar" name="formModificar" method="post" action="<?php echo $urlMascotas; ?>" ENCTYPE="multipart/form-data">
 <input name="cod" type="hidden" id="cod" value="<?php echo $row['id_figuras']?>">
 <input type="hidden" name="submit" id="submit" value="Modificar"><button type="submit" class="btn btn-success">Modificar</button>
 </form>
 </td>
 <td data-label="Eliminar">
-<input type="image" src="img/eliminar.png" onClick="confirmeliminar2('Mascotas.php',{'del':'<?php echo $row['id_figuras'];?>'},'<?php echo $row['id_figuras'];?>');" value="Eliminar">
+<input type="image" src="img/eliminar.png" onClick="confirmeliminar2('<?php echo $urlMascotas; ?>',{'del':'<?php echo $row['id_figuras'];?>'},'<?php echo $row['id_figuras'];?>');" value="Eliminar">
 </td>
 <?php } ?>
 </tr>
@@ -135,12 +138,12 @@ if ($eliminar = $mysqli->query($sql)){
  /*Validamos si el registro fue eliminado con éxito*/ 
  ?>
 Registro eliminado
-<meta http-equiv="refresh" content="1; url=Mascotas.php" />
+<meta http-equiv="refresh" content="1; url=<?php echo $urlMascotas; ?>" />
 <?php 
 }else{
 ?>
 Eliminación fallida, por favor compruebe que la usuario no esté en uso
-<meta http-equiv="refresh" content="2; url=Mascotas.php" />
+<meta http-equiv="refresh" content="2; url=<?php echo $urlMascotas; ?>" />
 <?php 
 }
 }
@@ -181,12 +184,12 @@ if ($insertar = $mysqli->query($sql)) {
  /*Validamos si el registro fue ingresado con éxito*/ 
  ?>
 Registro exitoso
-<meta http-equiv="refresh" content="1; url=Mascotas.php" />
+<meta http-equiv="refresh" content="1; url=<?php echo $urlMascotas; ?>" />
 <?php 
  }else{ 
  ?>
 Registro fallido
-<meta http-equiv="refresh" content="1; url=Mascotas.php" />
+<meta http-equiv="refresh" content="1; url=<?php echo $urlMascotas; ?>" />
 <?php 
 }
  }
@@ -198,7 +201,7 @@ $textoh1 ="Registrar";
 $textobtn ="Registrar";
 
  ?>
-<div class="col-md-3"></div><form class="col-md-6" id="form1" name="form1" method="post" action="Mascotas.php" ENCTYPE="multipart/form-data">
+<div class="col-md-3"></div><form class="col-md-6" id="form1" name="form1" method="post" action="<?php echo $urlMascotas; ?>" ENCTYPE="multipart/form-data">
 <h1><?php echo $textoh1 ?></h1>
 <?php 
 echo '<div class="form-group"><p><input class="form-control"name="id_figuras"type="hidden" id="id_figuras" value="';if (isset($row['id_figuras'])) echo $row['id_figuras'];echo '"';echo '></p>';
@@ -218,7 +221,7 @@ $row=$consulta->fetch_assoc();
 $textoh1 ="Modificar";
 $textobtn ="Actualizar";
  ?>
-<div class="col-md-3"></div><form class="col-md-6" id="form1" name="form1" method="post" action="Mascotas.php" ENCTYPE="multipart/form-data">
+<div class="col-md-3"></div><form class="col-md-6" id="form1" name="form1" method="post" action="<?php echo $urlMascotas; ?>" ENCTYPE="multipart/form-data">
 <h1><?php echo $textoh1 ?></h1>
 <p><input name="cod" type="hidden" id="cod" value="<?php if (isset($row['id_figuras']))  echo $row['id_figuras'] ?>" size="120" required></p>
 <?php 
@@ -242,13 +245,13 @@ $sql.=' WHERE  id_figuras = "'.$_POST['cod'].'";';
 //  $actualizar = $mysqli->query($sql);
 if($consulta =mysqli_query($mysqli,$sql)){ 
 echo 'Modificación exitosa';
-echo '<meta http-equiv="refresh" content="1; url=Mascotas.php" />';
+echo '<meta http-equiv="refresh" content="1; url=' . $urlMascotas . '" />';
 
  }else{ 
 echo 'Modificacion fallida';
-echo '<meta http-equiv="refresh" content="2; url=Mascotas.php" />';
+echo '<meta http-equiv="refresh" content="2; url=' . $urlMascotas . '" />';
  }
- echo '<meta http-equiv="refresh" content="2; url=Mascotas.php" />';
+ echo '<meta http-equiv="refresh" content="2; url=' . $urlMascotas . '" />';
 
  }
  
@@ -279,10 +282,10 @@ $sql.=" WHERE  id_figuras = '".$_POST['cod']."';";
 #echo $sql;
 if ($actualizar = $mysqli->query($sql)) {
 echo 'Modificación exitosa';
-echo '<meta http-equiv="refresh" content="1; url=Mascotas.php" />';
+echo '<meta http-equiv="refresh" content="1; url=' . $urlMascotas . '" />';
  }else{ 
 echo 'Modificacion fallida';
-echo '<meta http-equiv="refresh" content="2; url=Mascotas.php" />';
+echo '<meta http-equiv="refresh" content="2; url=' . $urlMascotas . '" />';
  }
 }        
                    

@@ -1,0 +1,30 @@
+const assert=require('node:assert/strict');
+require('../apps/espacio/ordering.js');
+require('../apps/espacio/report-data.js');
+const report=globalThis.EspacioReports;
+const date='2026-10-18T15:30:00.000Z';
+const parent={type:'todo',text:'Preparar clase',checked:false,indent:0};
+const child={type:'todo',text:'Adjuntar guía',checked:false,indent:1,link:'https://example.com/guia'};
+const legacy={type:'todo',text:'Revisar material',checked:true};
+const pages=[{id:'a',title:'Aula',blocks:[parent,child,{type:'text',text:'Nota'},legacy]},
+ {id:'b',title:'Proyecto',blocks:[{type:'todo',text:'Entregar proyecto',checked:true,completedAt:'2026-10-17T12:00:00.000Z'}]},
+ {id:'deleted',title:'Papelera',deleted:true,blocks:[{type:'todo',text:'Borrada',checked:true}]}];
+let rows=report.collect(pages);
+assert.equal(rows.length,4);assert.deepEqual(report.summary(rows),{total:4,done:2,pending:2,percent:50});
+assert.deepEqual(rows[1].ancestors,['Preparar clase']);assert.equal(rows[1].level,1);
+assert.equal(rows[2].completedAt,null,'No inventar fechas para tareas existentes');
+report.complete(child,true,new Date(date));
+assert.equal(child.completedAt,date);assert.equal(parent.checked,false,'Cada subtarea se completa de forma independiente');
+report.complete(child,true,new Date('2026-10-19T15:30:00.000Z'));
+assert.equal(child.completedAt,date,'Repetir el mismo estado no cambia su fecha');
+rows=report.collect(pages);
+assert.equal(report.filter(rows,{status:'done'})[0].block,child);
+assert.equal(report.filter(rows,{status:'done'})[2].block,legacy);
+assert.equal(report.filter(rows,{page:'a',status:'pending'}).length,1);
+assert.equal(report.filter(rows,{query:'PREPARAR'}).length,2,'Buscar también por la tarea principal');
+assert.equal(report.filter(rows,{order:'pending'})[0].block,parent);
+assert.equal(report.filter(rows,{order:'page'})[0].block,parent);
+report.complete(child,false);assert.equal(child.completedAt,undefined);assert.equal(child.link,'https://example.com/guia');
+assert.deepEqual(report.summary([]),{total:0,done:0,pending:0,percent:0});
+assert.equal(report.timestamp('invalid'),null);assert.equal(report.timestamp({}),null);
+console.log('Reportes verificados: conteos, subtareas, papelera, filtros, orden, fechas anteriores y reapertura.');

@@ -1,0 +1,32 @@
+const fs = require('fs');
+const serverFile = 'D:/xampp/htdocs/wsp/server.js';
+const batchFile = 'D:/xampp/htdocs/whisper/run_script.bat';
+const htmlFile = 'D:/xampp/htdocs/wsp/index.html';
+let source = fs.readFileSync(serverFile, 'utf8');
+const start = source.indexOf("    socket.on('start_whisper', () => {");
+const end = source.indexOf("    socket.on('consolidate_whisper_tsv'", start);
+if (start < 0 || end < 0 || source.includes('const whisperWorkflow =')) throw new Error('Estructura inesperada o corrección ya aplicada.');
+const backup = 'D:/xampp/htdocs/guagua/tmp/whatsapp-diario/';
+for (const [file, name] of [[serverFile, 'server-antes-flujo-whisper.js'], [batchFile, 'run_script-antes-flujo-whisper.bat'], [htmlFile, 'index-antes-flujo-whisper.html']]) {
+    if (!fs.existsSync(backup + name)) fs.copyFileSync(file, backup + name);
+}
+source = source.slice(0, start) + fs.readFileSync('tmp/diario-start-whisper-handler.txt', 'utf8') + source.slice(end);
+source = source.replace('diaryService.attach(io);', `diaryService.attach(io);
+const { createWhisperWorkflow } = require('../guagua/apps/diario/whisper-workflow.cjs');
+const whisperWorkflow = createWhisperWorkflow({ projectRoot: WHISPER_PROJECT_ROOT, logPath: path.join(__dirname, '../guagua/tmp/whatsapp-diario/whisper.log') });`);
+source = source.replace("            if (botState !== 'READY') throw new Error('WhatsApp no está conectado o todavía está sincronizando.');", `            if (whisperProcess && whisperProcess.exitCode === null && !whisperProcess.killed) throw new Error('Espere a que Whisper termine antes de extraer otro lote.');
+            if (botState !== 'READY') throw new Error('WhatsApp no está conectado o todavía está sincronizando.');`);
+source = source.replace('            let savedAudio = 0;', `            if (!mediaCandidates.length && !textByChat.size) throw new Error('No se encontró contenido del tipo seleccionado en el rango elegido.');
+            emitExtractionProgress({ phase: 'archiving', percent: 35, message: 'Archivando archivos sueltos anteriores de input y output...' });
+            const archives = whisperWorkflow.prepareExtraction(exportFolder, WHISPER_OUTPUT_PATH);
+            if (archives.length) io.emit('log', { msg: 'Archivos anteriores conservados en: ' + archives.map(a => a.archive).join(' | '), type: 'info' });
+            activeWhisperTranscriptPath = null;
+            let savedAudio = 0;`);
+source = source.replace('                historyLimit: MAX_MESSAGES_PER_CHAT\n', '                historyLimit: MAX_MESSAGES_PER_CHAT,\n                archives\n');
+fs.writeFileSync(serverFile, source);
+fs.writeFileSync(batchFile, fs.readFileSync('tmp/run_script-diario.bat', 'utf8').replace(/\r?\n/g, '\r\n'));
+let html = fs.readFileSync(htmlFile, 'utf8');
+html = html.replace('Confirma el aviso de administrador de Windows si aparece.', 'Los resultados anteriores de output se archivan automáticamente.');
+html = html.replace("showWhisperStatus('Solicitando permisos de administrador para ejecutar D:\\\\xampp\\\\htdocs\\\\whisper\\\\run_script.bat...', 'info');", "showWhisperStatus('Preparando Whisper y archivando las transcripciones anteriores...', 'info');");
+fs.writeFileSync(htmlFile, html);
+console.log('Servidor y run_script.bat actualizados; archivos anteriores respaldados.');

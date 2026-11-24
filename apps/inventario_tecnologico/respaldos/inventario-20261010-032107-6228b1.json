@@ -1,0 +1,1987 @@
+{
+    "version": 1,
+    "titulo": "Inventario general",
+    "sede": "Centro Educativo Vallesol",
+    "fuente": "vallesoloct2026 (2).xls",
+    "periodo": "Octubre 2026",
+    "equipos": [
+        {
+            "id": "10800",
+            "nombre": "Sillas de brazos",
+            "tipo": "Sillas de brazos",
+            "categoria": "Mobiliario",
+            "detalle": "COLOR: BLANCA - REFERENCIA: sin brazos",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 4,
+            "fecha_adquisicion": "2009-05-07",
+            "placa": "10800 - SL",
+            "marca": "",
+            "referencia": "sin brazos",
+            "color": "BLANCA",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10800",
+                    "placa": "10800 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2009-05-07",
+                    "fila_excel": 2
+                },
+                {
+                    "id": "10801",
+                    "placa": "10801 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2009-05-07",
+                    "fila_excel": 3
+                },
+                {
+                    "id": "10813",
+                    "placa": "10813 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2009-05-07",
+                    "fila_excel": 15
+                },
+                {
+                    "id": "10814",
+                    "placa": "10814 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2009-05-07",
+                    "fila_excel": 16
+                }
+            ]
+        },
+        {
+            "id": "10802",
+            "nombre": "Sillas de brazos",
+            "tipo": "Sillas de brazos",
+            "categoria": "Mobiliario",
+            "detalle": "COLOR: VERDE - REFERENCIA: sin brazos",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 11,
+            "fecha_adquisicion": "2009-05-07",
+            "placa": "10802 - SL",
+            "marca": "",
+            "referencia": "sin brazos",
+            "color": "VERDE",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10802",
+                    "placa": "10802 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2009-05-07",
+                    "fila_excel": 4
+                },
+                {
+                    "id": "10803",
+                    "placa": "10803 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2009-05-07",
+                    "fila_excel": 5
+                },
+                {
+                    "id": "10804",
+                    "placa": "10804 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2009-05-07",
+                    "fila_excel": 6
+                },
+                {
+                    "id": "10805",
+                    "placa": "10805 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2009-05-07",
+                    "fila_excel": 7
+                },
+                {
+                    "id": "10806",
+                    "placa": "10806 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2009-05-07",
+                    "fila_excel": 8
+                },
+                {
+                    "id": "10807",
+                    "placa": "10807 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2009-05-07",
+                    "fila_excel": 9
+                },
+                {
+                    "id": "10808",
+                    "placa": "10808 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2009-05-07",
+                    "fila_excel": 10
+                },
+                {
+                    "id": "10809",
+                    "placa": "10809 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2009-05-07",
+                    "fila_excel": 11
+                },
+                {
+                    "id": "10810",
+                    "placa": "10810 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2009-05-07",
+                    "fila_excel": 12
+                },
+                {
+                    "id": "10811",
+                    "placa": "10811 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2009-05-07",
+                    "fila_excel": 13
+                },
+                {
+                    "id": "10812",
+                    "placa": "10812 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2009-05-07",
+                    "fila_excel": 14
+                }
+            ]
+        },
+        {
+            "id": "10815",
+            "nombre": "Unidades de almacenamiento general",
+            "tipo": "Unidades de almacenamiento general",
+            "categoria": "Mobiliario",
+            "detalle": "MARCA:",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2009-05-15",
+            "placa": "10815 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10815",
+                    "placa": "10815 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2009-05-15",
+                    "fila_excel": 17
+                }
+            ]
+        },
+        {
+            "id": "10819",
+            "nombre": "Sillas para grupos de trabajo",
+            "tipo": "Sillas para grupos de trabajo",
+            "categoria": "Mobiliario",
+            "detalle": "MARCA: SONY",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2011-05-14",
+            "placa": "10819 - SL",
+            "marca": "SONY",
+            "referencia": "",
+            "color": "",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10819",
+                    "placa": "10819 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 18
+                }
+            ]
+        },
+        {
+            "id": "10820",
+            "nombre": "Cámara digital",
+            "placa": "10820 - SL",
+            "detalle": "MARCA: OLIMPUS - SERIE: vr 370",
+            "cantidad": 1,
+            "estado": "REGULAR",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "fecha_adquisicion": "2011-05-14",
+            "tipo": "Cámaras digitales",
+            "categoria": "Audiovisual",
+            "marca": "OLIMPUS",
+            "referencia": "vr 370",
+            "imagenes": [
+                "imagenes/10820/foto-20261010-030637-b3a442fd81a1.jpg"
+            ],
+            "color": "",
+            "registros": [
+                {
+                    "id": "10820",
+                    "placa": "10820 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 19,
+                    "estado": "REGULAR"
+                }
+            ]
+        },
+        {
+            "id": "10821",
+            "nombre": "Combinacion de neveras y congeladores para uso domestico",
+            "tipo": "Combinacion de neveras y congeladores para uso domestico",
+            "categoria": "Cocina",
+            "detalle": "MARCA: HACEB - REFERENCIA: 9 PIES - COLOR: BEIS",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2011-05-14",
+            "placa": "10821 - SL",
+            "marca": "HACEB",
+            "referencia": "9 PIES",
+            "color": "BEIS",
+            "imagenes": [
+                "imagenes/10821/foto-20261010-031458-9b545881dd08.jpg"
+            ],
+            "registros": [
+                {
+                    "id": "10821",
+                    "placa": "10821 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 20
+                }
+            ]
+        },
+        {
+            "id": "10822",
+            "nombre": "Licuadoras para uso domestico",
+            "tipo": "Licuadoras para uso domestico",
+            "categoria": "Cocina",
+            "detalle": "MARCA: OSTER",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2011-11-05",
+            "placa": "10822 - SL",
+            "marca": "OSTER",
+            "referencia": "",
+            "color": "",
+            "imagenes": [
+                "imagenes/10822/foto-20261010-031711-94e5ad282dae.jpg"
+            ],
+            "registros": [
+                {
+                    "id": "10822",
+                    "placa": "10822 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-11-05",
+                    "fila_excel": 21
+                }
+            ]
+        },
+        {
+            "id": "10827",
+            "nombre": "Sillas para grupos de trabajo",
+            "tipo": "Sillas para grupos de trabajo",
+            "categoria": "Mobiliario",
+            "detalle": "COLOR: VERDE",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 14,
+            "fecha_adquisicion": "2011-05-14",
+            "placa": "10827 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "VERDE",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10827",
+                    "placa": "10827 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 22
+                },
+                {
+                    "id": "10828",
+                    "placa": "10828 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 23
+                },
+                {
+                    "id": "10829",
+                    "placa": "10829 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 24
+                },
+                {
+                    "id": "10830",
+                    "placa": "10830 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 25
+                },
+                {
+                    "id": "10831",
+                    "placa": "10831 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 26
+                },
+                {
+                    "id": "10832",
+                    "placa": "10832 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 27
+                },
+                {
+                    "id": "10834",
+                    "placa": "10834 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 28
+                },
+                {
+                    "id": "10835",
+                    "placa": "10835 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 29
+                },
+                {
+                    "id": "10836",
+                    "placa": "10836 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 30
+                },
+                {
+                    "id": "10837",
+                    "placa": "10837 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 31
+                },
+                {
+                    "id": "10839",
+                    "placa": "10839 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 32
+                },
+                {
+                    "id": "10841",
+                    "placa": "10841 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 33
+                },
+                {
+                    "id": "10848",
+                    "placa": "10848 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 34
+                },
+                {
+                    "id": "10849",
+                    "placa": "10849 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 35
+                }
+            ]
+        },
+        {
+            "id": "10850",
+            "nombre": "Escritorios",
+            "tipo": "Escritorios",
+            "categoria": "Mobiliario",
+            "detalle": "COLOR: MADERA - REFERENCIA: 98X 49X 76 ALTO - MARCA: MADERA",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2011-05-14",
+            "placa": "10850 - SL",
+            "marca": "MADERA",
+            "referencia": "98X 49X 76 ALTO",
+            "color": "MADERA",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10850",
+                    "placa": "10850 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 36
+                }
+            ]
+        },
+        {
+            "id": "10851",
+            "nombre": "Archivadores móviles",
+            "tipo": "Archivadores móviles",
+            "categoria": "Mobiliario",
+            "detalle": "COLOR: MADERA - MARCA: 4 CAJONES",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2011-05-14",
+            "placa": "10851 - SL",
+            "marca": "4 CAJONES",
+            "referencia": "",
+            "color": "MADERA",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10851",
+                    "placa": "10851 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2011-05-14",
+                    "fila_excel": 37
+                }
+            ]
+        },
+        {
+            "id": "10852",
+            "nombre": "Mesas",
+            "tipo": "Mesas",
+            "categoria": "Mobiliario",
+            "detalle": "COLOR: BLANCA",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2013-06-12",
+            "placa": "10852 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "BLANCA",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10852",
+                    "placa": "10852 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 38
+                }
+            ]
+        },
+        {
+            "id": "10853",
+            "nombre": "Mesas",
+            "tipo": "Mesas",
+            "categoria": "Mobiliario",
+            "detalle": "MARCA: RIMAX - COLOR: BLANCA",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 4,
+            "fecha_adquisicion": "2013-06-12",
+            "placa": "10853 - SL",
+            "marca": "RIMAX",
+            "referencia": "",
+            "color": "BLANCA",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10853",
+                    "placa": "10853 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 39
+                },
+                {
+                    "id": "10854",
+                    "placa": "10854 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 40
+                },
+                {
+                    "id": "10855",
+                    "placa": "10855 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 41
+                },
+                {
+                    "id": "10856",
+                    "placa": "10856 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 42
+                }
+            ]
+        },
+        {
+            "id": "10857",
+            "nombre": "Sillas de brazos",
+            "tipo": "Sillas de brazos",
+            "categoria": "Mobiliario",
+            "detalle": "COLOR: BLANCA - MARCA: RIMAX",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 10,
+            "fecha_adquisicion": "2013-06-12",
+            "placa": "10857 - SL",
+            "marca": "RIMAX",
+            "referencia": "",
+            "color": "BLANCA",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10857",
+                    "placa": "10857 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 43,
+                    "estado": "BUENO"
+                },
+                {
+                    "id": "10858",
+                    "placa": "10858 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 44,
+                    "estado": "BUENO"
+                },
+                {
+                    "id": "10859",
+                    "placa": "10859 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 45,
+                    "estado": "BUENO"
+                },
+                {
+                    "id": "10860",
+                    "placa": "10860 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 46,
+                    "estado": "BUENO"
+                },
+                {
+                    "id": "10861",
+                    "placa": "10861 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 47,
+                    "estado": "BUENO"
+                },
+                {
+                    "id": "10862",
+                    "placa": "10862 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 48,
+                    "estado": "BUENO"
+                },
+                {
+                    "id": "10863",
+                    "placa": "10863 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 49,
+                    "estado": "BUENO"
+                },
+                {
+                    "id": "10864",
+                    "placa": "10864 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 50,
+                    "estado": "BUENO"
+                },
+                {
+                    "id": "10865",
+                    "placa": "10865 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 51,
+                    "estado": "BUENO"
+                },
+                {
+                    "id": "10866",
+                    "placa": "10866 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 52,
+                    "estado": "BUENO"
+                }
+            ]
+        },
+        {
+            "id": "10868",
+            "nombre": "Sillas de brazos",
+            "tipo": "Sillas de brazos",
+            "categoria": "Mobiliario",
+            "detalle": "COLOR: AZUL",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 4,
+            "fecha_adquisicion": "2013-06-12",
+            "placa": "10868 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "AZUL",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10868",
+                    "placa": "10868 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 53
+                },
+                {
+                    "id": "10869",
+                    "placa": "10869 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 54
+                },
+                {
+                    "id": "10870",
+                    "placa": "10870 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 55
+                },
+                {
+                    "id": "10871",
+                    "placa": "10871 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-06-12",
+                    "fila_excel": 56
+                }
+            ]
+        },
+        {
+            "id": "10872",
+            "nombre": "Esterilizador de bebidas",
+            "tipo": "Esterilizador de bebidas",
+            "categoria": "Cocina",
+            "detalle": "MARCA:  - COLOR: BLANCA",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2013-08-09",
+            "placa": "10872 - SL",
+            "marca": "- COLOR: BLANCA",
+            "referencia": "",
+            "color": "",
+            "imagenes": [
+                "imagenes/10872/foto-20261010-031611-08f469da051e.jpg"
+            ],
+            "registros": [
+                {
+                    "id": "10872",
+                    "placa": "10872 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-08-09",
+                    "fila_excel": 57
+                }
+            ]
+        },
+        {
+            "id": "10873",
+            "nombre": "Computador personal",
+            "placa": "10873 - SL",
+            "detalle": "MARCA: SAMGUNG - REFERENCIA: NP 270E4V",
+            "cantidad": 1,
+            "estado": "MALO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "fecha_adquisicion": "2013-12-31",
+            "tipo": "Computadores personales",
+            "categoria": "Computación",
+            "marca": "SAMGUNG",
+            "referencia": "NP 270E4V",
+            "imagenes": [
+                "imagenes/10873/foto-20261010-030425-18cf4ea9a2a0.jpg"
+            ],
+            "color": "",
+            "registros": [
+                {
+                    "id": "10873",
+                    "placa": "10873 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2013-12-31",
+                    "fila_excel": 58,
+                    "estado": "MALO"
+                }
+            ]
+        },
+        {
+            "id": "10874",
+            "nombre": "Mesas",
+            "tipo": "Mesas",
+            "categoria": "Mobiliario",
+            "detalle": "MARCA: Logo de seduca",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 10,
+            "fecha_adquisicion": "2014-12-30",
+            "placa": "10874 - SL",
+            "marca": "Logo de seduca",
+            "referencia": "",
+            "color": "",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10874",
+                    "placa": "10874 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2014-12-30",
+                    "fila_excel": 59
+                },
+                {
+                    "id": "10875",
+                    "placa": "10875 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2014-12-30",
+                    "fila_excel": 60
+                },
+                {
+                    "id": "10876",
+                    "placa": "10876 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2014-12-30",
+                    "fila_excel": 61
+                },
+                {
+                    "id": "10877",
+                    "placa": "10877 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2014-12-30",
+                    "fila_excel": 62
+                },
+                {
+                    "id": "10878",
+                    "placa": "10878 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2014-12-30",
+                    "fila_excel": 63
+                },
+                {
+                    "id": "10879",
+                    "placa": "10879 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2014-12-30",
+                    "fila_excel": 64
+                },
+                {
+                    "id": "10880",
+                    "placa": "10880 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2014-12-30",
+                    "fila_excel": 65
+                },
+                {
+                    "id": "10881",
+                    "placa": "10881 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2014-12-30",
+                    "fila_excel": 66
+                },
+                {
+                    "id": "10882",
+                    "placa": "10882 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2014-12-30",
+                    "fila_excel": 67
+                },
+                {
+                    "id": "10883",
+                    "placa": "10883 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2014-12-30",
+                    "fila_excel": 68
+                }
+            ]
+        },
+        {
+            "id": "10884",
+            "nombre": "Ventilador de piso",
+            "tipo": "Ventilador de piso",
+            "categoria": "Ventilación",
+            "detalle": "MARCA: TMT",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 2,
+            "fecha_adquisicion": "2015-11-10",
+            "placa": "10884 - SL",
+            "marca": "TMT",
+            "referencia": "",
+            "color": "",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10884",
+                    "placa": "10884 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2015-11-10",
+                    "fila_excel": 69
+                },
+                {
+                    "id": "10885",
+                    "placa": "10885 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2015-11-10",
+                    "fila_excel": 70
+                }
+            ]
+        },
+        {
+            "id": "10887",
+            "nombre": "Licuadoras para uso domestico",
+            "tipo": "Licuadoras para uso domestico",
+            "categoria": "Cocina",
+            "detalle": "MARCA: OSTERIZER - COLOR: PLATEADA - REFERENCIA: 3 VELOCIDADES",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2020-01-09",
+            "placa": "10887 - SL",
+            "marca": "OSTERIZER",
+            "referencia": "3 VELOCIDADES",
+            "color": "PLATEADA",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10887",
+                    "placa": "10887 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-01-09",
+                    "fila_excel": 71
+                }
+            ]
+        },
+        {
+            "id": "10888",
+            "nombre": "Proyector de video",
+            "placa": "10888 - SL",
+            "detalle": "MARCA: VIEWSONIC - REFERENCIA: PA503S",
+            "cantidad": 1,
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "fecha_adquisicion": "2020-01-09",
+            "tipo": "Proyectores de video",
+            "categoria": "Audiovisual",
+            "marca": "VIEWSONIC",
+            "referencia": "PA503S",
+            "imagenes": [
+                "imagenes/10888/foto-20261010-030809-e0852defcd9a.jpg"
+            ],
+            "color": "",
+            "registros": [
+                {
+                    "id": "10888",
+                    "placa": "10888 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-01-09",
+                    "fila_excel": 72
+                }
+            ]
+        },
+        {
+            "id": "10889",
+            "nombre": "Computador personal",
+            "placa": "10889 - SL",
+            "detalle": "MARCA: ASUS - REFERENCIA: X407U Ci3 4gb ram 1tb DD",
+            "cantidad": 1,
+            "estado": "MALO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "fecha_adquisicion": "2020-01-09",
+            "tipo": "Computadores personales",
+            "categoria": "Computación",
+            "marca": "ASUS",
+            "referencia": "X407U Ci3 · 4 GB RAM · 1 TB DD",
+            "imagenes": [
+                "imagenes/10889/foto-20261010-030438-023d8a6d536a.jpg"
+            ],
+            "color": "",
+            "registros": [
+                {
+                    "id": "10889",
+                    "placa": "10889 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-01-09",
+                    "fila_excel": 73,
+                    "estado": "MALO"
+                }
+            ]
+        },
+        {
+            "id": "10890",
+            "nombre": "Televisor",
+            "placa": "10890 - SL",
+            "detalle": "MARCA: LG - COLOR: NEGRO - REFERENCIA: 49UM7300PDA",
+            "cantidad": 1,
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "fecha_adquisicion": "2020-01-09",
+            "tipo": "Televisores",
+            "categoria": "Audiovisual",
+            "marca": "LG",
+            "referencia": "49UM7300PDA",
+            "imagenes": [
+                "imagenes/10890/foto-20261010-030934-29c10cc1eb19.jpg"
+            ],
+            "color": "NEGRO",
+            "registros": [
+                {
+                    "id": "10890",
+                    "placa": "10890 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-01-09",
+                    "fila_excel": 74
+                }
+            ]
+        },
+        {
+            "id": "10891",
+            "nombre": "Sillas para grupos de trabajo",
+            "tipo": "Sillas para grupos de trabajo",
+            "categoria": "Mobiliario",
+            "detalle": "COLOR: GRIS",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 15,
+            "fecha_adquisicion": null,
+            "placa": "10891 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "GRIS",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10891",
+                    "placa": "10891 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-02-21",
+                    "fila_excel": 75
+                },
+                {
+                    "id": "10892",
+                    "placa": "10892 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-02-22",
+                    "fila_excel": 76
+                },
+                {
+                    "id": "10893",
+                    "placa": "10893 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-02-23",
+                    "fila_excel": 77
+                },
+                {
+                    "id": "10894",
+                    "placa": "10894 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-02-24",
+                    "fila_excel": 78
+                },
+                {
+                    "id": "10895",
+                    "placa": "10895 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-02-25",
+                    "fila_excel": 79
+                },
+                {
+                    "id": "10896",
+                    "placa": "10896 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-02-26",
+                    "fila_excel": 80
+                },
+                {
+                    "id": "10897",
+                    "placa": "10897 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-02-27",
+                    "fila_excel": 81
+                },
+                {
+                    "id": "10898",
+                    "placa": "10898 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-02-28",
+                    "fila_excel": 82
+                },
+                {
+                    "id": "10899",
+                    "placa": "10899 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-02-29",
+                    "fila_excel": 83
+                },
+                {
+                    "id": "10900",
+                    "placa": "10900 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-03-01",
+                    "fila_excel": 84
+                },
+                {
+                    "id": "10901",
+                    "placa": "10901 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-03-02",
+                    "fila_excel": 85
+                },
+                {
+                    "id": "10902",
+                    "placa": "10902 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-03-03",
+                    "fila_excel": 86
+                },
+                {
+                    "id": "10903",
+                    "placa": "10903 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-03-04",
+                    "fila_excel": 87
+                },
+                {
+                    "id": "10904",
+                    "placa": "10904 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-03-05",
+                    "fila_excel": 88
+                },
+                {
+                    "id": "10905",
+                    "placa": "10905 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-03-06",
+                    "fila_excel": 89
+                }
+            ]
+        },
+        {
+            "id": "10906",
+            "nombre": "Ventilador de piso",
+            "tipo": "Ventilador de piso",
+            "categoria": "Ventilación",
+            "detalle": "MARCA: Halux",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2021-08-17",
+            "placa": "10906 - SL",
+            "marca": "Halux",
+            "referencia": "",
+            "color": "",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10906",
+                    "placa": "10906 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 90
+                }
+            ]
+        },
+        {
+            "id": "10907",
+            "nombre": "Ollas a presion para uso domestico",
+            "tipo": "Ollas a presion para uso domestico",
+            "categoria": "Cocina",
+            "detalle": "MARCA: Imusa - SERIE: CB 56 CURV - COLOR: Blanco",
+            "estado": "REGULAR",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2021-08-17",
+            "placa": "10907 - SL",
+            "marca": "Imusa",
+            "referencia": "CB 56 CURV",
+            "color": "Blanco",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10907",
+                    "placa": "10907 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 91
+                }
+            ]
+        },
+        {
+            "id": "10909",
+            "nombre": "Escritorios",
+            "tipo": "Escritorios",
+            "categoria": "Mobiliario",
+            "detalle": "COLOR: Plateado",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2021-08-17",
+            "placa": "10909 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "Plateado",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10909",
+                    "placa": "10909 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 92
+                }
+            ]
+        },
+        {
+            "id": "10913",
+            "nombre": "Sillas para grupos de trabajo",
+            "tipo": "Sillas para grupos de trabajo",
+            "categoria": "Mobiliario",
+            "detalle": "COLOR: Azul",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 2,
+            "fecha_adquisicion": "2021-08-17",
+            "placa": "10913 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "Azul",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10913",
+                    "placa": "10913 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 93
+                },
+                {
+                    "id": "10918",
+                    "placa": "10918 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 98
+                }
+            ]
+        },
+        {
+            "id": "10914",
+            "nombre": "Sillas para grupos de trabajo",
+            "tipo": "Sillas para grupos de trabajo",
+            "categoria": "Mobiliario",
+            "detalle": "COLOR: naranja",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 2,
+            "fecha_adquisicion": "2021-08-17",
+            "placa": "10914 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "naranja",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10914",
+                    "placa": "10914 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 94
+                },
+                {
+                    "id": "10932",
+                    "placa": "10932 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 99
+                }
+            ]
+        },
+        {
+            "id": "10915",
+            "nombre": "Cajoneras o estanterias",
+            "tipo": "Cajoneras o estanterias",
+            "categoria": "Mobiliario",
+            "detalle": "COLOR: Madera",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2021-08-17",
+            "placa": "10915 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "Madera",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10915",
+                    "placa": "10915 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 95
+                }
+            ]
+        },
+        {
+            "id": "10916",
+            "nombre": "Extintores",
+            "tipo": "Extintores",
+            "categoria": "Seguridad",
+            "detalle": "COLOR: Amarillo",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 2,
+            "fecha_adquisicion": "2021-08-17",
+            "placa": "10916 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "Amarillo",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10916",
+                    "placa": "10916 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 96
+                },
+                {
+                    "id": "10917",
+                    "placa": "10917 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 97
+                }
+            ]
+        },
+        {
+            "id": "10933",
+            "nombre": "Bibliotecas",
+            "tipo": "Bibliotecas",
+            "categoria": "Mobiliario",
+            "detalle": "REFERENCIA: 1,37x33x2,11 - COLOR: Madera",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2021-08-17",
+            "placa": "10933 - SL",
+            "marca": "",
+            "referencia": "1,37x33x2,11",
+            "color": "Madera",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10933",
+                    "placa": "10933 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 100
+                }
+            ]
+        },
+        {
+            "id": "10934",
+            "nombre": "Proyector de video",
+            "placa": "10934 - SL",
+            "detalle": "MARCA: unic - COLOR: Negro",
+            "cantidad": 1,
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "fecha_adquisicion": "2021-08-17",
+            "tipo": "Proyectores de video",
+            "categoria": "Audiovisual",
+            "marca": "unic",
+            "referencia": "",
+            "imagenes": [
+                "imagenes/10934/foto-20261010-030844-e234a810e46f.jpg"
+            ],
+            "color": "Negro",
+            "registros": [
+                {
+                    "id": "10934",
+                    "placa": "10934 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 101
+                }
+            ]
+        },
+        {
+            "id": "10935",
+            "nombre": "Sillas para grupos de trabajo",
+            "tipo": "Sillas para grupos de trabajo",
+            "categoria": "Mobiliario",
+            "detalle": "COLOR: Verde Limon",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 5,
+            "fecha_adquisicion": "2021-08-17",
+            "placa": "10935 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "Verde Limon",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10935",
+                    "placa": "10935 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 102
+                },
+                {
+                    "id": "10936",
+                    "placa": "10936 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 103
+                },
+                {
+                    "id": "10937",
+                    "placa": "10937 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 104
+                },
+                {
+                    "id": "10938",
+                    "placa": "10938 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 105
+                },
+                {
+                    "id": "10939",
+                    "placa": "10939 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2021-08-17",
+                    "fila_excel": 106
+                }
+            ]
+        },
+        {
+            "id": "10940",
+            "nombre": "Sillas para grupos de trabajo",
+            "tipo": "Sillas para grupos de trabajo",
+            "categoria": "Mobiliario",
+            "detalle": "",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2020-04-23",
+            "placa": "10940 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "10940",
+                    "placa": "10940 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2020-04-23",
+                    "fila_excel": 107
+                }
+            ]
+        },
+        {
+            "id": "19117",
+            "nombre": "Estanterias para almacenaje",
+            "tipo": "Estanterias para almacenaje",
+            "categoria": "Mobiliario",
+            "detalle": "",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2024-04-15",
+            "placa": "19117 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "19117",
+                    "placa": "19117 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2024-04-15",
+                    "fila_excel": 108
+                }
+            ]
+        },
+        {
+            "id": "19118",
+            "nombre": "Punto ecologico  3 canecas",
+            "tipo": "Punto ecologico  3 canecas",
+            "categoria": "Aseo y ambiente",
+            "detalle": "",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2024-04-15",
+            "placa": "19118 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [
+                "imagenes/19118/foto-20261010-031131-4d7994bf6b42.jpg"
+            ],
+            "registros": [
+                {
+                    "id": "19118",
+                    "placa": "19118 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2024-04-15",
+                    "fila_excel": 109
+                }
+            ]
+        },
+        {
+            "id": "19119",
+            "nombre": "Sillas para comedor",
+            "tipo": "Sillas para comedor",
+            "categoria": "Mobiliario",
+            "detalle": "",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2024-04-15",
+            "placa": "19119 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "19119",
+                    "placa": "19119 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2024-04-15",
+                    "fila_excel": 110
+                }
+            ]
+        },
+        {
+            "id": "19120",
+            "nombre": "Meson en acero con poceta",
+            "tipo": "Meson en acero con poceta",
+            "categoria": "Cocina",
+            "detalle": "",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2024-04-15",
+            "placa": "19120 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [
+                "imagenes/19120/foto-20261010-031901-33f720e77657.jpg"
+            ],
+            "registros": [
+                {
+                    "id": "19120",
+                    "placa": "19120 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2024-04-15",
+                    "fila_excel": 111
+                }
+            ]
+        },
+        {
+            "id": "19121",
+            "nombre": "Meson en acero con azafates",
+            "tipo": "Meson en acero con azafates",
+            "categoria": "Cocina",
+            "detalle": "",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2024-04-15",
+            "placa": "19121 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [
+                "imagenes/19121/foto-20261010-032012-3b2782b16125.jpg"
+            ],
+            "registros": [
+                {
+                    "id": "19121",
+                    "placa": "19121 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2024-04-15",
+                    "fila_excel": 112
+                }
+            ]
+        },
+        {
+            "id": "19122",
+            "nombre": "Mesa para preparar alimentos",
+            "tipo": "Mesa para preparar alimentos",
+            "categoria": "Cocina",
+            "detalle": "",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2024-04-15",
+            "placa": "19122 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [
+                "imagenes/19122/foto-20261010-031834-c3838516c3e1.jpg"
+            ],
+            "registros": [
+                {
+                    "id": "19122",
+                    "placa": "19122 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2024-04-15",
+                    "fila_excel": 113
+                }
+            ]
+        },
+        {
+            "id": "19123",
+            "nombre": "Estufa de gas 3 puestos",
+            "tipo": "Estufa de gas 3 puestos",
+            "categoria": "Otros",
+            "detalle": "OBSERVACIONES: estufa lineal 3 quemadores",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2024-04-15",
+            "placa": "19123 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "19123",
+                    "placa": "19123 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2024-04-15",
+                    "fila_excel": 114
+                }
+            ]
+        },
+        {
+            "id": "19124",
+            "nombre": "Ollas a presion para uso domestico",
+            "tipo": "Ollas a presion para uso domestico",
+            "categoria": "Cocina",
+            "detalle": "REFERENCIA: olla a presion de 10 litros",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2024-04-15",
+            "placa": "19124 - SL",
+            "marca": "",
+            "referencia": "olla a presion de 10 litros",
+            "color": "",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "19124",
+                    "placa": "19124 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2024-04-15",
+                    "fila_excel": 115
+                }
+            ]
+        },
+        {
+            "id": "19125",
+            "nombre": "Ollas para uso domestico",
+            "tipo": "Ollas para uso domestico",
+            "categoria": "Cocina",
+            "detalle": "OBVSERVACIONES: olla 8.5 lt, olla de 10.5 lt,  2 chocolateras  3 lt, , 1 sarten  50 cm diamaetro",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 5,
+            "fecha_adquisicion": "2024-04-15",
+            "placa": "19125 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "19125",
+                    "placa": "19125 - SL",
+                    "cantidad": 5,
+                    "fecha_adquisicion": "2024-04-15",
+                    "fila_excel": 116
+                }
+            ]
+        },
+        {
+            "id": "19126",
+            "nombre": "Estanterias de pared",
+            "tipo": "Estanterias de pared",
+            "categoria": "Mobiliario",
+            "detalle": "OBSERVACION: Estantes metalicos",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 3,
+            "fecha_adquisicion": "2023-10-20",
+            "placa": "19126 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "19126",
+                    "placa": "19126 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2023-10-20",
+                    "fila_excel": 117
+                },
+                {
+                    "id": "19127",
+                    "placa": "19126 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2023-10-20",
+                    "fila_excel": 118
+                },
+                {
+                    "id": "19128",
+                    "placa": "19126 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2023-10-20",
+                    "fila_excel": 119
+                }
+            ]
+        },
+        {
+            "id": "19129",
+            "nombre": "Impresora de tinta",
+            "placa": "19129 - SL",
+            "detalle": "REFERENCIA: Marca Epson  L3250",
+            "cantidad": 1,
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "fecha_adquisicion": "2023-10-20",
+            "tipo": "Impresoras de inyeccion de tinta",
+            "categoria": "Impresión",
+            "marca": "Epson",
+            "referencia": "L3250",
+            "imagenes": [
+                "imagenes/19129/foto-20261010-031028-3aebec0fa856.jpg"
+            ],
+            "color": "",
+            "registros": [
+                {
+                    "id": "19129",
+                    "placa": "19129 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2023-10-20",
+                    "fila_excel": 120
+                }
+            ]
+        },
+        {
+            "id": "19130",
+            "nombre": "Congeladores horizontales",
+            "tipo": "Congeladores horizontales",
+            "categoria": "Cocina",
+            "detalle": "OBSERVACION: Congelador marca challenger",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2023-10-20",
+            "placa": "19130 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [
+                "imagenes/19130/foto-20261010-031530-a1c0ed882a45.jpg"
+            ],
+            "registros": [
+                {
+                    "id": "19130",
+                    "placa": "19130 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2023-10-20",
+                    "fila_excel": 121
+                }
+            ]
+        },
+        {
+            "id": "19131",
+            "nombre": "Ventilador de pared",
+            "tipo": "Ventilador de pared",
+            "categoria": "Ventilación",
+            "detalle": "OBSERVACIONES: Ventilador marca Universal L75920",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2023-10-20",
+            "placa": "19131 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "19131",
+                    "placa": "19131 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2023-10-20",
+                    "fila_excel": 122
+                }
+            ]
+        },
+        {
+            "id": "19132",
+            "nombre": "Guillotinas para cortar papel",
+            "tipo": "Guillotinas para cortar papel",
+            "categoria": "Otros",
+            "detalle": "",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2023-10-20",
+            "placa": "19132 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [
+                "imagenes/19132/foto-20261010-031302-ac62fbcc3e6e.jpg"
+            ],
+            "registros": [
+                {
+                    "id": "19132",
+                    "placa": "19132 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2023-10-20",
+                    "fila_excel": 123
+                }
+            ]
+        },
+        {
+            "id": "19133",
+            "nombre": "Parlante activo",
+            "placa": "19133 - SL",
+            "detalle": "OBSERVACIONES: Bafle  J & R",
+            "cantidad": 1,
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "fecha_adquisicion": "2023-10-20",
+            "tipo": "Parlante Activo",
+            "categoria": "Sonido",
+            "marca": "J & R",
+            "referencia": "",
+            "imagenes": [
+                "imagenes/19133/foto-20261010-030212-792b179e4eef.jpg"
+            ],
+            "color": "",
+            "registros": [
+                {
+                    "id": "19133",
+                    "placa": "19133 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2023-10-20",
+                    "fila_excel": 124
+                }
+            ]
+        },
+        {
+            "id": "19134",
+            "nombre": "Soporte para televisor",
+            "placa": "19134 - SL",
+            "detalle": "OBSERVACION: Base de pared Nort Bayu P4",
+            "cantidad": 1,
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "fecha_adquisicion": "2023-10-20",
+            "tipo": "Soportes para televisor",
+            "categoria": "Audiovisual",
+            "marca": "Nort Bayu",
+            "referencia": "P4",
+            "imagenes": [
+                "imagenes/19134/foto-20261010-030909-1e0e5216aba3.jpg"
+            ],
+            "color": "",
+            "registros": [
+                {
+                    "id": "19134",
+                    "placa": "19134 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2023-10-20",
+                    "fila_excel": 125
+                }
+            ]
+        },
+        {
+            "id": "20282",
+            "nombre": "Tableta",
+            "placa": "20272 - SL",
+            "detalle": "REFERENCIA: TABLETS LENOVO  MODEL TB311FU - 10 PULGADAS, 8 GB DE RAM",
+            "cantidad": 1,
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "fecha_adquisicion": "2025-10-18",
+            "tipo": "Computadores de tableta",
+            "categoria": "Computación",
+            "marca": "LENOVO",
+            "referencia": "TB311FU · 10 pulgadas · 8 GB RAM",
+            "imagenes": [
+                "imagenes/20282/foto-20261010-030559-8f85f2e0cf65.jpg"
+            ],
+            "color": "",
+            "registros": [
+                {
+                    "id": "20282",
+                    "placa": "20272 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2025-10-18",
+                    "fila_excel": 126
+                }
+            ]
+        },
+        {
+            "id": "20290",
+            "nombre": "Cabina de sonido y micrófono",
+            "placa": "20288 - SL",
+            "detalle": "REFERENCIA: BAFLE SB-RES2002 + MICROFONO",
+            "cantidad": 1,
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "fecha_adquisicion": "2025-10-18",
+            "tipo": "Cabina de sonido con microfono",
+            "categoria": "Sonido",
+            "marca": "",
+            "referencia": "SB-RES2002 + micrófono",
+            "imagenes": [
+                "imagenes/20290/foto-20261010-030333-79d7577ab956.jpg",
+                "imagenes/20290/foto-20261010-030333-820a89f32127.jpg"
+            ],
+            "color": "",
+            "registros": [
+                {
+                    "id": "20290",
+                    "placa": "20288 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2025-10-18",
+                    "fila_excel": 127
+                }
+            ]
+        },
+        {
+            "id": "20304",
+            "nombre": "Ventilador de pared",
+            "tipo": "Ventilador de pared",
+            "categoria": "Ventilación",
+            "detalle": "OBSERVACIONES: samuray - maya metalica",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2025-10-18",
+            "placa": "20265 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "20304",
+                    "placa": "20265 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2025-10-18",
+                    "fila_excel": 128
+                }
+            ]
+        },
+        {
+            "id": "20323",
+            "nombre": "Colchonetas deportivas",
+            "tipo": "Colchonetas deportivas",
+            "categoria": "Deportes",
+            "detalle": "",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 5,
+            "fecha_adquisicion": "2025-10-18",
+            "placa": "",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [
+                "imagenes/20323/foto-20261010-031219-3654069fd4b6.jpg"
+            ],
+            "registros": [
+                {
+                    "id": "20323",
+                    "placa": "",
+                    "cantidad": 5,
+                    "fecha_adquisicion": "2025-10-18",
+                    "fila_excel": 129
+                }
+            ]
+        },
+        {
+            "id": "20576",
+            "nombre": "Molino de carne",
+            "tipo": "Molino de carne",
+            "categoria": "Cocina",
+            "detalle": "",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2026-07-15",
+            "placa": "20576 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "20576",
+                    "placa": "20576 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2026-07-15",
+                    "fila_excel": 130
+                }
+            ]
+        },
+        {
+            "id": "20582",
+            "nombre": "Nevecon",
+            "tipo": "Nevecon",
+            "categoria": "Otros",
+            "detalle": "",
+            "estado": "BUENO",
+            "ubicacion": "CENTRO EDUCATIVO VALLESOL",
+            "cantidad": 1,
+            "fecha_adquisicion": "2026-07-15",
+            "placa": "20574 - SL",
+            "marca": "",
+            "referencia": "",
+            "color": "",
+            "imagenes": [],
+            "registros": [
+                {
+                    "id": "20582",
+                    "placa": "20574 - SL",
+                    "cantidad": 1,
+                    "fecha_adquisicion": "2026-07-15",
+                    "fila_excel": 131
+                }
+            ]
+        }
+    ],
+    "registros_origen": 130,
+    "cantidad_total": 138,
+    "agrupacion": "Mismo tipo, descripción (marca, referencia y color), estado y ubicación. IDs y placas originales conservados en registros.",
+    "actualizado": "2026-10-10T03:20:12+02:00"
+}

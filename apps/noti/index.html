@@ -6,21 +6,20 @@
     <title>Generador de Circulares - IER La Josefina</title>
     
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
     
     <!-- Dependencias para exportación -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="/guagua/comun/js/html2canvas.js"></script>
+    <script src="/guagua/comun/vendor/jspdf.umd.min.js"></script>
     
     <!-- Quill.js para el editor WYSIWYG -->
-    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+    <link href="/guagua/comun/vendor/quill-2.0.2.snow.css" rel="stylesheet">
+    <script src="/guagua/comun/vendor/quill-2.0.2.js"></script>
 
     <!-- Archivos JS locales con los Base64 -->
     <script src="membrete-superior.js"></script>
     <script src="membrete-inferior.js"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
             overscroll-behavior-y: none;
@@ -51,6 +50,52 @@
         .resizing {
             cursor: col-resize !important;
             user-select: none;
+        }
+
+        /* Imágenes libres sobre el lienzo de la circular */
+        #canvas-images-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+        .canvas-image {
+            position: absolute;
+            pointer-events: auto;
+            touch-action: none;
+            user-select: none;
+            cursor: move;
+        }
+        .canvas-image img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+            user-select: none;
+        }
+        .canvas-image.is-selected {
+            outline: 2px solid #1c6628;
+            outline-offset: 3px;
+        }
+        .canvas-image.behind-text { z-index: 0; }
+        .canvas-image.in-front-text { z-index: 20; }
+        .image-resize-handle {
+            position: absolute;
+            width: 13px;
+            height: 13px;
+            right: -8px;
+            bottom: -8px;
+            border: 2px solid white;
+            border-radius: 50%;
+            background: #1c6628;
+            cursor: nwse-resize;
+            box-shadow: 0 1px 3px rgba(0,0,0,.35);
+        }
+        .exporting .canvas-image.is-selected {
+            outline: none;
+        }
+        .exporting .image-editor-chrome {
+            display: none !important;
         }
         
         /* Ajustes de Caja de Texto Quill */
@@ -166,7 +211,10 @@
     <aside id="sidebar" class="bg-white md:shadow-xl z-20 flex flex-col flex-1 md:h-full border-r border-slate-300 w-full md:w-auto shrink-0 overflow-hidden transition-all duration-300">
         <div class="p-5 md:p-6 border-b border-slate-200 bg-slate-50 flex justify-between items-start shrink-0">
             <div>
-                <h1 class="text-lg md:text-xl font-bold text-[#1c6628]">Generador de Circulares</h1>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <h1 class="text-lg md:text-xl font-bold text-[#1c6628]">Generador de Circulares</h1>
+                    <a href="chapolas.html" class="text-xs font-bold text-[#1c6628] bg-white border border-[#1c6628] hover:bg-[#f4f9f5] rounded-full px-3 py-1 transition" title="Crear chapolas de comunicación imprimibles">Chapolas</a>
+                </div>
                 <p class="text-xs md:text-sm text-slate-600 mt-1">IER La Josefina - Sede Vallesol</p>
             </div>
         </div>
@@ -220,6 +268,36 @@
                 </div>
             </div>
 
+            <!-- Imágenes opcionales dentro de la circular -->
+            <div class="bg-slate-50 border border-slate-200 rounded-md overflow-hidden">
+                <button id="btn-toggle-canvas-images" class="w-full flex items-center justify-between p-4 focus:outline-none hover:bg-slate-100 transition-colors" type="button">
+                    <div class="text-left">
+                        <h3 class="text-sm font-bold text-slate-800">Imágenes en la circular <span class="font-normal text-slate-500">(Opcional)</span></h3>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Añada, mueva y cambie el tamaño directamente en el lienzo.</p>
+                    </div>
+                    <svg id="icon-chevron-canvas-images" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 transform"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div id="content-canvas-images" class="hidden p-4 pt-0 space-y-3 border-t border-slate-200 mt-2">
+                    <input id="input-canvas-images" type="file" accept="image/*" multiple class="block w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[#1c6628] file:text-white hover:file:bg-[#144b1c] cursor-pointer">
+                    <p class="text-[11px] text-slate-500">Seleccione una imagen en el lienzo para arrastrarla. Use el punto verde de la esquina para redimensionarla.</p>
+                    <div id="canvas-image-list" class="space-y-1"></div>
+                    <div id="canvas-image-controls" class="hidden rounded-md border border-slate-200 bg-white p-3 space-y-3">
+                        <div class="flex items-center justify-between gap-2">
+                            <span id="canvas-image-name" class="text-xs font-semibold text-slate-700 truncate"></span>
+                            <button id="btn-delete-canvas-image" type="button" class="shrink-0 text-xs font-semibold text-red-600 hover:text-red-800">Eliminar</button>
+                        </div>
+                        <label class="block text-xs text-slate-600">Ancho: <span id="canvas-image-width">200</span> px
+                            <input id="input-canvas-image-width" type="range" min="60" max="760" value="200" class="mt-1.5 w-full accent-[#1c6628]">
+                        </label>
+                        <label class="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
+                            <input id="input-canvas-image-front" type="checkbox" checked class="accent-[#1c6628]">
+                            Ajustar delante del texto
+                        </label>
+                    </div>
+                    <p id="canvas-images-empty" class="text-[11px] text-slate-500 italic">No ha añadido imágenes adicionales.</p>
+                </div>
+            </div>
+
             <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-1">Título / Asunto</label>
                 <input type="text" id="input-title" class="w-full border border-slate-300 rounded-md p-2.5 focus:ring-2 focus:ring-[#1c6628] focus:border-[#1c6628] outline-none transition text-sm" placeholder="Ej. Reunión de Padres de Familia" value="Citación a Reunión de Padres">
@@ -260,10 +338,10 @@
         
         <!-- Wrapper para controlar el Zoom y la adaptabilidad -->
         <div id="zoom-wrapper" class="relative transition-all duration-200 ease-in-out">
-            <div class="w-[800px] h-fit min-h-[1035px] origin-top-left transition-transform duration-200 ease-in-out absolute top-0 left-0 shadow-2xl bg-white flex flex-col shrink-0" id="graphic-card">
+            <div class="w-[800px] h-fit min-h-[1035px] origin-top-left transition-transform duration-200 ease-in-out absolute top-0 left-0 shadow-2xl bg-white flex flex-col shrink-0 relative" id="graphic-card">
                 
                 <!-- Encabezado -->
-                <div id="container-top" class="w-full">
+                <div id="container-top" class="relative z-10 w-full">
                     <img id="img-top" src="" alt="Membrete Superior" class="w-full object-cover block" style="display: none;" onerror="handleImageError(this, 'placeholder-top')">
                     <div id="placeholder-top" class="img-placeholder w-full h-[150px]">
                         Sin membrete cargado. Use el menú izquierdo para cargar el Membrete Superior.
@@ -271,7 +349,7 @@
                 </div>
                 
                 <!-- Cuerpo del mensaje -->
-                <div class="px-14 py-12 graphic-content text-slate-800 flex-1">
+                <div class="relative z-10 px-14 py-12 graphic-content text-slate-800 flex-1">
                     <h2 id="out-title" class="graphic-title text-3xl font-bold text-center text-[#1c6628] mb-10 uppercase tracking-wide">Citación a Reunión de Padres</h2>
                     
                     <!-- Contenedor condicional -->
@@ -285,12 +363,15 @@
                 </div>
 
                 <!-- Pie de página -->
-                <div id="container-bottom" class="mt-auto w-full">
+                <div id="container-bottom" class="relative z-10 mt-auto w-full">
                     <img id="img-bottom" src="" alt="Membrete Inferior" class="w-full object-cover block" style="display: none;" onerror="handleImageError(this, 'placeholder-bottom')">
                     <div id="placeholder-bottom" class="img-placeholder w-full h-[100px]">
                         Sin membrete cargado. Use el menú izquierdo para cargar el Membrete Inferior.
                     </div>
                 </div>
+
+                <!-- Capas de imágenes que el usuario ubica libremente en el lienzo -->
+                <div id="canvas-images-layer" aria-label="Imágenes adicionales de la circular"></div>
 
             </div>
         </div>
@@ -697,22 +778,228 @@
         setupImageSource('top');
         setupImageSource('bottom');
 
+        // --- IMÁGENES OPCIONALES Y EDITABLES EN EL LIENZO ---
+        const btnToggleCanvasImages = document.getElementById('btn-toggle-canvas-images');
+        const contentCanvasImages = document.getElementById('content-canvas-images');
+        const iconChevronCanvasImages = document.getElementById('icon-chevron-canvas-images');
+        const canvasImagesInput = document.getElementById('input-canvas-images');
+        const canvasImagesLayer = document.getElementById('canvas-images-layer');
+        const canvasImageList = document.getElementById('canvas-image-list');
+        const canvasImageControls = document.getElementById('canvas-image-controls');
+        const canvasImagesEmpty = document.getElementById('canvas-images-empty');
+        const canvasImageName = document.getElementById('canvas-image-name');
+        const canvasImageWidth = document.getElementById('canvas-image-width');
+        const canvasImageWidthInput = document.getElementById('input-canvas-image-width');
+        const canvasImageFrontInput = document.getElementById('input-canvas-image-front');
+        const deleteCanvasImageButton = document.getElementById('btn-delete-canvas-image');
+        let activeCanvasImage = null;
+        let canvasImageSequence = 0;
+        let canvasImageInteraction = null;
+
+        btnToggleCanvasImages.addEventListener('click', () => {
+            contentCanvasImages.classList.toggle('hidden');
+            iconChevronCanvasImages.classList.toggle('rotate-180');
+        });
+
+        const clampCanvasImage = (imageBox) => {
+            const width = imageBox.offsetWidth;
+            const height = imageBox.offsetHeight;
+            const maxLeft = Math.max(0, graphicCard.offsetWidth - width);
+            const maxTop = Math.max(0, graphicCard.offsetHeight - height);
+            const left = Math.max(0, Math.min(parseFloat(imageBox.style.left) || 0, maxLeft));
+            const top = Math.max(0, Math.min(parseFloat(imageBox.style.top) || 0, maxTop));
+            imageBox.style.left = `${left}px`;
+            imageBox.style.top = `${top}px`;
+        };
+
+        const setCanvasImageSize = (imageBox, requestedWidth) => {
+            const aspectRatio = Number(imageBox.dataset.aspectRatio) || 1;
+            const maxWidth = Math.min(760, graphicCard.offsetWidth, graphicCard.offsetHeight * aspectRatio);
+            const minWidth = Math.min(60, maxWidth);
+            const width = Math.max(minWidth, Math.min(Math.round(requestedWidth), maxWidth));
+            imageBox.style.width = `${width}px`;
+            imageBox.style.height = `${Math.round(width / aspectRatio)}px`;
+            clampCanvasImage(imageBox);
+
+            if (imageBox === activeCanvasImage) {
+                canvasImageWidth.textContent = width;
+                canvasImageWidthInput.value = width;
+            }
+        };
+
+        const selectCanvasImage = (imageBox) => {
+            document.querySelectorAll('.canvas-image.is-selected').forEach(el => el.classList.remove('is-selected'));
+            canvasImageList.querySelectorAll('button').forEach(button => {
+                button.classList.remove('bg-[#e7f3e9]', 'text-[#154a1d]', 'border-[#1c6628]');
+                button.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+            });
+            activeCanvasImage = imageBox;
+
+            if (!imageBox) {
+                canvasImageControls.classList.add('hidden');
+                return;
+            }
+
+            imageBox.classList.add('is-selected');
+            const listButton = canvasImageList.querySelector(`[data-image-id="${imageBox.id}"]`);
+            if (listButton) {
+                listButton.classList.remove('bg-white', 'text-slate-600', 'border-slate-200');
+                listButton.classList.add('bg-[#e7f3e9]', 'text-[#154a1d]', 'border-[#1c6628]');
+            }
+            canvasImageControls.classList.remove('hidden');
+            canvasImageName.textContent = imageBox.dataset.fileName || 'Imagen';
+            const width = Math.round(imageBox.offsetWidth);
+            canvasImageWidth.textContent = width;
+            canvasImageWidthInput.value = width;
+            canvasImageFrontInput.checked = imageBox.classList.contains('in-front-text');
+        };
+
+        const updateCanvasImagesEmptyState = () => {
+            canvasImagesEmpty.classList.toggle('hidden', canvasImagesLayer.children.length > 0);
+        };
+
+        const finishCanvasImageInteraction = () => {
+            canvasImageInteraction = null;
+        };
+
+        document.addEventListener('pointermove', (event) => {
+            if (!canvasImageInteraction) return;
+            const { imageBox, type, startX, startY, startLeft, startTop, startWidth } = canvasImageInteraction;
+            const scale = currentZoom || 1;
+            const deltaX = (event.clientX - startX) / scale;
+            const deltaY = (event.clientY - startY) / scale;
+
+            if (type === 'move') {
+                imageBox.style.left = `${startLeft + deltaX}px`;
+                imageBox.style.top = `${startTop + deltaY}px`;
+                clampCanvasImage(imageBox);
+            } else {
+                setCanvasImageSize(imageBox, startWidth + Math.max(deltaX, deltaY));
+            }
+        });
+
+        document.addEventListener('pointerup', finishCanvasImageInteraction);
+        document.addEventListener('pointercancel', finishCanvasImageInteraction);
+
+        const addCanvasImage = (file) => {
+            if (!file.type.startsWith('image/')) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const source = event.target.result;
+                const image = new Image();
+                image.onload = () => {
+                    const imageBox = document.createElement('div');
+                    const imageId = `canvas-image-${++canvasImageSequence}`;
+                    const aspectRatio = image.naturalWidth / image.naturalHeight || 1;
+                    const initialWidth = Math.min(280, image.naturalWidth, 700);
+                    const initialLeft = Math.max(0, Math.round((graphicCard.offsetWidth - initialWidth) / 2));
+                    const initialTop = Math.min(280 + ((canvasImageSequence - 1) * 28), Math.max(0, graphicCard.offsetHeight - (initialWidth / aspectRatio)));
+
+                    imageBox.id = imageId;
+                    imageBox.className = 'canvas-image in-front-text';
+                    imageBox.dataset.fileName = file.name;
+                    imageBox.dataset.aspectRatio = aspectRatio;
+                    imageBox.style.left = `${initialLeft}px`;
+                    imageBox.style.top = `${initialTop}px`;
+
+                    const imageElement = document.createElement('img');
+                    imageElement.src = source;
+                    imageElement.alt = file.name;
+                    imageElement.draggable = false;
+
+                    const resizeHandle = document.createElement('span');
+                    resizeHandle.className = 'image-resize-handle image-editor-chrome';
+                    resizeHandle.title = 'Arrastre para redimensionar';
+
+                    imageBox.append(imageElement, resizeHandle);
+                    canvasImagesLayer.appendChild(imageBox);
+                    const listButton = document.createElement('button');
+                    listButton.type = 'button';
+                    listButton.dataset.imageId = imageId;
+                    listButton.className = 'w-full text-left border border-slate-200 bg-white text-slate-600 rounded px-2 py-1.5 text-xs truncate hover:border-[#1c6628] transition';
+                    listButton.textContent = file.name;
+                    listButton.addEventListener('click', () => selectCanvasImage(imageBox));
+                    canvasImageList.appendChild(listButton);
+                    setCanvasImageSize(imageBox, initialWidth);
+                    updateCanvasImagesEmptyState();
+                    selectCanvasImage(imageBox);
+
+                    imageBox.addEventListener('pointerdown', (pointerEvent) => {
+                        if (pointerEvent.target.closest('.image-resize-handle')) return;
+                        pointerEvent.preventDefault();
+                        selectCanvasImage(imageBox);
+                        canvasImageInteraction = {
+                            imageBox,
+                            type: 'move',
+                            startX: pointerEvent.clientX,
+                            startY: pointerEvent.clientY,
+                            startLeft: parseFloat(imageBox.style.left) || 0,
+                            startTop: parseFloat(imageBox.style.top) || 0
+                        };
+                    });
+
+                    resizeHandle.addEventListener('pointerdown', (pointerEvent) => {
+                        pointerEvent.preventDefault();
+                        pointerEvent.stopPropagation();
+                        selectCanvasImage(imageBox);
+                        canvasImageInteraction = {
+                            imageBox,
+                            type: 'resize',
+                            startX: pointerEvent.clientX,
+                            startY: pointerEvent.clientY,
+                            startWidth: imageBox.offsetWidth
+                        };
+                    });
+                };
+                image.src = source;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        canvasImagesInput.addEventListener('change', (event) => {
+            [...event.target.files].forEach(addCanvasImage);
+            event.target.value = '';
+        });
+
+        canvasImageWidthInput.addEventListener('input', () => {
+            if (activeCanvasImage) setCanvasImageSize(activeCanvasImage, canvasImageWidthInput.value);
+        });
+
+        canvasImageFrontInput.addEventListener('change', () => {
+            if (!activeCanvasImage) return;
+            activeCanvasImage.classList.toggle('in-front-text', canvasImageFrontInput.checked);
+            activeCanvasImage.classList.toggle('behind-text', !canvasImageFrontInput.checked);
+        });
+
+        deleteCanvasImageButton.addEventListener('click', () => {
+            if (!activeCanvasImage) return;
+            const listButton = canvasImageList.querySelector(`[data-image-id="${activeCanvasImage.id}"]`);
+            if (listButton) listButton.remove();
+            activeCanvasImage.remove();
+            selectCanvasImage(null);
+            updateCanvasImagesEmptyState();
+        });
+
         // --- RENDERIZACIÓN HD ---
         const renderHighQualityCanvas = async () => {
             const card = document.getElementById('graphic-card');
             const originalTransform = card.style.transform;
             card.style.transform = 'scale(1)';
+            card.classList.add('exporting');
             
-            const canvas = await html2canvas(card, {
-                scale: 2, 
-                useCORS: true, 
-                backgroundColor: '#ffffff',
-                logging: false,
-                allowTaint: false
-            });
-            
-            card.style.transform = originalTransform;
-            return canvas;
+            try {
+                return await html2canvas(card, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    allowTaint: false
+                });
+            } finally {
+                card.style.transform = originalTransform;
+                card.classList.remove('exporting');
+            }
         };
 
         const toggleButtons = (disabled) => {

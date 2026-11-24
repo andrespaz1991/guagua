@@ -148,22 +148,23 @@ Eliminación fallida, por favor compruebe que la usuario no esté en uso
 </center><?php 
 if (isset($_POST['submit'])){
 if ($_POST['submit']=="Registrar"){
-if(empty($_POST['estado'])){
-  $_POST['estado']="Activo";
-}
+$_POST['estado'] = ($_POST['estado_anio_lectivo'] ?? '') === 'Activo' ? 'Activo' : 'Inactivo';
  /*recibo los campos del formulario proveniente con el método POST*/ 
 $sql = "INSERT INTO ano_lectivo ( `nombre_ano_lectivo`,estado) VALUES ('".$_POST['nombre_ano_lectivo']."','".$_POST['estado']."')";
 #echo $sql;
+$mysqli->begin_transaction();
 if (isset($_POST['estado_anio_lectivo']) and $_POST['estado_anio_lectivo']=="Activo"){
-  $sql_activo = "UPDATE ano_lectivo SET estado_anio_lectivo='Inactivo'";
+  $sql_activo = "UPDATE ano_lectivo SET estado='Inactivo'";
 $mysqli->query($sql_activo);
 }
 
 if ($insertar = $mysqli->query($sql)) {
-require '../comun/funciones.php';
+$nuevoAnoId = $mysqli->insert_id;
+$mysqli->commit();
+require_once '../comun/funciones.php';
 if(isset($_POST['automatico'])){
   
-  inscribir_estudiante($_POST['id_ano_lectivo']);
+  inscribir_estudiante($nuevoAnoId);
 }
  /*Validamos si el registro fue ingresado con éxito*/ 
  ?>
@@ -173,6 +174,7 @@ Registro exitoso
  }else{ 
  ?>
 Registro fallido
+<?php $mysqli->rollback(); ?>
 <meta http-equiv="refresh" content="1; url=ano_lectivo.php" />
 <?php 
 }
@@ -225,15 +227,13 @@ echo '<p><input type="hidden" name="submit" id="submit" value="'.$textobtn.'"><b
 if ($_POST['submit']=="Actualizar"){
  /*recibo los campos del formulario proveniente con el método POST*/ 
 $cod = $_POST['cod'];
-echo "<pre>";
-print_r($_POST);
-echo "</pre>";
 if (!isset($_POST['estado_anio_lectivo']) or $_POST['estado_anio_lectivo']<>"Activo"){
   $_POST['estado_anio_lectivo']="Inactivo";
 }
 
  /*Instrucción SQL que permite insertar en la BD */ 
  $sql = "UPDATE ano_lectivo SET id_ano_lectivo='".$_POST['id_ano_lectivo']."', nombre_ano_lectivo='".$_POST['nombre_ano_lectivo']."',estado='".$_POST['estado_anio_lectivo']."'  WHERE  id_ano_lectivo = '".$cod."';";
+$mysqli->begin_transaction();
 if (isset($_POST['estado_anio_lectivo']) and $_POST['estado_anio_lectivo']=="Activo"){
 $sql_activo = "UPDATE ano_lectivo SET estado='Inactivo'";
 $mysqli->query($sql_activo);
@@ -241,10 +241,12 @@ $mysqli->query($sql_activo);
  #echo $sql;
  /*Se conecta a la BD y luego ejecuta la instrucción SQL*/ 
 if ($actualizar = $mysqli->query($sql)) {
+$mysqli->commit();
  /*Validamos si el registro fue ingresado con éxito*/
 echo 'Modificación exitosa';
 echo '<meta http-equiv="refresh" content="1; url=ano_lectivo.php" />';
  }else{ 
+$mysqli->rollback();
 echo 'Modificacion fallida';
 }
 echo '<meta http-equiv="refresh" content="2; url=ano_lectivo.php" />';

@@ -1,0 +1,11 @@
+[   28801ms] [ERROR] Access to fetch at 'http://localhost:1234/v1/models' from origin 'http://localhost' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost/guagua/usuario/login.php:0
+[   28802ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:1234/v1/models:0
+[   75687ms] [ERROR] Refused to apply style from 'http://localhost/guagua/comun/lib/emojionearea/dist/emojionearea.min.css' because its MIME type ('text/html') is not a supported stylesheet MIME type, and strict MIME checking is enabled. @ http://localhost/guagua/index.php:0
+[   75913ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost/guagua/comun/lib/emojionearea/dist/emojionearea.js:0
+[   76334ms] [ERROR] Refused to execute script from 'http://localhost/guagua/comun/lib/emojionearea/dist/emojionearea.js' because its MIME type ('text/html') is not executable, and strict MIME type checking is enabled. @ http://localhost/guagua/index.php:0
+[   76342ms] [ERROR] Refused to apply style from 'http://localhost/guagua/comun/lib/emojionearea/dist/emojionearea.min.css' because its MIME type ('text/html') is not a supported stylesheet MIME type, and strict MIME checking is enabled. @ http://localhost/guagua/index.php:0
+[   76668ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost/guagua/comun/audio/fondo.mp3:0
+[   77424ms] TypeError: Cannot set properties of null (setting 'className')
+    at verificar_sonido (http://localhost/guagua/comun/js/funciones.js:689:56)
+    at window.onload (http://localhost/guagua/index.php:522:13)
+[   77433ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost/guagua/comun/img/favicon.png:0

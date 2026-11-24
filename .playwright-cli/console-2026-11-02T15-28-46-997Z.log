@@ -1,0 +1,3 @@
+[      49ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ http://localhost/guagua/output/playwright/dba-accordion/index.html:0
+[   39439ms] [ERROR] Error: No fue posible cargar los datos.
+    at fetchData (http://localhost/guagua/apps/dba/assets/js/app.js:88:63) @ http://localhost/guagua/apps/dba/assets/js/app.js:99

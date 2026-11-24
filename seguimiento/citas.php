@@ -1,213 +1,15 @@
 <?php 
 ob_start();
+require_once __DIR__ . '/../comun/seguridad.php';
+guagua_exigir_rol(['admin','directivo','docente']);
 require("conexion.php");
 require("../comun/autoload.php");
+require_once __DIR__ . '/contexto.php';
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') guagua_exigir_origen_legado();
+$contextoAno = guagua_ano_activo($mysqli);
+$contextoPeriodo = guagua_periodo_activo($mysqli);
 
-// Función principal de búsqueda y renderizado de tabla
-function buscar_seguimiento($datos = '', $reporte = '') {
-    global $mysqli;
-    require_once ("../comun/lib/Zebra_Pagination/Zebra_Pagination.php");
-    
-    // Validación básica de resultados por página
-    $resultados = (isset($_COOKIE['numeroresultadosseguimiento']) && is_numeric($_COOKIE['numeroresultadosseguimiento'])) ? intval($_COOKIE['numeroresultadosseguimiento']) : 10;
-    
-    $paginacion = new Zebra_Pagination();
-    $paginacion->records_per_page($resultados);
-    $cookiepage = "page_numeroresultadosseguimiento";
-    $funcionjs = "buscar();";
-    $paginacion->fn_js_page("$funcionjs");
-    $paginacion->cookie_page($cookiepage);
-    $paginacion->padding(true);
-    
-    if (isset($_COOKIE[$cookiepage]) && is_numeric($_COOKIE[$cookiepage])) {
-        $_GET['page'] = intval($_COOKIE[$cookiepage]);
-    }
-
-    if ($reporte == "xls" || isset($_GET['xls'])) {
-        header("Content-type: application/vnd.ms-excel");
-        $filename = !empty($_GET['xls']) ? intval($_GET['xls']) . ".xls" : "seguimiento.xls";
-        header("Content-Disposition: attachment; Filename=" . $filename);
-    }
-
-    $sql = 'SELECT * FROM seguimiento';
-    $consulta = $mysqli->query($sql);
-    
-    // Si la tabla está vacía o hay error, evitamos error fatal
-    if (!$consulta) {
-        $paginacion->records(0);
-    } else {
-        $paginacion->records($consulta->num_rows);
-    }
-
-    $datos_array = array_filter(explode(" ", trim($datos))); // Filtramos espacios vacíos
-    
-    $sql .= ' WHERE 1=1 '; // Facilita la concatenación dinámica de condiciones
-    
-    if (!empty($_GET['xls'])) {
-        // Aseguramos que sea entero para evitar inyección en el GET
-        $id_xls = intval($_GET['xls']);
-        $sql .= " AND seguimiento.id_seguimiento = " . $id_xls;
-    } else {
-        if (!empty($datos_array)) {
-            $sql .= " AND (";
-            $condiciones = [];
-            foreach ($datos_array as $dato) {
-                // Escapamos el dato para la consulta dinámica LIKE
-                $dato_limpio = $mysqli->real_escape_string(mb_strtolower($dato, 'UTF-8'));
-                $condiciones[] = 'concat(LOWER(seguimiento.id_seguimiento),"", LOWER(seguimiento.id_inscripcion),"", LOWER(seguimiento.fecha_seguimiento),"", LOWER(seguimiento.hora_seguimiento),"", LOWER(seguimiento.observaciones)) LIKE "%' . $dato_limpio . '%"';
-            }
-            $sql .= implode(' AND ', $condiciones) . ") ";
-        }
-        
-        $sql .= ' ORDER BY seguimiento.id_seguimiento DESC ';
-        
-        if (!isset($_GET['xls'])) {
-            $page_num = $paginacion->get_page() > 0 ? $paginacion->get_page() : 1;
-            $offset = ($page_num - 1) * $resultados;
-            $sql .= " LIMIT " . intval($offset) . ", " . intval($resultados);
-        }
-    }
-
-    $consulta = $mysqli->query($sql);
-    $numero_usuario = $consulta ? $consulta->num_rows : 0;
-    
-    $page_num = $paginacion->get_page() > 0 ? $paginacion->get_page() : 1;
-    $minimo_usuario = (($page_num - 1) * $resultados) + ($numero_usuario > 0 ? 1 : 0);
-    $maximo_usuario = (($page_num - 1) * $resultados) + $numero_usuario;
-    ?>
-    
-    <style>
-        /* Estilos para integrar Zebra_Pagination con Tailwind */
-        .Zebra_Pagination { display: flex; justify-content: center; gap: 0.375rem; padding: 1.5rem; }
-        .Zebra_Pagination li { list-style-type: none; }
-        .Zebra_Pagination a, .Zebra_Pagination span { display: flex; align-items: center; justify-content: center; min-width: 2.25rem; height: 2.25rem; padding: 0 0.5rem; font-size: 0.875rem; border-radius: 0.5rem; transition: all 0.2s; font-weight: 500; }
-        .Zebra_Pagination a { background-color: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; text-decoration: none; }
-        .Zebra_Pagination a:hover { background-color: #f1f5f9; color: #0f172a; border-color: #cbd5e1; }
-        .Zebra_Pagination .navigation a { font-weight: 600; color: #475569; }
-        .Zebra_Pagination .current { background-color: #4f46e5; color: white; border: 1px solid #4f46e5; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2); }
-    </style>
-
-    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-        <div class="text-sm text-slate-500 font-medium bg-white px-4 py-2.5 rounded-xl border border-slate-200 shadow-sm w-full sm:w-auto text-center sm:text-left">
-            Mostrando <span class="text-indigo-600 font-bold"><?= $minimo_usuario ?></span> a <span class="text-indigo-600 font-bold"><?= $maximo_usuario ?></span> de resultados (Pág. <?= $page_num ?>)
-        </div>
-        
-        <?php if ($reporte == ''): ?>
-        <div class="flex gap-2 w-full sm:w-auto">
-            <form class="m-0 flex-1 sm:flex-none" id="formNuevo" name="formNuevo" method="post" action="citas.php">
-                <input name="cod" type="hidden" id="cod" value="0">
-                <button type="submit" name="submit" value="Nuevo" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-lg focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                    <i class="fa-solid fa-plus"></i> Nuevo Registro
-                </button>
-            </form>
-            <form class="flex items-center gap-2 m-0 flex-1 sm:flex-none" id="formExportar" name="formExportar" method="post" action="citas.php?xls">
-                <input name="cod" type="hidden" id="cod" value="0">
-                <button type="submit" name="submit" value="XLS" class="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded-xl text-sm font-bold transition-colors shadow-sm" title="Exportar a Excel">
-                    <i class="fa-solid fa-file-excel"></i> XLS
-                </button>
-                <a target="_blank" href="reporte_seguimiento.php" class="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 rounded-xl text-sm font-bold transition-colors shadow-sm" title="Exportar a PDF">
-                    <i class="fa-solid fa-file-pdf"></i> PDF
-                </a>
-            </form>
-        </div>
-        <?php endif; ?>
-    </div>
-
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden ring-1 ring-slate-900/5">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-200" id="tbseguimiento">
-                <thead class="bg-slate-50/80 backdrop-blur-sm">
-                    <tr>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Detalles de Inscripción</th>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Fecha y Hora</th>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Observaciones</th>
-                        <?php if ($reporte == ''): ?>
-                            <th scope="col" class="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Acciones</th>
-                        <?php endif; ?>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-slate-100">
-                    <?php if($consulta && $consulta->num_rows > 0): ?>
-                        <?php while ($row = $consulta->fetch_assoc()): ?>
-                            <tr class="hover:bg-slate-50/70 transition-colors group">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center gap-3">
-                                        <div class="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold border border-indigo-100">
-                                            #<?= htmlspecialchars($row['id_seguimiento'], ENT_QUOTES, 'UTF-8') ?>
-                                        </div>
-                                        <div>
-                                            <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">ID Estudiante</div>
-                                            <div class="text-sm font-bold text-slate-900"><?= htmlspecialchars($row['id_inscripcion'], ENT_QUOTES, 'UTF-8') ?></div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex flex-col gap-1.5">
-                                        <span class="inline-flex items-center gap-2 text-sm font-medium text-slate-700">
-                                            <i class="fa-regular fa-calendar-days text-indigo-400 w-4"></i> 
-                                            <?= htmlspecialchars($row['fecha_seguimiento'], ENT_QUOTES, 'UTF-8') ?>
-                                        </span>
-                                        <span class="inline-flex items-center gap-2 text-sm text-slate-500">
-                                            <i class="fa-regular fa-clock text-slate-400 w-4"></i> 
-                                            <?= htmlspecialchars($row['hora_seguimiento'], ENT_QUOTES, 'UTF-8') ?>
-                                        </span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <p class="text-sm text-slate-600 line-clamp-2 max-w-md leading-relaxed" title="<?= htmlspecialchars($row['observaciones'], ENT_QUOTES, 'UTF-8') ?>">
-                                        <?= htmlspecialchars($row['observaciones'], ENT_QUOTES, 'UTF-8') ?>
-                                    </p>
-                                </td>
-                                
-                                <?php if ($reporte == ''): ?>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div class="flex items-center justify-end gap-1 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <form class="m-0" id="formModificar_<?= $row['id_seguimiento'] ?>" name="formModificar" method="post" action="citas.php">
-                                                <input name="cod" type="hidden" id="cod_mod_<?= $row['id_seguimiento'] ?>" value="<?= htmlspecialchars($row['id_seguimiento'], ENT_QUOTES, 'UTF-8') ?>">
-                                                <button type="submit" name="submit" value="Modificar" class="p-2.5 text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors" title="Editar">
-                                                    <i class="fa-solid fa-pen-to-square text-lg"></i>
-                                                </button>
-                                            </form>
-                                            <button type="button" class="p-2.5 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors" title="Eliminar" onClick="confirmeliminar('citas.php',{'del':'<?= $row['id_seguimiento']; ?>'},'<?= $row['id_seguimiento']; ?>');">
-                                                <i class="fa-solid fa-trash-can text-lg"></i>
-                                            </button>
-                                            <div class="w-px h-6 bg-slate-200 mx-2"></div>
-                                            <a target="_blank" href="citas.php?xls=<?= $row['id_seguimiento'] ?>" class="p-2.5 text-emerald-600 hover:bg-emerald-50 rounded-xl transition-colors" title="Descargar Excel">
-                                                <i class="fa-solid fa-file-excel text-lg"></i>
-                                            </a>
-                                            <a target="_blank" href="citas.php?id=<?= $row['id_seguimiento'] ?>" class="p-2.5 text-rose-600 hover:bg-rose-50 rounded-xl transition-colors" title="Descargar PDF">
-                                                <i class="fa-solid fa-file-pdf text-lg"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                <?php endif; ?>
-                            </tr>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="4" class="px-6 py-16 text-center">
-                                <div class="flex flex-col items-center justify-center">
-                                    <div class="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center mb-5 ring-8 ring-white shadow-sm border border-slate-100">
-                                        <i class="fa-solid fa-folder-open text-3xl text-indigo-300"></i>
-                                    </div>
-                                    <h3 class="text-base font-bold text-slate-900 mb-1">Sin registros</h3>
-                                    <p class="text-sm text-slate-500 max-w-sm">No se han encontrado seguimientos estudiantiles que coincidan con los criterios de búsqueda.</p>
-                                </div>
-                            </td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-        
-        <?php if (!isset($_GET['xls'])): ?>
-            <div class="border-t border-slate-200 bg-slate-50/30">
-                <?= $paginacion->render2(); ?>
-            </div>
-        <?php endif; ?>
-    </div>
-    <?php 
-} // fin function buscar
+require_once __DIR__ . '/listado.php';
 
 // Rutas GET
 if (isset($_GET['buscar'])) {
@@ -217,6 +19,12 @@ if (isset($_GET['buscar'])) {
 if (isset($_GET['xls'])) {
     buscar_seguimiento('', 'xls');
     exit();
+}
+if (isset($_GET['imprimir'])) {
+    echo '<meta charset="utf-8"><h1>Seguimiento estudiantil</h1>';
+    buscar_seguimiento('', 'imprimir');
+    echo '<script>window.print();</script>';
+    exit;
 }
 
 $alert_html = '';
@@ -244,7 +52,40 @@ function generar_toast($tipo, $titulo, $mensaje) {
         </button>
     </div>
     <script>setTimeout(() => { let t = document.getElementById("toast-message"); if(t) { t.style.opacity = "0"; t.style.transform = "translateX(20px)"; setTimeout(() => t.remove(), 500); } }, 3500);</script>
-    <meta http-equiv="refresh" content="2; url=citas.php" />';
+    ';
+}
+
+// Validar inscripción, año, período y alcance antes de cualquier escritura.
+$errorValidacion = '';
+try {
+    if (isset($_POST['del']) || in_array($_POST['submit'] ?? '', ['Actualizar', 'Modificar'], true)) {
+        $idRegistro = (int)($_POST['del'] ?? $_POST['id_seguimiento'] ?? $_POST['cod'] ?? 0);
+        $registro = guagua_sql($mysqli, 'SELECT s.id_seguimiento FROM seguimiento s
+            INNER JOIN inscripcion i ON i.id_inscripcion=s.id_inscripcion
+            INNER JOIN asignacion a ON a.id_asignacion=i.id_asignacion
+            WHERE s.id_seguimiento=? AND ' . seguimiento_condicion($mysqli), [$idRegistro], 'i')->fetch_assoc();
+        if (!$registro) throw new InvalidArgumentException('El registro no pertenece al año, período o cursos activos.');
+    }
+    if (in_array($_POST['submit'] ?? '', ['Registrar', 'Actualizar'], true)) {
+        $permitidas = array_column(seguimiento_inscripciones($mysqli), 'id_inscripcion');
+        if (!in_array((string)($_POST['id_inscripcion'] ?? ''), array_map('strval', $permitidas), true)) {
+            throw new InvalidArgumentException('Seleccione una inscripción del año lectivo activo.');
+        }
+        $fecha = (string)($_POST['fecha_seguimiento'] ?? '');
+        $fechaReal = DateTimeImmutable::createFromFormat('!Y-m-d', $fecha);
+        if (!$contextoPeriodo || !$fechaReal || $fechaReal->format('Y-m-d') !== $fecha
+            || $fecha < $contextoPeriodo['fecha_inicio'] || $fecha > $contextoPeriodo['fecha_fin']) {
+            throw new InvalidArgumentException('La fecha debe pertenecer al período activo.');
+        }
+        if (!preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/D', (string)($_POST['hora_seguimiento'] ?? ''))
+            || trim((string)($_POST['observaciones'] ?? '')) === '') {
+            throw new InvalidArgumentException('Complete una hora válida y las observaciones.');
+        }
+    }
+} catch (InvalidArgumentException $e) {
+    $errorValidacion = $e->getMessage();
+    $alert_html = generar_toast('error', 'Revise los datos', htmlspecialchars($errorValidacion, ENT_QUOTES, 'UTF-8'));
+    unset($_POST['del'], $_POST['submit']);
 }
 
 // Lógica de Eliminación con Consultas Preparadas
@@ -291,10 +132,9 @@ if (isset($_POST['submit']) && $_POST['submit'] == "Actualizar" && !empty($_POST
 ?>
 
 <!-- ======================= INICIO DE LA VISTA (HTML) ======================= -->
-<script src="../comun/css/tailwindcss.css"></script>
+<script src="../apps/PlanMind/tailwindcss.js"></script>
 <link rel="stylesheet" href="../comun/css/all.min.css">
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
 </style>
 
@@ -302,6 +142,8 @@ if (isset($_POST['submit']) && $_POST['submit'] == "Actualizar" && !empty($_POST
     
     <!-- Renderizar Alertas -->
     <?= $alert_html ?>
+    <p class="mb-5 text-sm font-semibold text-slate-600">Año lectivo: <?= htmlspecialchars((string)($contextoAno['nombre_ano_lectivo'] ?? 'Sin configurar'), ENT_QUOTES, 'UTF-8') ?> · Período: <?= htmlspecialchars((string)($contextoPeriodo['nombre_periodo'] ?? 'Sin configurar'), ENT_QUOTES, 'UTF-8') ?></p>
+    <?php if (!$contextoPeriodo): ?><p role="alert">Configure un período activo correspondiente al año lectivo activo para registrar seguimientos.</p><?php endif; ?>
 
     <?php 
     // Mostrar Formulario de Nuevo o Edición
@@ -369,14 +211,23 @@ if (isset($_POST['submit']) && $_POST['submit'] == "Actualizar" && !empty($_POST
                             if(isset($row['id_inscripcion'])) {
                                 $val_inscripcion = $row['id_inscripcion'];
                             } else if (isset($_POST['estudiante'])) {
-                                $val_inscripcion = $_POST['estudiante'];
+                                foreach (seguimiento_inscripciones($mysqli) as $inscripcion) {
+                                    if ((string)$inscripcion['id_estudiante'] === (string)$_POST['estudiante']) {
+                                        $val_inscripcion = $inscripcion['id_inscripcion']; break;
+                                    }
+                                }
                             }
                         ?>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-600 transition-colors">
                                 <i class="fa-solid fa-id-card"></i>
                             </div>
-                            <input type="text" name="id_inscripcion" class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all bg-slate-50 focus:bg-white text-slate-800 font-semibold placeholder-slate-400 shadow-sm" value="<?= htmlspecialchars($val_inscripcion, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ej. 1085..." required>
+                            <select name="id_inscripcion" class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 bg-white" required>
+                                <option value="">Seleccione estudiante e inscripción</option>
+                                <?php foreach (seguimiento_inscripciones($mysqli) as $inscripcion): ?>
+                                <option value="<?= (int)$inscripcion['id_inscripcion'] ?>" <?= (string)$val_inscripcion === (string)$inscripcion['id_inscripcion'] ? 'selected' : '' ?>><?= htmlspecialchars($inscripcion['etiqueta'], ENT_QUOTES, 'UTF-8') ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                     </div>
 
@@ -476,3 +327,30 @@ if (isset($_POST['submit']) && $_POST['submit'] == "Actualizar" && !empty($_POST
 </div>
 
 <!-- Script nativo para activar menú activo (Mantiene compatibilidad con tu sistema) -->
+<script>
+function grabarcookie(nombre, valor) {
+    document.cookie = encodeURIComponent(nombre) + '=' + encodeURIComponent(valor) + '; path=/; SameSite=Lax';
+}
+let busquedaControlador;
+async function buscar(datos = document.getElementById('buscar')?.value || '') {
+    if (busquedaControlador) busquedaControlador.abort();
+    busquedaControlador = new AbortController();
+    try {
+        const respuesta = await fetch('citas.php?buscar=1', {method: 'POST', body: new URLSearchParams({datos}), signal: busquedaControlador.signal});
+        if (!respuesta.ok) throw new Error('No se pudo cargar la búsqueda.');
+        document.getElementById('txtsugerencias').innerHTML = await respuesta.text();
+    } catch (error) {
+        if (error.name !== 'AbortError') alert(error.message);
+    }
+}
+function confirmeliminar(url, datos, id) {
+    if (!confirm('¿Eliminar el seguimiento ' + id + '?')) return;
+    const formulario = document.createElement('form');
+    formulario.method = 'POST'; formulario.action = url;
+    for (const [name, value] of Object.entries(datos)) {
+        const campo = document.createElement('input'); campo.type = 'hidden'; campo.name = name; campo.value = value;
+        formulario.appendChild(campo);
+    }
+    document.body.appendChild(formulario); formulario.submit();
+}
+</script>

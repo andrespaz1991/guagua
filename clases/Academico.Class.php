@@ -17,11 +17,8 @@ public function __construct($identificacion=""){
 
 
 public function periodo_academico(){
-  $sql="SELECT fecha_inicio,fecha_fin
-            FROM periodo
-            WHERE estado_periodo ='1' 
-            ORDER BY nombre_periodo DESC
-            LIMIT 1";
+  require_once __DIR__ . '/../comun/academico.php';
+  $sql = guagua_periodos_sql(true);
   #echo $sql;
   return $datos = json_decode($this->consultar_datos($sql,true),true);
 }
@@ -484,7 +481,7 @@ $sql.=" and fecha='".$fechasol."'";
 }
 
  public function inscripcion_estudiante2($cur){
-   $sql_inscripcion ='SELECT * FROM `inscripcion` where id_estudiante = "'.$_SESSION['id_usuario'].'" and fecha_inscripcion like "%'.date("Y").'%" and id_asignacion="'.$cur.'"';
+   $sql_inscripcion ='SELECT i.* FROM inscripcion i INNER JOIN asignacion a ON a.id_asignacion=i.id_asignacion where i.id_estudiante = "'.$_SESSION['id_usuario'].'" and a.ano_lectivo = "'.consultar_id_ano_lectivo().'" and i.id_asignacion="'.$cur.'"';
  $datos = json_decode($this->consultar_datos($sql_inscripcion,true),true);
  return $datos[0]['id_inscripcion'];
  }
@@ -497,7 +494,7 @@ if ($_SESSION['rol']=="acudiente"){
 if ($_SESSION['rol']=="estudiante"){
  $sql_estudiante.= "'".$_SESSION['id_usuario']."'";
 }
-$sql_estudiante.=" and           asignacion.id_asignacion=inscripcion.id_asignacion 
+$sql_estudiante.=" and asignacion.ano_lectivo = '".consultar_id_ano_lectivo()."' and asignacion.id_asignacion=inscripcion.id_asignacion 
               order by id_inscripcion desc limit 1  ";
               
 return $datos = json_decode($this->consultar_datos($sql_estudiante,true),true);
@@ -517,98 +514,10 @@ return    $sqlp;
 
 
 
-public function estudiantes_de_una_asignacion($nombre = "",$id_asignacion='',$name="") {
- 
-#$parametro_grado = $nombre ; 
-$ano_lectivo=date('Y');
-$busqueda=$nombre;
-$anio=date('Y');
-$sql = "SELECT id_usuario, nombre, apellido, foto, observaciones AS grado, genero 
-            FROM usuario 
-            WHERE rol = 'estudiante' 
-              AND estado != 'inactivo' 
-              AND observaciones IS NOT NULL 
-              AND observaciones != '' 
-              AND YEAR(fecha_creacion) = '$ano_lectivo'";
-
-    // Evaluación dinámica del parámetro de búsqueda
-    if ($busqueda === '6-8') {
-        $sql .= " AND CAST(observaciones AS UNSIGNED) BETWEEN 6 AND 8";
-    } elseif ($busqueda === '9-11') {
-        $sql .= " AND CAST(observaciones AS UNSIGNED) BETWEEN 9 AND 11";
-    } 
-    if (!empty($name)) {
-        $termino = "%$name%";
-        // Búsqueda robusta por ID, Nombre, Apellido o Nombre Completo
-        $sql .= " AND (
-                    id_usuario LIKE '%$name%' OR 
-                    UPPER(nombre) LIKE UPPER('%$name%') OR 
-                    UPPER(apellido) LIKE UPPER('%$name%') OR 
-                    UPPER(CONCAT(nombre, ' ', apellido)) LIKE UPPER('%$name%')
-                  )";
-    }
-
-    // Ordenamiento numérico descendente para el grado, seguido de alfabetico
-    $sql .= " ORDER BY CAST(observaciones AS UNSIGNED) DESC, apellido ASC, nombre ASC LIMIT 50";
-
-  $datos = json_decode($this->consultar_datos($sql, true), true);
-
-  return(($datos));
-
-  #elseif ($id_asignacion > 0) {
-    // Comportamiento original si se selecciona un curso específico en lugar de un rango
-    #$sql_curso .= " AND a.id_asignacion = " . (int)$id_asignacion;
-#}
-#echo $sql_curso;
-// echo $sql; // Descomenta esta línea para hacer debug en caso de fallos.
-// Imprimir para depurar (opcional, bórralo en producción)
-// echo $sql;
-// Imprimir para depurar (opcional, bórralo en producción)
-// echo $sql;
-  // Ejecutar consulta
-
-   /*
-  $sql = "SELECT DISTINCT 
-              usuario.id_usuario, 
-              usuario.nombre, 
-                           usuario.foto, 
- 
-              usuario.apellido, 
-              usuario.correo, 
-              usuario.telefono, 
-              usuario.estado
-          FROM inscripcion
-          INNER JOIN asignacion ON inscripcion.id_asignacion = asignacion.id_asignacion
-          INNER JOIN usuario ON inscripcion.id_estudiante = usuario.id_usuario
-          INNER JOIN materia_oficial ON asignacion.id_asignatura = materia_oficial.id_materia
-          INNER JOIN categoria_curso ON asignacion.id_categoria_curso = categoria_curso.id_categoria_curso
-          INNER JOIN ano_lectivo ON asignacion.ano_lectivo = ano_lectivo.id_ano_lectivo
-          WHERE
-           usuario.estado = 'activo' 
-          AND (inscripcion.estado_inscripcion = 'Aprobado' or inscripcion.estado_inscripcion = 'En curso') ";
-
-  // Filtro por nombre si se proporciona un valor
-  if ($id_asignacion != "") {
-    $sql.=" AND inscripcion.id_asignacion = ".$id_asignacion." ";
-
-  }
-  if ($nombre != "") {
-    $sql .= " AND LOWER(usuario.nombre) LIKE '%" . mb_strtolower($nombre, 'UTF-8') . "%'";
-  }
-  // Ordenar por apellido
-  $sql .= " ORDER BY usuario.apellido ASC";
-
-  // Depuración: Ver la consulta generada (puedes comentarla después de probar)
- */
-// Iniciamos la consulta base
-// Iniciamos la consulta base
-
-// Recepción de parámetros enviados por la función listarEstudiantes()
-
+public function estudiantes_de_una_asignacion($nombre = "", $id_asignacion = '', $name = "") {
+    require_once __DIR__ . '/../usuario/lib/estudiantes_home.php';
+    return guagua_estudiantes_home($this->conectar(), $_SESSION, (string)$nombre, (string)$id_asignacion, (string)$name);
 }
-
-
-
 
 public function consultar_materia($asignacion="") {
 $sql='SELECT categoria_curso.nombre_categoria_curso, materia_oficial.id_materia, materia_oficial.nombre_materia,asignacion.id_curso,asignacion.id_asignatura,categoria_curso.nombre_categoria_curso FROM `asignacion`,

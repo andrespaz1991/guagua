@@ -1,0 +1,48 @@
+RewriteEngine On
+
+# Comprimir recursos estáticos si el servidor dispone de mod_deflate.
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/css application/javascript text/javascript image/svg+xml
+</IfModule>
+
+# Código interno, pruebas y herramientas de consola no son entradas públicas.
+RewriteRule ^(?:\.git|\.agents|\.codex|tests)(?:/|$) - [F,L,NC]
+# Paquetes y respaldos de aplicaciones: acceso exclusivo mediante la tienda.
+RewriteRule ^sga-data/tienda(?:/|$) - [F,L,NC]
+# Hoja CSS generada por el sistema de iconos; es código de la aplicación, no una carga.
+RewriteRule ^comun/img/png/icon-sga\.php$ - [END,NC]
+RewriteRule ^(?:sga-data|comun/(?:sga-data|img)|red/(?:banco_red|ej)|cursos/imagenes|apps/[^/]+/(?:uploads|imagenes|images|adjuntos))/.*\.(?:php[0-9]*|phtml|phar|cgi|pl|asp|aspx)(?:[./]|$) - [F,L,NC]
+<FilesMatch "(?i)\.(?:py|ps1|bat|cmd|sh)$">
+    Require all denied
+</FilesMatch>
+
+# Nunca servir copias de bases de datos, archivos de configuración, registros
+# ni metadatos de dependencias desde el directorio público.
+RewriteRule ^(?:reportes/bd/|Configuración%20de%20guagua%20inicio%20de%20año/|output/|tmp/) - [F,L,NC]
+RewriteRule ^apps/asistencia/config_sincronizacion\.json$ - [F,L,NC]
+<FilesMatch "(?i)\.(?:sql|sqlite|sqlite3|bak|backup|log|env|ini|ya?ml|lock)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# Los módulos abiertos dentro del contenedor común no vuelven a redirigirse.
+RewriteCond %{REQUEST_METHOD} !^GET$ [OR]
+RewriteCond %{QUERY_STRING} (^|&)guagua_embedded=1(&|$) [NC,OR]
+RewriteCond %{QUERY_STRING} (^|&)ajax_(?:search|sync_apps)=[^&]*(&|$) [NC]
+RewriteRule ^ - [END]
+
+# Entradas existentes registradas en menu_items2. La ruta se conserva como
+# parámetro para localizar el módulo registrado sin depender de un id fijo.
+RewriteRule ^((?:Planeador/(?:institucion_educativa|calendario|importador_malla|periodo|retirar|genasig|inscripes)\.php)|(?:usuario/(?:inscripcion|matrimonio|usuario)\.php)|(?:cursos/(?:area|categoria_curso|ano_lectivo)\.php)|(?:comun/(?:Mascotas|iconos)\.php)|(?:ia/(?:config_reporte|reporte)\.php)|(?:reportes/informe_asistencia\.php)|(?:seguimiento/citas\.php)|(?:sisga(?:/index\.html)?)|(?:asistencia/?)|(?:apps/asistencia/?)|(?:apps/(?:Ruleta|circular|collage|edupreguntasoficial)(?:/index\.html)?)|(?:apps/(?:utel|geminichat)(?:/index\.php)?)|(?:apps/restaurante(?:/index\.php)?)|(?:apps/noti(?:/index\.html)?)|(?:apps/PlanMind(?:/(?:index\.html|index2\.php))?)|(?:apps/MiMercado(?:/index\.php)?)|(?:apps/(?:generacion_cursos|generador_vallesol|Bingo_fracciones|Fracciones|carnet|edutask|pdf|rubrica|sopas|davinci|dba|evidencias|Manual|configuracion_interfaz|customizador_menu)(?:/(?:index2?\.(?:php|html))?)?))$ /guagua/comun/modulo.php?path=$1 [R=302,L,NE,QSA,NC]

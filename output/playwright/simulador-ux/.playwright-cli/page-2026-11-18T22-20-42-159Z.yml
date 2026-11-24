@@ -1,0 +1,363 @@
+- generic [active] [ref=f3e1]:
+  - link "Ir a las notas" [ref=f3e2] [cursor=pointer]:
+    - /url: "#sn-results"
+  - main [ref=f3e3]:
+    - navigation "Ruta de navegación" [ref=f3e4]:
+      - link "Aplicaciones" [ref=f3e5] [cursor=pointer]:
+        - /url: ../../comun/dir_menu.php
+      - generic [ref=f3e8]: Seguimiento académico
+    - generic [ref=f3e9]:
+      - generic [ref=f3e14]:
+        - heading "Simulador de notas" [level=1] [ref=f3e15]
+        - paragraph [ref=f3e16]: Consulta el año académico y proyecta el resultado del cuarto periodo.
+      - generic [ref=f3e17]:
+        - button "Cómo usar el simulador" [ref=f3e18] [cursor=pointer]
+        - button "Importar notas" [ref=f3e21] [cursor=pointer]
+        - button "Exportar vista" [ref=f3e24] [cursor=pointer]
+    - generic [ref=f3e27]:
+      - complementary "Seleccionar estudiante" [ref=f3e28]:
+        - generic [ref=f3e29]:
+          - generic [ref=f3e30]:
+            - heading "Estudiantes" [level=2] [ref=f3e31]
+            - generic [ref=f3e32]: "15"
+          - generic [ref=f3e33]:
+            - generic [ref=f3e34]:
+              - text: Año académico
+              - combobox "Año académico" [ref=f3e35]:
+                - option "Todos los años"
+                - option "2026" [selected]
+            - generic [ref=f3e36]:
+              - text: Grupo
+              - combobox "Grupo" [ref=f3e37]:
+                - option "Todos" [selected]
+                - option "Grado 6"
+                - option "Grado 7"
+          - generic [ref=f3e38]:
+            - generic [ref=f3e39]: Buscar estudiante por nombre o código
+            - searchbox "Buscar estudiante por nombre o código" [ref=f3e40]
+          - button "Vista general Todos los estudiantes del año" [ref=f3e41] [cursor=pointer]:
+            - generic [ref=f3e45]:
+              - strong [ref=f3e46]: Vista general
+              - generic [ref=f3e47]: Todos los estudiantes del año
+          - generic [ref=f3e50]: SELECCIONA UN ESTUDIANTE
+          - generic "Estudiantes disponibles" [ref=f3e52]:
+            - button "Alejandra Martínez González Grado 6 · Cód. DEMO001" [pressed] [ref=f3e53] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f3e54]: AM
+              - generic [ref=f3e55]:
+                - strong [ref=f3e56]: Alejandra Martínez González
+                - generic [ref=f3e57]: Grado 6 · Cód. DEMO001
+            - button "Andrés Felipe Ramírez Torres Grado 6 · Cód. DEMO002" [ref=f3e60] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f3e61]: AF
+              - generic [ref=f3e62]:
+                - strong [ref=f3e63]: Andrés Felipe Ramírez Torres
+                - generic [ref=f3e64]: Grado 6 · Cód. DEMO002
+            - button "Camila Sofía Valencia Pérez Grado 6 · Cód. DEMO003" [ref=f3e65] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f3e66]: CS
+              - generic [ref=f3e67]:
+                - strong [ref=f3e68]: Camila Sofía Valencia Pérez
+                - generic [ref=f3e69]: Grado 6 · Cód. DEMO003
+            - button "Daniel Santiago Muñoz Díaz Grado 6 · Cód. DEMO004" [ref=f3e70] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f3e71]: DS
+              - generic [ref=f3e72]:
+                - strong [ref=f3e73]: Daniel Santiago Muñoz Díaz
+                - generic [ref=f3e74]: Grado 6 · Cód. DEMO004
+            - button "Emilia Rodríguez Salazar Grado 6 · Cód. DEMO005" [ref=f3e75] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f3e76]: ER
+              - generic [ref=f3e77]:
+                - strong [ref=f3e78]: Emilia Rodríguez Salazar
+                - generic [ref=f3e79]: Grado 6 · Cód. DEMO005
+            - button "Gabriel Esteban Castro López Grado 6 · Cód. DEMO006" [ref=f3e80] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f3e81]: GE
+              - generic [ref=f3e82]:
+                - strong [ref=f3e83]: Gabriel Esteban Castro López
+                - generic [ref=f3e84]: Grado 6 · Cód. DEMO006
+            - button "Isabella Juliana Moreno Ruiz Grado 6 · Cód. DEMO007" [ref=f3e85] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f3e86]: IJ
+              - generic [ref=f3e87]:
+                - strong [ref=f3e88]: Isabella Juliana Moreno Ruiz
+                - generic [ref=f3e89]: Grado 6 · Cód. DEMO007
+            - button "Juan Sebastián Méndez García Grado 6 · Cód. DEMO008" [ref=f3e90] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f3e91]: JS
+              - generic [ref=f3e92]:
+                - strong [ref=f3e93]: Juan Sebastián Méndez García
+                - generic [ref=f3e94]: Grado 6 · Cód. DEMO008
+            - button "Laura Valentina Herrera Álvarez Grado 7 · Cód. DEMO009" [ref=f3e95] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f3e96]: LV
+              - generic [ref=f3e97]:
+                - strong [ref=f3e98]: Laura Valentina Herrera Álvarez
+                - generic [ref=f3e99]: Grado 7 · Cód. DEMO009
+            - button "Mariana Isabel Cortés Ríos Grado 7 · Cód. DEMO010" [ref=f3e100] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f3e101]: MI
+              - generic [ref=f3e102]:
+                - strong [ref=f3e103]: Mariana Isabel Cortés Ríos
+                - generic [ref=f3e104]: Grado 7 · Cód. DEMO010
+            - button "Mateo Alejandro Gómez Silva Grado 7 · Cód. DEMO011" [ref=f3e105] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f3e106]: MA
+              - generic [ref=f3e107]:
+                - strong [ref=f3e108]: Mateo Alejandro Gómez Silva
+                - generic [ref=f3e109]: Grado 7 · Cód. DEMO011
+            - button "Nicolás Antonio Vargas Peña Grado 7 · Cód. DEMO012" [ref=f3e110] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f3e111]: NA
+              - generic [ref=f3e112]:
+                - strong [ref=f3e113]: Nicolás Antonio Vargas Peña
+                - generic [ref=f3e114]: Grado 7 · Cód. DEMO012
+            - button "Sara Lucía Mendoza Ospina Grado 7 · Cód. DEMO013" [ref=f3e115] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f3e116]: SL
+              - generic [ref=f3e117]:
+                - strong [ref=f3e118]: Sara Lucía Mendoza Ospina
+                - generic [ref=f3e119]: Grado 7 · Cód. DEMO013
+            - button "Sofía Gabriela Sánchez Mora Grado 7 · Cód. DEMO014" [ref=f3e120] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f3e121]: SG
+              - generic [ref=f3e122]:
+                - strong [ref=f3e123]: Sofía Gabriela Sánchez Mora
+                - generic [ref=f3e124]: Grado 7 · Cód. DEMO014
+            - button "Tomás Eduardo Jiménez Arias Grado 7 · Cód. DEMO015" [ref=f3e125] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f3e126]: TE
+              - generic [ref=f3e127]:
+                - strong [ref=f3e128]: Tomás Eduardo Jiménez Arias
+                - generic [ref=f3e129]: Grado 7 · Cód. DEMO015
+          - generic [ref=f3e130]: Las notas de consulta provienen del reporte importado.
+      - generic [ref=f3e134]:
+        - region [ref=f3e135]:
+          - generic [ref=f3e136]:
+            - generic [aria-hidden] [ref=f3e137]: AM
+            - generic [ref=f3e138]:
+              - generic [ref=f3e139]: CONSULTA POR ESTUDIANTE
+              - heading "Alejandra Martínez González" [level=2] [ref=f3e140]
+              - paragraph [ref=f3e141]: Código DEMO001 · Grado 6 · Año 2026
+          - generic [ref=f3e142]:
+            - generic [ref=f3e143]:
+              - generic [ref=f3e144]: Proyección completada
+              - strong [ref=f3e145]: 1 de 9 materias
+            - progressbar "Materias con proyección completa" [ref=f3e146]
+            - text: Completa las notas pendientes de P4.
+        - region "Resumen de la consulta" [ref=f3e147]:
+          - article [ref=f3e148]:
+            - generic [ref=f3e149]: Materias
+            - strong [ref=f3e153]: "9"
+            - generic [ref=f3e154]: en el reporte del estudiante
+          - article [ref=f3e155]:
+            - generic [ref=f3e156]: Promedio P1–P3
+            - strong [ref=f3e160]: 3,56
+            - generic [ref=f3e161]: 9 con los 3 periodos completos
+          - article [ref=f3e162]:
+            - generic [ref=f3e163]: Final proyectada
+            - strong [ref=f3e167]: 3,00
+            - generic [ref=f3e168]: Promedio de 1 proyecciones
+          - article [ref=f3e169]:
+            - generic [ref=f3e170]: Bajo la meta
+            - strong [ref=f3e173]: "0"
+            - generic [ref=f3e174]: "Meta final: 3,00"
+        - region [ref=f3e175]:
+          - generic [ref=f3e176]:
+            - generic [ref=f3e177]:
+              - heading "Materias y simulación" [level=2] [ref=f3e178]
+              - paragraph [ref=f3e179]: Escribe una nota en P4 para calcular la final al instante.
+            - button "Simular varias materias" [ref=f3e180] [cursor=pointer]
+          - generic [ref=f3e183]:
+            - generic [ref=f3e184]:
+              - generic [ref=f3e185]: Filtrar por materia
+              - combobox "Filtrar por materia" [ref=f3e186]:
+                - option "Todas las materias" [selected]
+                - option "Ciencias Naturales y Educación Ambiental"
+                - option "Ciencias sociales, hist, Geo,Const.Pol y Demo"
+                - option "Educación Artística"
+                - option "Educación Ética y en Valores Humanos"
+                - option "Educación Física, Recreación y Deportes"
+                - 'option "Idioma Extranjero: Inglés"'
+                - option "Lengua Castellana"
+                - option "Matemáticas"
+                - option "Tecnología e Informática"
+            - generic [ref=f3e187]:
+              - generic [ref=f3e188]: Periodos visibles
+              - combobox "Periodos visibles" [ref=f3e189]:
+                - option "Todos los periodos" [selected]
+                - option "Periodo 1 y simulación"
+                - option "Periodo 2 y simulación"
+                - option "Periodo 3 y simulación"
+                - option "Solo simulación P4"
+            - generic [ref=f3e190]:
+              - generic [ref=f3e191]: Filtrar por resultado
+              - combobox "Filtrar por resultado" [ref=f3e192]:
+                - option "Todos los resultados" [selected]
+                - option "Alcanza la meta"
+                - option "Bajo la meta"
+                - option "Sin proyección"
+          - table [ref=f3e194]:
+            - caption [ref=f3e195]: Notas del año y proyección de la nota final
+            - rowgroup [ref=f3e196]:
+              - row [ref=f3e197]:
+                - columnheader "Materia" [ref=f3e198]
+                - columnheader "PERIODO 1 25 %" [ref=f3e199]:
+                  - text: PERIODO 1
+                  - generic [ref=f3e200]: 25 %
+                - columnheader "PERIODO 2 25 %" [ref=f3e201]:
+                  - text: PERIODO 2
+                  - generic [ref=f3e202]: 25 %
+                - columnheader "PERIODO 3 25 %" [ref=f3e203]:
+                  - text: PERIODO 3
+                  - generic [ref=f3e204]: 25 %
+                - columnheader "P4 · SIMULAR 25 % de la nota final" [ref=f3e205]:
+                  - text: P4 · SIMULAR
+                  - generic [ref=f3e208]: 25 % de la nota final
+                - columnheader "FINAL simulada" [ref=f3e209]:
+                  - text: FINAL
+                  - generic [ref=f3e210]: simulada
+                - columnheader "NECESITA EN P4 para la meta" [ref=f3e211]:
+                  - text: NECESITA EN P4
+                  - generic [ref=f3e212]: para la meta
+            - rowgroup [ref=f3e213]:
+              - row [ref=f3e214]:
+                - cell "Ciencias Naturales y Educación Ambiental" [ref=f3e215]
+                - cell "3,40" [ref=f3e217]
+                - cell "3,80" [ref=f3e218]
+                - cell "3,90" [ref=f3e219]
+                - cell "Por ingresar" [ref=f3e220]:
+                  - textbox "P4 de Alejandra Martínez González, Ciencias Naturales y Educación Ambiental" [ref=f3e222]:
+                    - /placeholder: —
+                - cell "— Sin P4" [ref=f3e224]:
+                  - strong [ref=f3e225]: —
+                  - generic [ref=f3e226]: Sin P4
+                - cell "1,00 para una final de 3,00" [ref=f3e227]:
+                  - strong [ref=f3e228]: 1,00
+                  - generic [ref=f3e229]: para una final de 3,00
+              - row [ref=f3e230]:
+                - cell "Ciencias sociales, hist, Geo,Const.Pol y Demo" [ref=f3e231]
+                - cell "2,50" [ref=f3e233]
+                - cell "3,30" [ref=f3e234]
+                - cell "3,90" [ref=f3e235]
+                - cell "2,30 Restaurar P4 de Ciencias sociales, hist, Geo,Const.Pol y Demo Simulada" [ref=f3e236]:
+                  - generic [ref=f3e237]:
+                    - textbox "P4 de Alejandra Martínez González, Ciencias sociales, hist, Geo,Const.Pol y Demo" [ref=f3e238]:
+                      - /placeholder: —
+                      - text: 2,30
+                    - button "Restaurar P4 de Ciencias sociales, hist, Geo,Const.Pol y Demo" [ref=f3e239] [cursor=pointer]
+                  - generic [ref=f3e242]: Simulada
+                - cell [ref=f3e243]:
+                  - strong [ref=f3e244]: 3,00
+                  - generic [ref=f3e245]: Alcanza meta
+                - cell "2,30 para una final de 3,00" [ref=f3e248]:
+                  - strong [ref=f3e249]: 2,30
+                  - generic [ref=f3e250]: para una final de 3,00
+              - row [ref=f3e251]:
+                - cell "Educación Artística" [ref=f3e252]
+                - cell "3,10" [ref=f3e254]
+                - cell "3,80" [ref=f3e255]
+                - cell "3,90" [ref=f3e256]
+                - cell "Por ingresar" [ref=f3e257]:
+                  - textbox "P4 de Alejandra Martínez González, Educación Artística" [ref=f3e259]:
+                    - /placeholder: —
+                - cell "— Sin P4" [ref=f3e261]:
+                  - strong [ref=f3e262]: —
+                  - generic [ref=f3e263]: Sin P4
+                - cell "1,20 para una final de 3,00" [ref=f3e264]:
+                  - strong [ref=f3e265]: 1,20
+                  - generic [ref=f3e266]: para una final de 3,00
+              - row [ref=f3e267]:
+                - cell "Educación Ética y en Valores Humanos" [ref=f3e268]
+                - cell "3,10" [ref=f3e270]
+                - cell "3,50" [ref=f3e271]
+                - cell "3,70" [ref=f3e272]
+                - cell "Por ingresar" [ref=f3e273]:
+                  - textbox "P4 de Alejandra Martínez González, Educación Ética y en Valores Humanos" [ref=f3e275]:
+                    - /placeholder: —
+                - cell "— Sin P4" [ref=f3e277]:
+                  - strong [ref=f3e278]: —
+                  - generic [ref=f3e279]: Sin P4
+                - cell "1,70 para una final de 3,00" [ref=f3e280]:
+                  - strong [ref=f3e281]: 1,70
+                  - generic [ref=f3e282]: para una final de 3,00
+              - row [ref=f3e283]:
+                - cell "Educación Física, Recreación y Deportes" [ref=f3e284]
+                - cell "3,40" [ref=f3e286]
+                - cell "3,50" [ref=f3e287]
+                - cell "3,70" [ref=f3e288]
+                - cell "Por ingresar" [ref=f3e289]:
+                  - textbox "P4 de Alejandra Martínez González, Educación Física, Recreación y Deportes" [ref=f3e291]:
+                    - /placeholder: —
+                - cell "— Sin P4" [ref=f3e293]:
+                  - strong [ref=f3e294]: —
+                  - generic [ref=f3e295]: Sin P4
+                - cell "1,40 para una final de 3,00" [ref=f3e296]:
+                  - strong [ref=f3e297]: 1,40
+                  - generic [ref=f3e298]: para una final de 3,00
+              - row [ref=f3e299]:
+                - 'cell "Idioma Extranjero: Inglés" [ref=f3e300]'
+                - cell "4,00" [ref=f3e302]
+                - cell "3,50" [ref=f3e303]
+                - cell "3,70" [ref=f3e304]
+                - cell "Por ingresar" [ref=f3e305]:
+                  - 'textbox "P4 de Alejandra Martínez González, Idioma Extranjero: Inglés" [ref=f3e307]':
+                    - /placeholder: —
+                - cell "— Sin P4" [ref=f3e309]:
+                  - strong [ref=f3e310]: —
+                  - generic [ref=f3e311]: Sin P4
+                - cell "1,00 para una final de 3,00" [ref=f3e312]:
+                  - strong [ref=f3e313]: 1,00
+                  - generic [ref=f3e314]: para una final de 3,00
+              - row [ref=f3e315]:
+                - cell "Lengua Castellana" [ref=f3e316]
+                - cell "3,70" [ref=f3e318]
+                - cell "3,20" [ref=f3e319]
+                - cell "3,50" [ref=f3e320]
+                - cell "Por ingresar" [ref=f3e321]:
+                  - textbox "P4 de Alejandra Martínez González, Lengua Castellana" [ref=f3e323]:
+                    - /placeholder: —
+                - cell "— Sin P4" [ref=f3e325]:
+                  - strong [ref=f3e326]: —
+                  - generic [ref=f3e327]: Sin P4
+                - cell "1,60 para una final de 3,00" [ref=f3e328]:
+                  - strong [ref=f3e329]: 1,60
+                  - generic [ref=f3e330]: para una final de 3,00
+              - row [ref=f3e331]:
+                - cell "Matemáticas" [ref=f3e332]
+                - cell "3,70" [ref=f3e334]
+                - cell "3,80" [ref=f3e335]
+                - cell "3,90" [ref=f3e336]
+                - cell "Por ingresar" [ref=f3e337]:
+                  - textbox "P4 de Alejandra Martínez González, Matemáticas" [ref=f3e339]:
+                    - /placeholder: —
+                - cell "— Sin P4" [ref=f3e341]:
+                  - strong [ref=f3e342]: —
+                  - generic [ref=f3e343]: Sin P4
+                - cell "1,00 para una final de 3,00" [ref=f3e344]:
+                  - strong [ref=f3e345]: 1,00
+                  - generic [ref=f3e346]: para una final de 3,00
+              - row [ref=f3e347]:
+                - cell "Tecnología e Informática" [ref=f3e348]
+                - cell "4,00" [ref=f3e350]
+                - cell "3,20" [ref=f3e351]
+                - cell "3,50" [ref=f3e352]
+                - cell "Por ingresar" [ref=f3e353]:
+                  - textbox "P4 de Alejandra Martínez González, Tecnología e Informática" [ref=f3e355]:
+                    - /placeholder: —
+                - cell "— Sin P4" [ref=f3e357]:
+                  - strong [ref=f3e358]: —
+                  - generic [ref=f3e359]: Sin P4
+                - cell "1,30 para una final de 3,00" [ref=f3e360]:
+                  - strong [ref=f3e361]: 1,30
+                  - generic [ref=f3e362]: para una final de 3,00
+          - generic [ref=f3e363]:
+            - generic [ref=f3e364]: Mostrando 1–9 de 9 materias
+            - generic [ref=f3e365]:
+              - generic [ref=f3e366]:
+                - text: Ver
+                - combobox "Registros por página" [ref=f3e367]:
+                  - option "10" [selected]
+                  - option "20"
+                  - option "50"
+              - button "Página anterior" [disabled] [ref=f3e368]
+              - generic [ref=f3e371]: 1 / 1
+              - button "Página siguiente" [disabled] [ref=f3e372]
+          - generic [ref=f3e375]:
+            - generic [ref=f3e376]: 1 nota simulada · guardadas en esta pestaña
+            - generic [ref=f3e380]:
+              - button "Deshacer" [disabled] [ref=f3e381]
+              - button "Restablecer vista" [ref=f3e384] [cursor=pointer]
+        - generic [ref=f3e387]:
+          - generic [ref=f3e388]: "Cada periodo aporta el 25 % · Meta: 3,00"
+          - button "Configurar cálculo" [ref=f3e392] [cursor=pointer]
+        - paragraph [ref=f3e395]: «—» indica una nota pendiente. Las simulaciones no cambian las notas oficiales.
+    - generic [ref=f3e396]:
+      - generic "Reporte de ejemplo · datos ficticios.xls" [ref=f3e400]: "Reporte: Reporte de ejemplo · datos ficticios.xls"
+      - generic [ref=f3e401]: Actualizado el 18 de nov de 2026

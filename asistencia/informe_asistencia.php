@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Asistencias</title>
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
     <style>
         .modal-active { display: flex !important; }
         /* Animación para el Toast */

@@ -1,0 +1,276 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: ↗
+      - text: horizonte
+      - generic [ref=e6]: .
+    - generic [ref=e7]: Tu espacio financiero
+    - navigation "Secciones" [ref=e8]:
+      - button "◫ Vista general" [ref=e9] [cursor=pointer]:
+        - generic [ref=e10]: ◫
+        - text: Vista general
+      - button "↔ Registro mensual" [ref=e11] [cursor=pointer]:
+        - generic [ref=e12]: ↔
+        - text: Registro mensual
+      - button "▤ Documentos y análisis" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: ▤
+        - text: Documentos y análisis
+      - button "≋ Conciliación" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: ≋
+        - text: Conciliación
+      - button "◈ Balance general" [ref=e17] [cursor=pointer]:
+        - generic [ref=e18]: ◈
+        - text: Balance general
+      - button "↘ Deudas y créditos" [ref=e19] [cursor=pointer]:
+        - generic [ref=e20]: ↘
+        - text: Deudas y créditos
+      - button "⌁ Inversiones" [ref=e21] [cursor=pointer]:
+        - generic [ref=e22]: ⌁
+        - text: Inversiones
+      - button "☑ Cierre del mes" [ref=e23] [cursor=pointer]:
+        - generic [ref=e24]: ☑
+        - text: Cierre del mes
+    - generic [ref=e25]: Solo en tu computadorDatos financieros en esta sesión.Exporta tu JSON antes de salir.12 meses para tomarmejores decisiones.
+  - generic [ref=e27]:
+    - banner [ref=e28]:
+      - generic [ref=e29]:
+        - text: Período
+        - combobox "Mes seleccionado" [ref=e30]:
+          - option "noviembre de 2026" [selected]
+          - option "diciembre de 2026"
+          - option "enero de 2027"
+          - option "febrero de 2027"
+          - option "marzo de 2027"
+          - option "abril de 2027"
+          - option "mayo de 2027"
+          - option "junio de 2027"
+          - option "julio de 2027"
+          - option "agosto de 2027"
+          - option "septiembre de 2027"
+          - option "octubre de 2027"
+      - generic [ref=e31]:
+        - generic [ref=e32]: Datos de ejemplo
+        - button "↓ Exportar JSON" [ref=e33] [cursor=pointer]
+        - button "↑ Importar JSON" [ref=e34] [cursor=pointer]
+    - main [ref=e35]:
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - generic [ref=e39]: Cada decisión cuenta
+            - heading "Tu dinero, en perspectiva." [level=1] [ref=e40]
+            - paragraph [ref=e41]: Entiende dónde estás. Decide hacia dónde quieres ir.
+          - button "+ Subir extractos" [ref=e42] [cursor=pointer]
+        - generic [ref=e43]: Estás explorando datos de ejemplo en COP. Reemplázalos en Registro mensual y Balance, o importa tus extractos. Cada mes futuro es un presupuesto editable.
+        - generic [ref=e44]:
+          - article [ref=e45]:
+            - text: Ingresos del mes
+            - generic [ref=e46]: $ 6.950.000
+            - text: Todas tus fuentes de ingreso
+          - article [ref=e47]:
+            - text: Gastos del mes
+            - generic [ref=e48]: $ 4.250.000
+            - text: Incluye cuotas de deuda
+          - article [ref=e49]:
+            - text: Utilidad mensual
+            - generic [ref=e50]: $ 2.700.000
+            - text: Antes de aportes a inversión
+          - article [ref=e51]:
+            - text: Patrimonio neto
+            - generic [ref=e52]: $ 72.200.000
+            - text: Activos menos pasivos
+        - generic [ref=e53]:
+          - article [ref=e54]:
+            - generic [ref=e55]:
+              - heading "El panorama de tus próximos 12 meses" [level=2] [ref=e56]
+              - generic [ref=e57]: COP · flujo de caja
+            - paragraph [ref=e58]: Ingresos, gastos y ahorro acumulado desde cero en el período.
+            - img "Ingresos y gastos mensuales con ahorro acumulado" [ref=e60]
+          - article [ref=e61]:
+            - generic [ref=e62]:
+              - heading "Tu salud financiera" [level=2] [ref=e63]
+              - generic [ref=e64]: Este mes
+            - generic [ref=e65]:
+              - generic [ref=e66]:
+                - generic [ref=e67]:
+                  - generic [ref=e68]: Ingreso destinado a deudas
+                  - strong [ref=e69]: ● 9.4 %
+                - text: Sano <15 % · crítico >30 %
+              - generic [ref=e72]:
+                - generic [ref=e73]:
+                  - generic [ref=e74]: Tasa de ahorro
+                  - strong [ref=e75]: ● 38.8 %
+                - text: Utilidad / ingresos · sana >15 % · crítica <5 %
+              - generic [ref=e78]:
+                - generic [ref=e79]:
+                  - generic [ref=e80]: Fondo de emergencia
+                  - strong [ref=e81]: ● 1.8 meses
+                - text: "Referencia: 3–6 meses de gasto; >6 es un colchón mayor"
+              - generic [ref=e84]:
+                - generic [ref=e85]:
+                  - generic [ref=e86]: Gasto cubierto por ingreso pasivo
+                  - strong [ref=e87]: ● 15.3 %
+                - text: Meta editable mediante ingresos · verde ≥100 %, amarillo ≥25 %
+        - generic [ref=e90]:
+          - article [ref=e91]:
+            - generic [ref=e92]:
+              - heading "En qué se va tu dinero" [level=2] [ref=e93]
+              - generic [ref=e94]: Mes seleccionado
+            - img "Gastos por categoría" [ref=e96]
+          - article [ref=e97]:
+            - generic [ref=e98]:
+              - heading "Tu siguiente mejor paso" [level=2] [ref=e99]
+              - generic [ref=e100]: ↗
+            - generic [ref=e101]:
+              - generic [ref=e102]:
+                - generic [ref=e103]: "01"
+                - generic [ref=e104]:
+                  - strong [ref=e105]: Ponle nombre a tu prioridad
+                  - paragraph [ref=e106]: Tarjeta de crédito tiene una tasa de 28 % EA. Compara avalancha y bola de nieve con tu pago extra disponible.
+              - generic [ref=e107]:
+                - generic [ref=e108]: "02"
+                - generic [ref=e109]:
+                  - strong [ref=e110]: Construye tu reserva de emergencia
+                  - paragraph [ref=e111]: Faltan $ 5.250.000 para cubrir tres meses de gastos al nivel actual.
+              - generic [ref=e112]:
+                - generic [ref=e113]: "03"
+                - generic [ref=e114]:
+                  - strong [ref=e115]: Conciliar te da una base confiable
+                  - paragraph [ref=e116]: Compara cada saldo con su extracto antes de cerrar el mes.
+        - article [ref=e117]:
+          - generic [ref=e118]:
+            - heading "Estado de pérdidas y ganancias · 12 meses" [level=2] [ref=e119]
+            - button "Editar presupuesto →" [ref=e120] [cursor=pointer]
+          - paragraph [ref=e121]: "Vista de caja: las cuotas de deuda completas se muestran como salidas. Los aportes a inversión se restan después de la utilidad; las transferencias entre cuentas no son ingresos ni gastos."
+          - table [ref=e123]:
+            - rowgroup [ref=e124]:
+              - row [ref=e125]:
+                - columnheader "Mes" [ref=e126]
+                - columnheader "Estado" [ref=e127]
+                - columnheader "Ingresos" [ref=e128]
+                - columnheader "Gastos" [ref=e129]
+                - columnheader "Utilidad / ahorro" [ref=e130]
+                - columnheader "Inversión" [ref=e131]
+                - columnheader "Efectivo libre" [ref=e132]
+                - columnheader "Ahorro acum." [ref=e133]
+            - rowgroup [ref=e134]:
+              - row [ref=e135]:
+                - cell [ref=e136]:
+                  - button "noviembre de 2026" [ref=e137] [cursor=pointer]
+                - cell "Ejemplo / plan" [ref=e138]
+                - cell "$ 6.950.000" [ref=e139]
+                - cell "$ 4.250.000" [ref=e140]
+                - cell "$ 2.700.000" [ref=e141]
+                - cell "$ 600.000" [ref=e142]
+                - cell "$ 2.100.000" [ref=e143]
+                - cell "$ 2.700.000" [ref=e144]
+              - row [ref=e145]:
+                - cell [ref=e146]:
+                  - button "diciembre de 2026" [ref=e147] [cursor=pointer]
+                - cell "Ejemplo / plan" [ref=e148]
+                - cell "$ 6.950.000" [ref=e149]
+                - cell "$ 4.250.000" [ref=e150]
+                - cell "$ 2.700.000" [ref=e151]
+                - cell "$ 600.000" [ref=e152]
+                - cell "$ 2.100.000" [ref=e153]
+                - cell "$ 5.400.000" [ref=e154]
+              - row [ref=e155]:
+                - cell [ref=e156]:
+                  - button "enero de 2027" [ref=e157] [cursor=pointer]
+                - cell "Ejemplo / plan" [ref=e158]
+                - cell "$ 6.950.000" [ref=e159]
+                - cell "$ 4.250.000" [ref=e160]
+                - cell "$ 2.700.000" [ref=e161]
+                - cell "$ 600.000" [ref=e162]
+                - cell "$ 2.100.000" [ref=e163]
+                - cell "$ 8.100.000" [ref=e164]
+              - row [ref=e165]:
+                - cell [ref=e166]:
+                  - button "febrero de 2027" [ref=e167] [cursor=pointer]
+                - cell "Ejemplo / plan" [ref=e168]
+                - cell "$ 6.950.000" [ref=e169]
+                - cell "$ 4.250.000" [ref=e170]
+                - cell "$ 2.700.000" [ref=e171]
+                - cell "$ 600.000" [ref=e172]
+                - cell "$ 2.100.000" [ref=e173]
+                - cell "$ 10.800.000" [ref=e174]
+              - row [ref=e175]:
+                - cell [ref=e176]:
+                  - button "marzo de 2027" [ref=e177] [cursor=pointer]
+                - cell "Ejemplo / plan" [ref=e178]
+                - cell "$ 6.950.000" [ref=e179]
+                - cell "$ 4.250.000" [ref=e180]
+                - cell "$ 2.700.000" [ref=e181]
+                - cell "$ 600.000" [ref=e182]
+                - cell "$ 2.100.000" [ref=e183]
+                - cell "$ 13.500.000" [ref=e184]
+              - row [ref=e185]:
+                - cell [ref=e186]:
+                  - button "abril de 2027" [ref=e187] [cursor=pointer]
+                - cell "Ejemplo / plan" [ref=e188]
+                - cell "$ 6.950.000" [ref=e189]
+                - cell "$ 4.250.000" [ref=e190]
+                - cell "$ 2.700.000" [ref=e191]
+                - cell "$ 600.000" [ref=e192]
+                - cell "$ 2.100.000" [ref=e193]
+                - cell "$ 16.200.000" [ref=e194]
+              - row [ref=e195]:
+                - cell [ref=e196]:
+                  - button "mayo de 2027" [ref=e197] [cursor=pointer]
+                - cell "Ejemplo / plan" [ref=e198]
+                - cell "$ 6.950.000" [ref=e199]
+                - cell "$ 4.250.000" [ref=e200]
+                - cell "$ 2.700.000" [ref=e201]
+                - cell "$ 600.000" [ref=e202]
+                - cell "$ 2.100.000" [ref=e203]
+                - cell "$ 18.900.000" [ref=e204]
+              - row [ref=e205]:
+                - cell [ref=e206]:
+                  - button "junio de 2027" [ref=e207] [cursor=pointer]
+                - cell "Ejemplo / plan" [ref=e208]
+                - cell "$ 6.950.000" [ref=e209]
+                - cell "$ 4.250.000" [ref=e210]
+                - cell "$ 2.700.000" [ref=e211]
+                - cell "$ 600.000" [ref=e212]
+                - cell "$ 2.100.000" [ref=e213]
+                - cell "$ 21.600.000" [ref=e214]
+              - row [ref=e215]:
+                - cell [ref=e216]:
+                  - button "julio de 2027" [ref=e217] [cursor=pointer]
+                - cell "Ejemplo / plan" [ref=e218]
+                - cell "$ 6.950.000" [ref=e219]
+                - cell "$ 4.250.000" [ref=e220]
+                - cell "$ 2.700.000" [ref=e221]
+                - cell "$ 600.000" [ref=e222]
+                - cell "$ 2.100.000" [ref=e223]
+                - cell "$ 24.300.000" [ref=e224]
+              - row [ref=e225]:
+                - cell [ref=e226]:
+                  - button "agosto de 2027" [ref=e227] [cursor=pointer]
+                - cell "Ejemplo / plan" [ref=e228]
+                - cell "$ 6.950.000" [ref=e229]
+                - cell "$ 4.250.000" [ref=e230]
+                - cell "$ 2.700.000" [ref=e231]
+                - cell "$ 600.000" [ref=e232]
+                - cell "$ 2.100.000" [ref=e233]
+                - cell "$ 27.000.000" [ref=e234]
+              - row [ref=e235]:
+                - cell [ref=e236]:
+                  - button "septiembre de 2027" [ref=e237] [cursor=pointer]
+                - cell "Ejemplo / plan" [ref=e238]
+                - cell "$ 6.950.000" [ref=e239]
+                - cell "$ 4.250.000" [ref=e240]
+                - cell "$ 2.700.000" [ref=e241]
+                - cell "$ 600.000" [ref=e242]
+                - cell "$ 2.100.000" [ref=e243]
+                - cell "$ 29.700.000" [ref=e244]
+              - row [ref=e245]:
+                - cell [ref=e246]:
+                  - button "octubre de 2027" [ref=e247] [cursor=pointer]
+                - cell "Ejemplo / plan" [ref=e248]
+                - cell "$ 6.950.000" [ref=e249]
+                - cell "$ 4.250.000" [ref=e250]
+                - cell "$ 2.700.000" [ref=e251]
+                - cell "$ 600.000" [ref=e252]
+                - cell "$ 2.100.000" [ref=e253]
+                - cell "$ 32.400.000" [ref=e254]
+      - paragraph [ref=e255]: Horizonte · Herramienta personal local · COP · Las recomendaciones usan tus datos y los umbrales definidos en esta herramienta. Exporta un respaldo JSON antes de cerrar; los PDFs se respaldan copiando la carpeta documentos.

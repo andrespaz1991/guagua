@@ -154,7 +154,7 @@ if ($materiasQuery) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Asistencias</title>
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
     <style>
         .modal-active { display: flex !important; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }

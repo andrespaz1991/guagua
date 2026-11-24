@@ -50,9 +50,8 @@ if ($idInstitucion > 0) {
     $params[] = $idInstitucion;
 }
 
-// Cuando la institución marca el año lectivo, se prioriza. Se dejan pasar
-// registros sin estado para mantener compatibilidad con instalaciones antiguas.
-$sql .= " AND (al.estado IS NULL OR LOWER(al.estado) IN ('activo', 'activa', 'en curso'))
+// Las asignaciones deben corresponder al año seleccionado en Configuración.
+$sql .= " AND LOWER(TRIM(al.estado)) = 'activo'
           ORDER BY mo.nombre_materia, cc.nombre_categoria_curso";
 
 $stmt = $mysqli->prepare($sql);

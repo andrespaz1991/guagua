@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Juego de palabras · creador de diapositivas</title>
+  <style>
+    :root{font-family:Inter,Arial,sans-serif;color:#1c2540;background:#f3f5fa}
+    *{box-sizing:border-box}body{margin:0}button,input,textarea,select{font:inherit}
+    .shell{max-width:1180px;margin:auto;padding:42px 28px 64px}
+    .eyebrow{color:#6358d9;font-size:12px;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
+    h1{font-size:clamp(32px,4vw,52px);line-height:1.07;letter-spacing:-.045em;margin:12px 0 12px}
+    .intro{font-size:17px;color:#647087;line-height:1.55;margin:0 0 34px;max-width:720px}
+    .grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:24px;align-items:start}
+    .panel{background:white;border:1px solid #e2e7f0;border-radius:20px;box-shadow:0 14px 38px #25305009;padding:26px}
+    .panel h2{font-size:19px;margin:0 0 6px;letter-spacing:-.02em}.hint{font-size:13px;color:#69758b;line-height:1.5;margin:0 0 19px}
+    label{display:block;font-weight:700;font-size:13px;margin-bottom:9px}textarea{width:100%;min-height:280px;resize:vertical;padding:16px;border:1px solid #cfd7e6;border-radius:12px;line-height:1.65;outline-color:#7669e7}
+    .upload{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px dashed #b8c3d8;border-radius:12px;padding:14px 16px;margin-top:18px}
+    .upload strong{font-size:14px}.upload small{display:block;color:#7a879b;margin-top:3px}input[type=file]{max-width:190px;font-size:12px}
+    .fields{display:grid;grid-template-columns:1fr 1fr;gap:17px;margin-top:21px}.field input[type=number],select{width:100%;border:1px solid #cfd7e6;border-radius:10px;padding:11px 12px;background:white}
+    .colors{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:23px}.colors label{margin:0}.colors span{display:block;margin-bottom:8px}
+    .image-options{margin-top:19px;padding:16px;border:1px solid #dce2ed;border-radius:12px;background:#f9faff}
+    .image-options input[type=file]{max-width:100%;width:100%}.image-options .fields{margin-top:16px}
+    input[type=range]{width:100%;accent-color:#6859df}.range-value{color:#6859df;font-weight:700}
+    input[type=color]{width:100%;height:43px;padding:3px;border:1px solid #cfd7e6;border-radius:10px;background:white;cursor:pointer}
+    .checks{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:25px}.checks label{display:flex;gap:9px;align-items:center;font-weight:500;margin:0;line-height:1.35}.checks input{accent-color:#6859df;width:16px;height:16px}
+    .preview-title{display:flex;align-items:center;justify-content:space-between;gap:10px}.count{font-size:12px;font-weight:800;color:#6659d9;background:#f0edff;padding:6px 10px;border-radius:20px}
+    .slide{aspect-ratio:16/9;background:#12182b;color:white;border-radius:13px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10%;font-weight:700;font-size:clamp(24px,3vw,42px);overflow:hidden;position:relative;overflow-wrap:anywhere;line-height:1.08}
+    .slide small{position:absolute;bottom:17px;left:19px;color:#f6c85f;font-size:12px;font-weight:500}.slide small.time{left:auto;right:19px}
+    .preview-note{color:#7a879b;font-size:12px;line-height:1.45;margin:13px 0 0}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:23px}button{border:0;border-radius:11px;padding:13px 11px;font-weight:800;cursor:pointer}
+    .ppt{background:#6455dd;color:white}.pdf{background:#e9e6ff;color:#4f42bf}button:disabled{opacity:.5;cursor:wait}
+    .status{font-size:13px;min-height:20px;margin:15px 0 0;color:#536079}.status.error{color:#b52646}
+    .help{border-top:1px solid #e9edf4;margin-top:23px;padding-top:18px;color:#69758b;font-size:12px;line-height:1.55}
+    .help code{background:#f1f3f8;padding:2px 5px;border-radius:4px;color:#354163}
+    @media(max-width:850px){.grid{grid-template-columns:1fr}.shell{padding:28px 17px}.panel{padding:21px}}
+    @media(max-width:460px){.fields,.checks{grid-template-columns:1fr}.colors{gap:7px}.actions{grid-template-columns:1fr}}
+  </style>
+</head>
+<body><main class="shell">
+  <div class="eyebrow">Creador de juegos</div>
+  <h1>Una palabra. Una diapositiva.</h1>
+  <p class="intro">Prepara un juego para adivinar palabras o frases. Escribe tu lista, carga un CSV y descarga una presentación lista para proyectar.</p>
+  <div class="grid">
+    <section class="panel" aria-labelledby="list-title">
+      <h2 id="list-title">1. Agrega las palabras</h2>
+      <p class="hint">Separa las palabras con saltos de línea, comas o punto y coma. Para cambiar un tiempo, escribe <strong>palabra | segundos</strong>.</p>
+      <label for="manual">Lista manual</label>
+      <textarea id="manual" spellcheck="false" placeholder="Elefante, Bicicleta&#10;Viaje a la luna | 12"></textarea>
+      <div class="upload">
+        <div><strong>O carga un CSV</strong><small>Se sumará a la lista manual</small></div>
+        <input id="csv" type="file" accept=".csv,text/csv,text/plain" aria-label="Seleccionar archivo CSV">
+      </div>
+      <p class="help">CSV: una columna <code>palabra</code> o <code>frase</code> y, opcionalmente, <code>segundos</code>. Acepta coma, punto y coma o tabulación. <a href="#" id="template">Descargar ejemplo CSV</a>.</p>
+      <h2 style="margin-top:26px">2. Personaliza el juego</h2>
+      <div class="fields">
+        <div class="field"><label for="seconds">Segundos por diapositiva</label><input id="seconds" type="number" min="1" max="300" value="8"></div>
+        <div class="field"><label for="fontSize">Tamaño máximo de letra (pt)</label><input id="fontSize" type="number" min="28" max="120" value="72"></div>
+        <div class="field"><label for="ratio">Formato de pantalla</label><select id="ratio"><option>16:9</option><option>4:3</option></select></div>
+        <div class="field"><label for="backgroundMode">Tipo de fondo</label><select id="backgroundMode"><option value="color">Color sólido</option><option value="image">Imagen de plantilla</option></select></div>
+      </div>
+      <div class="colors">
+        <label><span>Fondo / bordes</span><input id="background" type="color" value="#12182b"></label>
+        <label><span>Letra</span><input id="foreground" type="color" value="#ffffff"></label>
+        <label><span>Detalles</span><input id="accent" type="color" value="#f6c85f"></label>
+      </div>
+      <div class="image-options" id="imageOptions">
+        <label for="backgroundImage">Subir imagen de plantilla (opcional)</label>
+        <input id="backgroundImage" type="file" accept="image/png,image/jpeg,image/webp" aria-label="Seleccionar imagen de fondo">
+        <div class="fields">
+          <div class="field"><label for="backgroundFit">Ajuste de imagen</label><select id="backgroundFit"><option value="cover">Cubrir pantalla</option><option value="contain">Mostrar completa</option></select></div>
+          <div class="field"><label for="backgroundOverlay">Oscurecer imagen: <span class="range-value" id="overlayValue">20%</span></label><input id="backgroundOverlay" type="range" min="0" max="70" value="20"></div>
+        </div>
+        <p class="hint" style="margin:12px 0 0">Al elegir una imagen se activará como fondo de todas las palabras. Para volver al color, cambia «Tipo de fondo» a «Color sólido». Acepta JPG, PNG y WebP.</p>
+      </div>
+      <div class="checks">
+        <label><input id="uppercase" type="checkbox"> MAYÚSCULAS</label>
+        <label><input id="bold" type="checkbox" checked> Letra en negrita</label>
+        <label><input id="showNumber" type="checkbox" checked> Mostrar número</label>
+        <label><input id="showTime" type="checkbox"> Mostrar segundos</label>
+        <label><input id="autoAdvance" type="checkbox" checked> Avance automático en PPT</label>
+      </div>
+    </section>
+    <aside class="panel" aria-labelledby="preview-title">
+      <div class="preview-title"><h2 id="preview-title">Vista previa</h2><span class="count" id="count">0 palabras</span></div>
+      <p class="hint">Así se verá la primera diapositiva.</p>
+      <div class="slide" id="slide"><span id="slideText">Tu palabra aquí</span><small id="slideNumber">01 / 01</small><small class="time" id="slideTime" hidden>8 s</small></div>
+      <p class="preview-note">El PowerPoint puede avanzar automáticamente. El PDF es estático y se pasa de página manualmente.</p>
+      <div class="actions"><button class="ppt" data-format="pptx">Descargar PPT</button><button class="pdf" data-format="pdf">Descargar PDF</button></div>
+      <p class="status" id="status" role="status"></p>
+      <div class="help">Cada elemento tendrá su propia diapositiva o página. Las frases largas se ajustan para mantenerse dentro de la pantalla.</div>
+    </aside>
+  </div>
+</main>
+<script>
+  const $ = id => document.getElementById(id);
+  let csvText = '';
+  let backgroundFile = null;
+  let backgroundPreviewUrl = null;
+  const manualItems = () => $('manual').value.split(/\r?\n/).flatMap(line => /\|\s*\d+,\d+\s*$/.test(line) ? [line] : line.split(/[,;]/)).map(x => x.trim()).filter(Boolean);
+  function options(){return {seconds:Number($('seconds').value),font_size:Number($('fontSize').value),ratio:$('ratio').value,background:$('background').value,background_mode:$('backgroundMode').value,background_overlay:Number($('backgroundOverlay').value),foreground:$('foreground').value,accent:$('accent').value,uppercase:$('uppercase').checked,bold:$('bold').checked,show_number:$('showNumber').checked,show_time:$('showTime').checked,auto_advance:$('autoAdvance').checked};}
+  async function backgroundDataUrl(){
+    if($('backgroundMode').value!=='image')return null;
+    if(!backgroundFile)throw new Error('Selecciona una imagen de fondo.');
+    const bitmap=await createImageBitmap(backgroundFile);
+    try{
+      const baseWidth=$('ratio').value==='4:3'?960:1280, baseHeight=720;
+      let factor=1, quality=.88;
+      for(let attempt=0;attempt<12;attempt++){
+        const canvas=document.createElement('canvas');canvas.width=Math.round(baseWidth*factor);canvas.height=Math.round(baseHeight*factor);
+        const ctx=canvas.getContext('2d');ctx.fillStyle=$('background').value;ctx.fillRect(0,0,canvas.width,canvas.height);
+        const scale=($('backgroundFit').value==='contain'?Math.min:Math.max)(canvas.width/bitmap.width,canvas.height/bitmap.height);
+        const drawWidth=bitmap.width*scale,drawHeight=bitmap.height*scale;
+        ctx.drawImage(bitmap,(canvas.width-drawWidth)/2,(canvas.height-drawHeight)/2,drawWidth,drawHeight);
+        const data=canvas.toDataURL('image/jpeg',quality);
+        if((data.length-23)*.75<=1200000)return data;
+        if(quality>.66)quality-=.08;else{factor*=.8;quality=.82;}
+      }
+    }finally{bitmap.close?.();}
+    throw new Error('La imagen es demasiado grande para usarla como fondo.');
+  }
+  function refresh(){
+    const list=manualItems(); const csvRows=csvText.trim()?Math.max(0,csvText.trim().split(/\r?\n/).length-1):0;
+    const count=list.length+csvRows; $('count').textContent=`${count} ${count===1?'palabra':'palabras'}`;
+    let first=list[0]?.replace(/\s*\|\s*\d+(?:[.,]\d+)?\s*$/,'') || (csvRows?'Primera palabra del CSV':'Tu palabra aquí');
+    $('slideText').textContent=$('uppercase').checked?first.toLocaleUpperCase('es'):first;
+    const useImage=$('backgroundMode').value==='image';
+    $('overlayValue').textContent=`${$('backgroundOverlay').value}%`;
+    $('slide').style.backgroundColor=$('background').value;
+    $('slide').style.backgroundImage=useImage&&backgroundPreviewUrl?`linear-gradient(rgba(0,0,0,${Number($('backgroundOverlay').value)/100}),rgba(0,0,0,${Number($('backgroundOverlay').value)/100})),url("${backgroundPreviewUrl}")`:'none';
+    $('slide').style.backgroundSize=useImage&&backgroundPreviewUrl?`cover,${$('backgroundFit').value}`:'auto';
+    $('slide').style.backgroundPosition='center';$('slide').style.backgroundRepeat='no-repeat';
+    $('slide').style.color=$('foreground').value;
+    $('slide').style.aspectRatio=$('ratio').value==='4:3'?'4 / 3':'16 / 9';
+    $('slide').style.fontWeight=$('bold').checked?'700':'400';
+    $('slide').style.fontSize=`${Math.min(42,Math.max(20,Number($('fontSize').value)*.48))}px`;
+    $('slideNumber').hidden=!$('showNumber').checked;
+    $('slideNumber').textContent=`01 / ${String(Math.max(count,1)).padStart(2,'0')}`;
+    $('slideTime').hidden=!$('showTime').checked;
+    $('slideTime').textContent=`${$('seconds').value||8} s`;
+    $('slideNumber').style.color=$('accent').value; $('slideTime').style.color=$('accent').value;
+  }
+  document.querySelectorAll('input,textarea,select').forEach(el=>el.addEventListener('input',refresh));
+  $('csv').addEventListener('change',async e=>{csvText=e.target.files[0]?await e.target.files[0].text():'';refresh();});
+  $('backgroundImage').addEventListener('change',e=>{
+    const file=e.target.files[0]||null;
+    if(file&&!['image/jpeg','image/png','image/webp'].includes(file.type)){$('status').classList.add('error');$('status').textContent='Selecciona una imagen JPG, PNG o WebP.';e.target.value='';return;}
+    if(file&&file.size>15000000){$('status').classList.add('error');$('status').textContent='La imagen debe pesar menos de 15 MB.';e.target.value='';return;}
+    if(backgroundPreviewUrl)URL.revokeObjectURL(backgroundPreviewUrl);
+    backgroundFile=file;backgroundPreviewUrl=file?URL.createObjectURL(file):null;
+    $('backgroundMode').value=file?'image':'color';
+    $('status').classList.remove('error');$('status').textContent='';refresh();
+  });
+  $('template').addEventListener('click',e=>{e.preventDefault();const blob=new Blob(['palabra;segundos\r\nElefante;8\r\nViaje a la luna;12\r\nBicicleta;6\r\n'],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ejemplo_palabras.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);});
+  document.querySelectorAll('[data-format]').forEach(button=>button.addEventListener('click',async()=>{
+    const format=button.dataset.format; const status=$('status');status.classList.remove('error');status.textContent='Creando archivo…';
+    document.querySelectorAll('[data-format]').forEach(b=>b.disabled=true);
+    try{
+      const background_image=await backgroundDataUrl();
+      const payload=JSON.stringify({manual:$('manual').value,csv_text:csvText,background_image,options:options(),format});
+      const bytes=new TextEncoder().encode(payload);let binary='';
+      for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.slice(i,i+8192));
+      const encoded=btoa(binary).replace(/\+/g,'-').replace(/\//g,'_');
+      const session=crypto.randomUUID();const chunks=encoded.match(/.{1,5000}/g)||[];
+      let next=0;async function sendChunks(){while(next<chunks.length){const i=next++;const loaded=await fetch(`/api/cargar?session=${session}&part=${i}&total=${chunks.length}&data=${encodeURIComponent(chunks[i])}`);if(!loaded.headers.get('content-type')?.includes('application/json'))throw new Error('El navegador no recibió respuesta del servidor local. Actualiza la página e inténtalo de nuevo.');if(!loaded.ok){const body=await loaded.text();let message='No se pudo enviar la lista al servidor local.';try{message=JSON.parse(body).error||message}catch{}throw new Error(message);}}}
+      await Promise.all(Array.from({length:Math.min(8,chunks.length)},sendChunks));
+      const response=await fetch(`/api/generar?session=${session}`);
+      if(!response.ok){const body=await response.text();let message='El servidor local no pudo crear el archivo. Actualiza la página e inténtalo de nuevo.';try{message=JSON.parse(body).error||message}catch{}throw new Error(message);}
+      if(!response.headers.get('content-type')?.includes(format==='pdf'?'application/pdf':'presentationml.presentation'))throw new Error('La respuesta no contiene el archivo esperado. Actualiza la página e inténtalo de nuevo.');
+      const blob=await response.blob();const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`juego_de_palabras.${format}`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);status.textContent='Archivo listo para descargar.';
+    }catch(error){status.classList.add('error');status.textContent=error.message;}
+    finally{document.querySelectorAll('[data-format]').forEach(b=>b.disabled=false);}
+  }));
+  refresh();
+</script></body></html>

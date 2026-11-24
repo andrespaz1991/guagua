@@ -1,0 +1,14 @@
+{
+    "primary": "#2563eb",
+    "secondary": "#adc2c1",
+    "background": "#f4f7fb",
+    "homeBackground": "#1054c1",
+    "surface": "#ffffff",
+    "text": "#1e293b",
+    "font": "Inter",
+    "fontSize": 15,
+    "radius": 12,
+    "density": "comfortable",
+    "shadow": true,
+    "animations": true
+}

@@ -1,0 +1,15 @@
+{
+  "registros": [
+    {
+      "grado": "Sexto",
+      "materia": "Ciencias Sociales",
+      "periodo": 1,
+      "estandar": "Comprendo la importancia de las normas en la convivencia.",
+      "descripcion_estandar": "Descripción opcional del estándar.",
+      "dba": "DBA 1: Reconoce las normas de convivencia.",
+      "descripcion_dba": "Descripción opcional del DBA.",
+      "eje_tematico": "Convivencia y ciudadanía",
+      "descripcion_eje": "Descripción opcional del eje."
+    }
+  ]
+}

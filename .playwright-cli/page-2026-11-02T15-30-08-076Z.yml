@@ -1,0 +1,119 @@
+- generic [active] [ref=f2e1]:
+  - generic [ref=f2e2]:
+    - complementary [ref=f2e3]:
+      - generic [ref=f2e4]:
+        - generic [ref=f2e5]: 
+        - heading "Malla viva" [level=2] [ref=f2e6]
+      - generic [ref=f2e7]:
+        - heading "Filtros Principales" [level=3] [ref=f2e8]
+        - generic [ref=f2e9]:
+          - generic [ref=f2e10]: Grado
+          - generic [ref=f2e11]:
+            - combobox "Grado" [ref=f2e12]:
+              - option "Seleccione un grado..."
+              - option "6" [selected]
+              - option "7"
+            - generic: 
+        - generic [ref=f2e13]:
+          - generic [ref=f2e14]: Materia
+          - generic [ref=f2e15]:
+            - combobox "Materia" [ref=f2e16]:
+              - option "Seleccione una materia..."
+              - option "Matemáticas" [selected]
+              - option "Emprendimiento"
+            - generic: 
+      - paragraph [ref=f2e18]:
+        - generic [aria-hidden] [ref=f2e19]: 
+        - generic [ref=f2e20]:
+          - text: Use los botones
+          - generic [aria-hidden] [ref=f2e21]: +
+          - text: ","
+          - generic [aria-hidden] [ref=f2e22]: 
+          - text: "y"
+          - generic [aria-hidden] [ref=f2e23]: 
+          - text: para crear, modificar o eliminar. Los cambios se guardan directamente.
+    - main [ref=f2e24]:
+      - generic [ref=f2e25]:
+        - generic [ref=f2e26]:
+          - heading "Grado 6 - Matemáticas" [level=1] [ref=f2e52]
+          - paragraph [ref=f2e28]: Periodo 4 vigente según las fechas configuradas. Despliegue los elementos para consultar o editar.
+        - button "" [ref=f2e30] [cursor=pointer]
+      - tablist "Vistas del módulo" [ref=f2e32]:
+        - tab "Editor curricular" [selected] [ref=f2e33] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f2e34]: 
+          - text: Editor curricular
+        - tab "Reporte de pendientes" [ref=f2e35] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f2e36]: 
+          - text: Reporte de pendientes
+        - tab "Evidencias de aprendizaje" [ref=f2e37] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f2e38]: 
+          - text: Evidencias de aprendizaje
+        - tab "Importar DBA" [ref=f2e39] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f2e40]: 
+          - text: Importar DBA
+        - tab "Exportar" [ref=f2e41] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f2e42]: 
+          - text: Exportar
+      - text:                  +    +     +      +      +     +    +     +        +      +    +    +       
+      - tabpanel "Editor curricular" [ref=f2e43]:
+        - generic [ref=f2e44]:
+          - group [ref=f2e53]:
+            - generic "Periodo 1 1 estándares · 13/01/2026 – 27/03/2026 + Añadir Estándar" [ref=f2e54] [cursor=pointer]:
+              - generic [ref=f2e55]:
+                - generic [aria-hidden] [ref=f2e56]: 
+                - generic [ref=f2e57]:
+                  - generic [ref=f2e58]: Periodo 1
+                  - generic [ref=f2e59]: 1 estándares · 13/01/2026 – 27/03/2026
+              - button "+ Añadir Estándar" [ref=f2e60]:
+                - generic [ref=f2e61]: +
+                - text: Añadir Estándar
+            - text:   +    +                                          +                     +                +        
+          - group [ref=f2e62]:
+            - generic "Periodo 2 1 estándares · 27/03/2026 – 27/06/2026 + Añadir Estándar" [ref=f2e63] [cursor=pointer]:
+              - generic [ref=f2e64]:
+                - generic [aria-hidden] [ref=f2e65]: 
+                - generic [ref=f2e66]:
+                  - generic [ref=f2e67]: Periodo 2
+                  - generic [ref=f2e68]: 1 estándares · 27/03/2026 – 27/06/2026
+              - button "+ Añadir Estándar" [ref=f2e69]:
+                - generic [ref=f2e70]: +
+                - text: Añadir Estándar
+            - text:   +    +                 +                +                            
+          - group [ref=f2e71]:
+            - generic "Periodo 3 1 estándares · 05/07/2026 – 13/09/2026 + Añadir Estándar" [ref=f2e72] [cursor=pointer]:
+              - generic [ref=f2e73]:
+                - generic [aria-hidden] [ref=f2e74]: 
+                - generic [ref=f2e75]:
+                  - generic [ref=f2e76]: Periodo 3
+                  - generic [ref=f2e77]: 1 estándares · 05/07/2026 – 13/09/2026
+              - button "+ Añadir Estándar" [ref=f2e78]:
+                - generic [ref=f2e79]: +
+                - text: Añadir Estándar
+            - text:   +    +                      +                     +           +           +           +        
+          - group [ref=f2e80]:
+            - generic "Periodo 4 Vigente 1 estándares · 14/09/2026 – 20/11/2026 + Añadir Estándar" [ref=f2e81] [cursor=pointer]:
+              - generic [ref=f2e82]:
+                - generic [aria-hidden] [ref=f2e83]: 
+                - generic [ref=f2e84]:
+                  - generic [ref=f2e85]:
+                    - text: Periodo 4
+                    - generic [ref=f2e86]: Vigente
+                  - generic [ref=f2e87]: 1 estándares · 14/09/2026 – 20/11/2026
+              - button "+ Añadir Estándar" [ref=f2e88]:
+                - generic [ref=f2e89]: +
+                - text: Añadir Estándar
+            - group [ref=f2e91]:
+              - generic "Estándar Construyo e interpreto representaciones geométricas y estadísticas para plantear y resolver problemas.  + " [ref=f2e92] [cursor=pointer]:
+                - generic [ref=f2e93]:
+                  - generic [aria-hidden] [ref=f2e94]: 
+                  - generic [ref=f2e95]:
+                    - generic [ref=f2e96]: Estándar
+                    - generic [ref=f2e97]: Construyo e interpreto representaciones geométricas y estadísticas para plantear y resolver problemas.
+                - generic [ref=f2e98]:
+                  - button "" [ref=f2e99]
+                  - button "+" [ref=f2e101]
+                  - button "" [ref=f2e103]
+              - text:   +                           +           +                +                     +                +        
+        - status [ref=f2e48]
+      - text:         
+  - text:   

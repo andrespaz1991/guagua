@@ -1,0 +1,27 @@
+<?php
+/** Registro único del centro: destinos internos y permisos explícitos. */
+$staff = ['admin', 'docente'];
+$admin = ['admin'];
+return [
+    'tienda' => ['grupo'=>'Usuarios y administración','titulo'=>'Tienda de aplicaciones','descripcion'=>'Instalar, desinstalar y recuperar apps con una copia de seguridad opcional.','ruta'=>'comun/tienda.php','icono'=>'store','roles'=>['admin','directivo','docente']],
+    'mapa_procesos' => ['grupo'=>'Institución y gestión académica','titulo'=>'Mapa de procesos de Guagua','descripcion'=>'Explorar el flujo escolar, sus módulos, dependencias y oportunidades de mejora.','ruta'=>'apps/mapa_procesos/index.php','icono'=>'diagram-project','embebido'=>true,'roles'=>['admin','directivo','docente']],
+    'inicio_anual' => ['grupo'=>'Institución y gestión académica','titulo'=>'Asistente de inicio de año','descripcion'=>'Preparar el año escolar paso a paso: períodos, grados, asignaturas, docentes, horarios e inscripciones.','ruta'=>'Planeador/inicio_anual.php','icono'=>'wand-magic-sparkles','embebido'=>true,'roles'=>['admin','directivo','docente']],
+    'apariencia' => ['grupo'=>'Apariencia y navegación','titulo'=>'Apariencia de la plataforma','descripcion'=>'Colores, fuentes, botones, formularios y paneles.','ruta'=>'apps/configuracion_interfaz/index.php','icono'=>'palette','roles'=>$staff],
+    'menu_visual' => ['grupo'=>'Apariencia y navegación','titulo'=>'Diseño de los iconos del menú','descripcion'=>'Tamaño de iconos, textos, barra de navegación y foto de usuario.','ruta'=>'apps/customizador_menu/index.php','icono'=>'sliders','roles'=>$staff],
+    'menu_items' => ['grupo'=>'Apariencia y navegación','titulo'=>'Opciones y accesos del menú','descripcion'=>'Editar nombres, iconos, enlaces, favoritos y cabecera dentro de Aplicaciones.','ruta'=>'comun/tienda.php','vista'=>'menu','icono'=>'bars','roles'=>['admin','directivo','docente']],
+    'directorio' => ['grupo'=>'Apariencia y navegación','titulo'=>'Directorio de módulos','descripcion'=>'Consultar y organizar los módulos y recursos registrados.','ruta'=>'comun/dir_menu.php','icono'=>'th-large','roles'=>$staff],
+    'tarjetas' => ['grupo'=>'Apariencia y navegación','titulo'=>'Tarjetas de inicio','descripcion'=>'Administrar accesos, iconos y permisos de las tarjetas de inicio.','ruta'=>'tarjeta.php','icono'=>'th','roles'=>$admin],
+    'institucion' => ['grupo'=>'Institución y gestión académica','titulo'=>'Instituciones educativas','descripcion'=>'Identidad institucional, datos generales y elementos de la institución.','ruta'=>'Planeador/institucion_educativa.php','icono'=>'school','roles'=>$staff],
+    'periodos' => ['grupo'=>'Institución y gestión académica','titulo'=>'Períodos académicos','descripcion'=>'Administrar períodos y seleccionar el período activo.','ruta'=>'Planeador/periodo.php','icono'=>'calendar','roles'=>$staff],
+    'inscripciones' => ['grupo'=>'Institución y gestión académica','titulo'=>'Años, cursos e inscripciones','descripcion'=>'Gestionar las asignaciones e inscripciones por institución y año lectivo.','ruta'=>'Planeador/inscripes.php','icono'=>'user-graduate','roles'=>$staff],
+    'malla' => ['grupo'=>'Institución y gestión académica','titulo'=>'Malla curricular','descripcion'=>'Organizar estándares, DBA, ejes y referentes curriculares.','ruta'=>'Planeador/admin_malla.php','icono'=>'sitemap','roles'=>$staff],
+    'calendario' => ['grupo'=>'Institución y gestión académica','titulo'=>'Calendario académico','descripcion'=>'Consultar y ajustar la organización de la planeación.','ruta'=>'Planeador/calendario.php','icono'=>'calendar-days','roles'=>$staff],
+    'contenidos' => ['grupo'=>'Catálogos pedagógicos','titulo'=>'Contenidos','descripcion'=>'Administrar el catálogo de contenidos de la planeación.','ruta'=>'Planeador/contenido.php','icono'=>'book','roles'=>$staff],
+    'objetivos' => ['grupo'=>'Catálogos pedagógicos','titulo'=>'Objetivos','descripcion'=>'Actualizar los objetivos utilizados en la planeación.','ruta'=>'Planeador/objetivos.php','icono'=>'bullseye','roles'=>$staff],
+    'recursos' => ['grupo'=>'Catálogos pedagógicos','titulo'=>'Recursos educativos','descripcion'=>'Mantener los recursos y sus descripciones.','ruta'=>'Planeador/recursos.php','icono'=>'folder-open','roles'=>$staff],
+    'usuarios' => ['grupo'=>'Usuarios y administración','titulo'=>'Usuarios','descripcion'=>'Gestionar perfiles y datos de las cuentas de Guagua.','ruta'=>'usuario/usuario.php','icono'=>'users','roles'=>$staff],
+    'acudientes' => ['grupo'=>'Usuarios y administración','titulo'=>'Acudientes y estudiantes','descripcion'=>'Administrar los vínculos entre estudiantes y sus acudientes.','ruta'=>'usuario/acudiente_estudiante.php','icono'=>'user-group','roles'=>$staff],
+    'importacion' => ['grupo'=>'Usuarios y administración','titulo'=>'Importar usuarios','descripcion'=>'Abrir las herramientas de importación de usuarios.','ruta'=>'usuario/importar.php','icono'=>'file-import','roles'=>$admin],
+    'copias' => ['grupo'=>'Usuarios y administración','titulo'=>'Descargar Guagua','descripcion'=>'Llevar los archivos y las bases de datos en un ZIP listo para instalar en XAMPP.','ruta'=>'reportes/descargar_guagua.php','icono'=>'file-zipper','roles'=>$staff],
+    'reportes_ia' => ['grupo'=>'Usuarios y administración','titulo'=>'Configuración de reportes IA','descripcion'=>'Revisar los parámetros usados por los reportes de inteligencia artificial.','ruta'=>'ia/config_reporte.php','icono'=>'wand-magic-sparkles','roles'=>$staff],
+];

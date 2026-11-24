@@ -10,15 +10,10 @@
 /**
  * Define database parameters here
  */
-define("DB_USER", 'root');
-define("DB_PASSWORD", '');
-#define("this->dbName", 'abc');
-define("DB_HOST", 'localhost');
-#$var=('C:\Users\Andr&eacute;s Paz\Dropbox');
-#define("BACKUP_DIR",$var); // Comment this line to use same script's directory ('.')
+require_once __DIR__ . '/../comun/database.php';
 define("TABLES", '*'); // Full backup
 //define("TABLES", 'table1, table2, table3'); // Partial backup
-define("CHARSET", 'utf8');
+if (!defined('CHARSET')) define('CHARSET', GuaguaDatabase::settings()['charset']);
 define("GZIP_BACKUP_FILE", false);  // Set to false if you want plain SQL backup files (not gzipped)
 
 /**
@@ -78,27 +73,28 @@ class Backup_Database  {
     /**
      * Constructor initializes database
      */
-    public function __construct($charset = 'utf8') {
-        $this->host            = 'localhost:7000';
-        $this->username        = 'root';
-        $this->passwd          = '';
-        $this->dbName          = "guagua";
-        $this->charset         = $charset;
-       $this->backupDir         = "bd/";
-        $this->conn            = $this->initializeDatabase();
-        $this->backupDir       = ($this->backupDir) ? ($this->backupDir)  : '.';
-        $this->backupFile      = 'copia-'.$this->dbName.'-'.date("Ymd_His", time()).'.sql';
-        $this->gzipBackupFile  = defined('GZIP_BACKUP_FILE') ? GZIP_BACKUP_FILE : true;
-        $this->output          = '';
+    public function __construct($charset = null, $legacyUser = null, $legacyPassword = null, $database = null, $directory = null) {
+        $settings = GuaguaDatabase::settings();
+        // Accept old five-argument calls, while taking server/credentials only from the central configuration.
+        $this->host = $settings['host'];
+        $this->username = $settings['user'];
+        $this->passwd = $settings['password'];
+        $this->dbName = $database ?: $settings['database'];
+        $this->charset = $settings['charset'];
+        $this->backupDir = $directory ?: 'bd/';
+        $this->conn = $this->initializeDatabase();
+        $this->backupFile = 'copia-' . $this->dbName . '-' . date('Ymd_His') . '.sql';
+        $this->gzipBackupFile = defined('GZIP_BACKUP_FILE') ? GZIP_BACKUP_FILE : true;
+        $this->output = '';
     }
 
-public function copia_bd($bd="guagua",$ruta_guardar=false,$info=0){
-$enlace = mysqli_connect($this->host, $this->username, $this->passwd);
+public function copia_bd($bd=null,$ruta_guardar=false,$info=0){
+$enlace = guagua_db_mysqli('default', ['database' => '']);
 if($ruta_guardar==false){
 $ruta_guardar=$this->backupDir;
 }
   if($bd<>"information_schema"){
-$backup=new Backup_Database($this->host, $this->username, $this->passwd,$bd,$this->backupDir);
+$backup=new Backup_Database(null, null, null, $bd ?: $this->dbName, $this->backupDir);
 $result = $backup->backupTables(TABLES,$this->backupDir,1);
 //if ($info==true) {
 $output = $backup->getOutput();
@@ -120,14 +116,14 @@ readfile($filePath);
 }
 }
 public function todas_las_bd($ruta_guardar=false,$info=false){
-$enlace = mysqli_connect($this->host, $this->username, $this->passwd);
+$enlace = guagua_db_mysqli('default', ['database' => '']);
 if($ruta_guardar==false){
 $ruta_guardar=$this->backupDir;
 }
-echo $resultado = $enlace->query("SHOW DATABASES");
+$resultado = $enlace->query("SHOW DATABASES");
 while ($fila = mysqli_fetch_assoc($resultado)) {
    if($fila['Database']<>"information_schema"){
-$backup=new Backup_Database($this->host, $this->username, $this->passwd,$fila['Database'],$ruta_guardar);
+$backup=new Backup_Database(null, null, null, $fila['Database'], $ruta_guardar);
 $result = $backup->backupTables(TABLES, $ruta_guardar,1);
 if ($info==1) {
 $output = $backup->getOutput();
@@ -138,21 +134,7 @@ $output = $backup->getOutput();
 
 
     protected function initializeDatabase() {
-        try {
-            $conn = mysqli_connect($this->host, $this->username, $this->passwd, $this->dbName);
-            if (mysqli_connect_errno()) {
-                throw new Exception('ERROR connecting database: ' . mysqli_connect_error());
-                die();
-            }
-            if (!mysqli_set_charset($conn, $this->charset)) {
-                mysqli_query($conn, 'SET NAMES '.$this->charset);
-            }
-        } catch (Exception $e) {
-            print_r($e->getMessage());
-            die();
-        }
-
-        return $conn;
+        return guagua_db_mysqli('default', ['database' => $this->dbName]);
     }
 
     /**

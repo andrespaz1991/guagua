@@ -1,0 +1,158 @@
+- generic [active] [ref=f2e1]:
+  - link "Ir a las notas" [ref=f2e2] [cursor=pointer]:
+    - /url: "#sn-results"
+  - main [ref=f2e3]:
+    - navigation "Ruta de navegación" [ref=f2e4]:
+      - link "Aplicaciones" [ref=f2e5] [cursor=pointer]:
+        - /url: ../../comun/dir_menu.php
+      - generic [ref=f2e8]: Seguimiento académico
+    - generic [ref=f2e9]:
+      - generic [ref=f2e14]:
+        - heading "Simulador de notas" [level=1] [ref=f2e15]
+        - paragraph [ref=f2e16]: Consulta el año académico y proyecta el resultado del cuarto periodo.
+      - generic [ref=f2e17]:
+        - button "Cómo usar el simulador" [ref=f2e18] [cursor=pointer]
+        - button "Importar notas" [ref=f2e21] [cursor=pointer]
+        - button "Exportar vista" [disabled] [ref=f2e24]
+    - generic [ref=f2e27]:
+      - complementary "Seleccionar estudiante" [ref=f2e28]:
+        - generic [ref=f2e29]:
+          - generic [ref=f2e30]:
+            - heading "Estudiantes" [level=2] [ref=f2e31]
+            - generic [ref=f2e32]: "0"
+          - generic [ref=f2e33]:
+            - generic [ref=f2e34]:
+              - text: Año académico
+              - combobox "Año académico" [ref=f2e35]:
+                - option "Todos los años" [selected]
+            - generic [ref=f2e36]:
+              - text: Grupo
+              - combobox "Grupo" [ref=f2e37]:
+                - option "Todos" [selected]
+          - generic [ref=f2e38]:
+            - generic [ref=f2e39]: Buscar estudiante por nombre o código
+            - searchbox "Buscar estudiante por nombre o código" [ref=f2e40]
+          - button "Vista general Todos los estudiantes del reporte" [pressed] [ref=f2e41] [cursor=pointer]:
+            - generic [ref=f2e45]:
+              - strong [ref=f2e46]: Vista general
+              - generic [ref=f2e47]: Todos los estudiantes del reporte
+          - generic [ref=f2e50]: SELECCIONA UN ESTUDIANTE
+          - generic "Estudiantes disponibles" [ref=f2e52]:
+            - generic [ref=f2e53]:
+              - paragraph [ref=f2e54]: Importa un reporte para comenzar.
+              - button "Importar notas" [ref=f2e55] [cursor=pointer]
+          - generic [ref=f2e56]: Las notas de consulta provienen del reporte importado.
+      - generic [ref=f2e60]:
+        - tablist "Vistas del seguimiento académico" [ref=f2e61]:
+          - tab "Consulta y simulación" [selected] [ref=f2e62] [cursor=pointer]
+          - tab "Alertas del año 0" [ref=f2e65] [cursor=pointer]:
+            - text: Alertas del año
+            - generic "0 estudiantes con materias en riesgo en el año y grupo elegidos" [ref=f2e68]: "0"
+        - tabpanel "Consulta y simulación" [ref=f2e69]:
+          - region [ref=f2e70]:
+            - generic [ref=f2e75]:
+              - generic [ref=f2e76]: VISTA GENERAL
+              - heading "Comienza con tu reporte de notas" [level=2] [ref=f2e77]
+              - paragraph [ref=f2e78]: 0 estudiantes · Todos los años
+            - generic [ref=f2e79]:
+              - generic [ref=f2e80]:
+                - generic [ref=f2e81]: Proyección completada
+                - strong [ref=f2e82]: 0 de 0 registros
+              - progressbar "Materias con proyección completa" [ref=f2e83]
+              - text: Completa las notas pendientes de P4.
+          - region "Resumen de la consulta" [ref=f2e84]:
+            - article [ref=f2e85]:
+              - generic [ref=f2e86]: Estudiante · materia
+              - strong [ref=f2e90]: "0"
+              - generic [ref=f2e91]: 0 estudiantes en esta vista
+            - article "Promedio simple de las materias con notas en los tres primeros periodos." [ref=f2e92]:
+              - generic [ref=f2e93]: Promedio P1–P3
+              - strong [ref=f2e97]: —
+              - generic [ref=f2e98]: 0 con los 3 periodos completos
+            - article [ref=f2e99]:
+              - generic [ref=f2e100]: Final proyectada
+              - strong [ref=f2e104]: —
+              - generic [ref=f2e105]: Completa P4 para calcular
+            - article [ref=f2e106]:
+              - generic [ref=f2e107]: Bajo la meta
+              - strong [ref=f2e110]: —
+              - generic [ref=f2e111]: "Meta final: 3,00"
+          - region [ref=f2e112]:
+            - generic [ref=f2e113]:
+              - generic [ref=f2e114]:
+                - heading "Materias y simulación" [level=2] [ref=f2e115]
+                - paragraph [ref=f2e116]: Escribe una nota en P4 para calcular la final al instante.
+              - button "Simular varias materias" [disabled] [ref=f2e117]
+            - generic [ref=f2e120]:
+              - generic [ref=f2e121]:
+                - generic [ref=f2e122]: Filtrar por materia
+                - combobox "Filtrar por materia" [ref=f2e123]:
+                  - option "Todas las materias" [selected]
+              - generic [ref=f2e124]:
+                - generic [ref=f2e125]: Periodos visibles
+                - combobox "Periodos visibles" [ref=f2e126]:
+                  - option "Todos los periodos" [selected]
+                  - option "Periodo 1 y simulación"
+                  - option "Periodo 2 y simulación"
+                  - option "Periodo 3 y simulación"
+                  - option "Solo simulación P4"
+              - generic [ref=f2e127]:
+                - generic [ref=f2e128]: Filtrar por resultado
+                - combobox "Filtrar por resultado" [ref=f2e129]:
+                  - option "Todos los resultados" [selected]
+                  - option "Alcanza la meta"
+                  - option "Bajo la meta"
+                  - option "Sin proyección"
+            - table [ref=f2e131]:
+              - caption [ref=f2e132]: Notas del año y proyección de la nota final
+              - rowgroup [ref=f2e133]:
+                - row [ref=f2e134]:
+                  - columnheader "Estudiante / Materia" [ref=f2e135]
+                  - columnheader "PERIODO 1 25 %" [ref=f2e136]:
+                    - text: PERIODO 1
+                    - generic [ref=f2e137]: 25 %
+                  - columnheader "PERIODO 2 25 %" [ref=f2e138]:
+                    - text: PERIODO 2
+                    - generic [ref=f2e139]: 25 %
+                  - columnheader "PERIODO 3 25 %" [ref=f2e140]:
+                    - text: PERIODO 3
+                    - generic [ref=f2e141]: 25 %
+                  - columnheader "P4 · SIMULAR 25 % de la nota final" [ref=f2e142]:
+                    - text: P4 · SIMULAR
+                    - generic [ref=f2e145]: 25 % de la nota final
+                  - columnheader "FINAL simulada" [ref=f2e146]:
+                    - text: FINAL
+                    - generic [ref=f2e147]: simulada
+                  - columnheader "NECESITA EN P4 para la meta" [ref=f2e148]:
+                    - text: NECESITA EN P4
+                    - generic [ref=f2e149]: para la meta
+              - rowgroup [ref=f2e150]:
+                - row [ref=f2e151]:
+                  - cell [ref=f2e152]:
+                    - strong [ref=f2e155]: Importa las notas para comenzar
+                    - paragraph [ref=f2e156]: Carga tu reporte Excel y consulta todos los periodos en un solo lugar.
+                    - button "Importar notas" [ref=f2e157] [cursor=pointer]
+            - generic [ref=f2e158]:
+              - generic [ref=f2e159]: Sin resultados
+              - generic [ref=f2e160]:
+                - generic [ref=f2e161]:
+                  - text: Ver
+                  - combobox "Registros por página" [disabled] [ref=f2e162]:
+                    - option "10" [selected]
+                    - option "20"
+                    - option "50"
+                - button "Página anterior" [disabled] [ref=f2e163]
+                - generic [ref=f2e166]: 1 / 1
+                - button "Página siguiente" [disabled] [ref=f2e167]
+            - generic [ref=f2e170]:
+              - generic [ref=f2e171]: Tus escenarios se guardan en esta pestaña
+              - generic [ref=f2e175]:
+                - button "Deshacer" [disabled] [ref=f2e176]
+                - button "Restablecer vista" [disabled] [ref=f2e179]
+        - generic [ref=f2e182]:
+          - generic [ref=f2e183]: "Cada periodo aporta el 25 % · Meta: 3,00"
+          - button "Configurar cálculo" [ref=f2e187] [cursor=pointer]
+        - paragraph [ref=f2e190]: «—» indica una nota pendiente. Las simulaciones no cambian las notas oficiales.
+    - generic [ref=f2e191]:
+      - generic "Reporte de ejemplo · datos ficticios.xls" [ref=f2e195]: "Reporte: Reporte de ejemplo · datos ficticios.xls"
+      - generic [ref=f2e196]: Actualizado el 18 de nov de 2026

@@ -1,0 +1,675 @@
+- generic [ref=f1e1]:
+  - navigation [ref=f1e2]:
+    - generic [ref=f1e3]:
+      - generic [ref=f1e4]:
+        - button "❮" [ref=f1e5] [cursor=pointer]
+        - list [ref=f1e7]:
+          - listitem [ref=f1e8]:
+            - link "INICIO" [ref=f1e9] [cursor=pointer]:
+              - /url: //localhost/guagua/index.php
+          - listitem [ref=f1e11]:
+            - link "ESPACIO" [ref=f1e12] [cursor=pointer]:
+              - /url: //localhost/guagua/apps/espacio/
+          - listitem [ref=f1e14]:
+            - link "PROMPTS" [ref=f1e15] [cursor=pointer]:
+              - /url: //localhost/guagua/apps/prompts/
+          - listitem [ref=f1e17]:
+            - link "CURSOS" [ref=f1e18] [cursor=pointer]:
+              - /url: //localhost/guagua/cursos
+          - listitem [ref=f1e20]:
+            - link "RED" [ref=f1e21] [cursor=pointer]:
+              - /url: //localhost/guagua/red
+          - listitem [ref=f1e23]:
+            - link "APPS" [ref=f1e24] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/gestor_menu.php
+          - listitem [ref=f1e26]:
+            - link "Datos" [ref=f1e27] [cursor=pointer]:
+              - /url: //localhost/guagua/reportes/informe_docente.php
+          - listitem [ref=f1e29]:
+            - link "CONFIG" [ref=f1e30] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/configuracion.php
+          - listitem [ref=f1e32]:
+            - link "Sisga" [ref=f1e33] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=59
+          - listitem [ref=f1e35]:
+            - link "UTEL" [ref=f1e36] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=79
+          - listitem [ref=f1e38]:
+            - link "Seguimiento" [ref=f1e39] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=87
+          - listitem [ref=f1e41]:
+            - link "Alerta" [ref=f1e42] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=88
+          - listitem [ref=f1e44]:
+            - link "PAE" [ref=f1e45] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=90
+          - listitem [ref=f1e47]:
+            - link "NOTI" [ref=f1e48] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=91
+          - listitem [ref=f1e50]:
+            - link "PlanIa" [ref=f1e51] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=92
+          - listitem [ref=f1e53]:
+            - link "Merca" [ref=f1e54] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=96
+          - listitem [ref=f1e56]:
+            - link "pdf" [ref=f1e57] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=101
+          - listitem [ref=f1e59]:
+            - link "rubrica" [ref=f1e60] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=102
+          - listitem [ref=f1e62]:
+            - link "Davinci" [ref=f1e63] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=104
+          - listitem [ref=f1e65]:
+            - link "dba" [ref=f1e66] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=105
+          - listitem [ref=f1e68]:
+            - link "Diario" [ref=f1e69] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=107
+          - listitem [ref=f1e71]:
+            - link "Plantilla" [ref=f1e72] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=108
+          - listitem [ref=f1e74]:
+            - link "evidencias" [ref=f1e75] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=109
+          - listitem [ref=f1e77]:
+            - link "Asignaciones" [ref=f1e78] [cursor=pointer]:
+              - /url: //localhost/guagua/comun/modulo.php?id=110
+        - button "❯" [ref=f1e80] [cursor=pointer]
+      - search [ref=f1e81]:
+        - generic [ref=f1e82]:
+          - generic [aria-hidden]: ⌕
+          - searchbox "Buscar iconos del menú" [ref=f1e83]
+      - list [ref=f1e85]:
+        - listitem [ref=f1e86]:
+          - generic "Cuenta actual" [ref=f1e87]:
+            - generic [ref=f1e88]:
+              - generic "Root App" [ref=f1e89]
+              - 'link "Cambiar perfil. Perfil actual: Docente" [ref=f1e90] [cursor=pointer]':
+                - /url: //localhost/guagua/usuario/login.php
+                - text: Docente
+            - link "Cerrar sesión en Guagua" [ref=f1e94] [cursor=pointer]:
+              - /url: //localhost/guagua/usuario/login.php?logout=1
+              - generic [ref=f1e97]: Cerrar sesión
+  - main [ref=f1e99]:
+    - generic [ref=f1e101]:
+      - generic [ref=f1e103]:
+        - generic [ref=f1e104]:
+          - heading "🚀 Periodo 4" [level=4] [ref=f1e105]:
+            - generic [ref=f1e106]: 🚀
+            - generic [ref=f1e107]: Periodo 4
+          - button "⚙️" [ref=f1e108] [cursor=pointer]
+        - generic [ref=f1e109]:
+          - generic [ref=f1e110]: 71.2%
+          - generic [ref=f1e112]:
+            - generic [ref=f1e113]: "Inicio: 14 sept 2026"
+            - generic [ref=f1e114]: "Fin: 20 nov 2026"
+          - generic [ref=f1e117]: Han transcurrido 47 días de un total de 67 días.
+      - generic [ref=f1e119]:
+        - heading "Mi calendario" [level=4] [ref=f1e121]:
+          - generic [aria-hidden] [ref=f1e122]: 
+          - generic [aria-hidden] [ref=f1e123]: 
+          - text: Mi calendario
+        - generic [ref=f1e124]:
+          - paragraph [ref=f1e125]: Próximos eventos de tu calendario principal de Google.
+          - status [ref=f1e126]: Próximos eventos · America/Bogota
+          - list [ref=f1e128]:
+            - listitem [ref=f1e129]:
+              - link [ref=f1e130] [cursor=pointer]:
+                - /url: https://www.google.com/calendar/event?eid=bTE1aHY1ZGtzYzB2dGVjMnM3cWxzcDd0NzRfMjAyNjExMDIgYW5kcmVzLnBhejE5OTFAbQ&ctz=America/Bogota
+                - strong [ref=f1e131]: Entregar planeador hasta el 3 Josefina
+              - generic [ref=f1e132]: 2 de nov · Todo el día
+            - listitem [ref=f1e133]:
+              - link [ref=f1e134] [cursor=pointer]:
+                - /url: https://www.google.com/calendar/event?eid=NGpna2luNmhjbmM2bWlwNTkwOGdkcXR1dWtfMjAyNjExMDJUMTMwMDAwWiBhbmRyZXMucGF6MTk5MUBt&ctz=America/Bogota
+                - strong [ref=f1e135]: Entregar planeador hasta el 3 Josefina
+              - generic [ref=f1e136]: 2 de nov, 08:00 a. m.
+            - listitem [ref=f1e137]:
+              - link [ref=f1e138] [cursor=pointer]:
+                - /url: https://www.google.com/calendar/event?eid=dHE3ZmhvcTNoYnRyMzBhMnY0cDEydjVibjBfMjAyNjExMDMgYW5kcmVzLnBhejE5OTFAbQ&ctz=America/Bogota
+                - strong [ref=f1e139]: Pagar ICETEX
+              - generic [ref=f1e140]: 3 de nov · Todo el día
+            - listitem [ref=f1e141]:
+              - link [ref=f1e142] [cursor=pointer]:
+                - /url: https://www.google.com/calendar/event?eid=Z3M0YmVtMGIwdmlpaDZrcW9ja2dvNWJuOHNfMjAyNjExMDNUMjIwMDAwWiBhbmRyZXMucGF6MTk5MUBt&ctz=America/Bogota
+                - strong [ref=f1e143]: Grupo 17 Planificación con IA - Docentes Antioquia 2026 - 3
+              - generic [ref=f1e144]: 3 de nov, 05:00 p. m.
+            - listitem [ref=f1e145]:
+              - link [ref=f1e146] [cursor=pointer]:
+                - /url: https://www.google.com/calendar/event?eid=cWhhdTdqaHYwMXNtZHRwN3FybWozbG9nM28gYW5kcmVzLnBhejE5OTFAbQ&ctz=America/Bogota
+                - strong [ref=f1e147]: Formación rectores líderes transformadores (RLT)
+              - generic [ref=f1e148]: 5 de nov · Todo el día
+              - generic [ref=f1e149]: Sede La Josefina
+            - listitem [ref=f1e150]:
+              - link [ref=f1e151] [cursor=pointer]:
+                - /url: https://www.google.com/calendar/event?eid=M2xmamdqaWprMWl0ZmFlcThzOTkwZHI2NjRfMjAyNjExMDVUMTQwMDAwWiBhbmRyZXMucGF6MTk5MUBt&ctz=America/Bogota
+                - strong [ref=f1e152]: Cancelar suscripción y tarjeta de débito en Audible
+              - generic [ref=f1e153]: 5 de nov, 09:00 a. m.
+            - listitem [ref=f1e154]:
+              - link [ref=f1e155] [cursor=pointer]:
+                - /url: https://www.google.com/calendar/event?eid=N2Y5ZWduYXRvYm10amNvYTJpb2k2MXFkOW8gYW5kcmVzLnBhejE5OTFAbQ&ctz=America/Bogota
+                - strong [ref=f1e156]: Tecnología educativa — Semana 10 — Gabriela Cervantes Jiménez
+              - generic [ref=f1e157]: 5 de nov, 08:00 p. m.
+              - generic [ref=f1e158]: https://aula113.utel.edu.mx/local/openclass/?id=434&page=3
+            - listitem [ref=f1e159]:
+              - link [ref=f1e160] [cursor=pointer]:
+                - /url: https://www.google.com/calendar/event?eid=NTJxNDNncnJicDdndDNsb2kzZDIxc3Nka28gYW5kcmVzLnBhejE5OTFAbQ&ctz=America/Bogota
+                - strong [ref=f1e161]: Participación en el Festival Folclórico Municipal
+              - generic [ref=f1e162]: 6 de nov · Todo el día
+              - generic [ref=f1e163]: Parque principal del municipio de San Luis
+          - button "Actualizar" [ref=f1e164] [cursor=pointer]
+          - button "Desconectar" [ref=f1e165] [cursor=pointer]
+        - link "Abrir Google Calendar" [ref=f1e167] [cursor=pointer]:
+          - /url: https://calendar.google.com/calendar/u/0/r/agenda
+      - generic [ref=f1e169]:
+        - heading "Mi actividad · Salud" [level=4] [ref=f1e171]:
+          - generic [aria-hidden] [ref=f1e172]: 
+          - text: Mi actividad · Salud
+        - generic [ref=f1e173]:
+          - status [ref=f1e174]: "Google Health · Último día recibido: 2026-10-18"
+          - generic [ref=f1e175]:
+            - paragraph [ref=f1e176]:
+              - generic [ref=f1e177]: Pasos
+              - strong [ref=f1e178]: "77"
+            - paragraph [ref=f1e179]:
+              - generic [ref=f1e180]: Distancia
+              - strong [ref=f1e181]: Sin datos
+            - paragraph [ref=f1e182]:
+              - generic [ref=f1e183]: Energía activa
+              - strong [ref=f1e184]: Sin datos
+            - paragraph [ref=f1e185]:
+              - generic [ref=f1e186]: Pisos subidos
+              - strong [ref=f1e187]: Sin datos
+            - paragraph [ref=f1e188]:
+              - generic [ref=f1e189]: Minutos activos
+              - strong [ref=f1e190]: Sin datos
+            - paragraph [ref=f1e191]:
+              - generic [ref=f1e192]: Pulso medio
+              - strong [ref=f1e193]: Sin datos
+            - paragraph [ref=f1e194]:
+              - generic [ref=f1e195]: Pulso mínimo
+              - strong [ref=f1e196]: Sin datos
+            - paragraph [ref=f1e197]:
+              - generic [ref=f1e198]: Pulso máximo
+              - strong [ref=f1e199]: Sin datos
+            - paragraph [ref=f1e200]:
+              - generic [ref=f1e201]: Peso medio del día
+              - strong [ref=f1e202]: Sin datos
+            - paragraph [ref=f1e203]:
+              - generic [ref=f1e204]: Grasa corporal media
+              - strong [ref=f1e205]: Sin datos
+            - paragraph [ref=f1e206]:
+              - generic [ref=f1e207]: Tiempo dormido
+              - strong [ref=f1e208]: Sin datos
+            - paragraph [ref=f1e209]:
+              - generic [ref=f1e210]: Sueño profundo
+              - strong [ref=f1e211]: Sin datos
+            - paragraph [ref=f1e212]:
+              - generic [ref=f1e213]: Sueño REM
+              - strong [ref=f1e214]: Sin datos
+            - paragraph [ref=f1e215]:
+              - generic [ref=f1e216]: Sueño ligero
+              - strong [ref=f1e217]: Sin datos
+            - generic [ref=f1e218]: "Recibido: 18/10/2026, 9:43:32 p. m."
+          - paragraph [ref=f1e219]: Pasos de Google Health o datos enviados desde tu iPhone.
+          - generic [ref=f1e220]:
+            - button "Conectar Google Health" [ref=f1e221] [cursor=pointer]
+            - button "Sincronizar Google" [ref=f1e222] [cursor=pointer]
+            - button "Desconectar Google" [ref=f1e223] [cursor=pointer]
+            - status [ref=f1e224]: Conecta Google para consultar tu actividad, mediciones y sueño disponibles.
+          - button "Actualizar" [ref=f1e225] [cursor=pointer]
+        - link "Historial y conectar iPhone" [ref=f1e227] [cursor=pointer]:
+          - /url: //localhost/guagua/apps/salud/index.php
+      - generic [ref=f1e229]:
+        - generic [ref=f1e230]:
+          - heading "Mis Estudiantes" [level=4] [ref=f1e231]:
+            - generic [aria-hidden] [ref=f1e232]: 
+            - text: Mis Estudiantes
+          - link:
+            - /url: ""
+            - img [ref=f1e233] [cursor=pointer]
+        - generic [ref=f1e234]:
+          - combobox [ref=f1e235]:
+            - option "Todos los grados" [selected]
+            - option "Grados 6 a 8"
+            - option "Grados 9 a 11"
+          - textbox "Buscar" [active] [ref=f1e236]
+          - generic [ref=f1e237]:
+            - link "Cristina Caviedes Hernánd.." [ref=f1e238] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1029561372
+            - button "Crear seguimiento" [ref=f1e240] [cursor=pointer]
+            - link "Yennifer Duque Aristizaba.." [ref=f1e241] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1127955147
+            - button "Crear seguimiento" [ref=f1e243] [cursor=pointer]
+            - link "Marlon Gallego Giraldo.." [ref=f1e244] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1037974770
+            - button "Crear seguimiento" [ref=f1e246] [cursor=pointer]
+            - link "Sebastian Camilo García N.." [ref=f1e247] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1131284071
+            - button "Crear seguimiento" [ref=f1e249] [cursor=pointer]
+            - link "Salomé González Martínez.." [ref=f1e250] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1022006639
+            - button "Crear seguimiento" [ref=f1e252] [cursor=pointer]
+            - link "Franco Barraza Gyshet Joh.." [ref=f1e253] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1052085569
+            - button "Crear seguimiento" [ref=f1e255] [cursor=pointer]
+            - link "Julieta Gómez Pamplona.." [ref=f1e256] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1037974896
+            - button "Crear seguimiento" [ref=f1e258] [cursor=pointer]
+            - link "Edwin Alexander Lezcano M.." [ref=f1e259] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1126453029
+            - button "Crear seguimiento" [ref=f1e261] [cursor=pointer]
+            - link "Anderson Valencia Vásquez.." [ref=f1e262] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1045396829
+            - button "Crear seguimiento" [ref=f1e264] [cursor=pointer]
+            - link "Ángel Gabriel Duque Arist.." [ref=f1e265] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1127955146
+            - button "Crear seguimiento" [ref=f1e267] [cursor=pointer]
+            - link "Juan Camilo Giraldo Giral.." [ref=f1e268] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1050038422
+            - button "Crear seguimiento" [ref=f1e270] [cursor=pointer]
+            - link "Michael Estiven Gómez Ver.." [ref=f1e271] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1065997343
+            - button "Crear seguimiento" [ref=f1e273] [cursor=pointer]
+            - link "Alexis López Aguirre.." [ref=f1e274] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1037974417
+            - button "Crear seguimiento" [ref=f1e276] [cursor=pointer]
+            - link "Juan Pablo Castrillon Her.." [ref=f1e277] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1201228314
+            - button "Crear seguimiento" [ref=f1e279] [cursor=pointer]
+            - link "Juan Manuel Caviedez Hema.." [ref=f1e280] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1117971461
+            - button "Crear seguimiento" [ref=f1e282] [cursor=pointer]
+            - link "Duvan Alexander Lezcano M.." [ref=f1e283] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1127076464
+            - button "Crear seguimiento" [ref=f1e285] [cursor=pointer]
+            - link "Anyely Tatiana Velásquez .." [ref=f1e286] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1037975509
+            - button "Crear seguimiento" [ref=f1e288] [cursor=pointer]
+            - link "Dylan Alexis Chavarría Va.." [ref=f1e289] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1040261666
+            - button "Crear seguimiento" [ref=f1e291] [cursor=pointer]
+            - link "Miguel Angel Giraldo Ceba.." [ref=f1e292] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1037976249
+            - button "Crear seguimiento" [ref=f1e294] [cursor=pointer]
+            - link "Juan Pablo Hincapie Muñoz.." [ref=f1e295] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1036259133
+            - button "Crear seguimiento" [ref=f1e297] [cursor=pointer]
+            - link "Alejandro Jiménez Muñoz.." [ref=f1e298] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1036944456
+            - button "Crear seguimiento" [ref=f1e300] [cursor=pointer]
+            - link "Dubian Esteban Rodríguez .." [ref=f1e301] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1037975488
+            - button "Crear seguimiento" [ref=f1e303] [cursor=pointer]
+            - link "Virgen Alexandra Valencia.." [ref=f1e304] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1018257103
+            - button "Crear seguimiento" [ref=f1e306] [cursor=pointer]
+            - link "Juan Sebastian Barrientos.." [ref=f1e307] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1111798734
+            - button "Crear seguimiento" [ref=f1e309] [cursor=pointer]
+            - link "Maria Jose Franco Barraza.." [ref=f1e310] [cursor=pointer]:
+              - /url: usuario/hdv.php?id=1037975712
+            - button "Crear seguimiento" [ref=f1e312] [cursor=pointer]
+        - link "Ver más" [ref=f1e314] [cursor=pointer]:
+          - /url: //localhost/guagua
+      - generic [ref=f1e316]:
+        - generic [ref=f1e317]:
+          - heading "Mis cursos" [level=4] [ref=f1e318]:
+            - generic [aria-hidden] [ref=f1e319]: 
+            - text: Mis cursos
+          - link:
+            - /url: cursos/crear_curso.php
+            - img [ref=f1e320] [cursor=pointer]
+        - generic [ref=f1e322]:
+          - generic [ref=f1e323]:
+            - generic [ref=f1e324]: Buscar asignación
+            - searchbox "Buscar asignación" [ref=f1e325]
+          - generic [ref=f1e327]:
+            - article [ref=f1e328]:
+              - button "Opciones de Urbanidad" [ref=f1e330] [cursor=pointer]: ⋮
+              - link "Urbanidad 11 Icono de Urbanidad" [ref=f1e331] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=144
+                - strong [ref=f1e332]: Urbanidad
+                - generic [ref=f1e333]: "11"
+                - img "Icono de Urbanidad" [ref=f1e334]
+            - article [ref=f1e335]:
+              - button "Opciones de Urbanidad" [ref=f1e337] [cursor=pointer]: ⋮
+              - link "Urbanidad 10 Icono de Urbanidad" [ref=f1e338] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=143
+                - strong [ref=f1e339]: Urbanidad
+                - generic [ref=f1e340]: "10"
+                - img "Icono de Urbanidad" [ref=f1e341]
+            - article [ref=f1e342]:
+              - button "Opciones de Urbanidad" [ref=f1e344] [cursor=pointer]: ⋮
+              - link "Urbanidad 9 Icono de Urbanidad" [ref=f1e345] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=142
+                - strong [ref=f1e346]: Urbanidad
+                - generic [ref=f1e347]: "9"
+                - img "Icono de Urbanidad" [ref=f1e348]
+            - article [ref=f1e349]:
+              - button "Opciones de Urbanidad" [ref=f1e351] [cursor=pointer]: ⋮
+              - link "Urbanidad 8 Icono de Urbanidad" [ref=f1e352] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=141
+                - strong [ref=f1e353]: Urbanidad
+                - generic [ref=f1e354]: "8"
+                - img "Icono de Urbanidad" [ref=f1e355]
+            - article [ref=f1e356]:
+              - button "Opciones de Urbanidad" [ref=f1e358] [cursor=pointer]: ⋮
+              - link "Urbanidad 7 Icono de Urbanidad" [ref=f1e359] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=140
+                - strong [ref=f1e360]: Urbanidad
+                - generic [ref=f1e361]: "7"
+                - img "Icono de Urbanidad" [ref=f1e362]
+            - article [ref=f1e363]:
+              - button "Opciones de Urbanidad" [ref=f1e365] [cursor=pointer]: ⋮
+              - link "Urbanidad 6 Icono de Urbanidad" [ref=f1e366] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=139
+                - strong [ref=f1e367]: Urbanidad
+                - generic [ref=f1e368]: "6"
+                - img "Icono de Urbanidad" [ref=f1e369]
+            - article [ref=f1e370]:
+              - button "Opciones de Tecnología e informática" [ref=f1e372] [cursor=pointer]: ⋮
+              - link "Tecnología e informática 11 Icono de Tecnología e informática" [ref=f1e373] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=138
+                - strong [ref=f1e374]: Tecnología e informática
+                - generic [ref=f1e375]: "11"
+                - img "Icono de Tecnología e informática" [ref=f1e376]
+            - article [ref=f1e377]:
+              - button "Opciones de Tecnología e informática" [ref=f1e379] [cursor=pointer]: ⋮
+              - link "Tecnología e informática 10 Icono de Tecnología e informática" [ref=f1e380] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=137
+                - strong [ref=f1e381]: Tecnología e informática
+                - generic [ref=f1e382]: "10"
+                - img "Icono de Tecnología e informática" [ref=f1e383]
+            - article [ref=f1e384]:
+              - button "Opciones de Tecnología e informática" [ref=f1e386] [cursor=pointer]: ⋮
+              - link "Tecnología e informática 9 Icono de Tecnología e informática" [ref=f1e387] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=136
+                - strong [ref=f1e388]: Tecnología e informática
+                - generic [ref=f1e389]: "9"
+                - img "Icono de Tecnología e informática" [ref=f1e390]
+            - article [ref=f1e391]:
+              - button "Opciones de Tecnología e informática" [ref=f1e393] [cursor=pointer]: ⋮
+              - link "Tecnología e informática 8 Icono de Tecnología e informática" [ref=f1e394] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=135
+                - strong [ref=f1e395]: Tecnología e informática
+                - generic [ref=f1e396]: "8"
+                - img "Icono de Tecnología e informática" [ref=f1e397]
+            - article [ref=f1e398]:
+              - button "Opciones de Tecnología e informática" [ref=f1e400] [cursor=pointer]: ⋮
+              - link "Tecnología e informática 7 Icono de Tecnología e informática" [ref=f1e401] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=134
+                - strong [ref=f1e402]: Tecnología e informática
+                - generic [ref=f1e403]: "7"
+                - img "Icono de Tecnología e informática" [ref=f1e404]
+            - article [ref=f1e405]:
+              - button "Opciones de Tecnología e informática" [ref=f1e407] [cursor=pointer]: ⋮
+              - link "Tecnología e informática 6 Icono de Tecnología e informática" [ref=f1e408] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=133
+                - strong [ref=f1e409]: Tecnología e informática
+                - generic [ref=f1e410]: "6"
+                - img "Icono de Tecnología e informática" [ref=f1e411]
+            - article [ref=f1e412]:
+              - button "Opciones de matemáticas" [ref=f1e414] [cursor=pointer]: ⋮
+              - link "matemáticas 11 Icono de matemáticas" [ref=f1e415] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=132
+                - strong [ref=f1e416]: matemáticas
+                - generic [ref=f1e417]: "11"
+                - img "Icono de matemáticas" [ref=f1e418]
+            - article [ref=f1e419]:
+              - button "Opciones de matemáticas" [ref=f1e421] [cursor=pointer]: ⋮
+              - link "matemáticas 10 Icono de matemáticas" [ref=f1e422] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=131
+                - strong [ref=f1e423]: matemáticas
+                - generic [ref=f1e424]: "10"
+                - img "Icono de matemáticas" [ref=f1e425]
+            - article [ref=f1e426]:
+              - button "Opciones de matemáticas" [ref=f1e428] [cursor=pointer]: ⋮
+              - link "matemáticas 9 Icono de matemáticas" [ref=f1e429] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=130
+                - strong [ref=f1e430]: matemáticas
+                - generic [ref=f1e431]: "9"
+                - img "Icono de matemáticas" [ref=f1e432]
+            - article [ref=f1e433]:
+              - button "Opciones de matemáticas" [ref=f1e435] [cursor=pointer]: ⋮
+              - link "matemáticas 8 Icono de matemáticas" [ref=f1e436] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=129
+                - strong [ref=f1e437]: matemáticas
+                - generic [ref=f1e438]: "8"
+                - img "Icono de matemáticas" [ref=f1e439]
+            - article [ref=f1e440]:
+              - button "Opciones de matemáticas" [ref=f1e442] [cursor=pointer]: ⋮
+              - link "matemáticas 7 Icono de matemáticas" [ref=f1e443] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=128
+                - strong [ref=f1e444]: matemáticas
+                - generic [ref=f1e445]: "7"
+                - img "Icono de matemáticas" [ref=f1e446]
+            - article [ref=f1e447]:
+              - button "Opciones de matemáticas" [ref=f1e449] [cursor=pointer]: ⋮
+              - link "matemáticas 6 Icono de matemáticas" [ref=f1e450] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=127
+                - strong [ref=f1e451]: matemáticas
+                - generic [ref=f1e452]: "6"
+                - img "Icono de matemáticas" [ref=f1e453]
+            - article [ref=f1e454]:
+              - button "Opciones de Geometria" [ref=f1e456] [cursor=pointer]: ⋮
+              - link "Geometria 11 Icono de Geometria" [ref=f1e457] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=126
+                - strong [ref=f1e458]: Geometria
+                - generic [ref=f1e459]: "11"
+                - img "Icono de Geometria" [ref=f1e460]
+            - article [ref=f1e461]:
+              - button "Opciones de Geometria" [ref=f1e463] [cursor=pointer]: ⋮
+              - link "Geometria 10 Icono de Geometria" [ref=f1e464] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=125
+                - strong [ref=f1e465]: Geometria
+                - generic [ref=f1e466]: "10"
+                - img "Icono de Geometria" [ref=f1e467]
+            - article [ref=f1e468]:
+              - button "Opciones de Geometria" [ref=f1e470] [cursor=pointer]: ⋮
+              - link "Geometria 9 Icono de Geometria" [ref=f1e471] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=124
+                - strong [ref=f1e472]: Geometria
+                - generic [ref=f1e473]: "9"
+                - img "Icono de Geometria" [ref=f1e474]
+            - article [ref=f1e475]:
+              - button "Opciones de Geometria" [ref=f1e477] [cursor=pointer]: ⋮
+              - link "Geometria 8 Icono de Geometria" [ref=f1e478] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=123
+                - strong [ref=f1e479]: Geometria
+                - generic [ref=f1e480]: "8"
+                - img "Icono de Geometria" [ref=f1e481]
+            - article [ref=f1e482]:
+              - button "Opciones de Geometria" [ref=f1e484] [cursor=pointer]: ⋮
+              - link "Geometria 7 Icono de Geometria" [ref=f1e485] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=122
+                - strong [ref=f1e486]: Geometria
+                - generic [ref=f1e487]: "7"
+                - img "Icono de Geometria" [ref=f1e488]
+            - article [ref=f1e489]:
+              - button "Opciones de Geometria" [ref=f1e491] [cursor=pointer]: ⋮
+              - link "Geometria 6 Icono de Geometria" [ref=f1e492] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=121
+                - strong [ref=f1e493]: Geometria
+                - generic [ref=f1e494]: "6"
+                - img "Icono de Geometria" [ref=f1e495]
+            - article [ref=f1e496]:
+              - button "Opciones de Fisica" [ref=f1e498] [cursor=pointer]: ⋮
+              - link "Fisica 11 Icono de Fisica" [ref=f1e499] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=120
+                - strong [ref=f1e500]: Fisica
+                - generic [ref=f1e501]: "11"
+                - img "Icono de Fisica" [ref=f1e502]
+            - article [ref=f1e503]:
+              - button "Opciones de Fisica" [ref=f1e505] [cursor=pointer]: ⋮
+              - link "Fisica 10 Icono de Fisica" [ref=f1e506] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=119
+                - strong [ref=f1e507]: Fisica
+                - generic [ref=f1e508]: "10"
+                - img "Icono de Fisica" [ref=f1e509]
+            - article [ref=f1e510]:
+              - button "Opciones de Emprendimiento" [ref=f1e512] [cursor=pointer]: ⋮
+              - link "Emprendimiento 11 Icono de Emprendimiento" [ref=f1e513] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=114
+                - strong [ref=f1e514]: Emprendimiento
+                - generic [ref=f1e515]: "11"
+                - img "Icono de Emprendimiento" [ref=f1e516]
+            - article [ref=f1e517]:
+              - button "Opciones de Emprendimiento" [ref=f1e519] [cursor=pointer]: ⋮
+              - link "Emprendimiento 10 Icono de Emprendimiento" [ref=f1e520] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=113
+                - strong [ref=f1e521]: Emprendimiento
+                - generic [ref=f1e522]: "10"
+                - img "Icono de Emprendimiento" [ref=f1e523]
+            - article [ref=f1e524]:
+              - button "Opciones de Emprendimiento" [ref=f1e526] [cursor=pointer]: ⋮
+              - link "Emprendimiento 9 Icono de Emprendimiento" [ref=f1e527] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=112
+                - strong [ref=f1e528]: Emprendimiento
+                - generic [ref=f1e529]: "9"
+                - img "Icono de Emprendimiento" [ref=f1e530]
+            - article [ref=f1e531]:
+              - button "Opciones de Emprendimiento" [ref=f1e533] [cursor=pointer]: ⋮
+              - link "Emprendimiento 8 Icono de Emprendimiento" [ref=f1e534] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=111
+                - strong [ref=f1e535]: Emprendimiento
+                - generic [ref=f1e536]: "8"
+                - img "Icono de Emprendimiento" [ref=f1e537]
+            - article [ref=f1e538]:
+              - button "Opciones de Emprendimiento" [ref=f1e540] [cursor=pointer]: ⋮
+              - link "Emprendimiento 7 Icono de Emprendimiento" [ref=f1e541] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=110
+                - strong [ref=f1e542]: Emprendimiento
+                - generic [ref=f1e543]: "7"
+                - img "Icono de Emprendimiento" [ref=f1e544]
+            - article [ref=f1e545]:
+              - button "Opciones de Emprendimiento" [ref=f1e547] [cursor=pointer]: ⋮
+              - link "Emprendimiento 6 Icono de Emprendimiento" [ref=f1e548] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=109
+                - strong [ref=f1e549]: Emprendimiento
+                - generic [ref=f1e550]: "6"
+                - img "Icono de Emprendimiento" [ref=f1e551]
+            - article [ref=f1e552]:
+              - button "Opciones de Educación Física" [ref=f1e554] [cursor=pointer]: ⋮
+              - link "Educación Física 11 Icono de Educación Física" [ref=f1e555] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=108
+                - strong [ref=f1e556]: Educación Física
+                - generic [ref=f1e557]: "11"
+                - img "Icono de Educación Física" [ref=f1e558]
+            - article [ref=f1e559]:
+              - button "Opciones de Educación Física" [ref=f1e561] [cursor=pointer]: ⋮
+              - link "Educación Física 10 Icono de Educación Física" [ref=f1e562] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=107
+                - strong [ref=f1e563]: Educación Física
+                - generic [ref=f1e564]: "10"
+                - img "Icono de Educación Física" [ref=f1e565]
+            - article [ref=f1e566]:
+              - button "Opciones de Educación Física" [ref=f1e568] [cursor=pointer]: ⋮
+              - link "Educación Física 9 Icono de Educación Física" [ref=f1e569] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=106
+                - strong [ref=f1e570]: Educación Física
+                - generic [ref=f1e571]: "9"
+                - img "Icono de Educación Física" [ref=f1e572]
+            - article [ref=f1e573]:
+              - button "Opciones de Educación Física" [ref=f1e575] [cursor=pointer]: ⋮
+              - link "Educación Física 8 Icono de Educación Física" [ref=f1e576] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=105
+                - strong [ref=f1e577]: Educación Física
+                - generic [ref=f1e578]: "8"
+                - img "Icono de Educación Física" [ref=f1e579]
+            - article [ref=f1e580]:
+              - button "Opciones de Educación Física" [ref=f1e582] [cursor=pointer]: ⋮
+              - link "Educación Física 7 Icono de Educación Física" [ref=f1e583] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=104
+                - strong [ref=f1e584]: Educación Física
+                - generic [ref=f1e585]: "7"
+                - img "Icono de Educación Física" [ref=f1e586]
+            - article [ref=f1e587]:
+              - button "Opciones de Educación Física" [ref=f1e589] [cursor=pointer]: ⋮
+              - link "Educación Física 6 Icono de Educación Física" [ref=f1e590] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=103
+                - strong [ref=f1e591]: Educación Física
+                - generic [ref=f1e592]: "6"
+                - img "Icono de Educación Física" [ref=f1e593]
+            - article [ref=f1e594]:
+              - button "Opciones de Economia/politica" [ref=f1e596] [cursor=pointer]: ⋮
+              - link "Economia/politica 11 Icono de Economia/politica" [ref=f1e597] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=102
+                - strong [ref=f1e598]: Economia/politica
+                - generic [ref=f1e599]: "11"
+                - img "Icono de Economia/politica" [ref=f1e600]
+            - article [ref=f1e601]:
+              - button "Opciones de Economia/politica" [ref=f1e603] [cursor=pointer]: ⋮
+              - link "Economia/politica 10 Icono de Economia/politica" [ref=f1e604] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=101
+                - strong [ref=f1e605]: Economia/politica
+                - generic [ref=f1e606]: "10"
+                - img "Icono de Economia/politica" [ref=f1e607]
+            - article [ref=f1e608]:
+              - button "Opciones de Ciencias Sociales" [ref=f1e610] [cursor=pointer]: ⋮
+              - link "Ciencias Sociales 11 Icono de Ciencias Sociales" [ref=f1e611] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=96
+                - strong [ref=f1e612]: Ciencias Sociales
+                - generic [ref=f1e613]: "11"
+                - img "Icono de Ciencias Sociales" [ref=f1e614]
+            - article [ref=f1e615]:
+              - button "Opciones de Ciencias Sociales" [ref=f1e617] [cursor=pointer]: ⋮
+              - link "Ciencias Sociales 10 Icono de Ciencias Sociales" [ref=f1e618] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=95
+                - strong [ref=f1e619]: Ciencias Sociales
+                - generic [ref=f1e620]: "10"
+                - img "Icono de Ciencias Sociales" [ref=f1e621]
+            - article [ref=f1e622]:
+              - button "Opciones de Ciencias Sociales" [ref=f1e624] [cursor=pointer]: ⋮
+              - link "Ciencias Sociales 9 Icono de Ciencias Sociales" [ref=f1e625] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=94
+                - strong [ref=f1e626]: Ciencias Sociales
+                - generic [ref=f1e627]: "9"
+                - img "Icono de Ciencias Sociales" [ref=f1e628]
+            - article [ref=f1e629]:
+              - button "Opciones de Ciencias Sociales" [ref=f1e631] [cursor=pointer]: ⋮
+              - link "Ciencias Sociales 8 Icono de Ciencias Sociales" [ref=f1e632] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=93
+                - strong [ref=f1e633]: Ciencias Sociales
+                - generic [ref=f1e634]: "8"
+                - img "Icono de Ciencias Sociales" [ref=f1e635]
+            - article [ref=f1e636]:
+              - button "Opciones de Ciencias Sociales" [ref=f1e638] [cursor=pointer]: ⋮
+              - link "Ciencias Sociales 7 Icono de Ciencias Sociales" [ref=f1e639] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=92
+                - strong [ref=f1e640]: Ciencias Sociales
+                - generic [ref=f1e641]: "7"
+                - img "Icono de Ciencias Sociales" [ref=f1e642]
+            - article [ref=f1e643]:
+              - button "Opciones de Ciencias Sociales" [ref=f1e645] [cursor=pointer]: ⋮
+              - link "Ciencias Sociales 6 Icono de Ciencias Sociales" [ref=f1e646] [cursor=pointer]:
+                - /url: cursos/curso.php?asignacion=91
+                - strong [ref=f1e647]: Ciencias Sociales
+                - generic [ref=f1e648]: "6"
+                - img "Icono de Ciencias Sociales" [ref=f1e649]
+        - link "Ver más" [ref=f1e651] [cursor=pointer]:
+          - /url: //localhost/guaguacursos/
+      - generic [ref=f1e653]:
+        - generic [ref=f1e654]:
+          - heading "Mis Actividades" [level=4] [ref=f1e655]:
+            - generic [aria-hidden] [ref=f1e656]: 
+            - text: Mis Actividades
+          - link:
+            - /url: asistencia/horario_completo.php
+            - img [ref=f1e657] [cursor=pointer]
+        - link "Ver más" [ref=f1e660] [cursor=pointer]:
+          - /url: //localhost/guagua
+      - generic [ref=f1e662]:
+        - generic [ref=f1e663]:
+          - heading "Mis Pendientes" [level=4] [ref=f1e664]:
+            - generic [aria-hidden] [ref=f1e665]: 
+            - text: Mis Pendientes
+          - link:
+            - /url: ""
+            - img [ref=f1e666] [cursor=pointer]
+        - paragraph [ref=f1e669]: No tienes tareas pendientes de UTEL.
+        - link "Ver más" [ref=f1e671] [cursor=pointer]:
+          - /url: //localhost/guagua
+  - contentinfo [ref=f1e672]:
+    - generic [ref=f1e673]: Institución Educativa Rural La Josefina

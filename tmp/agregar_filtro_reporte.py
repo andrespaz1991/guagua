@@ -1,0 +1,14 @@
+from pathlib import Path
+p=Path('apps/inventario_tecnologico/index.html');s=p.read_text(encoding='utf-8')
+s=s.replace('<div class="top-actions">','<div class="top-actions"><button class="btn" id="export-pdf" title="Reporte completo con todas las fotografías">Exportar PDF</button>',1)
+s=s.replace('<label class="sr-only" for="sort">','<label class="sr-only" for="photo-filter">Fotografías</label><select id="photo-filter"><option value="">Todas las fotografías</option><option value="without">Sin fotografía</option><option value="with">Con fotografía</option></select><label class="sr-only" for="sort">',1)
+s=s.replace("&&query.every(word=>haystack.includes(word))", "&&(!$('photo-filter').value||($('photo-filter').value==='without'?item.imagenes.length===0:item.imagenes.length>0))&&query.every(word=>haystack.includes(word))")
+s=s.replace("$('reset').hidden=!category&&!$('state').value&&!$('search').value;", "$('reset').hidden=!category&&!$('state').value&&!$('search').value&&!$('photo-filter').value;")
+s=s.replace("function resetFilters(){category='';", "function resetFilters(){$('photo-filter').value='';category='';")
+s=s.replace("$('search').addEventListener('input',render);", "$('photo-filter').addEventListener('change',render);$('search').addEventListener('input',render);",1)
+s=s.replace("    start();", """    $('export-pdf').addEventListener('click',()=>{if(!inventory){showNotice('Carga un inventario antes de exportar.');return;}const key='inventory-report-'+Date.now();try{localStorage.setItem(key,JSON.stringify(inventory));window.open('reporte.html?snapshot='+encodeURIComponent(key),'_blank','noopener');}catch(error){if(serverInventory)window.open('reporte.html','_blank','noopener');else showNotice('No se pudo preparar el reporte. Abre la galería desde XAMPP.');}});
+    start();""")
+s=s.replace('</style>','.top-actions{flex-wrap:wrap}.toolbar{flex-wrap:wrap}.search{flex-basis:200px}@media(max-width:760px){.topbar{flex-wrap:wrap}.top-actions{width:100%}.top-actions .btn{flex:1}#photo-filter{min-width:140px}} </style>')
+p.write_text(s,encoding='utf-8')
+g=Path('apps/inventario_tecnologico/LEEME.md');g.write_text(g.read_text(encoding='utf-8')+'''\n\n## Filtrar fotografías y exportar PDF\n\nEn el selector **Fotografías**, elige **Sin fotografía** o **Con fotografía**. Se combina con la búsqueda, la categoría y el estado. Sin fotografía significa que la ficha no tiene imágenes asociadas en el JSON.\n\nPulsa **Exportar PDF** para abrir el reporte completo, independientemente de los filtros activos. Incluye resumen por categoría, todas las fichas, todas sus fotografías y registros individuales. Espera a que carguen las imágenes, pulsa **Guardar como PDF / Imprimir** y elige **Guardar como PDF** en el diálogo del navegador. El diseño usa papel A4. Si una foto no existe, se indica en el reporte.\n''',encoding='utf-8')
+print('Filtro y exportación agregados')

@@ -1,0 +1,140 @@
+{
+  "limite_bytes": 10485760,
+  "peticiones_guagua": 10729,
+  "primera_fecha": "31/Aug/2026:19:26:28 -0500",
+  "ultima_fecha": "12/Oct/2026:00:20:16 -0500",
+  "candidatos": [
+    {
+      "archivo": "usuario/registrarse.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "usuario/Recuperar_contra.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "usuario/acudiente_estudiante.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "cursos/inscribir_estudiante.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "cursos/funcionesbd.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "seguimiento/mysql.class.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "seguimiento/actualizar_proyecto.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "seguimiento/actualizar_datos.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "tarjeta.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "Planeador/unir.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "Planeador/recursos.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "usuario/importar.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "red/subir_scorm.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "red/readfile2.php",
+      "accesos_en_muestra": 1
+    },
+    {
+      "archivo": "red/iconos_red.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "index3.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "Planeador/admin_malla.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "asistencia/informe_asistencia.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "mensajes/bandeja_salida.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "miplaneador/reporte_planeador.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "Planeador/dba.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "asistencia/crud_asistencias.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "Planeador/contenido.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "Planeador/consulta_ia.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "Planeador/duplicar_plan.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "Planeador/objetivos.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "apps/rubrica/importar_exposiciones_emprendimiento.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "apps/rubrica/estimar_anteriores.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "comun/img/figuras/icon-mascotas.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "apps/evidencias/setup/uninstall.php",
+      "accesos_en_muestra": 1
+    },
+    {
+      "archivo": "apps/evidencias/report.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "apps/eventos/eventos.php",
+      "accesos_en_muestra": 0
+    },
+    {
+      "archivo": "apps/dba/api/save_json.php",
+      "accesos_en_muestra": 0
+    }
+  ]
+}

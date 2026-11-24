@@ -354,6 +354,9 @@ $estudiantesAsignados = getEstudiantesConAcudientes($mysqli);
 <!-- --- 5. JAVASCRIPT --- -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    const apiUrl = new URL(window.location.href);
+    apiUrl.hash = '';
+    apiUrl.searchParams.set('guagua_embedded', '1');
     const dropZone = document.getElementById('col-asignados');
     let draggedStudent = null;
     let draggedAcudiente = null;
@@ -450,7 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('termino', termino);
 
         try {
-            const response = await fetch('<?= basename($_SERVER['PHP_SELF']) ?>', { method: 'POST', body: formData });
+            const response = await fetch(apiUrl, { method: 'POST', body: formData });
             const result = await response.json();
             if (result.status === 'success') {
                 actualizarListaUsuarios(rol, result.usuarios);
@@ -501,7 +504,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('parentesco', parentesco);
 
         try {
-            const response = await fetch('<?= basename($_SERVER['PHP_SELF']) ?>', { method: 'POST', body: formData });
+            const response = await fetch(apiUrl, { method: 'POST', body: formData });
             const result = await response.json();
             if (result.status === 'success') {
                 const cardToRemove = document.querySelector(`#estudiantes-list .user-card[data-id="${idEstudiante}"]`);
@@ -533,7 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('id_relacion', idRelacion);
         
         try {
-            const response = await fetch('<?= basename($_SERVER['PHP_SELF']) ?>', { method: 'POST', body: formData });
+            const response = await fetch(apiUrl, { method: 'POST', body: formData });
             const result = await response.json();
             if (result.status === 'success') {
                 const cardToRemove = document.getElementById(`relacion-${idRelacion}`);
@@ -567,7 +570,7 @@ document.addEventListener('DOMContentLoaded', () => {
         importResultsContainer.style.display = 'none';
 
         try {
-            const response = await fetch('<?= basename($_SERVER['PHP_SELF']) ?>', { method: 'POST', body: formData });
+            const response = await fetch(apiUrl, { method: 'POST', body: formData });
             const result = await response.json();
             
             importSpinner.style.display = 'none';
@@ -632,7 +635,7 @@ document.addEventListener('DOMContentLoaded', () => {
         importSpinner.style.display = 'block';
 
         try {
-            const response = await fetch('<?= basename($_SERVER['PHP_SELF']) ?>', { method: 'POST', body: formData });
+            const response = await fetch(apiUrl, { method: 'POST', body: formData });
             const result = await response.json();
             
             importSpinner.style.display = 'none';

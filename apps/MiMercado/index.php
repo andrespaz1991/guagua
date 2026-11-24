@@ -29,14 +29,12 @@ if ($col_fecha_compra && ($fecha_compra_info = $col_fecha_compra->fetch_assoc())
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MiMercado - Control de Compras</title>
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/guagua/comun/vendor/fontawesome/css/all.min.css">
     <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/guagua/comun/js/sweetalert2@11.js"></script>
     <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/guagua/comun/js/chart.js"></script>
     
     <!-- Estilos de MiMercado -->
     <link rel="stylesheet" href="css/styles.css?v=<?php echo filemtime(__DIR__ . '/css/styles.css'); ?>">

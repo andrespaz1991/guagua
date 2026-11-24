@@ -1,5 +1,6 @@
 <?php
 require_once (dirname(__FILE__)."/../../config.php");
+require_once dirname(__DIR__, 2) . '/vista_modulo.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -24,7 +25,7 @@ require_once (dirname(__FILE__)."/../../config.php");
             <?php
             
              #require(dirname(__FILE__)."/header.php"); ?>
-            <?php require(SGA_COMUN_SERVER."/menu.php"); ?>
+            <?php if (!guagua_modulo_embebido()) require(SGA_COMUN_SERVER."/menu.php"); ?>
            	<main>
            	    <section>
                 <?php if (isset($contenido)) echo $contenido; ?>
@@ -32,6 +33,6 @@ require_once (dirname(__FILE__)."/../../config.php");
             </main>
         </div>
     </div>
-     <?php require("footer.php"); ?>
+     <?php if (!guagua_modulo_embebido()) require("footer.php"); ?>
 </body>
 </html>

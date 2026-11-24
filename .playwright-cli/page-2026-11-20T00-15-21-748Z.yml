@@ -1,0 +1,100 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e12]:
+      - generic [ref=e13]: GUAGUA · ARQUITECTURA DEL PROCESO
+      - heading "El sistema, conectado." [level=1] [ref=e14]
+      - paragraph [ref=e15]: Explora cada rama, sus módulos y lo que necesita mejorar.
+    - generic [ref=e16]:
+      - button "Fuentes y alcance" [ref=e17] [cursor=pointer]
+      - link "Volver a Guagua" [ref=e18] [cursor=pointer]:
+        - /url: http://localhost/guagua/index.php
+  - generic [ref=e19]:
+    - group "Vista del sistema" [ref=e20]:
+      - button "Mapa actual" [pressed] [ref=e21] [cursor=pointer]
+      - button "Flujo recomendado" [ref=e22] [cursor=pointer]
+      - button "Directorio de módulos" [ref=e23] [cursor=pointer]
+    - searchbox "Buscar un proceso o módulo" [ref=e25]
+  - generic [ref=e26]:
+    - region "Explorador de procesos" [ref=e27]:
+      - generic [ref=e28]:
+        - navigation "Ubicación en el mapa" [ref=e29]:
+          - button "Mapa general" [ref=e30] [cursor=pointer]
+        - generic [ref=e31]: 7 ramas
+      - group "Condición del proceso" [ref=e32]:
+        - button "Todos" [pressed] [ref=e33] [cursor=pointer]
+        - button "Fundamentales" [ref=e34] [cursor=pointer]
+        - button "A unificar" [ref=e36] [cursor=pointer]
+        - button "Brechas" [ref=e38] [cursor=pointer]
+        - button "Complementarios" [ref=e40] [cursor=pointer]
+      - generic "Mapa navegable de Guagua" [ref=e42]:
+        - generic [ref=e43]:
+          - generic:
+            - button "Guagua. Sistema de gestión escolar. Ver detalle." [pressed] [ref=e44] [cursor=pointer]:
+              - generic [ref=e45]: Guagua
+              - generic [ref=e47]: Sistema de gestión escolar
+            - button "Instalación y plataforma. 3 procesos · 1 brechas. Explorar rama." [ref=e48] [cursor=pointer]:
+              - generic [ref=e49]:
+                - generic [ref=e50]: Instalación y plataforma
+                - generic [aria-hidden] [ref=e51]: +
+              - generic [ref=e52]: 3 procesos · 1 brechas
+            - button "Apertura del año escolar. 7 procesos · 1 brechas. Explorar rama." [ref=e53] [cursor=pointer]:
+              - generic [ref=e54]:
+                - generic [ref=e55]: Apertura del año escolar
+                - generic [aria-hidden] [ref=e56]: +
+              - generic [ref=e57]: 7 procesos · 1 brechas
+            - button "Estudiantes y familias. 6 procesos · 2 brechas. Explorar rama." [ref=e58] [cursor=pointer]:
+              - generic [ref=e59]:
+                - generic [ref=e60]: Estudiantes y familias
+                - generic [aria-hidden] [ref=e61]: +
+              - generic [ref=e62]: 6 procesos · 2 brechas
+            - button "Trabajo académico. 5 procesos · 0 brechas. Explorar rama." [ref=e63] [cursor=pointer]:
+              - generic [ref=e64]:
+                - generic [ref=e65]: Trabajo académico
+                - generic [aria-hidden] [ref=e66]: +
+              - generic [ref=e67]: 5 procesos · 0 brechas
+            - button "Asistencia y seguimiento. 5 procesos · 0 brechas. Explorar rama." [ref=e68] [cursor=pointer]:
+              - generic [ref=e69]:
+                - generic [ref=e70]: Asistencia y seguimiento
+                - generic [aria-hidden] [ref=e71]: +
+              - generic [ref=e72]: 5 procesos · 0 brechas
+            - button "Evaluación y cierre. 6 procesos · 3 brechas. Explorar rama." [ref=e73] [cursor=pointer]:
+              - generic [ref=e74]:
+                - generic [ref=e75]: Evaluación y cierre
+                - generic [aria-hidden] [ref=e76]: +
+              - generic [ref=e77]: 6 procesos · 3 brechas
+            - button "Herramientas de apoyo. 6 procesos · 0 brechas. Explorar rama." [ref=e78] [cursor=pointer]:
+              - generic [ref=e79]:
+                - generic [ref=e80]: Herramientas de apoyo
+                - generic [aria-hidden] [ref=e81]: +
+              - generic [ref=e82]: 6 procesos · 0 brechas
+        - generic "Controles del mapa" [ref=e83]:
+          - button "Alejar mapa" [ref=e84] [cursor=pointer]: −
+          - status "Nivel de zoom" [ref=e85]: 75 %
+          - button "Acercar mapa" [ref=e86] [cursor=pointer]: +
+          - button "Ajustar" [ref=e87] [cursor=pointer]
+      - generic [ref=e88]:
+        - generic [ref=e89]: Selecciona una rama para desplegar sus procesos.
+        - generic [ref=e90]: Arrastra el fondo para moverte.
+    - complementary "Detalle del proceso" [ref=e91]:
+      - generic [ref=e92]: LECTURA DEL SISTEMA
+      - heading "Un ciclo escolar completo" [level=2] [ref=e93]
+      - paragraph [ref=e94]: Empieza por una rama del mapa. Cada proceso reúne su función, las pantallas existentes y sus conexiones.
+      - heading "Lo que muestra el diagnóstico" [level=3] [ref=e95]
+      - paragraph [ref=e96]:
+        - strong [ref=e97]: 7 procesos con brechas
+        - text: "y"
+        - strong [ref=e98]: 8 por unificar
+        - text: dentro del modelo revisado. Son condiciones del diseño, no mediciones de uso.
+      - heading "Por dónde empezar" [level=3] [ref=e99]
+      - generic [ref=e100]:
+        - button "Revisar la instalación" [ref=e101] [cursor=pointer]
+        - button "Recorrer la apertura del año" [ref=e104] [cursor=pointer]
+        - button "Entender matrícula e inscripciones" [ref=e107] [cursor=pointer]
+        - button "Conectar a las familias" [ref=e110] [cursor=pointer]
+      - heading "Cómo leer las conexiones" [level=3] [ref=e113]
+      - paragraph [ref=e114]: En el mapa actual, cada rama agrupa procesos. El detalle permite saltar a sus dependencias. En el flujo recomendado, las flechas describen la secuencia propuesta.
+      - paragraph [ref=e115]: La ausencia de uso no está demostrada. Una herramienta complementaria puede seguir siendo necesaria para la institución.
+  - generic [ref=e116]:
+    - generic [ref=e117]: Diagnóstico del 19 nov 2026 · Código y respaldo local
+    - generic [ref=e118]: Los estados describen el diagnóstico, no actividad en tiempo real.
+  - status [ref=e119]

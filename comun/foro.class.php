@@ -57,7 +57,7 @@ $sql_misforos.= ' and concat(LOWER(`grupo_foro`.`nombre_grupo`)) LIKE "%'.mb_str
     function listar_entradas($id_grupo){
     require dirname(__FILE__).'/../comun/conexion.php';
     require_once dirname(__FILE__).'/../comun/funciones.php';
-    $sql = "SELECT usuario.foto,`entrada`.`id`,`entrada`.`estado`, `entrada`.`suscribirse`, `entrada`.`contenido`, `entrada`.`rol_quien_comenta`, `entrada`.`fecha`, `entrada`.`grupo`, `entrada`.`usuario`, `entrada`.`estrellas`, `entrada`.`visitas`, `usuario`.`usuario`, concat(`usuario`.`nombre`,' ', `usuario`.`apellido`) as nombre_usuario, COUNT(`comentario`.`id_comentario`) AS num_comentarios FROM `entrada` left join `comentario` on `entrada`.`id` = `comentario`.`id_entrada` inner join `usuario` on `entrada`.`usuario` = `usuario`.`id_usuario` where  `entrada`.`grupo`='".$id_grupo."' GROUP BY `entrada`.`id` ORDER BY `entrada`.`fecha` desc";
+    $sql = "SELECT usuario.genero, usuario.foto,`entrada`.`id`,`entrada`.`estado`, `entrada`.`suscribirse`, `entrada`.`contenido`, `entrada`.`rol_quien_comenta`, `entrada`.`fecha`, `entrada`.`grupo`, `entrada`.`usuario`, `entrada`.`estrellas`, `entrada`.`visitas`, `usuario`.`usuario`, concat(`usuario`.`nombre`,' ', `usuario`.`apellido`) as nombre_usuario, COUNT(`comentario`.`id_comentario`) AS num_comentarios FROM `entrada` left join `comentario` on `entrada`.`id` = `comentario`.`id_entrada` inner join `usuario` on `entrada`.`usuario` = `usuario`.`id_usuario` where  `entrada`.`grupo`='".$id_grupo."' GROUP BY `entrada`.`id` ORDER BY `entrada`.`fecha` desc";
     $consulta_centradas = $mysqli->query($sql);
     $total_entradas = $consulta_centradas->num_rows;
     $mis_entradas = array();
@@ -70,14 +70,14 @@ $sql_misforos.= ' and concat(LOWER(`grupo_foro`.`nombre_grupo`)) LIKE "%'.mb_str
     function listar_comentarios($id_entrada){
     require dirname(__FILE__).'/../comun/conexion.php';
     require_once dirname(__FILE__).'/../comun/funciones.php';
-    $sql = "SELECT *,usuario.foto, concat(usuario.nombre,\" \",usuario.apellido) as nombre_usuario,`entrada`.`estado` FROM entrada inner join usuario on entrada.usuario=usuario.id_usuario where id = '$id_entrada'";
+    $sql = "SELECT *,usuario.genero, usuario.foto, concat(usuario.nombre,\" \",usuario.apellido) as nombre_usuario,`entrada`.`estado` FROM entrada inner join usuario on entrada.usuario=usuario.id_usuario where id = '$id_entrada'";
     $consulta_entrada = $mysqli->query($sql);
 	$num = $consulta_entrada->num_rows;
 	$mi_entrada = array();
 	$mis_comentarios = array();
 	if ($row_entrada=$consulta_entrada->fetch_assoc()){
 	    $mi_entrada['datos_entrada']=$row_entrada;
-    $sql_com = "SELECT `comentario`.`id_comentario`, `comentario`.`fecha`, `comentario`.`contenido`, `usuario`.`usuario`, concat(`usuario`.`nombre`,' ', `usuario`.`apellido`) as nombre_usuario FROM `comentario` inner join `usuario` on `comentario`.`usuario` = `usuario`.`id_usuario` WHERE `id_entrada` = ".$id_entrada." ORDER BY comentario.fecha desc";
+    $sql_com = "SELECT usuario.foto, usuario.genero, `comentario`.`id_comentario`, `comentario`.`fecha`, `comentario`.`contenido`, `usuario`.`usuario`, concat(`usuario`.`nombre`,' ', `usuario`.`apellido`) as nombre_usuario FROM `comentario` inner join `usuario` on `comentario`.`usuario` = `usuario`.`id_usuario` WHERE `id_entrada` = ".$id_entrada." ORDER BY comentario.fecha desc";
 	$consulta_comentarios = $mysqli->query($sql_com);
 	$num = $consulta_comentarios->num_rows;
 	if ($num>0){
@@ -95,7 +95,7 @@ $sql_misforos.= ' and concat(LOWER(`grupo_foro`.`nombre_grupo`)) LIKE "%'.mb_str
      $mis_comentarios=array();
     if ($grupo!=""){
       $where = " WHERE `grupo_foro`.`id_grupo_foro` ='".$grupo."'";  
-    $sql = 'SELECT entrada.id, entrada.contenido, entrada.fecha, entrada.usuario, entrada.estrellas, COUNT(`comentario`.`id_comentario`) AS num_comentarios, usuario.foto, concat(usuario.nombre," ",usuario.apellido) as nombre_usuario FROM entrada inner join usuario on entrada.usuario=usuario.id_usuario inner join `comentario` on `comentario`.`id_entrada` = `entrada`.`id` inner join `grupo_foro` on `entrada`.`grupo` = `grupo_foro`.`id_grupo_foro` '.$where.' GROUP BY `entrada`.`id` ORDER BY num_comentarios desc LIMIT 5';
+    $sql = 'SELECT entrada.id, entrada.contenido, entrada.fecha, entrada.usuario, entrada.estrellas, COUNT(`comentario`.`id_comentario`) AS num_comentarios, usuario.genero, usuario.foto, concat(usuario.nombre," ",usuario.apellido) as nombre_usuario FROM entrada inner join usuario on entrada.usuario=usuario.id_usuario inner join `comentario` on `comentario`.`id_entrada` = `entrada`.`id` inner join `grupo_foro` on `entrada`.`grupo` = `grupo_foro`.`id_grupo_foro` '.$where.' GROUP BY `entrada`.`id` ORDER BY num_comentarios desc LIMIT 5';
     $consulta_comentarios = $mysqli->query($sql);
 	$num = $consulta_comentarios->num_rows;
 	if ($num>0){

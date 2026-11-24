@@ -6,9 +6,9 @@
  * =================================================================
  */
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../../comun/seguridad.php';
+guagua_iniciar_sesion_segura();
+guagua_exigir_rol(['admin', 'docente']);
 
 $css_file_path = __DIR__ . '/../../comun/css/menu_custom.css';
 $json_file_path = __DIR__ . '/../../comun/css/menu_custom_config.json';
@@ -43,11 +43,8 @@ if (file_exists($json_file_path)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personalizador Completo de la Barra del Menú - Guagua</title>
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/guagua/comun/vendor/fontawesome/css/all.min.css">
     
     <!-- Estilos base de Guagua -->
     <link rel="stylesheet" href="../../comun/css/estilos_guagua.css">
@@ -681,7 +678,7 @@ if (file_exists($json_file_path)) {
                     <!-- ZONA DERECHA (FOTO DE USUARIO Y ROL REGULABLE POR SLIDER) -->
                     <div class="preview-right-zone" id="preview-right-zone">
                         <div class="preview-user-zone" id="preview-user-zone">
-                            <img src="../../comun/img/png/icono-usuario-default.png" onerror="this.src='https://ui-avatars.com/api/?name=Andres+Paz&background=38bdf8&color=fff';" id="preview-user-img" class="preview-user-avatar-img" alt="Foto Usuario">
+                            <img src="../../comun/img/png/icono-usuario-default.png" onerror="this.src='/guagua/comun/img/user-icon2.png';" id="preview-user-img" class="preview-user-avatar-img" alt="Foto Usuario">
                             <span class="preview-role-badge" id="preview-role-badge">docente</span>
                         </div>
                     </div>

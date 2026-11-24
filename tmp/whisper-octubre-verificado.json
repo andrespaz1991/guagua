@@ -1,0 +1,8 @@
+{
+  "status": "completed",
+  "message": "Whisper terminó correctamente. Ahora use “3. Unir transcripciones”.",
+  "logPath": "D:\\xampp\\htdocs\\guagua\\tmp\\whatsapp-diario\\whisper.log",
+  "transcriptions": 9,
+  "outputFiles": 36,
+  "nonemptyTsv": true
+}

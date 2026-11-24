@@ -1,0 +1,335 @@
+
+EST 584 M1 P1 1. Resuelve problemas que involucran números racionales
+DESC: Números racionales.
+DBA 595: 1. Resuelve problemas que involucran números racionales.
+DESC: Aplicar operaciones (suma, resta, potencias) en contextos escolares y reales.
+CLAVES: fracciones, proporción, equivalencia
+EJE 846: Cantidades relativas (positivos/negativos), variaciones porcentuales y poder adquisitivo | None
+EVID 452: El estudiante resuelve un problema de proporciones utilizando fracciones, demostrando comprensión del concepto de equivalencia y la aplicación en situaciones cotidianas. | ia_pendiente
+
+EST 585 M1 P1 2. Describe y utiliza algoritmos para operar números racionales
+DESC: Operaciones racionales.
+DBA 596: 2. Describe y utiliza algoritmos para operar números racionales.
+DESC: Representar números en la recta numérica y estimar raíces cuadradas.
+CLAVES: algoritmo, raíz cuadrada, operaciones con números racionales, programación
+EJE 847: Máximo común divisor (MCD), mínimo común múltiplo (mcm) y fracciones/decimales | None
+EVID 453: El estudiante elabora un algoritmo que permita calcular la raíz cuadrada de un número racional utilizando una recta numérica, mostrando la secuencia de pasos y la comprobación del resultado. | ia_pendiente
+
+EST 586 M1 P2 2. Describe algoritmos (Práctica)
+DESC: Práctica operaciones racionales.
+DBA 597: 2. Describe y utiliza algoritmos para operar números racionales.
+DESC: Representar números en la recta numérica y estimar raíces cuadradas.
+CLAVES: algoritmo, raíz cuadrada, ecuación, fórmula cuadrática
+EJE 848: Aplicación de algoritmos con racionales | None
+EVID 454: El estudiante elabora un algoritmo para calcular la raíz cuadrada de un número racional utilizando una calculadora gráfica, mostrando el proceso en una hoja de cálculo y presentando su solución con precisión. | ia_pendiente
+
+EST 587 M1 P2 3. Utiliza relaciones y representaciones para hallar cantidades desconocidas
+DESC: Propiedades numéricas.
+DBA 598: 3. Utiliza relaciones y representaciones para hallar cantidades desconocidas.
+DESC: Usar propiedades distributiva, asociativa y conmutativa en cálculos racionales.
+CLAVES: proporcionalidad, representación gráfica, diagrama de venn
+EJE 849: Valor decimal de una fracción, transformaciones algebraicas y uso de calculadora | None
+EVID 455: El estudiante resuelve un problema de proporcionalidad con una representación gráfica, mostrando la relación entre las variables y calculando la cantidad desconocida. | ia_pendiente
+
+EST 588 M1 P3 4. Utiliza escalas para representar planos, mapas y maquetas
+DESC: Escalas y proporciones.
+DBA 599: 4. Utiliza escalas para representar planos, mapas y maquetas.
+DESC: Seleccionar la escala adecuada de acuerdo al espacio disponible para dibujar.
+CLAVES: escalas, planos, maquetas, representación espacial
+EJE 850: Unidades de medida (Dm2, m2), ampliación, reducción e interpretación de planos | None
+EVID 456: El estudiante elabora un plano de una casa utilizando una escala de 1:50, mostrando con precisión la ubicación de las habitaciones y el tamaño real de cada una. El estudiante explica la elección de la escala y cómo afecta la representación del espacio. | ia_pendiente
+
+EST 589 M1 P3 5. Observa objetos tridimensionales desde diferentes puntos de vista
+DESC: Geometría 3D.
+DBA 600: 5. Observa objetos tridimensionales desde diferentes puntos de vista.
+DESC: Representar objetos según su ubicación y transformaciones (rotación, traslación).
+CLAVES: perspectiva, transformación, objetos tridimensionales
+EJE 851: Vistas frontal, superior e inferior, y reconocimiento de formas volumétricas | None
+EVID 457: El estudiante realiza una serie de dibujos con perspectiva lineal y angular para representar un objeto tridimensional en diferentes posiciones y ángulos, utilizando herramientas digitales como AutoCAD o SketchUp. El dibujo debe mostrar la forma del objeto y su posición en el espacio. | ia_pendiente
+
+EST 590 M1 P4 6. Representa la variación de magnitudes (área y perímetro) en el plano
+DESC: Variación de magnitudes.
+DBA 601: 6. Representa la variación de magnitudes (área y perímetro) en el plano.
+DESC: Interpretar modificaciones entre perímetro y área con factores de variación.
+CLAVES: variación, área, perímetro, figura geométrica
+EJE 852: Registros tabulares, gráficos de segmentos y software de geometría dinámica | None
+EVID 458: El estudiante realiza un análisis comparativo del área y perímetro de dos figuras geométricas, identificando las diferencias entre ellas y justificando su razonamiento con la variación de magnitudes. | ia_pendiente
+
+EST 591 M6 P1 1. Energía mecánica
+DESC: Física mecánica.
+DBA 602: 1. Comprende las formas y las transformaciones de energía en un sistema mecánico.
+DESC: Relacionar variables de velocidad y posición para describir la energía cinética y potencial.
+CLAVES: energía mecánica, forma de energía, transformación de energía
+EJE 853: Formas de energía mecánica, sistemas en caída libre, montaña rusa y péndulo | None
+EVID 459: El estudiante realiza un diagrama de flujo que muestra las diferentes formas de energía en un sistema mecánico, incluyendo la energía cinética y potencial. El diagrama debe incluir ejemplos específicos de cada forma de energía y su transformación. | ia_pendiente
+
+EST 592 M6 P1 2. Interacción de elementos
+DESC: Química básica.
+DBA 603: 2. Explica cómo las sustancias se forman a partir de la interacción de los elementos.
+DESC: Reconocer la estructura del átomo y su relación con la Tabla Periódica.
+CLAVES: estructura del átomo, interacción de elementos, sustancias
+EJE 854: Tabla Periódica (Z y A), estructura del átomo, modelos de Bohr y Lewis, propiedades de metales y no metales | None
+EVID 460: El estudiante elabora un modelo tridimensional de un átomo, utilizando materiales como arcilla o plastilina, para ilustrar la estructura del núcleo y los electrones. | ia_pendiente
+
+EST 593 M6 P2 2. Interacción de elementos (Continuación)
+DESC: Refuerzo química.
+DBA 604: 2. Explica cómo las sustancias se forman a partir de la interacción de los elementos.
+DESC: Reconocer la estructura del átomo y su relación con la Tabla Periódica.
+CLAVES: estructura del átomo, tabla periódica, elementos, modelo tridimensional
+EJE 855: Enlaces químicos y estructura de la materia | None
+EVID 461: El estudiante elabora un modelo tridimensional de un átomo, utilizando bloques de diferentes colores y materiales para representar los protones, neutrones y electrones. El modelo debe mostrar la disposición del núcleo y las órbitas de los electrones. | ia_pendiente
+
+EST 594 M6 P2 3. Flujos de materia y energía
+DESC: Ecología y nutrición.
+DBA 605: 3. Comprende que en las cadenas y redes tróficas existen flujos de materia y energía.
+DESC: Relacionar la nutrición con procesos de fotosíntesis y respiración celular.
+CLAVES: cadena alimenticia, flujo de materia, flujo de energía, fotosíntesis, respiración celular
+EJE 856: Nutrición autótrofa y heterótrofa, construcción de materia orgánica y composición atmosférica | None
+EVID 462: La estudiante elabora un diagrama que muestra los flujos de materia y energía en una cadena alimentaria, identificando las diferentes etapas y sus respectivos roles. | ia_pendiente
+
+EST 595 M6 P3 4. Ciclos biogeoquímicos
+DESC: Ciclos naturales.
+DBA 606: 4. Comprende la relación entre los ciclos del carbono, nitrógeno y agua.
+DESC: Establecer la importancia de los ciclos biogeoquímicos en el mantenimiento de los ecosistemas.
+CLAVES: ciclo del carbono, ecosistema, interconexión, transformación
+EJE 857: Mantenimiento de suelos, efectos de la intervención humana (erosión, contaminación) y microorganismos | None
+EVID 463: El estudiante elabora un modelo visual del ciclo del carbono, mostrando la interconexión con el ecosistema y las diferentes etapas de transformación. | ia_pendiente
+
+EST 651 M3 P1 comprende la responsabilidad de la sociedad democrática para evitar la violación de los derechos fundamentales
+DESC: 
+DBA 662: comprende la responsabilidad de la sociedad democrática para evitar la violación de los derechos fundamentales
+DESC: 
+CLAVES: participación ciudadana, derechos fundamentales, protección de derechos
+EJE 915: Geografía política (Estado, territorio y gobierno), clasificación de los Derechos Humanos, mecanismos de participación ciudadana y grandes imperios de Asia y África | 
+EVID 519: El estudiante elabora un ensayo argumentativo que defiende la importancia de la participación ciudadana en la protección de los derechos humanos, basándose en ejemplos concretos de casos de violaciones y acciones para su prevención. | ia_pendiente
+
+EST 652 M3 P3 Analiza la influencia del imperio romano en la cultura de occidente y los aportes en diversos campos como la literatura, las leyes, la ingeniería y la vida cotidiana
+DESC: 
+DBA 663: Analiza la influencia del imperio romano en la cultura de occidente y los aportes en diversos campos como la literatura, las leyes, la ingeniería y la vida cotidiana
+DESC: 
+CLAVES: influencia, cultura, literatura, leyes, ingeniería, arte
+EJE 913: Las monarquías como sistemas políticos, El gobierno y la administración durante la Colonia,Protestas y movimientos sociales en la época colonial | 
+EVID 520: El estudiante elabora un ensayo argumentativo que analiza la influencia del Imperio Romano en la cultura occidental, utilizando ejemplos específicos de literatura, leyes y arte. | ia_pendiente
+
+EST 653 M3 P3 Comprender cómo se presentaron los conflictos en los sistemas políticos de los siglos V al XV e identificar qué prácticas hemos heredado o reevaluado
+DESC: 
+DBA 664: Comprender cómo se presentaron los conflictos en los sistemas políticos de los siglos V al XV e identificar qué prácticas hemos heredado o reevaluado
+DESC: 
+CLAVES: conflictos políticos, prácticas políticas, historias del siglo v al xv, sistemas políticos
+EJE 914: Conflictos generados en las organizaciones sociales antiguas,Ideas para la resolución de conflictos aportadas por estas sociedades, Expresiones políticas y organización ciudadana | 
+EVID 521: El estudiante elabora un mapa conceptual que relaciona las causas y consecuencias de los conflictos políticos en el periodo comprendido entre los siglos V al XV, incluyendo ejemplos específicos. | ia_pendiente
+
+EST 654 M3 P1 Aplica procesos de mediación de conflictos para establecer una cultura de paz
+DESC: 
+DBA 665: Aplica procesos de mediación de conflictos para establecer una cultura de paz
+DESC: 
+CLAVES: mediación, conflicto, cultura de paz
+EJE 916: Saberes en las sociedades de los siglos V al XV (Saber religioso, tecnológico y social | 
+EVID 522: El estudiante, en un debate grupal sobre la importancia de la paz, propone soluciones pacíficas para resolver desacuerdos y argumenta con argumentos sólidos basándose en hechos. | ia_pendiente
+
+EST 655 M3 P2 Interpreta las relaciones entre crecimiento poblacional, desarrollo urbano y problemáticas sociales
+DESC: 
+DBA 666: Interpreta las relaciones entre crecimiento poblacional, desarrollo urbano y problemáticas sociales
+DESC: 
+CLAVES: crecimiento poblacional, desarrollo urbano, problemas sociales
+EVID 523: El estudiante elabora un mapa conceptual que relaciona el crecimiento poblacional con la expansión urbana y sus consecuencias en la distribución de recursos y servicios sociales. El mapa incluye ejemplos específicos de problemas sociales como la desigualdad, la contaminación y la falta de acceso a vivienda. | ia_pendiente
+
+EST 661 M8 P4 Reflexiono sobre el uso del poder y la autoridad en mi entorno y expreso pacíficamente mi desacuerdo cuando considero que hay injusticia.
+DESC: Participación responsable, democracia, liderazgo comunitario y defensa de las libertades.
+DBA 671: Identifica las diversas formas de participar correctamente en política y las características de un líder en la comunidad.
+DESC: Explica la necesidad de una nueva generación en política, reconoce formas de participación y analiza la honestidad y la corrupción en la vida política.
+CLAVES: participación política, liderazgo comunitario, organización, gestión de grupos
+EJE 921: Unidades 7 y 8. Participación política y liderazgo comunitario: democracia, tipos de política, participación, comunidad, líderes, tipos de liderazgo y habilidades para liderar. | Fortalece la confianza, la igualdad de derechos, el respeto por las libertades y la participación ciudadana para velar por los derechos de la comunidad.
+EVID 528: El estudiante elabora un plan de acción para participar activamente en una iniciativa ciudadana, identificando roles y responsabilidades dentro del grupo. | ia_pendiente
+
+EST 666 M3 P4 Reconoce y valora legados culturales de diferentes épocas y regiones para el desarrollo de la humanidad.
+DESC: Analiza conquista, colonización y sociedad colonial en la Nueva Granada.
+DBA 676: DBA 6. Evalúa causas y consecuencias de la conquista y colonización europea en América.
+DESC: Comprende transformaciones políticas, sociales y culturales de la época colonial.
+CLAVES: conquista, colonización, impactos socioeconómicos, participación indígena, influencia cultural
+EJE 926: Conquista y colonización. | Conquista de América y del territorio colombiano, virreinato y mundo cultural de la Nueva Granada.
+EVID 533: El estudiante elabora un ensayo argumentativo que analiza las causas y consecuencias de la conquista española en el territorio colombiano, incluyendo la participación de indígenas, africanos y europeos. | ia_pendiente
+
+EST 671 M4 P1 Reconoce y valora su potencial biológico y psicológico para realizar tareas motrices.
+DESC: Explora movimientos en armonía con ritmos, espacios y elementos de acompañamiento.
+DBA 681: Valora su salud física, emplea primeros auxilios y reflexiona sobre las consecuencias de sus actos.
+DESC: Ejecuta movimientos que generan bienestar y disfrute de forma segura.
+CLAVES: evaluación de riesgos, primeros auxilios, prevención de lesiones
+EJE 931: Movimiento, cuerpo y salud. | Terminología básica, movimientos articulares, desplazamientos, sistema muscular y adaptación motriz.
+EVID 538: El estudiante realiza una evaluación de riesgos en un escenario deportivo simulada, identificando y evaluando posibles lesiones y tomando medidas preventivas. | ia_pendiente
+
+EST 672 M4 P2 Reconoce diferencias individuales y desarrolla capacidades físicas respetando normas de seguridad e higiene.
+DESC: Interactúa motrizmente para mejorar su movimiento y participar en juegos organizados.
+DBA 682: Ejecuta pruebas de capacidades físicas y aplica juegos básicos y predeportivos.
+DESC: Reconoce fuerza, resistencia, velocidad y flexibilidad.
+CLAVES: capacidades físicas, juegos básicos, cooperación
+EJE 932: Capacidades físicas y formación deportiva. | Fuerza, resistencia, velocidad, flexibilidad, pruebas físicas, juegos organizados y formación deportiva básica.
+EVID 539: El estudiante realiza correctamente las pruebas de capacidades físicas propuestas en clase, como flexión de brazos, salto vertical y carrera de velocidad. | ia_pendiente
+
+EST 673 M4 P3 Reconoce diferencias personales y participa respetuosamente en actividades motrices de clase.
+DESC: Acepta limitaciones físicas, sensoriales y cognitivas de sus compañeros.
+DBA 683: Conoce reglas y normas de juegos básicos y predeportivos y conceptos de formación deportiva.
+DESC: Aplica convivencia y respeto en actividades de juego y deporte.
+CLAVES: reglas, normas, seguridad, ética, juego
+EJE 933: Reglas, juegos y formación deportiva. | Pruebas físicas, juegos organizados, actividades predeportivas y formación deportiva básica.
+EVID 540: El estudiante realiza una presentación oral sobre las reglas básicas de un juego de pelota, mencionando la importancia del respeto a las normas y la seguridad en el juego. | ia_pendiente
+
+EST 674 M4 P4 Reconoce su potencial motriz y mantiene habilidades que le permiten explorar y adaptarse al medio.
+DESC: Valora el deporte como medio de integración y convivencia.
+DBA 684: Reconoce beneficios de higiene, alimentación e hidratación durante la práctica deportiva.
+DESC: Promueve estilos de vida saludables y participación responsable.
+CLAVES: higiene, alimentación, hidratación, rendimiento deportivo
+EJE 934: Recreación, deporte y vida saludable. | Juego, lúdica, recreación, deporte, socialización, integración y estilos de vida saludable.
+EVID 541: El estudiante realiza una lista de beneficios de la higiene, alimentación y hidratación para el rendimiento deportivo. | ia_pendiente
+
+EST 699 M9 P1 Módulo 1: reconoce el entorno y sus relaciones.
+DESC: Diagnostica características sociales y ambientales de la vereda.
+DBA 709: Analiza información sobre el entorno escolar y comunitario.
+DESC: Desarrolla las guías 1 y 2 del PPP.
+CLAVES: análisis de entorno, emprendimiento, solución social
+EJE 959: Módulo 1 - Guías 1 y 2. | ¿Cómo es mi entorno? y características biofísicas de la vereda.
+EVID 566: El estudiante elabora un plan de acción para la implementación de una iniciativa social en su comunidad, identificando las necesidades del entorno y proponiendo soluciones innovadoras. | ia_pendiente
+
+EST 700 M9 P1 Módulo 2: interpreta información del diagnóstico.
+DESC: Relaciona actividades humanas, entorno y alternativas de emprendimiento.
+DBA 710: Analiza actividades de habitantes y relaciones ser humano-entorno.
+DESC: Desarrolla las guías 3 y 4 del PPP.
+CLAVES: actividades, entorno, relaciones, emprendimiento, comunidad
+EJE 960: Módulo 2 - Guías 3 y 4. | Actividades de la vereda y relación de los seres humanos con el entorno.
+EVID 567: El estudiante elabora un diagrama que muestra las diferentes actividades de los habitantes de una comunidad, identificando sus interrelaciones con el entorno. | ia_pendiente
+
+EST 701 M9 P2 Módulo 3: analiza emprendimiento e información del contexto.
+DESC: Reconoce propósitos económicos y sociales de los emprendimientos.
+DBA 711: Identifica alternativas de emprendimiento y analiza información del diagnóstico.
+DESC: Desarrolla las guías 5 y 6 del PPP.
+CLAVES: alternativas de emprendimiento, diagnóstico de mercado, análisis de oportunidades y amenazas
+EJE 961: Módulo 3 - Guías 5 y 6. | Finalidades del emprendimiento y análisis de información.
+EVID 568: El estudiante identifica al menos tres alternativas de emprendimiento en el contexto local, presentando una breve descripción de cada una y sus características. | ia_pendiente
+
+EST 702 M9 P2 Módulo 4: formula un Proyecto Pedagógico Productivo.
+DESC: Define idea, propósito y diseño inicial del proyecto.
+DBA 712: Identifica problemas, objetivos y componentes básicos de un proyecto.
+DESC: Desarrolla las guías 7, 8 y 9 del PPP.
+CLAVES: identificar problemas, establecer objetivos, componentes básicos, plan de acción
+EJE 962: Módulo 4 - Guías 7 a 9. | Idea, propósito y diseño del Proyecto Pedagógico Productivo.
+EVID 569: El estudiante elabora un documento que identifica los problemas clave del proyecto, establece objetivos específicos y describe los componentes básicos del mismo. | ia_pendiente
+
+EST 703 M9 P3 Módulo 5: planifica la gestión del proyecto.
+DESC: Organiza actividades y criterios de acción para el PPP.
+DBA 713: Selecciona actividades y orienta un plan de acción.
+DESC: Desarrolla las guías 10 y 11 del PPP.
+CLAVES: plan de acción, actividades, empresa ficticia, recursos, evaluación
+EJE 963: Módulo 5 - Guías 10 y 11. | Selección de actividades y orientación del plan de acción.
+EVID 570: El estudiante elabora un plan de acción con 3 actividades para una empresa ficticia, identificando las acciones a realizar, los recursos necesarios y la evaluación del proyecto. | ia_pendiente
+
+EST 704 M9 P3 Módulo 6: produce con responsabilidad y hace seguimiento.
+DESC: Reconoce compromisos de producción responsable en su proyecto.
+DBA 714: Aplica criterios de responsabilidad en actividades del PPP.
+DESC: Desarrolla las guías 12 y 13 del PPP.
+CLAVES: plan de acción, propuesta de valor, responsabilidad social, sostenibilidad
+EJE 964: Módulo 6 - Guías 12 y 13. | Producción responsable y verificación de compromisos.
+EVID 571: El estudiante elabora un plan de acción para la implementación de una propuesta de valor, considerando las necesidades del mercado y los recursos disponibles, utilizando criterios de responsabilidad social y ambiental. | ia_pendiente
+
+EST 705 M9 P4 Módulo 7: registra y evalúa resultados del proyecto.
+DESC: Relaciona cuentas, resultados y cumplimiento de objetivos.
+DBA 715: Registra información y evalúa avances del PPP.
+DESC: Desarrolla las guías 14, 15 y 16 del PPP.
+CLAVES: registro de información, evaluación, seguimiento, proyecto, aprendizaje
+EJE 965: Módulo 7 - Guías 14 a 16. | Registro de cuentas, evaluación del proyecto y alternativas de proyección comunitaria.
+EVID 572: El estudiante realiza un seguimiento de los avances del proyecto en el registro de información, utilizando la plataforma digital asignada para registrar datos relevantes sobre las actividades realizadas, los recursos utilizados y los resultados obtenidos. | ia_pendiente
+
+EST 706 M9 P4 Módulo 8: proyecta el PPP hacia la comunidad.
+DESC: Socializa resultados y reconoce beneficios comunitarios.
+DBA 716: Organiza y participa en espacios de difusión del proyecto.
+DESC: Desarrolla las guías 17 y 18 del PPP.
+CLAVES: organización, difusión, emprendimiento
+EJE 966: Módulo 8 - Guías 17 y 18. | Feria de proyectos y beneficios comunitarios de los PPP.
+EVID 573: El estudiante presenta un plan de difusión del proyecto que incluye estrategias para diferentes plataformas digitales, como redes sociales y sitios web. | ia_pendiente
+
+EST 735 M7 P1 Utiliza procesadores de texto para crear documentos.
+DESC: Maneja operaciones básicas de Word.
+DBA 745: Usa herramientas informáticas de texto con seguridad.
+DESC: Crea, abre, guarda y edita documentos.
+CLAVES: seguridad, editor de texto, funciones de seguridad
+EJE 995: Microsoft Word básico. | Procesadores de texto y operaciones básicas.
+EVID 602: El estudiante podrá identificar y utilizar las funciones de seguridad de un editor de texto como la función de búsqueda y reemplazar, la opción de guardar archivos con contraseña o la función de bloqueo de escritura. | ia_pendiente
+
+EST 736 M7 P2 Elabora documentos con formato y organización.
+DESC: Aplica formato de texto, párrafo y página.
+DBA 746: Usa TIC para producir documentos.
+DESC: Integra objetos y configuración de página.
+CLAVES: tic, documento digital, herramientas de procesamiento de texto, software de diseño gráfico, comunicación digital
+EJE 996: Formato en Word. | Texto, listas, sangrías, párrafos, márgenes y objetos.
+EVID 603: El estudiante elabora un documento digital utilizando una herramienta de procesamiento de texto y/o software de diseño gráfico, integrando imágenes y multimedia. | ia_pendiente
+
+EST 737 M7 P3 Diseña documentos y representa información.
+DESC: Utiliza herramientas avanzadas de Word y máquinas simples.
+DBA 747: Interpreta gráficos, bocetos y diagramas.
+DESC: Aplica normas de presentación documental.
+CLAVES: análisis de gráficos, elaboración de diagramas
+EJE 997: Documentos avanzados y máquinas. | Encabezados, tablas de contenido, APA, ecuaciones y gráficas.
+EVID 604: El estudiante podrá identificar las diferentes partes de un gráfico, como eje x, eje y, título, leyenda y datos, utilizando una herramienta digital para analizar la información. | ia_pendiente
+
+EST 738 M7 P4 Comprende internet y recursos de comunicación.
+DESC: Usa web y servicios en línea responsablemente.
+DBA 748: Busca y valida información digital.
+DESC: Reconoce Internet, web, dominios y navegadores.
+CLAVES: verificación de información, fuentes digitales, evaluación de confiabilidad
+EJE 998: Telemática e Internet. | Clientes, servidores, web, TCP/IP, direcciones y buscadores.
+EVID 605: El estudiante identifica y evalúa la confiabilidad de fuentes digitales, utilizando herramientas como Google Scholar y Wikipedia para verificar la veracidad de la información. | ia_pendiente
+
+EST 759 M5 P1 Clasifica y construye triángulos según sus propiedades.
+DESC: Relaciona lados y ángulos para describir triángulos.
+DBA 769: Construye triángulos con regla, compás y transportador.
+DESC: Identifica congruencia y propiedades básicas de los triángulos.
+CLAVES: triángulos, regla, compás, transportador, geometría
+EJE 1019: Triángulos y ángulos. | Clasificación, construcción y propiedades de triángulos; suma de ángulos internos.
+EVID 626: El estudiante construye un triángulo rectángulo utilizando regla, compás y transportador, con precisión de 90 grados en cada ángulo. | ia_pendiente
+
+EST 760 M5 P2 Analiza propiedades de cuadriláteros y polígonos regulares.
+DESC: Establece relaciones entre sus lados, ángulos y diagonales.
+DBA 770: Calcula perímetros y áreas de polígonos.
+DESC: Aplica fórmulas de área en situaciones de medida.
+CLAVES: área, perímetro, rectángulos, polígonos
+EJE 1020: Cuadriláteros y polígonos. | Paralelogramos, trapecios, polígonos regulares, perímetro y área.
+EVID 627: El estudiante realiza correctamente la formulación del área y perímetro de un rectángulo, utilizando las medidas proporcionadas en el problema. | ia_pendiente
+
+EST 761 M5 P3 Usa la proporcionalidad para interpretar relaciones geométricas.
+DESC: Resuelve problemas de escala, razón y proporción en figuras.
+DBA 771: Representa relaciones de proporcionalidad directa e inversa.
+DESC: Aplica escalas y razones en planos, mapas y figuras semejantes.
+CLAVES: proporcionalidad, triángulos, ecuaciones
+EJE 1021: Proporcionalidad y escala. | Razones, proporciones, regla de tres, escalas y aplicaciones geométricas.
+EVID 628: El estudiante elabora un diagrama que relaciona la cantidad de lados y ángulos de un triángulo con la relación entre sus dimensiones, mostrando una proporción directa. | ia_pendiente
+
+EST 762 M5 P4 Ubica y representa figuras en el plano cartesiano.
+DESC: Interpreta coordenadas y transformaciones elementales.
+DBA 772: Lee y construye representaciones en el plano cartesiano.
+DESC: Describe desplazamientos y figuras mediante pares ordenados.
+CLAVES: plano cartesiano, coordenadas, relación
+EJE 1022: Plano cartesiano y transformaciones. | Coordenadas, ubicación de puntos, traslación, reflexión y simetría.
+EVID 629: El estudiante puede construir un diagrama de la relación entre las coordenadas x e y, utilizando una recta y un punto para representar una posición en el plano cartesiano. | ia_pendiente
+
+EST 782 M8 P1 Contribuye constructivamente a la convivencia en el medio escolar.
+DESC: Fortalece la comunicación respetuosa y previene situaciones de violencia escolar.
+DBA 792: Analiza críticamente medios de comunicación y supera emociones para perdonar y reconciliarse.
+DESC: Reconoce conflictos y alternativas de solución respetando libertades y opiniones ajenas.
+CLAVES: análisis crítico, perspectiva social, comunicación, perdon, reconciliación, estrategias de comunicación
+EJE 1042: Unidades 1 y 2. Comunicación y prevención de la violencia; acoso escolar. | Comunicación asertiva, respeto, diálogo, comportamiento agresivo, agresión escolar y alternativas de solución.
+EVID 649: El estudiante elabora un análisis crítico del impacto mediático en la construcción de la percepción social, identificando sesgos y manipulación. El estudiante presenta una propuesta de comunicación que busca superar las emociones negativas para promover la reconciliación. | ia_pendiente
+
+EST 783 M8 P2 Construye relaciones pacíficas para la convivencia cotidiana en comunidad y municipio.
+DESC: Comprende el conflicto como oportunidad de aprendizaje y transformación.
+DBA 793: Analiza el escalamiento de conflictos y aplica mediación en la convivencia escolar.
+DESC: Identifica causas de conflicto, elabora el perfil de un mediador y actúa como facilitador cuando es necesario.
+CLAVES: escalamiento de conflictos, mediación, resolución de conflictos, plan de acción, soluciones consensuadas
+EJE 1043: Unidades 3 y 4. Resolución pacífica y manejo de conflictos. | Conflicto, escalamiento, causas, mediación, convivencia escolar y normas del colegio.
+EVID 650: El estudiante elabora un plan de acción para la resolución de conflictos, utilizando estrategias de mediación, que incluya la identificación de las necesidades de cada parte, la formulación de soluciones y la implementación del acuerdo. | ia_pendiente
+
+EST 784 M8 P3 Reflexiona sobre el uso del poder y la autoridad y expresa pacíficamente su desacuerdo ante injusticias.
+DESC: Reconoce el derecho a la igualdad y analiza pobreza, desigualdad, exclusión y discriminación.
+DBA 794: Identifica pobreza extrema y propone acciones para reducir desigualdades en su entorno.
+DESC: Comprende que las familias tienen derecho al trabajo, salud, vivienda, educación y recreación.
+CLAVES: pobreza extrema, desigualdad, acciones, plan de acción, estrategia
+EJE 1044: Unidades 5 y 6. Pobreza extrema y combate a la desigualdad. | Pobreza, pobreza extrema, desarrollo humano, causas de desigualdad y acciones de reducción.
+EVID 651: El estudiante elabora un plan de acción para reducir la pobreza extrema en su comunidad, identificando las causas principales y proponiendo estrategias específicas para abordarlas. | ia_pendiente

@@ -91,7 +91,6 @@ function call_lm_studio_api($messages, $temperature = 0.7, $max_tokens = -1, $st
 
 // Ejemplo de uso de la función#
 #$prompt = 'Creame un ensayo de una pagina sobre el amor';
-#$api='AIzaSyB1ZbitpmioDkWOPWOlHJ-p_SORmxUYUrM';
 #$response = gemini($api, $prompt);
 #echo $response;
 

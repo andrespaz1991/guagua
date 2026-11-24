@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111b22">
+  <meta name="description" content="Prepara imágenes del mismo tamaño para tu slider, sin deformarlas. Recorta o completa con reflejo, desenfoque, color y transparencia.">
+  <title>Slider Studio · Imágenes a tu medida</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23c8ef82'/%3E%3Cpath d='M9 11h22v18H9zm5 0v18m12-18v18' fill='none' stroke='%23131f23' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="engine.js" defer></script>
+  <script src="zip.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m-4 4 4-4 4 4M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 16v4h16v-4"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8" cy="9" r="1.5"/><path d="m3 17 5-4 4 3 4-6 5 7"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 11a9 9 0 1 1 2 7M3 5v6h6"/></symbol>
+    <symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 3v15h15M3 6h15v15"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m9 5 10 7-10 7z"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4 2c-1 .7-1.5 1-1.5 2.5M12 17h.01"/></symbol>
+  </defs></svg>
+
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Slider Studio, inicio"><span class="brand-mark"><i></i><i></i><i></i></span><span>slider<span class="brand-light">studio</span><span class="brand-dot">.</span></span></a>
+    <div class="header-middle"><span class="status-dot"></span> TU ESTUDIO DE IMÁGENES</div>
+    <button class="button button-quiet" id="helpButton"><svg class="icon"><use href="#i-help"/></svg><span>Cómo funciona</span></button>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div><div class="eyebrow">DE TU CÁMARA A TU WEB</div><h1>Un slider perfecto.<br class="mobile-break"> Sin deformar tus imágenes<span>.</span></h1><p>El mismo tamaño, la misma armonía. Tú eliges cómo completar el encuadre.</p></div>
+      <div class="wordpress-badge"><span class="wp-logo" aria-hidden="true">W</span><span>LISTAS PARA TU<br><strong>slider de WordPress</strong></span></div>
+    </section>
+
+    <div class="workspace">
+      <aside class="settings-panel" aria-label="Configuración de salida">
+        <section class="settings-section">
+          <h2><span class="step">01</span> Tamaño de salida <span class="small-tag">TODAS</span></h2>
+          <label class="field-label" for="preset">Tamaño predefinido</label>
+          <select id="preset"><option value="768x576">Vallesol · 768 × 576 (4:3)</option><option value="1920x600">Slider panorámico · 1920 × 600</option><option value="1920x800">Slider amplio · 1920 × 800</option><option value="1920x1080">Pantalla 16:9 · 1920 × 1080</option><option value="1600x900">Web 16:9 · 1600 × 900</option><option value="1200x600">Banner 2:1 · 1200 × 600</option><option value="1080x1080">Cuadrado · 1080 × 1080</option><option value="1080x1350">Vertical · 1080 × 1350</option><option value="custom">Personalizado</option></select>
+          <div class="dimension-inputs"><label for="width">Ancho <span class="input-unit"><input id="width" type="number" value="768" min="64" max="6000" step="1" inputmode="numeric"><span>px</span></span></label><span class="times">×</span><label for="height">Alto <span class="input-unit"><input id="height" type="number" value="576" min="64" max="6000" step="1" inputmode="numeric"><span>px</span></span></label></div>
+          <p class="input-error" id="sizeError" role="alert" hidden></p>
+          <p class="hint" id="ratioInfo">Proporción 4:3 · Hasta 24 megapíxeles</p>
+        </section>
+
+        <section class="settings-section">
+          <h2><span class="step">02</span> Completar el encuadre</h2>
+          <fieldset class="mode-grid" aria-describedby="modeDescription"><legend class="sr-only">Modo de ajuste</legend>
+            <label class="mode-card"><input type="radio" name="mode" value="blur" checked><span class="mode-art blur-art"><i></i></span><span>Desenfoque</span><svg class="selected-check icon"><use href="#i-check"/></svg></label>
+            <label class="mode-card"><input type="radio" name="mode" value="mirror"><span class="mode-art mirror-art"><i></i></span><span>Reflejo</span><svg class="selected-check icon"><use href="#i-check"/></svg></label>
+            <label class="mode-card"><input type="radio" name="mode" value="color"><span class="mode-art color-art"><i></i></span><span>Color sólido</span><svg class="selected-check icon"><use href="#i-check"/></svg></label>
+            <label class="mode-card"><input type="radio" name="mode" value="transparent"><span class="mode-art transparent-art"><i></i></span><span>Transparente</span><svg class="selected-check icon"><use href="#i-check"/></svg></label>
+            <label class="mode-card mode-wide"><input type="radio" name="mode" value="cover"><svg class="icon"><use href="#i-crop"/></svg><span>Recortar para llenar</span><svg class="selected-check icon"><use href="#i-check"/></svg></label>
+          </fieldset>
+          <p class="hint mode-description" id="modeDescription">Conserva la imagen completa y rellena con un fondo desenfocado.</p>
+          <div id="blurControls" class="mode-extra"><label class="range-label" for="blur">Desenfoque del fondo <output id="blurValue">24</output></label><input id="blur" type="range" min="0" max="80" value="24"></div>
+          <div id="colorControls" class="mode-extra" hidden><label class="range-label" for="color">Color del fondo</label><div class="color-row"><input id="color" type="color" value="#e7ece4" aria-label="Elegir color de fondo"><span id="colorValue">#E7ECE4</span><button type="button" class="swatch" data-color="#ffffff" style="--swatch:#fff" aria-label="Fondo blanco"></button><button type="button" class="swatch" data-color="#111b22" style="--swatch:#111b22" aria-label="Fondo oscuro"></button><button type="button" class="swatch" data-color="#e7ece4" style="--swatch:#e7ece4" aria-label="Fondo gris claro"></button></div></div>
+          <div class="scope-note"><span class="status-dot"></span><span id="scopeLabel">Ajuste predeterminado para las imágenes nuevas.</span></div>
+          <button id="applyAll" class="button button-secondary button-full" disabled>Aplicar este ajuste a todas <svg class="icon"><use href="#i-arrow"/></svg></button>
+        </section>
+
+        <section class="settings-section export-settings">
+          <h2><span class="step">03</span> Formato de descarga</h2>
+          <div class="export-fields"><label class="field-label" for="format">Formato<select id="format"><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option><option value="image/png">PNG</option></select></label><label class="field-label" for="quality">Calidad <output id="qualityValue">90%</output><input id="quality" type="range" min="40" max="100" value="90"></label></div>
+          <p id="formatHint" class="hint">JPG: ideal para fotografías. Ajusta la calidad para reducir el peso.</p>
+        </section>
+        <div class="privacy-note"><svg class="icon"><use href="#i-lock"/></svg><p><strong>Se quedan contigo.</strong><br>Tus imágenes se procesan en este navegador.</p></div>
+      </aside>
+
+      <section class="editor-panel" aria-label="Editor de imágenes">
+        <div class="editor-toolbar"><div class="preview-label"><span class="live-dot"></span> VISTA PREVIA <span id="sampleBadge" class="sample-badge">EJEMPLO</span></div><div class="output-size" id="outputSize">768 × 576 px</div></div>
+        <div class="preview-stage" id="previewStage">
+          <div class="canvas-container" id="canvasContainer"><canvas id="previewCanvas" width="768" height="576" aria-label="Vista previa de la imagen ajustada"></canvas><div class="canvas-corners" aria-hidden="true"></div></div>
+          <div class="stage-caption"><span id="previewCaption">Una imagen, infinitas posibilidades.</span><span id="previewScale">Vista ajustada a la pantalla</span></div>
+        </div>
+
+        <div class="image-controls">
+          <div class="current-image"><span class="image-icon"><svg class="icon"><use href="#i-image"/></svg></span><div><strong id="selectedName">Así puede verse tu próxima imagen</strong><span id="selectedMeta">Carga tus archivos para empezar</span></div></div>
+          <button class="button button-icon" id="resetImage" title="Restablecer encuadre de esta imagen" aria-label="Restablecer encuadre de esta imagen"><svg class="icon"><use href="#i-reset"/></svg></button>
+          <button class="button button-icon" id="downloadOne" disabled title="Descargar esta imagen" aria-label="Descargar esta imagen"><svg class="icon"><use href="#i-download"/></svg></button>
+        </div>
+        <div class="position-controls"><label for="zoom">Zoom <output id="zoomValue">100%</output><input id="zoom" type="range" min="100" max="300" value="100"></label><label for="positionX">Posición horizontal <output id="positionXValue">50%</output><input id="positionX" type="range" min="0" max="100" value="50"></label><label for="positionY">Posición vertical <output id="positionYValue">50%</output><input id="positionY" type="range" min="0" max="100" value="50"></label></div>
+        <div class="crop-notice" id="cropNotice" hidden><svg class="icon"><use href="#i-crop"/></svg><span id="cropNoticeText"></span></div>
+
+        <div class="gallery-header"><div><h2>Tus imágenes <span id="imageCount">0</span></h2><span>Un tamaño común. Un encuadre para cada una.</span></div><button id="clearAll" class="text-button" disabled>Vaciar lista</button></div>
+        <div class="gallery" id="gallery" aria-label="Imágenes cargadas"><div class="gallery-empty" id="galleryEmpty"><span class="empty-stack"><svg class="icon"><use href="#i-image"/></svg></span><p>Aquí empieza tu colección<span>Agrega imágenes y selecciona cada una para afinar su encuadre.</span></p><button id="loadDemo" class="text-button">Probar con ejemplos <svg class="icon"><use href="#i-arrow"/></svg></button></div></div>
+
+        <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Agregar imágenes: haz clic o arrastra archivos aquí"><span class="upload-icon"><svg class="icon"><use href="#i-upload"/></svg></span><div><strong>Arrastra tus imágenes aquí <span>o elige archivos</span></strong><p>JPG, PNG, WebP, AVIF o GIF · Hasta 50 imágenes de 30 MB</p></div><span class="plus">+</span></div>
+        <input id="fileInput" class="sr-only" type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif,.jpg,.jpeg,.png,.webp,.avif,.gif" multiple tabindex="-1">
+        <div class="download-bar"><div><span class="ready-dot"></span><span id="exportSummary">Agrega imágenes para preparar tu descarga</span></div><button id="downloadAll" class="button button-primary" disabled><svg class="icon"><use href="#i-download"/></svg><span id="downloadLabel">Descargar imágenes</span><span class="zip-tag">ZIP</span></button></div>
+      </section>
+    </div>
+    <footer><span>Hecho para que tus imágenes encajen.</span><span>SIN DEFORMACIÓN <i></i> SIN SUBIR ARCHIVOS <i></i> SIN INSTALACIÓN</span></footer>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <div class="import-overlay" id="importOverlay" hidden><svg class="icon"><use href="#i-upload"/></svg><strong>Suelta tus imágenes</strong><span>Nos encargamos de que encajen.</span></div>
+  <dialog id="helpDialog"><div class="dialog-heading"><span class="eyebrow">DE PRINCIPIO A SLIDER</span><button class="button button-icon" id="closeHelp" aria-label="Cerrar ayuda"><svg class="icon"><use href="#i-close"/></svg></button></div><h2>Tres pasos. Todas a medida.</h2><ol><li><strong>Agrega tus imágenes.</strong> Arrástralas o selecciona varios archivos desde tu equipo.</li><li><strong>Elige el resultado.</strong> Configura el tamaño común. Selecciona una imagen para ajustar su fondo, zoom y posición; puedes aplicar ese ajuste a todo el lote.</li><li><strong>Descarga y sube a WordPress.</strong> Descomprime el ZIP y carga las imágenes resultantes en la biblioteca multimedia de tu sitio.</li></ol><p>Los modos Desenfoque, Reflejo, Color y Transparente conservan la imagen completa con zoom al 100%. Recortar llena todo el espacio y puede cortar bordes. El zoom también puede recortar. Nunca se estiran las proporciones.</p><p>La transparencia requiere PNG o WebP. Los GIF y AVIF animados se exportan como imagen estática. El fondo desenfocado y el reflejo se crean con la propia imagen, sin generación por IA.</p><button class="button button-primary" id="gotIt">Entendido <svg class="icon"><use href="#i-check"/></svg></button></dialog>
+</body>
+</html>

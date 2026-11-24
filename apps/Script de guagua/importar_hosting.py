@@ -1,3 +1,9 @@
+from pathlib import Path
+import sys
+_guagua_root = next(p for p in Path(__file__).resolve().parents if (p / 'comun' / 'database_client.py').is_file())
+sys.path.insert(0, str(_guagua_root / 'comun'))
+from database_client import connect_mysql as guagua_mysql_connect, mysql_command as guagua_mysql_command
+
 import mysql.connector
 import os
 import glob
@@ -6,12 +12,7 @@ import time
 
 def connect_db():
     try:
-        conn = mysql.connector.connect(
-            host="srv765.hstgr.io",
-            user="u417538463_root",
-            password="Celeste2025.",
-            database="u417538463_guagua"
-        )
+        conn = guagua_mysql_connect('hosting')
         return conn
     except mysql.connector.Error as err:
         print(f"Error: {err}")
@@ -59,12 +60,12 @@ def import_database(sql_file):
     print(f"Importando base de datos desde: {sql_file} ({file_size / 1024:.2f} KB) - Tiempo estimado: {estimated_time} segundos")
     
     mysql_path = "D:\\xampp\\mysql\\bin\\mysql"
-    command = f"{mysql_path} -h srv765.hstgr.io -u u417538463_root -pCeleste2025. u417538463_guagua"
+    command, mysql_environment = guagua_mysql_command(mysql_path, 'hosting')
     
     try:
         start_time = time.time()
         with open(sql_file, "r", encoding="utf-8") as sql_dump:
-            process = subprocess.Popen(command, stdin=sql_dump, shell=True)
+            process = subprocess.Popen(command, stdin=sql_dump, shell=False, env=mysql_environment)
             
             for remaining in range(estimated_time, 0, -1):
                 elapsed_time = time.time() - start_time

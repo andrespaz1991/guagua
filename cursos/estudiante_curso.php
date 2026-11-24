@@ -1,24 +1,22 @@
 <?php
+require_once __DIR__ . '/../comun/persona_imagen.php';
+require_once __DIR__ . '/../comun/database.php';
+
 // Muestra todos los errores de PHP. Útil para depuración.
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 // --- CONFIGURACIÓN DE LA BASE DE DATOS ---
-$servername = "localhost:7000";
-$username = "root";
-$password = "";
-$dbname = "guagua";
 
 // --- LÓGICA DE API ASINCRÓNICA (Responde con JSON) ---
 if (isset($_GET['action']) && $_GET['action'] === 'search_students') {
     header('Content-Type: application/json; charset=utf-8');
-    $conn = new mysqli($servername, $username, $password, $dbname);
+    $conn = guagua_db_mysqli();
     if ($conn->connect_error) {
         // Enviar error en JSON y salir
         echo json_encode(['error' => 'Error de Conexión: ' . $conn->connect_error]);
         exit();
     }
-    $conn->set_charset("utf8mb4");
 
     $id_asignacion = isset($_GET['id_asignacion']) ? (int)$_GET['id_asignacion'] : 0;
     if ($id_asignacion === 0 && isset($_GET['asignacion'])) {
@@ -53,7 +51,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'search_students') {
             $response['totalPages'] = ceil($total_results / $results_per_page);
 
             // Obtener estudiantes para la página actual
-            $students_sql_base = "SELECT u.nombre, u.apellido, u.foto, u.correo, u.telefono FROM usuario u JOIN inscripcion i ON u.id_usuario = i.id_estudiante WHERE i.id_asignacion = ? AND u.rol = 'estudiante'";
+            $students_sql_base = "SELECT u.nombre, u.apellido, u.foto, u.genero, u.correo, u.telefono FROM usuario u JOIN inscripcion i ON u.id_usuario = i.id_estudiante WHERE i.id_asignacion = ? AND u.rol = 'estudiante'";
             if (!empty($search_term)) {
                 $stmt_students = $conn->prepare($students_sql_base . " AND (u.nombre LIKE ? OR u.apellido LIKE ?) ORDER BY u.apellido, u.nombre LIMIT ? OFFSET ?");
                 if ($stmt_students === false) { $response['error'] = "Error al preparar búsqueda: " . $conn->error; }
@@ -67,6 +65,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'search_students') {
             if (!$response['error'] && $stmt_students->execute()) {
                  $result_students = $stmt_students->get_result();
                  $response['students'] = $result_students->fetch_all(MYSQLI_ASSOC);
+                 foreach ($response['students'] as &$student) {
+                     $student['foto'] = guagua_persona_foto($student['foto'], $student['genero']);
+                     $student['foto_default'] = guagua_persona_foto('', $student['genero']);
+                 }
+                 unset($student);
                  $stmt_students->close();
             } elseif(!$response['error']) {
                 $response['error'] = "Error al ejecutar la búsqueda: " . $stmt_students->error;
@@ -84,9 +87,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'search_students') {
 }
 
 // --- LÓGICA PARA LA CARGA INICIAL DE LA PÁGINA (Renderiza HTML) ---
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = guagua_db_mysqli();
 if ($conn->connect_error) { die("Error de Conexión: " . $conn->connect_error); }
-$conn->set_charset("utf8mb4");
 
 $id_asignacion = 0;
 if (isset($_GET['id_asignacion'])) { $id_asignacion = (int)$_GET['id_asignacion']; } 
@@ -119,8 +121,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $titulo_lista; ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         .loader {
@@ -258,14 +259,15 @@ $conn->close();
                 let studentsHTML = '<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">';
                 students.forEach(student => {
                     const studentName = `${student.nombre || ''} ${student.apellido || ''}`.trim();
-                    const studentPhoto = student.foto ? `assets/${student.foto}` : 'https://placehold.co/100x100/EBF4FF/7F9CF5?text=Sin+Foto';
+                    const studentPhoto = '../sga-data/foto/' + encodeURIComponent(student.foto);
+                    const studentFallback = '../sga-data/foto/' + encodeURIComponent(student.foto_default);
                     const studentEmail = student.correo || 'No disponible';
                     const studentPhone = student.telefono || 'No disponible';
 
                     studentsHTML += `
                         <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
                             <div class="p-6 flex flex-col items-center text-center">
-                                <img class="w-24 h-24 rounded-full object-cover border-4 border-gray-200 shadow-md" src="${studentPhoto}" alt="Foto de ${studentName}" onerror="this.onerror=null;this.src='https://placehold.co/100x100/EBF4FF/7F9CF5?text=Sin+Foto';">
+                                <img class="w-24 h-24 rounded-full object-cover border-4 border-gray-200 shadow-md" src="${studentPhoto}" alt="Foto de ${studentName}" onerror="this.onerror=null;this.src='${studentFallback}';">
                                 <h3 class="mt-4 text-xl font-semibold text-gray-800">${studentName}</h3>
                                 <div class="mt-4 w-full space-y-2 text-sm text-gray-600">
                                     <div class="flex items-center justify-center break-all">

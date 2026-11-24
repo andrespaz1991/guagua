@@ -1,16 +1,24 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/seguridad.php';
+guagua_iniciar_sesion_segura();
 
 require_once(dirname(__FILE__) . "/funciones.php");
 require_once(dirname(__FILE__) . "/config.php");
 require_once(dirname(__FILE__) . "/autoload.php");
+require_once __DIR__ . '/vista_modulo.php';
 
 if (isset($_GET['logout'])) {
     session_destroy();
     session_unset();
 }
+
+// El contenedor ya dibuja la cabecera. Mantener arriba la inicialización de
+// sesión/configuración: esta condición únicamente evita duplicar su vista.
+if (guagua_modulo_embebido()) {
+    return;
+}
+require_once __DIR__ . '/tienda_estado.php';
+require_once __DIR__ . '/tienda_rutas.php';
 
 $persona = null;
 if (isset($_SESSION['id_usuario'])) {
@@ -34,6 +42,7 @@ $barra_busqueda = isset($_SESSION['barra_busqueda']) ? $_SESSION['barra_busqueda
 $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
 ?>
 <link rel="stylesheet" href="<?php echo SGA_COMUN_URL; ?>/css/menu_custom.css?v=<?php echo file_exists(dirname(__FILE__).'/css/menu_custom.css') ? filemtime(dirname(__FILE__).'/css/menu_custom.css') : time(); ?>">
+<link rel="stylesheet" href="<?php echo SGA_COMUN_URL; ?>/css/interface_custom.css?v=<?php echo file_exists(dirname(__FILE__).'/css/interface_custom.css') ? filemtime(dirname(__FILE__).'/css/interface_custom.css') : time(); ?>">
 <style>
 /* =========================================================
    BARRA PRINCIPAL - 100% ANCHO - 90px ALTO - SIN OVERFLOW
@@ -379,7 +388,9 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
     .menu-icon-search.is-expanded #menu-icon-filter { flex: 1 !important; }
     .menu-icon-search.is-expanded .menu-icon-search-trigger { display: none !important; }
 }
+
 </style>
+<link rel="stylesheet" href="<?php echo SGA_COMUN_URL; ?>/css/menu_account.css?v=<?php echo filemtime(__DIR__ . '/css/menu_account.css'); ?>">
 
 <audio id="player" src="<?php echo SGA_COMUN_URL . '/audio/fondo.mp3'; ?>"></audio>
 
@@ -409,33 +420,26 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
                     <?php endif; ?>
 
                     <?php if (isset($_SESSION['id_usuario'])): ?>
+                        <?php if (guagua_tienda_app_disponible('apps/espacio/')): ?><li data-id="espacio"><a href="<?php echo SGA_URL; ?>/apps/espacio/" title="Documentos, ideas y proyectos personales"><span data-text="ESPACIO" class="icon-sga-notebook"></span></a></li><?php endif; ?>
+                        <?php if (guagua_tienda_app_disponible('apps/prompts/')): ?><li data-id="prompts"><a href="<?php echo SGA_URL; ?>/apps/prompts/" title="Mis prompts: instrucciones, categorías y favoritos"><span data-text="PROMPTS" class="icon-sga-magic-wand"></span></a></li><?php endif; ?>
                         <li data-id="cursos"><a href="<?php echo SGA_URL; ?>/cursos"><span data-text="CURSOS" class="icon-sga-notebook"></span></a></li>
                         
                         <?php if (in_array($rol_actual, array("admin", "docente", "estudiante", "acudiente"))): ?>
                             <li data-id="red"><a title="Recursos Educativos Digitales" href="<?php echo SGA_URL; ?>/red"><span data-text="RED" class="icon-sga-app"></span></a></li>
                         <?php endif; ?>
                         
-                        <?php if (in_array($rol_actual, array("admin", "docente"))): ?>
-                            <li data-id="apps"><a  target="_blank" href="<?php echo SGA_URL; ?>/comun/gestor_menu.php"><span data-text="APPS" class="icon-sga-smartphone-7"></span></a></li>
+                        <?php if (in_array($rol_actual, array('admin', 'directivo', 'docente'), true)): ?>
+                            <li data-id="apps"><a href="<?php echo SGA_URL; ?>/comun/tienda.php" title="Tienda de aplicaciones de Guagua"><span data-text="APPS" class="icon-sga-smartphone-7"></span></a></li>
                         <?php endif; ?>
                         
                         <li data-id="datos"><a href="<?php echo SGA_REPORTES_URL; ?>/informe_docente.php"><span data-text="Datos" class="icon-sga-time"></span></a></li>
                     <?php endif; ?>
 
                     <!-- Icono Configuración dentro del slider -->
-                    <li data-id="config" class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Configuración">
+                    <li data-id="config">
+                        <a href="<?php echo SGA_URL; ?>/comun/configuracion.php" title="Centro de configuración de Guagua">
                             <span data-text="CONFIG" class="icon-sga-settings-4"></span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-right">
-                            <?php if ($rol_actual == "docente" || $rol_actual == "admin" || empty($rol_actual)): ?>
-                                <li><a target='_blank' href="<?php echo SGA_URL; ?>/apps/customizador_menu/index.php"><i class="fa-solid fa-palette"></i> Personalizar Menú (Live)</a></li>
-                                <li><a target='_blank' href="<?php echo SGA_URL; ?>/comun/gestor_menu.php">Menú</a></li>
-                                <li><a href="<?php echo SGA_URL; ?>/comun/dir_menu.php">Dir Menú</a></li>
-                            <?php endif; ?>
-                            <li><a href="#" id="btn-restaurar-menu"><i class="fa-solid fa-rotate-left"></i> Restaurar Menú</a></li>
-                            <li><a href="<?php echo SGA_USUARIO_URL; ?>/login.php?logout">Salir</a></li>
-                        </ul>
                     </li>
 
                     <?php
@@ -444,7 +448,11 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
                     $res_cabecera = $mysqli->query($sql_cabecera);
                     if ($res_cabecera && $res_cabecera->num_rows > 0) {
                         while ($item = $res_cabecera->fetch_assoc()) {
-                            $url = (strpos($item['menu_url'], 'http') === 0) ? $item['menu_url'] : SGA_URL . $item['menu_url'];
+                            if (!guagua_tienda_app_disponible((string)$item['menu_url'])) continue;
+                            // Todos los módulos registrados se abren mediante el
+                            // contenedor común para conservar esta cabecera.
+                            $url = SGA_URL . '/comun/modulo.php?id=' . (int)$item['menu_item_id'];
+                            if (guagua_tienda_es_gestor_antiguo((string)$item['menu_url'])) $url = SGA_URL . '/comun/tienda.php';
                             ?>
                             <li data-id="dynamic_<?php echo $item['menu_item_id']; ?>"><a title="<?php echo htmlspecialchars($item['menu_item_name']); ?>" target="<?php echo htmlspecialchars($item['url_target']); ?>" href="<?php echo $url; ?>"><span data-text="<?php echo htmlspecialchars($item['menu_item_name']); ?>" class="<?php echo htmlspecialchars($item['icono']); ?>"></span></a></li>
                             <?php
@@ -525,32 +533,7 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
                         notificar_mensajes();
                     }
                 </script>
-                <!-- Foto de usuario circular -->
-                <?php if ($persona): ?>
-                <li style="display:flex;align-items:center;justify-content:center;height:100%;padding:0 8px;">
-                    <div id="estilo_foto_usuario_menu" class="estilos_fotos"
-                         <?php if (isset($_SESSION['hijo']) && $rol_actual == "acudiente") { echo "style='text-align:center'"; } ?>>
-                        <?php
-                        if (isset($_SESSION['hijo']) && $rol_actual == "acudiente") {
-                            $sql = 'SELECT * FROM `usuario` WHERE `id_usuario` = "' . $_SESSION["hijo"] . '"';
-                            $consulta = $mysqli->query($sql);
-                            if ($row = $consulta->fetch_assoc()) { ?>
-                                <img onclick="document.location.href='<?php echo SGA_USUARIO_URL; ?>/perfil.php'"
-                                     title="<?php echo $persona->nombre . " " . $persona->apellido; ?>"
-                                     id="foto_usuario_hijo" src="<?php echo READFILE_URL . "/foto/" . ($row['foto']); ?>" width="50%">
-                            <?php }
-                        }
-                        ?>
-                        <img onclick="document.location.href='<?php echo SGA_USUARIO_URL; ?>/perfil.php'"
-                             title="<?php echo $persona->nombre . " " . $persona->apellido; ?>"
-                             id="foto_usuario" src="<?php echo READFILE_URL . "/foto/" . ($persona->foto); ?>"
-                             width="<?php echo (isset($_SESSION['hijo']) && $rol_actual == "acudiente") ? '50%' : '100%'; ?>">
-                        <span <?php if (isset($persona->rol) && $persona->rol == "acudiente") { echo 'style="margin-left:-65px!important;"'; } ?>
-                              <?php if (count(explode(",", $persona->rol)) > 1): ?> data-toggle="modal" data-target="#myModal_roles" <?php endif; ?>
-                              id="area_rol"><?php echo $rol_actual; ?></span>
-                    </div>
-                </li>
-                <?php endif; ?>
+                <?php require __DIR__ . '/menu_account.php'; ?>
             <?php else: ?>
                 <li style="display:flex;align-items:center;">
                     <a href="<?php echo SGA_USUARIO_URL; ?>/login.php" style="display:flex;align-items:center;gap:6px;">
@@ -628,7 +611,7 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
     </div>
 </nav>
 
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script src="/guagua/comun/vendor/sortable.min.js"></script>
 <script>
     window.onload = function() {
         if (typeof verificar_sonido === 'function') {
@@ -656,14 +639,20 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
         const menuEl = document.getElementById('sortable-menu');
         if (menuEl) {
             // 0. Ocultar elementos desfijados
-            const hiddenItems = JSON.parse(localStorage.getItem('sgaMenuHidden')) || [];
+            const leerPreferenciaMenu = key => {
+                try {
+                    const value = JSON.parse(localStorage.getItem(key));
+                    return Array.isArray(value) ? value : [];
+                } catch (error) { return []; }
+            };
+            const hiddenItems = leerPreferenciaMenu('sgaMenuHidden');
             
             // 1. Restaurar el orden guardado
-            const savedOrder = localStorage.getItem('sgaMenuOrder');
+            const savedOrder = leerPreferenciaMenu('sgaMenuOrder');
             const items = Array.from(menuEl.children);
             
-            if (savedOrder) {
-                const orderArray = JSON.parse(savedOrder);
+            if (savedOrder.length) {
+                const orderArray = savedOrder;
                 orderArray.forEach(id => {
                     const item = items.find(el => el.getAttribute('data-id') === id);
                     if (item) {
@@ -675,17 +664,18 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
             // Aplicar ocultamiento
             Array.from(menuEl.children).forEach(item => {
                 const id = item.getAttribute('data-id');
-                if (hiddenItems.includes(id)) {
+                if (id !== 'config' && hiddenItems.includes(id)) {
                     item.style.display = 'none';
                 }
 
                 // Lógica de "Long Press" (sostenido) para desfijar
                 let pressTimer;
                 item.addEventListener('pointerdown', (e) => {
+                    if (id === 'config') return;
                     if(e.button !== 0) return; // solo clic izquierdo o touch
                     pressTimer = window.setTimeout(() => {
                         if(confirm('¿Deseas desfijar esta opción del menú? Puedes restaurarla desde tu perfil.')) {
-                            let currentHidden = JSON.parse(localStorage.getItem('sgaMenuHidden')) || [];
+                            let currentHidden = leerPreferenciaMenu('sgaMenuHidden');
                             if(!currentHidden.includes(id)) {
                                 currentHidden.push(id);
                                 localStorage.setItem('sgaMenuHidden', JSON.stringify(currentHidden));
@@ -799,7 +789,7 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
             });
 
             // 2. Inicializar Sortable
-            new Sortable(menuEl, {
+            if (typeof Sortable !== 'undefined') new Sortable(menuEl, {
                 animation: 150,
                 delay: 150, // Pequeño retraso para que los clics normales funcionen en móviles y no cruce con el long press
                 delayOnTouchOnly: true, // Sólo aplica el retraso en dispositivos táctiles
@@ -812,18 +802,6 @@ $archivo_actual = basename($_SERVER['SCRIPT_NAME']);
             });
         }
         
-        // Botón Restaurar
-        const btnRestaurar = document.getElementById('btn-restaurar-menu');
-        if(btnRestaurar) {
-            btnRestaurar.addEventListener('click', (e) => {
-                e.preventDefault();
-                if(confirm('¿Restaurar el orden y los íconos ocultos del menú a su estado original?')) {
-                    localStorage.removeItem('sgaMenuOrder');
-                    localStorage.removeItem('sgaMenuHidden');
-                    location.reload();
-                }
-            });
-        }
     });
 </script>
 

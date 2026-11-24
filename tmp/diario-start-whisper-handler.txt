@@ -1,0 +1,27 @@
+    socket.on('start_whisper', () => {
+        if (!isWhisperInputConfigured()) {
+            return socket.emit('whisper_job_result', { status: 'error', message: `Whisper procesa los archivos de ${DEFAULT_AUDIO_OUTPUT_PATH}. Guarde esa misma ruta antes de iniciarlo.` });
+        }
+        if (extractionJobActive) {
+            return socket.emit('whisper_job_result', { status: 'error', message: 'Espere a que termine la extracción antes de transcribir.' });
+        }
+        if (whisperProcess && whisperProcess.exitCode === null && !whisperProcess.killed) {
+            return socket.emit('whisper_job_result', { status: 'running', message: 'Whisper ya está procesando la carpeta input.' });
+        }
+        try {
+            whisperProcess = whisperWorkflow.start(getAudioOutputRoot(), WHISPER_OUTPUT_PATH, result => {
+                whisperProcess = null;
+                const failed = result.error || result.code !== 0;
+                const message = failed
+                    ? `Whisper terminó con un error (código ${result.code ?? 'desconocido'}). ${result.error?.message || result.tail || 'No se recibió salida.'} Registro: ${result.logPath}`
+                    : 'Whisper terminó correctamente. Ahora use “3. Unir transcripciones”.';
+                io.emit('whisper_job_result', { status: failed ? 'error' : 'completed', message, logPath: result.logPath });
+                io.emit('log', { msg: message, type: failed ? 'error' : 'success' });
+            });
+            io.emit('whisper_job_result', { status: 'started', message: 'Whisper está preparando la transcripción. Los archivos sueltos anteriores de output se archivarán automáticamente.', logPath: whisperWorkflow.logPath });
+        } catch (error) {
+            whisperProcess = null;
+            socket.emit('whisper_job_result', { status: 'error', message: `No se pudo iniciar Whisper: ${parseErrorMessage(error)}` });
+        }
+    });
+

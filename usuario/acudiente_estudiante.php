@@ -277,9 +277,8 @@ if (isset($_GET['Actualizar']) && !empty($_GET['Actualizar'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asignación de Acudientes - Vallesol</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
+    <script src="/guagua/comun/js/sweetalert2@11.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         .loader-line {

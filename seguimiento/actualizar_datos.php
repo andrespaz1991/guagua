@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../comun/seguridad.php';
+guagua_exigir_rol(['admin','directivo']);
 require 'conexion.php';  //llamamos archivo de conexion para insertar datos en bd
 if (($fichero = fopen("r.csv", "r")) !== FALSE) {
 $nombres_campos = fgetcsv($fichero, 0, ";", "\"", "\"");

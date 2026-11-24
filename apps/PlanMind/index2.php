@@ -33,12 +33,8 @@ function planmind2_grado_numero(string $grado): string
 
 function planmind2_formatear_horas(float $horas): string
 {
-    // Evita mostrar ceros decimales innecesarios: 4.00 se presenta como 4.
-    if (fmod($horas, 1.0) === 0.0) {
-        return (string)(int)$horas;
-    }
-
-    return rtrim(rtrim(number_format($horas, 2, '.', ''), '0'), '.');
+    // Presenta las horas semanales como el entero más cercano, sin decimales.
+    return (string)(int)round($horas, 0, PHP_ROUND_HALF_UP);
 }
 
 /**
@@ -53,11 +49,10 @@ function planmind2_horas_asignacion_activa(string $grado, int $idMateria): ?arra
     }
 
     require_once __DIR__ . '/../../comun/config.php';
-    $mysqli = new mysqli(SERVIDORBD, USUARIOBD, CLAVEBD, BASEDEDATOS);
+    $mysqli = guagua_db_mysqli();
     if ($mysqli->connect_errno) {
         throw new RuntimeException('No fue posible conectar con la base de datos.');
     }
-    $mysqli->set_charset('utf8mb4');
 
     // Si hay sesión, se prioriza la asignación del docente y la institución actuales.
     $idDocente = max(0, (int)($_SESSION['id_usuario'] ?? $_SESSION['identificacion_usu'] ?? 0));
@@ -65,13 +60,13 @@ function planmind2_horas_asignacion_activa(string $grado, int $idMateria): ?arra
 
     $sql = "SELECT a.id_asignacion,
                    COUNT(h.id_horario) AS bloques,
-                   ROUND(COALESCE(SUM(
+                   COALESCE(SUM(
                        CASE
                            WHEN h.hora_fin >= h.hora_inicio
                                THEN TIME_TO_SEC(h.hora_fin) - TIME_TO_SEC(h.hora_inicio)
                            ELSE 86400 + TIME_TO_SEC(h.hora_fin) - TIME_TO_SEC(h.hora_inicio)
                        END
-                   ), 0) / 3600, 2) AS horas
+                   ), 0) / 3600 AS horas
             FROM `asignacion` a
             INNER JOIN `ano_lectivo` al
                 ON al.id_ano_lectivo = a.ano_lectivo
@@ -152,11 +147,10 @@ function planmind2_referentes_curriculares(): void
 
     try {
         require_once __DIR__ . '/../../comun/config.php';
-        $mysqli = new mysqli(SERVIDORBD, USUARIOBD, CLAVEBD, BASEDEDATOS);
+        $mysqli = guagua_db_mysqli();
         if ($mysqli->connect_errno) {
             throw new RuntimeException('No fue posible conectar con la base de datos.');
         }
-        $mysqli->set_charset('utf8mb4');
 
         // La pantalla apps/dba asocia estándar -> DBA -> eje temático.
         // Acepta tanto el nombre del grado (Sexto) como su identificador (6).
@@ -282,8 +276,10 @@ $scriptReferentes = <<<'HTML'
         ejesInput.setAttribute('aria-busy', 'true');
         estado.textContent = 'Consultando DBA y ejes temáticos…';
 
+        // PlanIA se abre dentro del contenedor de Guagua con
+        // guagua_embedded=1. No se debe borrar la consulta completa: sin ese
+        // parámetro Apache devuelve el contenedor HTML en lugar del JSON.
         const url = new URL(window.location.href);
-        url.search = '';
         url.searchParams.set('action', 'referentes');
         url.searchParams.set('grado', grado);
         url.searchParams.set('materia', materia);
@@ -334,7 +330,7 @@ $scriptHorasHorario = <<<'HTML'
     aviso.setAttribute('aria-live', 'polite');
     tiempoInput.parentElement.appendChild(aviso);
 
-    tiempoInput.step = '0.01';
+    tiempoInput.step = '1';
     let controlador = null;
     let consecutivo = 0;
 
@@ -361,8 +357,9 @@ $scriptHorasHorario = <<<'HTML'
         tiempoInput.setAttribute('aria-busy', 'true');
         aviso.textContent = 'Calculando horas desde el horario…';
 
+        // Conserva guagua_embedded=1 cuando el módulo se muestra en el iframe
+        // común; de lo contrario la petición termina en la página contenedora.
         const url = new URL(window.location.href);
-        url.search = '';
         url.searchParams.set('action', 'horas-horario');
         url.searchParams.set('grado', grado);
         url.searchParams.set('materia', materia);

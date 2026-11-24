@@ -1,0 +1,5 @@
+[     265ms] [ERROR] Access to font at 'http://localhost/guagua/comun/fonts/CurseCasual.ttf' from origin 'http://127.0.0.1:8769' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://127.0.0.1:8769/:101
+[     266ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost/guagua/comun/fonts/CurseCasual.ttf:0
+[     312ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8769/favicon.ico:0
+[   88976ms] [ERROR] Access to font at 'http://localhost/guagua/comun/fonts/CurseCasual.ttf' from origin 'http://127.0.0.1:8769' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://127.0.0.1:8769/:0
+[   88976ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost/guagua/comun/fonts/CurseCasual.ttf:0

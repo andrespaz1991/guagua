@@ -1,0 +1,60 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]: 
+    - heading "Guagua Educativa" [level=1] [ref=e7]
+    - paragraph [ref=e8]: Inicia sesión en tu cuenta
+  - text: 
+  - generic [ref=e9]:
+    - generic [ref=e10]:
+      - generic [ref=e11]: 
+      - text: Institución Educativa
+    - generic [ref=e12]:
+      - generic: 
+      - combobox " Institución Educativa" [ref=e13] [cursor=pointer]:
+        - option "Seleccione una institución"
+        - option "Institución Educativa Rural La Josefin..." [selected]
+        - option "Cinar Sistemas..."
+        - option "Instituto José Mutis..."
+        - option "INSTITUCION EDUCATIVA MUNICIPAL LICEO ..."
+        - option "Cubos de formación..."
+        - option "Consorcio S&P EducatiON LINE..."
+        - option "Fundación Educativa HST..."
+  - generic [ref=e14]:
+    - generic [ref=e15]:
+      - generic [ref=e16]: 
+      - text: Usuario o Documento
+    - generic [ref=e17]:
+      - generic: 
+      - textbox " Usuario o Documento" [active] [ref=e18]:
+        - /placeholder: "Ej: docente o número de documento"
+        - text: admin
+  - generic [ref=e19]:
+    - generic [ref=e20]:
+      - generic [ref=e21]: 
+      - text: Perfil o Rol
+    - generic [ref=e22]:
+      - generic: 
+      - combobox " Perfil o Rol" [ref=e23] [cursor=pointer]:
+        - option "Perfil configurado en la cuenta"
+        - option "Docente" [selected]
+  - text: 
+  - generic [ref=e24]:
+    - generic [ref=e25]:
+      - generic [ref=e26]: 
+      - text: Contraseña
+    - generic [ref=e27]:
+      - generic: 
+      - textbox " Contraseña" [ref=e28]:
+        - /placeholder: Ingresa tu contraseña
+        - text: admin
+      - button "" [ref=e29] [cursor=pointer]
+  - generic [ref=e31]:
+    - generic [ref=e32] [cursor=pointer]:
+      - checkbox "Recordarme" [ref=e33]
+      - text: Recordarme
+    - link "¿Olvidaste tu clave?" [ref=e34] [cursor=pointer]:
+      - /url: recuperar/recuperar_cuenta.php
+  - button "Ingresar " [ref=e35] [cursor=pointer]:
+    - generic [ref=e36]: Ingresar
+    - generic [ref=e37]: 
+  - text: 

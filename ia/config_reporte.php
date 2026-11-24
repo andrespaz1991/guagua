@@ -3,31 +3,25 @@
 
 // Conexión dinámica: usa config.php para detectar local vs producción (como Clase_mysqli.Class.php)
 require_once __DIR__ . '/../comun/config.php';
+require_once __DIR__ . '/lib/config_grupos.php';
+guagua_exigir_rol(['admin', 'directivo', 'docente']);
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') guagua_exigir_origen_legado();
 
-// Separar host y puerto si vienen juntos (ej: "localhost:7000")
-$hostParts = explode(':', SERVIDORBD);
-$db_host = $hostParts[0];
-$db_port = isset($hostParts[1]) ? (int)$hostParts[1] : 3306;
+$conexion = guagua_db_mysqli();
 
-$conexion = @new mysqli($db_host, USUARIOBD, CLAVEBD, BASEDEDATOS, $db_port);
-
-if ($conexion->connect_error) {
-    die("Error de conexión: " . $conexion->connect_error);
-}
-$conexion->set_charset("utf8");
-
-// Detectar si estamos en local o en la web
-$es_local = in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1', '::1']);
+// Detectar si estamos en local o en la web. SERVER_NAME no existe al ejecutar desde CLI.
+$nombre_servidor = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '';
+$es_local = in_array($nombre_servidor, ['localhost', '127.0.0.1', '::1'], true);
 
 
 
 // Esta función se encarga de leer los datos de la base de datos
-function obtenerConfiguracion($conexion) {
+function obtenerConfiguracion($conexion, $es_local) {
     try {
-        // Asumimos un docente y año lectivo fijos para el ejemplo, basado en tus datos.
-        $id_docente_actual = 1085290375;
-        $ano_lectivo_actual = 16;
-        $id_institucion_actual = 7;
+        // El año procede del mismo centro de configuración que los cursos.
+        $id_docente_actual = (string)$_SESSION['id_usuario'];
+        $ano_lectivo_actual = (int)(guagua_ano_activo($conexion)['id_ano_lectivo'] ?? 0);
+        $id_institucion_actual = (int)$_SESSION['id_institucion'];
 
         // --- Obtener Docente ---
         $stmt_docente = $conexion->prepare("SELECT nombre, apellido, telefono FROM usuario WHERE id_usuario = ?");
@@ -43,45 +37,21 @@ function obtenerConfiguracion($conexion) {
         $sede_data = $stmt_sede->get_result()->fetch_assoc();
         $stmt_sede->close();
         
-        // --- Obtener Grupos y Materias ---
-        $stmt_grupos = $conexion->prepare("
-            SELECT 
-                (CASE WHEN c.id_categoria_curso <= 8 THEN 1 ELSE 2 END) as id, 
-                CONCAT('Grupo (', (CASE WHEN c.id_categoria_curso <= 8 THEN '6° a 8°' ELSE '9° a 11°' END), ')') as nombre,
-                MIN(c.nombre_categoria_curso) as min_grado,
-                MAX(c.nombre_categoria_curso) as max_grado,
-                'ruta/ejemplo.xlsx' as ruta_excel,
-                '' as ruta_excel_web, -- Enlace web del Excel
-                20 as ultimafila -- Dato de ejemplo
-            FROM asignacion a
-            JOIN categoria_curso c ON a.id_categoria_curso = c.id_categoria_curso
-            WHERE a.ano_lectivo = ? AND a.id_docente = ? AND c.id_categoria_curso BETWEEN 6 AND 11
-            GROUP BY (CASE WHEN c.id_categoria_curso <= 8 THEN 1 ELSE 2 END)
-        ");
-        $stmt_grupos->bind_param("is", $ano_lectivo_actual, $id_docente_actual);
-        $stmt_grupos->execute();
-        $grupos = $stmt_grupos->get_result()->fetch_all(MYSQLI_ASSOC);
-        $stmt_grupos->close();
-
-        // Para cada grupo, obtener sus materias (esto es una simplificación)
-        foreach ($grupos as $key => &$grupo) {
-             if ($grupo['min_grado'] <= 8) {
-                 $grupo['materias'] = [
-                    ["nombre" => "Geometría", "columna" => "D"],
-                    ["nombre" => "Ciencias Sociales", "columna" => "E"],
-                    ["nombre" => "Educación Física", "columna" => "F"]
-                ];
-            } else {
-                $grupo['materias'] = [
-                    ["nombre" => "Ciencias Sociales/Economia", "columna" => "E"],
-                    ["nombre" => "Emprendimiento", "columna" => "G"],
-                    ["nombre" => "Tecnología", "columna" => "I"]
-                ];
+        // Cargar las opciones guardadas, sin fabricar grupos, materias ni rutas.
+        $grupos = $conexion->query('SELECT id, nombre, min_grado, max_grado, ruta_excel, ultimafila FROM config_grupos ORDER BY id')->fetch_all(MYSQLI_ASSOC);
+        $materias = $conexion->query('SELECT grupo_id, nombre_materia, columna_excel FROM config_materias ORDER BY id')->fetch_all(MYSQLI_ASSOC);
+        $archivoRutas = __DIR__ . '/config_rutas.json';
+        $rutas = is_file($archivoRutas) ? json_decode(file_get_contents($archivoRutas), true) : [];
+        foreach ($grupos as &$grupo) {
+            $grupo['materias'] = [];
+            foreach ($materias as $materia) {
+                if ((int)$materia['grupo_id'] === (int)$grupo['id']) $grupo['materias'][] = ['nombre'=>$materia['nombre_materia'], 'columna'=>$materia['columna_excel']];
             }
-            // Seleccionar la ruta correcta según el entorno
+            $grupo['ruta_excel'] = $rutas[$grupo['id']]['local'] ?? $grupo['ruta_excel'];
+            $grupo['ruta_excel_web'] = $rutas[$grupo['id']]['web'] ?? '';
             $grupo['ruta_excel_activa'] = $es_local ? $grupo['ruta_excel'] : ($grupo['ruta_excel_web'] ?: $grupo['ruta_excel']);
         }
-        
+        unset($grupo);
         return [
             "docente" => [
                 "nombre" => $docente_data ? trim($docente_data['nombre'] . ' ' . $docente_data['apellido']) : 'No encontrado',
@@ -102,8 +72,8 @@ function obtenerConfiguracion($conexion) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
     $action = $input['action'] ?? null;
-    $id_docente_actual = 1085290375;
-    $id_institucion_actual = 7;
+    $id_docente_actual = (string)$_SESSION['id_usuario'];
+    $id_institucion_actual = (int)$_SESSION['id_institucion'];
 
     $response = ["success" => false, "message" => "Acción no reconocida."];
 
@@ -141,14 +111,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($action === 'save_group') {
-        $response = ["success" => true, "message" => "Grupo guardado (simulación)."];
+        $response = guagua_report_group_save($conexion, $input['data'] ?? [], __DIR__ . '/config_rutas.json');
     }
-    
     if ($action === 'delete_group') {
-        $id_grupo = $input['id'] ?? null;
-        $response = ["success" => true, "message" => "Grupo " . htmlspecialchars($id_grupo) . " eliminado (simulación)."];
+        $response = guagua_report_group_delete($conexion, (int)($input['id'] ?? 0));
     }
-
     header("Content-Type: application/json");
     echo json_encode($response);
     $conexion->close();
@@ -156,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // --- OBTENER DATOS PARA LA CARGA INICIAL DE LA PÁGINA ---
-$config_data = obtenerConfiguracion($conexion);
+$config_data = obtenerConfiguracion($conexion, $es_local);
 $conexion->close();
 
 // --- FIN DEL BACKEND PHP ---
@@ -168,10 +135,7 @@ $conexion->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Módulo de Configuración de Reportes</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         .modal { transition: opacity 0.25s ease; }
@@ -532,12 +496,21 @@ $conexion->close();
         
         document.getElementById('group-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            // Lógica para recolectar datos del formulario...
+            const groupData = {
+                id: document.getElementById('group-id').value,
+                nombre: document.getElementById('group-nombre').value,
+                min_grado: document.getElementById('group-min-grado').value,
+                max_grado: document.getElementById('group-max-grado').value,
+                ruta_excel: document.getElementById('group-ruta').value,
+                ruta_excel_web: document.getElementById('group-ruta-web').value,
+                ultimafila: document.getElementById('group-ultimafila').value,
+                materias: Array.from(document.querySelectorAll('.materia-nombre')).map(campo => ({nombre: campo.value, columna: campo.parentElement.querySelector('.materia-columna').value}))
+            };
 
              fetch('config_reporte.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'save_group', data: {} }) // Simulado
+                body: JSON.stringify({ action: 'save_group', data: groupData })
             })
             .then(res => res.json())
             .then(result => {

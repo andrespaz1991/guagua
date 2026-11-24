@@ -1,0 +1,54 @@
+- generic [active] [ref=f5e1]:
+  - generic [ref=f5e2]:
+    - complementary [ref=f5e3]:
+      - generic [ref=f5e4]:
+        - generic [ref=f5e5]: 
+        - heading "Malla viva" [level=2] [ref=f5e6]
+      - generic [ref=f5e7]:
+        - generic [ref=f5e8]:
+          - generic [ref=f5e9]: Grado
+          - generic [ref=f5e10]:
+            - combobox "Grado" [ref=f5e11]:
+              - option "Seleccione un grado..." [selected]
+              - option "6"
+              - option "7"
+            - generic: 
+        - generic [ref=f5e12]:
+          - generic [ref=f5e13]: Materia
+          - generic [ref=f5e14]:
+            - combobox "Materia" [ref=f5e15]:
+              - option "Seleccione una materia..." [selected]
+              - option "Matemáticas"
+              - option "Emprendimiento"
+            - generic: 
+      - text:  +  
+    - main [ref=f5e16]:
+      - generic [ref=f5e17]:
+        - generic [ref=f5e18]:
+          - heading "Configuración Curricular" [level=1] [ref=f5e19]
+          - paragraph [ref=f5e20]: Seleccione Grado y Materia en el panel lateral.
+        - button "" [ref=f5e22] [cursor=pointer]
+      - tablist "Vistas del módulo" [ref=f5e24]:
+        - tab "Editor curricular" [selected] [ref=f5e25] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f5e26]: 
+          - text: Editor curricular
+        - tab "Reporte de pendientes" [ref=f5e27] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f5e28]: 
+          - text: Reporte de pendientes
+        - tab "Evidencias de aprendizaje" [ref=f5e29] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f5e30]: 
+          - text: Evidencias de aprendizaje
+        - tab "Importar DBA" [ref=f5e31] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f5e32]: 
+          - text: Importar DBA
+        - tab "Exportar" [ref=f5e33] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f5e34]: 
+          - text: Exportar
+      - text:                +       +       +       +         +    +     +      +      +      +    +     +       
+      - tabpanel "Editor curricular" [ref=f5e35]:
+        - generic [ref=f5e37]:
+          - generic [ref=f5e38]: 
+          - paragraph [ref=f5e39]: Seleccione un Grado y Materia
+        - status [ref=f5e40]
+      - text:         
+  - text:   

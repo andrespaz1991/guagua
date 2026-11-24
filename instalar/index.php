@@ -1,4 +1,9 @@
 <?php ob_start();
+require_once __DIR__ . "/../comun/database.php";
+require_once __DIR__ . '/../comun/seguridad.php';
+guagua_iniciar_sesion_segura();
+if (is_file(dirname(__DIR__) . '/.env')) guagua_exigir_rol(['admin', 'directivo']);
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') guagua_exigir_csrf();
 @session_start();
 setcookie('instalacion',true);
 require (dirname(__FILE__)."/../comun/funciones.php");
@@ -6,17 +11,20 @@ if(isset($_POST['base_url'])){
 #echo "<pre>";
 #print_r($_POST);
 #echo "</pre>";
-$servidorbd = addslashes($_POST['servidorbd']);
-$usuariobd  = addslashes($_POST['usuariobd']);
-$clavebd  = addslashes($_POST['clavebd']);
-$basededatos = addslashes($_POST['basededatos']);
-$mysqli2 = new mysqli($servidorbd,$usuariobd,$clavebd);
-mysqli_set_charset($mysqli2,'utf8');
+$servidorbd = trim((string)$_POST['servidorbd']);
+$usuariobd = trim((string)$_POST['usuariobd']);
+$clavebd = (string)$_POST['clavebd'];
+$basededatos = trim((string)$_POST['basededatos']);
+if (!preg_match('/^[a-zA-Z0-9_]+$/D', $basededatos)) { http_response_code(400); exit('Nombre de base de datos inválido.'); }
+$installationOffset = preg_replace_callback('/^([+-])(\d):/', static fn($match) => $match[1] . '0' . $match[2] . ':', (string)$_POST['time_zone_offset']);
+$installationSettings = GuaguaDatabase::settings('default', ['host' => $servidorbd, 'user' => $usuariobd, 'password' => $clavebd, 'database' => $basededatos, 'timezone' => (string)$_POST['timezone'], 'time_zone' => $installationOffset]);
+$mysqli2 = guagua_db_mysqli('default', array_replace($installationSettings, ['database' => '']));
+// La factoría establece codificación y zona horaria.
 $mysqli2->query("CREATE DATABASE IF NOT EXISTS `$basededatos` DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;");
 /*
 */
-#$mysqli = new mysqli($servidorbd,$usuariobd,$clavebd,$basededatos);
-#mysqli_set_charset($mysqli,'utf8');
+// La conexión al esquema se obtiene de la factoría central.
+
 //time zone
 #Configuración de Zona Horaria
 $timezone  = addslashes($_POST['timezone']);
@@ -33,77 +41,17 @@ $ruta_sga_data = $_POST['sga_data'];
 if (!file_exists($ruta_sga_data))
 @mkdir ($ruta_sga_data);
 ##
-$plantilla_congif = '<?php
-#Configuración para conexion a Base de datos
-define (\'SERVIDORBD\',\''.$servidorbd.'\');
-define (\'USUARIOBD\',\''.$usuariobd.'\');
-define (\'CLAVEBD\',\''.$clavebd.'\');
-define (\'BASEDEDATOS\',\''.$basededatos.'\');
-#
-#Configuración de Zona Horaria
-define (\'TIME_ZONE\',\''.$timezone.'\');
-define (\'TIME_ZONE_OFFSET\',\''.$time_zone_offset.'\');
-#
-#Configuracion para ruta de carpetas comunes y modulos
-#
-define (\'SGA_URL\',\''.$base_url.'\');
-define (\'SGA\',$_SERVER[\'DOCUMENT_ROOT\']);#cuidado es la raiz
-define (\'SGA_SERVER\',\''.$base_server.'\');
-#
-define (\'SGA_COMUN_SERVER\',\''.$base_server.'comun\');
-#
-define (\'SGA_COMUN_URL\',SGA_URL.\'comun\');
-define (\'SGA_CURSOS_URL\',SGA_URL.\'cursos\');
-define (\'SGA_FOROS_URL\',SGA_URL.\'foros\');
-define (\'SGA_USUARIO_URL\',SGA_URL.\'usuario\');
-define (\'SGA_MENSAJE_URL\',SGA_URL.\'mensajes\');
-define (\'SGA_CUESTIONARIO_URL\',SGA_URL.\'cuestionario\');
-define (\'SGA_RED_URL\',SGA_URL.\'red\');
-#
-define (\'READFILE_SERVER\',\''.$ruta_sga_data.'\');
-define (\'READFILE_URL\',SGA_RED_URL.\'/readfile.php?file=\');
-#
-$array_roles = array("admin"=>"Administrador","docente"=>"Docente","estudiante"=>"Estudiante","acudiente"=>"Acudiente");
-?>';
-$plantilla_congif = '<?php
-#Configuración para conexion a Base de datos
-define (\'SERVIDORBD\',\''.$servidorbd.'\');
-define (\'USUARIOBD\',\''.$usuariobd.'\');
-define (\'CLAVEBD\',\''.$clavebd.'\');
-define (\'BASEDEDATOS\',\''.$basededatos.'\');
-#
-#Configuración de Zona Horaria
-define (\'TIME_ZONE\',\''.$timezone.'\');
-define (\'TIME_ZONE_OFFSET\',\''.$time_zone_offset.'\');
-#
-#Configuración para ruta de carpetas comunes y modulos
-define ("SGA_COMUN_SERVER",dirname(__FILE__));
-$url_comun = str_replace("\\\\","/",dirname(__FILE__)); $url_comun = str_replace($_SERVER[\'DOCUMENT_ROOT\'],"",$url_comun); $url_comun = "//".$_SERVER[\'SERVER_NAME\']."/".$url_comun;
-$url =  str_replace("/comun","",$url_comun);                                    
-$url_server =  str_replace("/comun","",SGA_COMUN_SERVER);
-define ("SGA_COMUN_URL","//".$url_comun);
-define ("SGA_SERVER",$url_server);
-define ("SGA_URL","//".$url);
-define ("SGA_COMUN_IMAGES","//".$url."/comun/img");
-define ("SGA_COMUN_IMAGES_URL","//".$url."/comun/img");
-define ("SGA_CURSOS_URL","//".$url."/cursos");
-define ("SGA_REPORTES_URL","//".$url."/reportes");
-define ("SGA_FOROS_URL","//".$url."/foros");
-define ("SGA_USUARIO_URL","//".$url."/usuario");
-define ("SGA_MENSAJE_URL","//".$url."/mensajes");
-define ("SGA_CUESTIONARIO_URL","//".$url."/cuestionario");
-define ("SGA_RED_URL","//".$url."/red");
-define ("SGA",$_SERVER[\'DOCUMENT_ROOT\']);//cuidado es la raiz, no la ruta del sw
-$ruta_sga_data = "/'.$ruta_sga_data.'";
-if (!file_exists(SGA_SERVER.$ruta_sga_data))
-@mkdir (SGA_SERVER.$ruta_sga_data);
-define ("READFILE_SERVER",SGA_SERVER.$ruta_sga_data);
-#define ("READFILE_URL",SGA_RED_URL."/readfile.php?file=");
-define ("READFILE_URL","//".$url.$ruta_sga_data);
-#
-$array_roles = array("admin"=>"Administrador","directivo"=>"Directivo","docente"=>"Docente","estudiante"=>"Estudiante","acudiente"=>"Acudiente","invitado"=>"Invitado");
-?>';
-file_put_contents($base_server.'comun/config.php',$plantilla_congif);
+// Guardar solo la configuración de conexión, sin sobrescribir config.php.
+GuaguaDatabase::saveEnvironment([
+    'GUAGUA_APP_ENV' => $installationSettings['environment'],
+    'GUAGUA_DB_HOST' => $installationSettings['host'],
+    'GUAGUA_DB_PORT' => $installationSettings['port'],
+    'GUAGUA_DB_USER' => $installationSettings['user'],
+    'GUAGUA_DB_PASSWORD' => $installationSettings['password'],
+    'GUAGUA_DB_NAME' => $installationSettings['database'],
+    'GUAGUA_TIMEZONE' => $installationSettings['timezone'],
+    'GUAGUA_DB_TIME_ZONE' => $installationSettings['time_zone'],
+]);
 #insertar administrador y configuracion de institucion
 //requerir conexion
 require($base_server.'comun/conexion.php');
@@ -1683,6 +1631,7 @@ $base_server =  $base_server."/";
                 </ul>
             </div>
             <form id="form_registro" role="form" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(guagua_csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
                 <div class="tab-content">
                     <div class="tab-pane active" role="tabpanel" id="step1">
                         <div class="step1">

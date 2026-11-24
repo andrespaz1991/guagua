@@ -1,0 +1,58 @@
+[     223ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost/guagua/comun/audio/fondo.mp3:0
+[     389ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ http://localhost/guagua/apps/PlanMind/tailwindcss.js:63
+[     815ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost/guagua/apps/PlanMind/index2.php?guagua_embedded=1:0
+[   35527ms] [LOG] [PlanMind] toReadableText input: {
+  "Inicio": "Presentación del tema: Conflicto y relación con el Estado. Se utilizará un juego de roles para simular situaciones cotidianas que generen conflicto y se trabaje la resolución pacífica.",
+  "Desarrollo": [
+    {
+      "tema": "Organización ciudadana y expresiones políticas",
+      "actividad": "Taller de debate sobre la participación ciudadana en la comunidad rural, con el objetivo de identificar las formas de participación y los derechos que se deben defender."
+    },
+    {
+      "tema": "Resolución pacífica y convivencia",
+      "actividad": "Simulación de situaciones cotidianas donde se resuelva un conflicto de forma pacífica, utilizando estrategias de comunicación y negociación."
+    }
+  ],
+  "Cierre": "Presentación de conclusiones del proyecto. Se realizará una reflexión individual sobre la importancia de la resolución pacífica y la convivencia en la comunidad rural."
+} @ http://localhost/guagua/apps/PlanMind/index2.php?guagua_embedded=1:1280
+[   35529ms] [LOG] [PlanMind] toReadableText input: {
+  "observables": [
+    "Participación activa en las actividades",
+    "Capacidad de análisis crítico sobre situaciones cotidianas relacionadas con el conflicto y la resolución pacífica.",
+    "Desarrollo de estrategias de comunicación y negociación para resolver conflictos de forma pacífica."
+  ],
+  "formativos": [
+    "Reflexión individual sobre la importancia de la resolución pacífica y la convivencia en la comunidad rural",
+    "Presentación de conclusiones del proyecto"
+  ]
+} @ http://localhost/guagua/apps/PlanMind/index2.php?guagua_embedded=1:1280
+[   75890ms] [ERROR] Failed to load resource: the server responded with a status of 422 (Unprocessable Entity) @ http://localhost/guagua/apps/PlanMind/lmstudio.php:0
+[   78154ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost/guagua/apps/PlanMind/lmstudio.php:0
+[   96595ms] [LOG] [PlanMind] toReadableText input: {
+  "Inicio": "Presentación del tema: Conflicto y relación con el Estado. Se utilizará un juego de roles para simular situaciones cotidianas que generen conflicto y se trabaje la resolución pacífica.",
+  "Desarrollo": [
+    {
+      "Tema": "Organización ciudadana y expresiones políticas",
+      "Actividad": "Taller de debate sobre la participación ciudadana en la comunidad rural, con el objetivo de identificar las formas de participación y los derechos que se deben defender."
+    },
+    {
+      "Tema": "Resolución pacífica y convivencia",
+      "Actividad": "Simulación de situaciones cotidianas donde se resuelva un conflicto de forma pacífica, utilizando estrategias de comunicación y negociación."
+    }
+  ],
+  "Cierre": "Presentación de conclusiones del proyecto. Se realizará una reflexión individual sobre la importancia de la resolución pacífica y la convivencia en la comunidad rural.  **¿Cómo podemos contribuir a una comunidad más pacífica y justa en nuestra zona?**"
+} @ http://localhost/guagua/apps/PlanMind/index2.php?guagua_embedded=1:1280
+[   96596ms] [LOG] [PlanMind] toReadableText input: {
+  "observables": [
+    "Participación activa en las actividades",
+    "Capacidad de análisis crítico sobre situaciones cotidianas relacionadas con el conflicto y la resolución pacífica.",
+    "Desarrollo de estrategias de comunicación y negociación para resolver conflictos de forma pacífica."
+  ],
+  "formativos": [
+    "Reflexión individual sobre la importancia de la resolución pacífica y la convivencia en la comunidad rural",
+    "Presentación de conclusiones del proyecto"
+  ]
+} @ http://localhost/guagua/apps/PlanMind/index2.php?guagua_embedded=1:1280
+[ 2268894ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost/guagua/comun/audio/fondo.mp3:0
+[ 2268944ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ http://localhost/guagua/apps/PlanMind/tailwindcss.js:63
+[ 2269186ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost/guagua/apps/PlanMind/index2.php?guagua_embedded=1:0

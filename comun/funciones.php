@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/persona_imagen.php';
 
 if (!file_exists(dirname(__FILE__)."/config.php")) {
 if (!isset($_COOKIE['instalacion'])) {//no mover del principo
@@ -10,24 +11,38 @@ if (file_exists("../instalar/index.php")) header("Location: ../instalar/index.ph
 
 
 
-require (dirname(__FILE__)."/funciones.rutas.php");
+
 /*Fin Rutas*/
 /*Clases*/
 #include_once (dirname(__FILE__)."/foro.class.php");
 /*Fin Clases*/
-@session_start();
-if(isset($_POST['valora'])){
-  @session_start();
-require (dirname(__FILE__)."/conexion.php");
-  $sql=' select * from usuario where id_usuario="'.$_POST['valora'].'"  and clave ="'.$_POST['valorb'].'"';
-      $consulta = $mysqli->query($sql);
-   while ($row = $consulta->fetch_Assoc()){ 
-$_SESSION['rol'] = $mysqli->real_escape_string($_POST['rol']);
- $_SESSION['id_usuario'] = $row['id_usuario'];
- $_SESSION['id_institucion']=$_POST['institucion']; 
+require_once __DIR__ . '/seguridad.php';
+guagua_iniciar_sesion_segura();
+// Los accesos antiguos comparaban hashes y aceptaban roles enviados por el cliente.
+// El único punto de autenticación es usuario/login.php.
+if (isset($_POST['valora']) || isset($_POST['fn_login_guagua'])) {
+    guagua_error_acceso(410, 'Use la página actual de inicio de sesión.');
 }
-print_r($consulta->num_rows);
+if (PHP_SAPI !== 'cli' && empty($_SESSION['id_usuario'])) {
+    $entry = str_replace('\\', '/', (string)($_SERVER['SCRIPT_FILENAME'] ?? ''));
+    $loginEntry = str_replace('\\', '/', dirname(__DIR__) . '/usuario/login.php');
+    $installerEntry = str_replace('\\', '/', dirname(__DIR__) . '/instalar/index.php');
+    if (strcasecmp($entry,$loginEntry)!==0 && !(strcasecmp($entry,$installerEntry)===0 && !is_file(dirname(__DIR__) . '/.env'))) {
+        $homeEntry = str_replace('\\', '/', dirname(__DIR__) . '/index.php');
+        if (strcasecmp($entry,$homeEntry)===0 || str_contains((string)($_SERVER['HTTP_ACCEPT'] ?? ''),'text/html')) {
+            header('Location: /guagua/usuario/login.php'); exit;
+        }
+        guagua_error_acceso(401, 'Debe iniciar sesión.');
+    }
 }
+
+// Ejecutar el dispatch después de recuperar y verificar la sesión.
+if (PHP_SAPI !== 'cli' && !guagua_validar_nombres_archivos($_FILES)) guagua_error_acceso(422, 'Nombre o formato de archivo no permitido.');
+if (PHP_SAPI !== 'cli' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') guagua_exigir_origen_legado();
+$legacyChanges = ['guardar_entrada','guardar_comentario','nueva_entrada','nuevo_comentario','fav_ent','elred','fav_red','estado_visible','estado_curso','estado_tema','fav_cuestionario','fav_eve','guardar_evento','scorm'];
+if (PHP_SAPI !== 'cli' && array_intersect($legacyChanges,array_keys($_GET))) guagua_exigir_origen_legado();
+require_once __DIR__ . '/funciones.rutas.php';
+
 function cursos_para_padres($id_cat,$id_ano_lectivo,$where){ #lista_cursos para padres
   return $sql= 'SELECT *, usuario.nombre as nombre_docente, usuario.apellido as apellido_docente FROM asignacion, materia ,  ano_lectivo, usuario, inscripcion , categoria_curso where asignacion.id_categoria_curso = categoria_curso.id_categoria_curso and asignacion.id_docente = usuario.id_usuario and 
         inscripcion.id_asignacion = asignacion.id_asignacion and
@@ -87,10 +102,8 @@ return $sql1="SELECT * FROM `respuesta_estudiante` WHERE `id_estudiante` = '".$_
 
 function cursos_para_docente($id_cat,$id_ano_lectivo,$where){ #lista_cursos para padres
   @session_start();
-  #$_SESSION['id_institucion']=6; //pilas borrar
-  if(!isset($_SESSION['id_institucion'])){
-   // $_SESSION['id_institucion']=6;
-  }
+
+
 return $sql= 'SELECT *, usuario.nombre as nombre_docente, usuario.apellido as apellido_docente FROM asignacion, materia_oficial ,  ano_lectivo, usuario,  categoria_curso where asignacion.id_categoria_curso = categoria_curso.id_categoria_curso and asignacion.id_docente = usuario.id_usuario and ano_lectivo.id_ano_lectivo = asignacion.ano_lectivo and materia_oficial.id_materia = asignacion.id_curso and asignacion.ano_lectivo="'.$id_ano_lectivo.'" and asignacion.id_categoria_curso = "'.$id_cat.'" 
 and asignacion.institucion_educativa = "'.$_SESSION['id_institucion'].'"
 and asignacion.id_docente = "'.$_SESSION['id_usuario'].'"'.$where.'  Order By materia_oficial.nombre_materia asc ';
@@ -204,7 +217,7 @@ $array_roles = array("admin"=>"Administrador","docente"=>"Docente","estudiante"=
     }
     
     $resultado = $resultado!="" ? $resultado : "user-icon.png";
-    $mifoto = "/foto/".$resultado;
+    $mifoto = "/foto/".guagua_persona_foto($resultado, $row['genero'] ?? '');
     $ruta_foto = READFILE_URL.$mifoto;//
 
  if($row['id_usuario'] != "" and $row['mascota']=='SI'){
@@ -376,74 +389,13 @@ $dia = $intervalo->format('%R%a');;
 **
  *  Funciones Login
  **/
-if (isset($_POST['fn_login_guagua'])){ //login para niños
-    @session_start();
-require 'conexion.php';
-    $usuario = $mysqli->real_escape_string($_POST['usuario']);
-    $clave = $mysqli->real_escape_string($_POST['clave']);
-  $sql = "SELECT * from usuario WHERE `clave` = '$clave' and `usuario` = '$usuario' and estado='activo'  ";
-   $consulta = $mysqli->query($sql);
-   if ($row=$consulta->fetch_assoc()){
-     $ultima_sesion_f = formatofecha($row['ultima_sesion']);
-       $hoy = date("Y-m-d H:i:s");
-       if ($ultima_sesion_f!= formatofecha($hoy)){
-       $sql_visitas = "UPDATE `usuario` SET `num_visitas`=`num_visitas`+1 , `puntos`=`puntos`+1 WHERE `id_usuario` = '".$row['id_usuario']."'";
-       $consulta_visitas = $mysqli->query($sql_visitas);
-       }
-       $sql_ultima_sesion = "UPDATE `usuario` SET `ultima_sesion`='".$hoy."' WHERE `id_usuario` = '".$row['id_usuario']."'";
-       $consulta_ultima_sesion = $mysqli->query($sql_ultima_sesion);
-@session_start();
-       $_SESSION['clave'] = $row['clave'];
-       $_SESSION['id_usuario'] = $row['id_usuario'];
-       $_SESSION['usuario'] = $row['usuario'];
-       $_SESSION['nombre_usu'] = $row['nombre']." ".$row['apellido'];
-       $_SESSION['nombre'] = $row['nombre'];
-       $_SESSION['apellido'] = $row['apellido'];
-       $_SESSION['foto'] = $row['foto'];
-       $misroles = explode(",",$row['rol']);
-     
-    if(in_array($_POST['rol'],$misroles)){
-          $_SESSION['rol'] = $mysqli->real_escape_string($_POST['rol']);
-       }
-       else{
-          $_SESSION['rol'] = $misroles[0];
-
-       }
-       $_SESSION['roles'] = $row['rol'];
-       $ruta = dirname(__DIR__)."/sga-data/foto/".$row['foto'];
-       //recordarme
-if (isset($_POST['recordarme']) and $_POST['recordarme']=="SI"){
-$cookie_name = "usuarios[".$row['id_usuario']."]";
-$cookie_value = $row['usuario'];
-setcookie($cookie_name, $cookie_value, time() + (86400 * 365), "/"); // 86400 = 1 dia
-}
-//fin recordarme
-       $ext1 = explode(".",$ruta);
-       $ext = end($ext1);
-       if (file_exists($ruta)){
-       $ruta_tmp = "login.$ext";
-       move_uploaded_file($ruta,$ruta_tmp);
-       }
-       $_SESSION['num_visitas'] = $row['num_visitas'];//+1;
-       $_SESSION['puntos'] = $row['puntos'];
-      if ($_SESSION['rol']=="estudiante"){
-         $sql_estudiante = "SELECT * from usuario WHERE id_usuario = '".$_SESSION['id_usuario']."'";
-         $consulta_estudiante = $mysqli->query($sql_estudiante);
-        if ($row_estudiante= $consulta_estudiante->fetch_assoc()){
-                $_SESSION['id_categoria_curso'] = $row_estudiante['id_categoria_curso'];
-        }
-       }
-   }
-   $numrow = $consulta->num_rows;
-   echo $numrow;//muestra el resultado de la consulta 0 o 1  
-}
 function nivel_educativo_de_estudiante($estudiante,$ano_lectivo){
         require 'conexion.php';
    $sql='Select * from  inscripcion,categoria_curso,asignacion where 
 inscripcion.id_asignacion =
 asignacion.id_asignacion and
-categoria_curso.id_categoria_curso = categoria_curso.id_categoria_curso and
-inscripcion.id_estudiante = "'.$estudiante.'" and Year(inscripcion.fecha_inscripcion) = "'.$ano_lectivo.'" '; 
+categoria_curso.id_categoria_curso = asignacion.id_categoria_curso and
+inscripcion.id_estudiante = "'.$estudiante.'" and asignacion.ano_lectivo IN (SELECT id_ano_lectivo FROM ano_lectivo WHERE nombre_ano_lectivo = "'.(int)$ano_lectivo.'" OR id_ano_lectivo = '.(int)$ano_lectivo.') '; 
 #echo $sql;
 $consulta_sql = $mysqli ->query($sql);
 while($rowsql= $consulta_sql ->fetch_assoc()){
@@ -459,9 +411,9 @@ function categoria_de_estudiante($estudiante,$ano_lectivo){
    $sql='Select * from  inscripcion,categoria_curso,asignacion where 
 inscripcion.id_asignacion =
 asignacion.id_asignacion and
-categoria_curso.id_categoria_curso = categoria_curso.id_categoria_curso and
+categoria_curso.id_categoria_curso = asignacion.id_categoria_curso and
  asignacion.institucion_educativa ="'.$_SESSION['institucion'].'"
-and inscripcion.id_estudiante = "'.$estudiante.'" and Year(inscripcion.fecha_inscripcion) = "'.$ano_lectivo.'" '; 
+and inscripcion.id_estudiante = "'.$estudiante.'" and asignacion.ano_lectivo IN (SELECT id_ano_lectivo FROM ano_lectivo WHERE nombre_ano_lectivo = "'.(int)$ano_lectivo.'" OR id_ano_lectivo = '.(int)$ano_lectivo.') '; 
 $consulta_sql = $mysqli ->query($sql);
 while($rowsql= $consulta_sql ->fetch_assoc()){
         return $rowsql['nombre_categoria_curso']; 
@@ -755,7 +707,7 @@ $top5 = $foro->top5($grupo);
 #print_r($top5);
 if (count($top5)>0){
 foreach ($top5 as $id => $row_entrada){
-?><a href="#t<?php echo $row_entrada['id']; ?>"><span><img style="border-radius:5px" height="18" src="<?php echo READFILE_URL."/foto/".validarfoto($row_entrada['foto']) ?>" ></span>&nbsp;&nbsp;<?php echo $row_entrada['contenido'] ?>&nbsp;&nbsp;<span class="badge badge_amarillo_azul"><?php echo $row_entrada['num_comentarios'] ?></span></a><br>
+?><a href="#t<?php echo $row_entrada['id']; ?>"><span><img style="border-radius:5px" height="18" src="<?php echo READFILE_URL."/foto/".validarfoto($row_entrada['foto'], $row_entrada['genero'] ?? '') ?>" ></span>&nbsp;&nbsp;<?php echo $row_entrada['contenido'] ?>&nbsp;&nbsp;<span class="badge badge_amarillo_azul"><?php echo $row_entrada['num_comentarios'] ?></span></a><br>
 <?php }
 }else{
   echo "No hay temas destacados en este Foro";
@@ -877,7 +829,7 @@ if ($row_entrada['estado']=="Desactivado"){
             <div  onclick="toogle_entradas('<?php echo $row_entrada['id']; ?>')" id="titulo_<?php echo $row_entrada['id']; ?>" class="panel-heading">
                 <span class="cabecera_entrada">
                     <span class="autor_publicacion"><?php #print_r($row_entrada) ?>
-                    &nbsp;&nbsp;<i><strong><span><img style="border-radius:5px" height="40" src="<?php if (isset($row_entrada['foto'])) echo READFILE_URL."/foto/".validarfoto($row_entrada['foto']) ?>" ></span><?php echo  $row_entrada['nombre_usuario'] ?></strong> dice:</i><br><span class="fecha_publicacion" style="font-size:14px;color:gray;"><?php echo diferenciaentrefechas_foro($row_entrada['fecha']) ?></span>
+                    &nbsp;&nbsp;<i><strong><span><img style="border-radius:5px" height="40" src="<?php if (isset($row_entrada['foto'])) echo READFILE_URL."/foto/".validarfoto($row_entrada['foto'], $row_entrada['genero'] ?? '') ?>" ></span><?php echo  $row_entrada['nombre_usuario'] ?></strong> dice:</i><br><span class="fecha_publicacion" style="font-size:14px;color:gray;"><?php echo diferenciaentrefechas_foro($row_entrada['fecha']) ?></span>
                     </span>
 <?php 
 $suscripciones = contar_suscripciones_json($row_entrada['suscribirse']);
@@ -1012,7 +964,7 @@ if(isset($_GET['listar_comentarios'])){
     echo "<div class='panel-body comentarios'  id='com_".$row_comentarios['id_comentario']."'>";?>
     <span class="cabecera_entrada" style="position:absolute;text-align:left;left: 90px;">
     <span class="foto_autor_comentario">
-        <img style="border-radius:5px" height="40" src="<?php if(isset($row_comentarios['foto'])) echo READFILE_URL."/foto/".validarfoto($row_comentarios['foto']) ?>" >
+        <img style="border-radius:5px" height="40" src="<?php if(isset($row_comentarios['foto'])) echo READFILE_URL."/foto/".validarfoto($row_comentarios['foto'], $row_comentarios['genero'] ?? '') ?>" >
     </span>
     <span class="nombre_autor_comentario">
     <i><strong><?php echo $row_comentarios['nombre_usuario']?></strong> dice:</i>
@@ -1547,10 +1499,10 @@ function ultima_inscripcion ($estudiante) {
 #04/04/2017 Fin Función para seleccionar hijo
 function inscribir_estudiante_materia($asignacion,$categoria,$ano_lectivo){
     require 'conexion.php';
-    $ano_lectivo=ano_lectivo();
+    $ano_lectivo=consultar_id_ano_lectivo();
      $sql = 'select * from inscripcion,asignacion where 
 asignacion.id_asignacion= inscripcion.id_asignacion and      
-    asignacion.id_categoria_curso = "'.$categoria.'" and Year(inscripcion.fecha_inscripcion) = "'.$ano_lectivo.'" '; 
+    asignacion.id_categoria_curso = "'.$categoria.'" and asignacion.ano_lectivo = "'.$ano_lectivo.'" '; 
        $consulta = $mysqli ->query($sql); #Consultamos estudiante
     $estudiante= array(); 
     while($row=$consulta->fetch_assoc()){
@@ -2171,13 +2123,8 @@ function nueva_categoria_curso($nombre,$nivel){
     $salida = $mysqli->insert_id;
     return $salida;
 }
-function validarfoto($miurl="user-icon.png",$sexo=0){
-  /*
-    $returl = "user-icon.png";
-    $returf = "user-iconf.png";
-if($sexo=="f"){     return $returf;      }
-if($sexo=="m" or $sexo==0 ){    return  $miurl;      }
-*/
+function validarfoto($miurl="user-icon.png",$sexo=''){
+    return guagua_persona_foto($miurl, $sexo);
 }
 if (isset($_GET['estado_visible'])){
 ob_clean();
@@ -2259,7 +2206,7 @@ require("conexion.php");
 $sqlinscripcion='select * from inscripcion,asignacion where 
 asignacion.id_asignacion = inscripcion.id_asignacion and
 asignacion.institucion_educativa="'.$_SESSION['id_institucion'].'" and 
-id_estudiante="'.$id_estudiante.'" and fecha_inscripcion like "%'.date('Y').'%" ';
+id_estudiante="'.$id_estudiante.'" and asignacion.ano_lectivo = "'.consultar_id_ano_lectivo().'" ';
 
 $consulta_inscripcion = $mysqli->query($sqlinscripcion);
 while ($rowinscripcion = $consulta_inscripcion -> fetch_assoc()) {
@@ -2329,7 +2276,7 @@ $tarea[] = false;
 ?>
 <tr class="filas" id="fila_<?php echo $row['id_inscripcion']?>" onclick="elegirfila_est('<?php echo $row['id_inscripcion']?>');document.getElementById('id_inscripcion').value='<?php echo $row['id_inscripcion']?>';<?php if (isset($row['id_seguimiento']) and $row['id_seguimiento']!="NULL") echo "modificar_nota('".$row['id_seguimiento']."');"; else echo "nueva_nota();"; ?>revisar_tareas('<?php echo $row['id_estudiante']?>','<?php echo $row['apellido']?> <?php echo $row['nombre']?>','<?php echo $row_act['id_cuestionario']?>');<?php
 /*revisar_cuestionario('<?php echo $row_act['id_cuestionario']?>','<?php echo $row['id_estudiante']?>');revisar_adjunto('<?php echo $row['id_estudiante']?>','<?php echo $row['apellido']?> <?php echo $row['nombre']?>');*/?>">
-<td style="text-align:left" title="Revisar a: <?php echo $row['id_estudiante']?>, <?php echo $row['apellido']?> <?php echo $row['nombre']?> "><img width="30px" style="background-color: transparent; border-radius: 15px;" src="<?php echo READFILE_URL."/foto/".($row['foto'])?>">&nbsp;&nbsp;<?php echo $row['id_inscripcion']?> <?php echo $row['apellido']?> <?php echo $row['nombre'];?><?php echo ' (Monedas: '.$row['puntos'].'  )'?></td><td title="<?php if ($row['observacion']) echo $row['observacion'] ?>" id="seguimiento_<?php echo $row['id_seguimiento']?>" valoracion="<?php echo $row['valoracion']?>" observacion="<?php echo $row['observacion']?>" style="<?php 
+<td style="text-align:left" title="Revisar a: <?php echo $row['id_estudiante']?>, <?php echo $row['apellido']?> <?php echo $row['nombre']?> "><img width="30px" style="background-color: transparent; border-radius: 15px;" src="<?php echo READFILE_URL."/foto/".guagua_persona_foto($row['foto'], $row['genero'] ?? '')?>">&nbsp;&nbsp;<?php echo $row['id_inscripcion']?> <?php echo $row['apellido']?> <?php echo $row['nombre'];?><?php echo ' (Monedas: '.$row['puntos'].'  )'?></td><td title="<?php if ($row['observacion']) echo $row['observacion'] ?>" id="seguimiento_<?php echo $row['id_seguimiento']?>" valoracion="<?php echo $row['valoracion']?>" observacion="<?php echo $row['observacion']?>" style="<?php 
 if(!in_array(false,$tarea)){
     echo 'background-color:#7bba3f';
     }elseif(in_array(true,$tarea)){
@@ -2468,13 +2415,13 @@ function consultar_foto($id_usuario){
     require(dirname(__FILE__)."/conexion.php");
     require_once(dirname(__FILE__)."/config.php");
     $resultado="user-icon.png";
-    $sql = "SELECT `foto` FROM `usuario` WHERE `usuario` = '$id_usuario'";
+    $sql = "SELECT `foto`, `genero` FROM `usuario` WHERE `usuario` = '$id_usuario'";
     $consulta = $mysqli->query($sql);
     if ($row=$consulta->fetch_assoc()){
     $resultado = $row['foto'];
-    $resultado = validarfoto($resultado)!="" ? validarfoto($resultado) : $row['foto'];
+    $resultado = guagua_persona_foto($resultado, $row['genero'] ?? '');
     }
-    $mifoto = "/foto/".$resultado;
+    $mifoto = "/foto/".guagua_persona_foto($resultado, $row['genero'] ?? '');
     $ruta = READFILE_URL.$mifoto."&token=".encriptar($mifoto);
     return $ruta;//url
 }
@@ -2580,7 +2527,7 @@ value='".$row['id_usuario']."'
 style='margin:2px;list-style:none;text-align:center;align:center' title='".$row['apellido']." ".$row['nombre']." (".$row['id_usuario'].")'><span ";
 echo 'fn-dranganddrop="estudiante_drop" dranganddrop-helper="clone" dranganddrop-datos=\'{"id_acudiente":"'.$row['id_usuario'].'","nombre_acudiente":"'.$row['apellido'].' '.$row['nombre'].'"}\'>';
 ?>
-<img  draggable="true" style="z-index:100;position:relative;border-radius:5px;" height="60" src="<?php echo READFILE_URL.'/foto/'.($row['foto']); ?>">
+<img  draggable="true" style="z-index:100;position:relative;border-radius:5px;" height="60" src="<?php echo READFILE_URL.'/foto/'.guagua_persona_foto($row['foto'], $row['genero'] ?? ''); ?>">
 <?php
 echo "<span style='z-index:100;position:relative;display:block;text-align:center' class='acudiente_draggable'>".$row['apellido']." ".$row['nombre']."</span></span></li>";
  }
@@ -2768,7 +2715,7 @@ $(function(fn){
         </td>
                 <?php } ?>
 
-        <td data-label="De" title="Última vez en linea: <?php echo formatofechayhora($row['ultima_sesion'])?>"><input type="hidden" name="remite" value="<?php echo $row['remite']; ?>"><img  width="30px" style="background-color:#fff;border-radius:15px;" src="<?php echo READFILE_URL."/foto/".($row['foto']);?>">&nbsp;&nbsp;&nbsp;<?php echo $row['nombre']." ".$row['apellido']; ?>
+        <td data-label="De" title="Última vez en linea: <?php echo formatofechayhora($row['ultima_sesion'])?>"><input type="hidden" name="remite" value="<?php echo $row['remite']; ?>"><img  width="30px" style="background-color:#fff;border-radius:15px;" src="<?php echo READFILE_URL."/foto/".guagua_persona_foto($row['foto'], $row['genero'] ?? '');?>">&nbsp;&nbsp;&nbsp;<?php echo $row['nombre']." ".$row['apellido']; ?>
         </td>
         <td title="<?php echo $row['mensaje']; ?>" data-label="Mensaje"><?php echo substr($row['mensaje'], 0, 50);
         if (strlen($row['mensaje'])>50) echo "..."; ?></td>
@@ -2831,7 +2778,7 @@ function ano_estudiante(){
 
  $sqlp= "SELECT * FROM `ano_lectivo`";
      if ($_SESSION['rol']=="acudiente" or $_SESSION['rol']=="estudiante"){ 
-        $sqlp.= ' where nombre_ano_lectivo like "'.date('Y').'" '  ; }
+        $sqlp.= ' where estado = "Activo" '  ; }
         $sqlp.=" order by id_ano_lectivo desc";
         
 return    $sqlp;
@@ -3151,7 +3098,7 @@ if ($estrellasmias>="1"){
 /* fin estrellas */
 ?>
 
-<p><img style="bottom:0px;right:0px;border-radius:10px;margin:0;margin-bottom: -30px;left: -34px;top: -10px;    position: relative;" height="20px" src="<?php echo READFILE_URL."/foto/".($row['foto'])?>"></p>
+<p><img style="bottom:0px;right:0px;border-radius:10px;margin:0;margin-bottom: -30px;left: -34px;top: -10px;    position: relative;" height="20px" src="<?php echo READFILE_URL."/foto/".guagua_persona_foto($row['foto'], $row['genero'] ?? '')?>"></p>
 <span style="z-index: 100;top: -20px;position: relative;">
 <?php echo $row['nombre']?>
 </span>
@@ -3545,7 +3492,7 @@ function validargenero(){
 var select = document.getElementById("genero"); 
 var genero=select.value;     
 var foto=document.getElementById("img_foto").src;
-if(foto=="http://localhost//guagua/sga-data//foto/user-icon.png" or foto=="http://localhost//guagua/sga-data//foto/user-iconf.png"){
+if (/\/user-icon(?:f)?2?\.png(?:[?#].*)?$/i.test(foto)) {
   if(genero=='m'){
 document.getElementById("img_foto").src = "../sga-data/foto/user-icon.png";
 document.getElementById("default").src = "../sga-data/foto/user-icon.png";
@@ -3706,13 +3653,11 @@ if(valor=="subir"){
 </div > 
 <script src="script.js"></script>
 <script
-  src="https://code.jquery.com/jquery-3.4.1.js"
-  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
-  crossorigin="anonymous"></script>
+  src="/guagua/comun/js/jquery-3.6.0.min.js"></script>
 <script src="../comun/js/funciones.js"></script>
 <div >
 <canvas  id="canvas" style="border: black 5px solid;
-;width:42%;height:65%;margin-top:4%;position:relative;margin-left:50%; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTeb9mdXVg787Q5XA5HGwkiye9o_qa9W9fDOMN9rQrfZp9Otp5D'); background-repeat: repeat-y; background-repeat: repeat-x;" >
+;width:42%;height:65%;margin-top:4%;position:relative;margin-left:50%; background-color: #ffffff;" >
 </canvas>
 </div>
 </div>
@@ -3956,7 +3901,7 @@ echo $_SESSION['hijo'] ?>" class="btn btn-success">Modificar Información estudi
     border-radius:150px;
     margin-left:70%;
     margin-top:-140%;
-    '  height="300" src="<?php if (isset($row['foto'])) echo READFILE_URL."/foto/".$row['foto'];
+    '  height="300" src="<?php if (isset($row['foto'])) echo READFILE_URL."/foto/".guagua_persona_foto($row['foto'], $row['genero'] ?? '');
  ?>">
 
 
@@ -4152,25 +4097,17 @@ function tipos_sangre($pre=""){ ?>
 <option <?php if($pre == "AB+") echo "selected";?> value="AB+">AB positivo</option><?php
 }
 function ano_lectivo() {
-    require(dirname(__FILE__)."/conexion.php");
-    $sql="SELECT id_ano_lectivo, nombre_ano_lectivo FROM `ano_lectivo` WHERE estado = 'Activo'";
-    $consulta_sql = $mysqli ->query($sql);
-    while($rowsql= $consulta_sql->fetch_assoc()){
-        return $rowsql['nombre_ano_lectivo']; 
-    }
+    require_once __DIR__ . '/database.php';
+    require_once __DIR__ . '/academico.php';
+    return guagua_ano_configurado(guagua_db_request());
 }
 
 
 
 function consultar_id_ano_lectivo(){
-    require(dirname(__FILE__)."/conexion.php");
-  $sql = "SELECT id_ano_lectivo, nombre_ano_lectivo FROM `ano_lectivo` WHERE estado = 'Activo'";
-    $consulta = $mysqli->query($sql);
-    $salida="";
-    if ($row=$consulta->fetch_assoc()){
-    $salida = $row['id_ano_lectivo'];
-    }
-    return $salida;
+    require_once __DIR__ . '/database.php';
+    require_once __DIR__ . '/academico.php';
+    return guagua_ano_activo(guagua_db_request())['id_ano_lectivo'] ?? '';
 }
 function importar_xls($ruta){
 require (dirname(__FILE__).'/conexion.php');
@@ -4420,17 +4357,10 @@ echo $rowcategoria['nombre_categoria_curso'];
 }
 
 
-function recuperar_contraseña($idusuario){
-$consultar_datos2 ='select * from usuario where id_usuario='.$idusuario.' ';
-require '../../comun/config.php';
-$cadena = consultar_datos2($consultar_datos2)[0][
-  0].consultar_datos2($consultar_datos2)[0][
-  1].date('Y-m-d');
-$token = sha1($cadena);
-$enlace = SGA_USUARIO_URL.'/restablecer.php?token='.$token;
-return enviarEmail(consultar_datos2($consultar_datos2)[0][
-  10], $enlace );
-  }
+function recuperar_contraseña($idusuario) {
+    require_once __DIR__ . '/../usuario/lib/password_reset.php';
+    reset_request(guagua_db_mysqli(), (string)$idusuario);
+}
 
   function enviarEmail( $email, $link ){
 $email_institucion=$email;  

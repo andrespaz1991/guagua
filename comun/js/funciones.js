@@ -19,66 +19,65 @@ function capitalizarPalabras(texto) {
 }
 
 function listarEstudiantes() {
-    document.getElementById("contenedor").innerHTML = "";
-    
-    // Variables de filtro renombradas para evitar colisiones
-    var filtroNombre = document.getElementById("filtro_grados").value;
-    var filtroAsignacion = document.getElementById("asignaciones").value;
-    var filtroname = document.getElementById("nombrees").value;
-
-    var ajax = new XMLHttpRequest();
-    var url = "estudianteshome.php?nid=" + encodeURIComponent(filtroAsignacion) + "&nombre=" + encodeURIComponent(filtroNombre)+ "&name=" + encodeURIComponent(filtroname);
-    console.log("Consultando:", url);
-    
-    ajax.open("GET", url, true);
-
-    ajax.onreadystatechange = function() {
-        if (ajax.readyState == 4 && ajax.status == 200) {
-            try {
-                var texto = ajax.responseText;
-                var resp_json = JSON.parse(texto);
-                
-                console.log("Total de registros recibidos:", resp_json.length);
-
-                // Iteración correcta sobre el array
-                for (let i = 0; i < resp_json.length; i++) {
-                    if (i <= 500) {
-                        let estudiante = resp_json[i];
-                        let nombreCompleto = estudiante.nombre + ' ' + estudiante.apellido;
-                        let nombreCapitalizado = capitalizarPalabras(nombreCompleto);
-                        
-                        // Controlar valores undefined (como id_asignacion que no está en tu JSON)
-                        let idAsig = estudiante.id_asignacion ? estudiante.id_asignacion : '';
-
-                        // Construcción limpia del HTML usando comillas simples para los atributos
-                        let html = "<a target='_blank' style='color:black;' href='usuario/hdv.php?id=" + estudiante.id_usuario + "'>" + 
-                                       "<img width='50px' src='sga-data/foto/" + estudiante.foto + "'> " +
-                                       "<span title='" + nombreCompleto + "'>" + puntosuspensivos(nombreCapitalizado) + "</span>" +
-                                   "</a>" +
-                                   "<form style='display:inline' action='seguimiento/citas.php' method='POST'>" +
-                                       "<input type='hidden' name='submit' value='Nuevo'>" +
-                                       "<input type='hidden' name='estudiante' value='" + estudiante.id_usuario + "'>" +
-                                       "<input type='hidden' name='nombreestudiante' value='" + nombreCompleto + "'>" +
-                                       "<input type='hidden' name='asignacion' value='" + idAsig + "'>" +
-                                       "<input type='image' src='comun/img/png/compose.png' alt='Submit' width='24' height='24'>" +
-                                   "</form><br>";
-
-                        $("#contenedor").append(html);
-                    }
-                }
-            } catch (error) {
-                console.error("Error al procesar el JSON o renderizar HTML:", error);
-            }
+    clearTimeout(listarEstudiantes.timer);
+    if (listarEstudiantes.controller) listarEstudiantes.controller.abort();
+    const sequence = listarEstudiantes.sequence = (listarEstudiantes.sequence || 0) + 1;
+    listarEstudiantes.timer = setTimeout(async () => {
+        const container = document.getElementById('contenedor');
+        if (!container) return;
+        const controller = listarEstudiantes.controller = new AbortController();
+        const filters = new URLSearchParams({
+            nid: document.getElementById('asignaciones')?.value || '',
+            nombre: document.getElementById('filtro_grados')?.value || '',
+            name: document.getElementById('nombrees')?.value || ''
+        });
+        container.setAttribute('aria-busy', 'true');
+        try {
+            const response = await fetch('estudianteshome.php?' + filters, { signal: controller.signal });
+            if (!response.ok) throw new Error('No se pudo cargar el directorio.');
+            const students = await response.json();
+            if (sequence !== listarEstudiantes.sequence) return;
+            const fragment = document.createDocumentFragment();
+            students.forEach(student => {
+                const name = String(student.nombre || '') + ' ' + String(student.apellido || '');
+                const link = document.createElement('a');
+                link.href = 'usuario/hdv.php?id=' + encodeURIComponent(student.id_usuario);
+                link.target = '_blank'; link.rel = 'noopener'; link.style.color = 'black';
+                const image = document.createElement('img');
+                const filename = String(student.foto || '').split(/[\\/]/).pop();
+                const gender = String(student.genero || '').trim().toLowerCase();
+                const fallback = student.foto_default || (['f', 'femenino', 'femenina', 'female', 'mujer'].includes(gender) ? 'user-iconf.png' : ['m', 'masculino', 'male', 'hombre'].includes(gender) ? 'user-icon.png' : 'user-icon2.png');
+                const defaults = ['', 'user-icon.png', 'user-iconf.png', 'user-icon2.png', 'user-iconf2.png'];
+                image.src = 'sga-data/foto/' + encodeURIComponent(defaults.includes(filename.toLowerCase()) ? fallback : filename);
+                image.onerror = function () { this.onerror = null; this.src = 'sga-data/foto/' + fallback; };
+                image.width = 50; image.loading = 'lazy'; image.alt = '';
+                const label = document.createElement('span');
+                label.title = name; label.textContent = puntosuspensivos(capitalizarPalabras(name));
+                link.append(image, label);
+                const form = document.createElement('form');
+                form.style.display = 'inline'; form.action = 'seguimiento/citas.php'; form.method = 'POST';
+                const fields = { submit: 'Nuevo', estudiante: student.id_usuario, nombreestudiante: name,
+                    asignacion: filters.get('nid'), csrf_token: window.guaguaCsrfToken || '' };
+                Object.entries(fields).forEach(([name,value]) => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden'; input.name = name; input.value = value; form.append(input);
+                });
+                const button = document.createElement('input');
+                button.type = 'image'; button.src = 'comun/img/png/compose.png';
+                button.alt = 'Crear seguimiento'; button.width = 24; form.append(button);
+                fragment.append(link, form, document.createElement('br'));
+            });
+            if (!students.length) fragment.append(document.createTextNode('No hay estudiantes para estos filtros.'));
+            container.replaceChildren(fragment);
+        } catch (error) {
+            if (error.name !== 'AbortError' && sequence === listarEstudiantes.sequence) container.textContent = error.message;
+        } finally {
+            if (sequence === listarEstudiantes.sequence) container.removeAttribute('aria-busy');
         }
-    };
-    ajax.send();
-}                  
+    }, 250);
+}
 
-
-
-
-
-   function adicionar_dias(dias) {
+function adicionar_dias(dias) {
  var isChecked = document.getElementById(dias).checked;
 if(isChecked==false){
 var elem1 = document.getElementById ('hr'+dias);
@@ -1682,25 +1681,22 @@ function alert3(texto,tipo="success",tiempo="5000"){
 		document.getElementById("txt_alertas").innerHTML='';
 		}, tiempo);
 }
-function buscarcurso(texto=""){
-/*
-* Objetivo: permitir realizar la búsqueda de los cursos dentro del modulo de cursos
-* Uso: Se utiliza en la barra de menu en el archivo comun/menu.php
-*/
-
-ajax=nuevoAjax();
-ajax.open("POST","../../cursos/fn_ajax.php?",true);
-ajax.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-	ajax.onreadystatechange=function() {
-		if (ajax.readyState==4) {
-		    $('.anos').show();
-            $('.cats').show();
-		//document.getElementById('txtresultados').innerHTML = "";
-alert2(ajax.responseText);
-		eval(ajax.responseText);
-		}
-	}
-ajax.send("texto="+texto);
+function buscarcurso(texto="") {
+    if (buscarcurso.controller) buscarcurso.controller.abort();
+    buscarcurso.controller = new AbortController();
+    const sequence = buscarcurso.sequence = (buscarcurso.sequence || 0) + 1;
+    const source = Array.from(document.scripts).find(script => /\/comun\/.*funciones\.js/.test(script.src));
+    const root = source ? source.src.split('/comun/')[0] + '/' : new URL('.', location.href).href;
+    fetch(new URL('cursos/fn_ajax.php', root), {
+        method: 'POST', signal: buscarcurso.controller.signal,
+        body: new URLSearchParams({ texto })
+    }).then(response => { if (!response.ok) throw new Error('No se pudo buscar'); return response.json(); })
+      .then(data => {
+          if (sequence !== buscarcurso.sequence) return;
+          $('.anos, .cats').hide();
+          data.anos.forEach(id => document.getElementById('id_' + id)?.style.setProperty('display','block'));
+          data.categorias.forEach(id => document.getElementById('cat_' + id)?.style.setProperty('display','block'));
+      }).catch(error => { if (error.name !== 'AbortError') console.error(error.message); });
 }
 function MostrarTodosLosRed(estado){
 if(estado=="false"){

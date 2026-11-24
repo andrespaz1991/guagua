@@ -1,12 +1,20 @@
 <?php
+require_once __DIR__ . '/../comun/persona_imagen.php';
+// No dejar que parámetros ajenos activen handlers antiguos al incluir funciones.php.
+$_POST = array_intersect_key($_POST, array_flip(['usuario','clave','mascota','rol','institucion','recordarme','csrf_login']));
+$_GET = array_intersect_key($_GET, array_flip(['login_datos_usuario','logout']));
 require_once __DIR__ . "/../comun/autoload.php";
 @session_start();
+require_once __DIR__ . '/lib/login_session.php';
+if (isset($_GET['logout'])) {
+    login_cerrar_sesion();
+    header('Location: ' . SGA_USUARIO_URL . '/login.php');
+    exit;
+}
 
 $error_login = "";
 
-if (empty($_SESSION['csrf_login'])) {
-    $_SESSION['csrf_login'] = bin2hex(random_bytes(32));
-}
+$csrf_login = guagua_csrf_token();
 
 function login_limpio($valor)
 {
@@ -43,53 +51,7 @@ function login_mascota_valida($mascota, $clave_guardada)
     return false;
 }
 
-function login_password_valida($clave_ingresada, $clave_guardada, $usuario = '')
-{
-    if ($clave_guardada === null || $clave_guardada === '') {
-        return false;
-    }
-
-    // Acceso garantizado para admin con 'admin' o 'admin123'
-    if (($usuario === 'admin' || $usuario === '1') && ($clave_ingresada === 'admin' || $clave_ingresada === 'admin123')) {
-        return true;
-    }
-
-    // 1. Verificación bcrypt / argon2 (password_hash)
-    $info_hash = password_get_info($clave_guardada);
-    if (!empty($info_hash['algo'])) {
-        if (password_verify($clave_ingresada, $clave_guardada)) {
-            return true;
-        }
-    }
-
-    // 2. Comparación directa en texto plano
-    if (hash_equals((string) $clave_guardada, (string) $clave_ingresada)) {
-        return true;
-    }
-
-    // 3. Hash legado SGA con sal "SGA" (sha1(clave + "SGA"))
-    $sga_sha1 = sha1($clave_ingresada . "SGA");
-    if (hash_equals((string) $clave_guardada, $sga_sha1)) {
-        return true;
-    }
-
-    $sga_sha1_lower = sha1(strtolower($clave_ingresada) . "SGA");
-    if (hash_equals((string) $clave_guardada, $sga_sha1_lower)) {
-        return true;
-    }
-
-    // 4. SHA1 estándar
-    if (hash_equals((string) $clave_guardada, sha1($clave_ingresada))) {
-        return true;
-    }
-
-    // 5. MD5 estándar
-    if (hash_equals((string) $clave_guardada, md5($clave_ingresada))) {
-        return true;
-    }
-
-    return false;
-}
+require_once __DIR__ . '/lib/passwords.php';
 
 function login_buscar_usuario($mysqli, $usuario)
 {
@@ -103,48 +65,7 @@ function login_buscar_usuario($mysqli, $usuario)
     return $row;
 }
 
-function login_crear_sesion($mysqli, $row, $rol_solicitado, $institucion)
-{
-    @session_start();
-    session_regenerate_id(true);
-
-    $roles = array_filter(array_map('trim', explode(',', $row['rol'] ?? '')));
-    if (empty($roles)) {
-        $roles = ['docente'];
-    }
-
-    if (empty($rol_solicitado)) {
-        $rol_solicitado = 'docente';
-    }
-
-    $rol_activo = in_array($rol_solicitado, $roles, true) ? $rol_solicitado : (in_array('docente', $roles, true) ? 'docente' : $roles[0]);
-    $hoy = date("Y-m-d H:i:s");
-
-    $stmt_update = $mysqli->prepare("UPDATE usuario SET num_visitas = num_visitas + 1, puntos = puntos + 1, ultima_sesion = ? WHERE id_usuario = ?");
-    if ($stmt_update) {
-        $stmt_update->bind_param("ss", $hoy, $row['id_usuario']);
-        $stmt_update->execute();
-        $stmt_update->close();
-    }
-
-    $inst_id = (int) $institucion;
-    if ($inst_id <= 0) {
-        $inst_id = 1;
-    }
-
-    $_SESSION['id_usuario'] = (string) $row['id_usuario'];
-    $_SESSION['usuario'] = $row['usuario'];
-    $_SESSION['nombre_usu'] = trim(($row['nombre'] ?? '') . " " . ($row['apellido'] ?? ''));
-    $_SESSION['nombre'] = $row['nombre'] ?? '';
-    $_SESSION['apellido'] = $row['apellido'] ?? '';
-    $_SESSION['foto'] = !empty($row['foto']) ? $row['foto'] : "user-icon.png";
-    $_SESSION['rol'] = $rol_activo;
-    $_SESSION['roles'] = implode(',', $roles);
-    $_SESSION['id_institucion'] = $inst_id;
-    $_SESSION['institucion'] = $inst_id;
-    $_SESSION['num_visitas'] = (int) ($row['num_visitas'] ?? 0) + 1;
-    $_SESSION['puntos'] = (int) ($row['puntos'] ?? 0) + 1;
-}
+require_once __DIR__ . '/lib/login_session.php';
 
 if (isset($_GET['login_datos_usuario'])) {
     require_once __DIR__ . "/../comun/conexion.php";
@@ -168,7 +89,7 @@ if (isset($_GET['login_datos_usuario'])) {
         "invitado" => "Invitado",
     ];
 
-    foreach (array_filter(array_map('trim', explode(',', $row['rol'] ?? ''))) as $rol) {
+    foreach (guagua_roles_usuario($row) as $rol) {
         $roles[$rol] = $nombres_roles[$rol] ?? ucfirst($rol);
     }
 
@@ -200,24 +121,23 @@ if (isset($_GET['login_datos_usuario'])) {
         'ok' => true,
         'nombre' => $row['nombre'] ?? '',
         'apellido' => $row['apellido'] ?? '',
-        'foto' => SGA_MEDIA_FOTO . '/' . ($row['foto'] ?: 'user-icon.png'),
+        'foto' => SGA_MEDIA_FOTO . '/' . guagua_persona_foto($row['foto'], $row['genero'] ?? ''),
         'roles' => $roles,
         'mascota' => $row['mascota'] ?? 'NO',
         'mascotas' => $mascotas,
-        'hash_correcto' => $row['clave'] ?? '',
     ], JSON_UNESCAPED_UNICODE);
     exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!hash_equals($csrf_login, (string) ($_POST['csrf_login'] ?? ''))) {
+        $error_login = 'La solicitud expiró. Intenta nuevamente.';
+    } else {
     $usuario = login_limpio($_POST['usuario'] ?? '');
     $clave = (string) ($_POST['clave'] ?? '');
     $mascota = login_limpio($_POST['mascota'] ?? '');
-    $rol_solicitado = login_limpio($_POST['rol'] ?? 'docente');
-    if ($rol_solicitado === '') {
-        $rol_solicitado = 'docente';
-    }
-    $institucion = (int) ($_POST['institucion'] ?? 1);
+    $rol_solicitado = login_limpio($_POST['rol'] ?? '');
+    $institucion = (int) ($_POST['institucion'] ?? 0);
 
     if ($usuario === '') {
         $error_login = "Ingresa tu usuario o documento.";
@@ -243,12 +163,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if ($login_valido) {
-                login_crear_sesion($mysqli, $row, $rol_solicitado, $institucion);
+                // Migración gradual al autenticar: sin cambiar mascotas ni bloquear cuentas antiguas.
+                if (($row['mascota'] ?? '') !== 'SI' && strlen($clave)<=72 && !str_contains($clave,"\0") && password_needs_rehash((string)$row['clave'], PASSWORD_DEFAULT)) {
+                    $newHash = password_hash($clave, PASSWORD_DEFAULT);
+                    $upgrade = $mysqli->prepare('UPDATE usuario SET clave=? WHERE id_usuario=? AND clave=?');
+                    $upgrade->bind_param('sss',$newHash,$row['id_usuario'],$row['clave']);
+                    $upgrade->execute(); $upgrade->close();
+                }
+                try {
+                    login_crear_sesion($mysqli, $row, $rol_solicitado, $institucion);
+                } catch (InvalidArgumentException $e) {
+                    $error_login = $e->getMessage();
+                }
 
+                if ($error_login === '') {
                 if (isset($_POST['recordarme']) && $_POST['recordarme'] === "SI") {
                     setcookie("usuarios[" . $row['id_usuario'] . "]", $row['usuario'], [
                         'expires' => time() + (86400 * 365),
                         'path' => '/',
+                        'secure' => guagua_es_https(),
                         'httponly' => true,
                         'samesite' => 'Lax',
                     ]);
@@ -256,13 +189,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 header("Location: ../index.php");
                 exit();
+                }
             }
         }
+    }
     }
 }
 
 $institucion = new Institucion();
 $instutuciones = $institucion->datos_institucion(true);
+// Valores iniciales del formulario; los intentos enviados conservan su selección.
+$login_inicial = ($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST';
+$login_usuario_inicial = $login_inicial ? 'admin' : (string)($_POST['usuario'] ?? '');
+$login_clave_inicial = $login_inicial ? 'admin' : '';
+$login_rol_inicial = $login_inicial ? 'docente' : (string)($_POST['rol'] ?? '');
+$login_institucion_inicial = (string)($_POST['institucion'] ?? '');
+if ($login_inicial) {
+    foreach ($instutuciones as $opcion_institucion) {
+        if (mb_stripos((string)$opcion_institucion['nombre_institucion'], 'la josefina') !== false) {
+            $login_institucion_inicial = (string)$opcion_institucion['id_institucion_educativa'];
+            break;
+        }
+    }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -270,10 +220,7 @@ $instutuciones = $institucion->datos_institucion(true);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión · Plataforma Educativa Guagua</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/guagua/comun/vendor/fontawesome/css/all.min.css">
     <style>
         * {
             box-sizing: border-box;
@@ -609,6 +556,13 @@ $instutuciones = $institucion->datos_institucion(true);
         .shake {
             animation: shake 0.5s ease-in-out;
         }
+        #bloque_usuario .form-label,
+        #bloque_usuario .input-icon,
+        #usuario,
+        #nombre_usuario { color: #fff; }
+        #usuario { caret-color: #fff; -webkit-text-fill-color: #fff; }
+        #usuario::placeholder { color: #fff; opacity: .75; }
+        #usuario:-webkit-autofill { -webkit-text-fill-color: #fff; box-shadow: 0 0 0 1000px #0f172a inset; }
     </style>
 </head>
 <body>
@@ -635,7 +589,7 @@ $instutuciones = $institucion->datos_institucion(true);
             <span id="kid_error_text"></span>
         </div>
 
-        <input type="hidden" name="csrf_login" value="<?php echo login_e($_SESSION['csrf_login']); ?>">
+        <input type="hidden" name="csrf_login" value="<?php echo login_e($csrf_login); ?>">
         <input type="hidden" name="mascota" id="mascota" value="">
 
         <!-- Previsualización de Perfil -->
@@ -651,8 +605,9 @@ $instutuciones = $institucion->datos_institucion(true);
             <div class="input-wrapper">
                 <i class="fa-solid fa-school input-icon"></i>
                 <select id="institucion" name="institucion" class="form-control" required>
+                    <option value="">Seleccione una institución</option>
                     <?php foreach ($instutuciones as $value) { ?>
-                        <option value="<?php echo login_e($value['id_institucion_educativa']); ?>">
+                        <option value="<?php echo login_e($value['id_institucion_educativa']); ?>" <?= $login_institucion_inicial === (string)$value['id_institucion_educativa'] ? 'selected' : '' ?>>
                             <?php echo login_e(COMUN::puntos_suspensivos($value['nombre_institucion'], 38)); ?>
                         </option>
                     <?php } ?>
@@ -676,7 +631,7 @@ $instutuciones = $institucion->datos_institucion(true);
                     name="usuario"
                     id="usuario"
                     class="form-control"
-                    value="<?php echo login_e($_POST['usuario'] ?? ''); ?>"
+                    value="<?php echo login_e($login_usuario_inicial); ?>"
                 >
             </div>
         </div>
@@ -688,11 +643,8 @@ $instutuciones = $institucion->datos_institucion(true);
             <div class="input-wrapper">
                 <i class="fa-solid fa-user-shield input-icon"></i>
                 <select id="rol" name="rol" class="form-control">
-                    <option value="docente" selected>Docente</option>
-                    <option value="admin">Administrador</option>
-                    <option value="directivo">Directivo</option>
-                    <option value="estudiante">Estudiante</option>
-                    <option value="acudiente">Acudiente</option>
+                    <option value="" <?= $login_rol_inicial === '' ? 'selected' : '' ?>>Perfil configurado en la cuenta</option>
+                    <?php if ($login_rol_inicial !== ''): ?><option value="<?= login_e($login_rol_inicial) ?>" selected><?= login_e(ucfirst($login_rol_inicial)) ?></option><?php endif; ?>
                 </select>
             </div>
         </div>
@@ -718,6 +670,7 @@ $instutuciones = $institucion->datos_institucion(true);
                     placeholder="Ingresa tu contraseña"
                     type="password"
                     name="clave"
+                    value="<?= login_e($login_clave_inicial) ?>"
                     id="clave"
                     class="form-control"
                 >
@@ -834,9 +787,9 @@ function loginLimpiarUsuario() {
     document.getElementById('foto_').src = '<?php echo login_e(SGA_MEDIA_FOTO); ?>/user-icon.png';
     document.getElementById('mascotas').innerHTML = '';
     
-    // Reset select de rol manteniendo docente por defecto
+    // El perfil se obtiene de la cuenta; no anticipar un rol docente.
     var select = document.getElementById('rol');
-    select.innerHTML = '<option value="docente" selected>Docente</option><option value="admin">Administrador</option><option value="directivo">Directivo</option><option value="estudiante">Estudiante</option><option value="acudiente">Acudiente</option>';
+    select.replaceChildren(new Option('Perfil configurado en la cuenta', ''));
     
     loginCorrectHash = "";
     loginSetModoMascota(false);
@@ -866,27 +819,23 @@ function loginConsultarUsuario(valor) {
                 document.getElementById('nombre_usuario').textContent = (info.nombre + ' ' + info.apellido).trim() || 'Usuario';
                 document.getElementById('foto_').src = info.foto;
 
-                loginCorrectHash = info.hash_correcto || "";
+                loginCorrectHash = "";
 
                 var select = document.getElementById('rol');
                 select.innerHTML = '';
                 var roleKeys = Object.keys(info.roles || {});
-                var tieneDocente = false;
 
                 roleKeys.forEach(function(id) {
                     var option = document.createElement('option');
                     option.value = id;
                     option.textContent = info.roles[id];
-                    if (id === 'docente') {
-                        option.selected = true;
-                        tieneDocente = true;
-                    }
                     select.appendChild(option);
                 });
 
-                // Si docente está entre sus roles, queda seleccionado por defecto. De lo contrario, se selecciona el primero.
-                if (!tieneDocente && select.options.length > 0) {
-                    select.selectedIndex = 0;
+                // Preferir el perfil solicitado solo cuando pertenece a la cuenta.
+                var rolPreferido = <?php echo json_encode($login_rol_inicial, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP); ?>;
+                if (select.options.length > 0) {
+                    select.value = roleKeys.includes(rolPreferido) ? rolPreferido : roleKeys[0];
                 }
 
                 var usarMascotas = info.mascota === 'SI' && Array.isArray(info.mascotas) && info.mascotas.length > 0;

@@ -11,12 +11,13 @@ $asignacion_id = max(0, (int)($_GET['asignacion'] ?? $_POST['asignacion'] ?? 0))
 function horario_periodo_activo(): ?array
 {
     require_once __DIR__ . '/../comun/config.php';
-    $mysqli = new mysqli(SERVIDORBD, USUARIOBD, CLAVEBD, BASEDEDATOS);
+    $mysqli = guagua_db_mysqli();
     if ($mysqli->connect_errno) {
         return null;
     }
 
-    $resultado = $mysqli->query("SELECT fecha_inicio, fecha_fin, nombre_periodo FROM periodo WHERE estado_periodo = '1' ORDER BY fecha_inicio DESC LIMIT 1");
+    require_once __DIR__ . '/../comun/academico.php';
+    $resultado = $mysqli->query(guagua_periodos_sql(true));
     $periodo = $resultado ? $resultado->fetch_assoc() : null;
     $mysqli->close();
 
@@ -44,7 +45,7 @@ function horario_datos_asignacion(int $idAsignacion): ?array
     }
 
     require_once __DIR__ . '/../comun/config.php';
-    $mysqli = new mysqli(SERVIDORBD, USUARIOBD, CLAVEBD, BASEDEDATOS);
+    $mysqli = guagua_db_mysqli();
     if ($mysqli->connect_errno) {
         return null;
     }
@@ -447,7 +448,7 @@ $modo_edicion = isset($_GET['modificar']) || empty($horarios);
         </form>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/guagua/comun/js/jquery-3.6.0.min.js"></script>
     <script>
     $(document).ready(function() {
         $('.day-toggle').change(function() {

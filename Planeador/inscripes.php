@@ -242,9 +242,6 @@ function inscripes_obtener_catalogos(mysqli $mysqli): array
             break;
         }
     }
-    if ($anoActivo === 0 && $anos) {
-        $anoActivo = (int) $anos[0]['id_ano_lectivo'];
-    }
 
     return ['anos' => $anos, 'grados' => $grados, 'ano_activo' => $anoActivo];
 }
@@ -682,10 +679,9 @@ if (!$inscripesAutorizado) {
 } else {
     require_once __DIR__ . '/../comun/conexion.php';
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-    $mysqli->set_charset('utf8mb4');
 
     $inscripesContexto = [
-        'institucion' => max(1, (int) ($_SESSION['id_institucion'] ?? $_SESSION['institucion'] ?? 1)),
+        'institucion' => max(0, (int) ($_SESSION['id_institucion'] ?? $_SESSION['institucion'] ?? 0)),
         'usuario' => trim((string) ($_SESSION['id_usuario'] ?? $_SESSION['identificacion_usu'] ?? '')),
         'solo_docente' => !inscripes_es_administrador($_SESSION),
     ];
@@ -791,7 +787,7 @@ if (!$inscripesAutorizado) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscripciones académicas</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
     <style>
         [x-cloak], .hidden { display: none !important; }
         :root { color-scheme: light; }

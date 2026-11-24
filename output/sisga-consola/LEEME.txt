@@ -1,0 +1,72 @@
+CAPTURAR Y REUTILIZAR INDICADORES EN SISGA
+
+PRIMERA VEZ, Y CADA VEZ QUE QUIERAS GUARDAR OTRA COMBINACIÓN
+
+1. Abre en SISGA la materia, el grado y el período correspondientes.
+2. Abre «Gestionar Indicadores».
+3. Marca las fortalezas y dificultades que quieras guardar.
+4. ANTES de pulsar «Asignar seleccionados», abre la consola del navegador
+   (F12 > Consola), pega TODO capturar-indicadores.js y ejecútalo.
+5. El script marca todos los estudiantes disponibles, guarda los indicadores
+   seleccionados y descarga un JS cuyo nombre incluye materia, grado y período.
+   Ejemplo: asignar-indicadores-Matematicas-grado-7-periodo-2.js.
+   La captura no asigna aún.
+
+Repite estos pasos para cada materia/grado/período. En el mismo navegador y
+origen web se acumulan las combinaciones; cada descarga incluye todas ellas.
+Conserva la descarga más reciente: los archivos anteriores no se actualizan.
+Volver a capturar la misma combinación reemplaza su selección guardada.
+
+PARA ASIGNAR EN EL FUTURO
+
+1. Abre la materia, el grado y el período en SISGA.
+2. Abre «Gestionar Indicadores».
+3. Pega TODO el archivo DESCARGADO asignar-indicadores-MATERIA-grado-GRADO-
+   periodo-PERIODO.js en la consola.
+4. Detectará la combinación actual, desmarcará los indicadores sobrantes,
+   marcará los guardados, seleccionará todos los estudiantes disponibles
+   y pulsará «Asignar seleccionados» una vez. Esperará el resultado de SISGA.
+
+El archivo descargado es autónomo: también funciona en otro navegador/equipo
+con sesión iniciada en la misma institución y dirección web de SISGA.
+No recorre materias automáticamente: actúa sobre la planilla abierta.
+Sirve para los grupos del mismo grado y admite otras materias y períodos
+cuando hayas capturado previamente sus selecciones.
+
+COMANDOS DESPUÉS DE HABER PEGADO CUALQUIERA DE LOS SCRIPTS
+
+IndicadoresSISGA.guardar()
+    Guarda los indicadores marcados, selecciona todos y descarga el respaldo.
+IndicadoresSISGA.aplicar()
+    Recupera la selección actual y pulsa «Asignar seleccionados».
+IndicadoresSISGA.preparar()
+    Recupera la selección y marca todos, sin pulsar el botón de asignación.
+IndicadoresSISGA.exportar()
+    Vuelve a descargar un JS con todas las combinaciones guardadas.
+IndicadoresSISGA.listar()
+    Muestra las combinaciones guardadas y devuelve sus datos completos.
+
+DETALLES
+
+- Se guardan materia, grado, período, institución, nivel, grupo de origen,
+  códigos, textos y categorías de los indicadores. No se guardan nombres
+  ni notas de estudiantes.
+- «Todos» incluye las filas ocultas por el filtro de nombre. Solo participan
+  los estudiantes que SISGA ofrece con nota definitiva guardada.
+- Se capturan también casillas marcadas en categorías cerradas o filtradas.
+- Al reutilizar se comprueban el texto y la categoría, incluso si existe
+  el mismo código. Si cambian los códigos, se admite una coincidencia única
+  de texto y categoría. Si falta un indicador, hay ambigüedad, no coincide
+  el contexto, se supera el máximo o el período está restringido, se detiene.
+- No omite las restricciones de la página ni crea indicadores.
+- Si cambias de navegador, borras sus datos o usas otra dirección web,
+  conserva e importa el JS descargado para recuperar tus selecciones.
+- SISGA desmarca las casillas al terminar de asignar. Por eso se captura
+  ANTES de asignar. Los números junto a cada estudiante indican cantidades;
+  no permiten reconstruir cuáles indicadores habías elegido.
+- Si SISGA informa un error o no confirma la petición, el script no reintenta.
+  Revisa el resultado de la página antes de volver a asignar.
+
+La estructura se verificó contra indicadores.html proporcionado. Si SISGA
+cambia los identificadores o el funcionamiento de esta pantalla, habrá
+que ajustar el script.

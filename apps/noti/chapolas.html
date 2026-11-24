@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapolas de comunicación - IER La Josefina</title>
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
+    <style>
+        :root { --verde: #1c6628; --verde-claro: #eef8f0; }
+        body { background: #e8edf2; color: #172033; }
+        .paper { width: 8.5in; min-height: 11in; margin: 0 auto; background: #fff; box-shadow: 0 10px 28px rgba(15, 23, 42, .18); padding: .35in; }
+        .chapola-grid { display: grid; gap: .08in; }
+        .chapola-grid[data-format="1x3"] { grid-template-columns: 1fr; grid-template-rows: repeat(3, 3.35in); }
+        .chapola-grid[data-format="2x2"] { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 5.05in); }
+        .chapola-grid[data-format="2x3"] { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 3.35in); }
+        .chapola { border: 1px dashed #64748b; min-width: 0; overflow: hidden; padding: .15in .17in; display: flex; flex-direction: column; font-family: Arial, sans-serif; }
+        .chapola-header { border-bottom: 2px solid var(--verde); padding-bottom: .07in; display: flex; align-items: center; justify-content: space-between; gap: .1in; }
+        .chapola-school { font-size: 8pt; color: #334155; font-weight: 700; text-transform: uppercase; line-height: 1.2; }
+        .chapola-label { flex: none; background: var(--verde); color: white; padding: 3px 7px; border-radius: 999px; font-size: 7pt; font-weight: 700; text-transform: uppercase; }
+        .chapola-title { font-size: 12pt; color: #124a1c; font-weight: 800; text-align: center; text-transform: uppercase; line-height: 1.1; margin: .13in 0 .08in; }
+        .chapola-message { font-size: 9pt; line-height: 1.35; text-align: justify; white-space: pre-line; }
+        .student-box { font-size: 8.5pt; line-height: 1.25; margin-top: .1in; padding-top: .08in; border-top: 1px solid #cbd5e1; }
+        .student-name { font-weight: 700; color: #0f172a; }
+        .student-entry { border-bottom: 1px solid #334155; display: inline-block; min-height: .23in; min-width: 68%; padding: 0 3px 2px; }
+        .signature { margin-top: auto; padding-top: .16in; font-size: 8pt; color: #172033; }
+        .signature.row { display: grid; grid-template-columns: 1.2fr .8fr; gap: .12in; }
+        .signature.column { display: grid; grid-template-columns: 1fr; gap: .08in; }
+        .sign-line { min-height: .25in; border-bottom: 1px solid #334155; display: flex; align-items: end; padding-bottom: 2px; }
+        .sign-label { display: block; text-align: center; font-size: 7pt; color: #475569; padding-top: 2px; }
+        .date-line { font-size: 7.5pt; text-align: right; margin-top: .08in; }
+        .empty-note { color: #64748b; font-style: italic; }
+        @media print {
+            @page { size: letter portrait; margin: 0; }
+            body { background: white; }
+            .no-print { display: none !important; }
+            main { display: block !important; max-width: none !important; padding: 0 !important; }
+            #print-area { display: block !important; }
+            .overflow-auto { overflow: visible !important; padding-bottom: 0 !important; }
+            .paper { box-shadow: none; margin: 0; width: 8.5in; min-height: 11in; padding: .35in; break-after: page; page-break-after: always; }
+            .paper:last-child { break-after: auto; page-break-after: auto; }
+            .chapola { border-color: #64748b !important; }
+        }
+        body.print-mode > .no-print,
+        body.print-mode main > .no-print,
+        body.print-mode .no-print { display: none !important; }
+        body.print-mode main { display: block; max-width: none; padding: 0; }
+    </style>
+</head>
+<body class="min-h-screen font-sans">
+    <header class="no-print bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+            <div class="min-w-0">
+                <h1 class="font-extrabold text-[#1c6628] leading-tight">Notificaciones</h1>
+                <p class="text-xs text-slate-500">IER La Josefina · Sede Vallesol</p>
+            </div>
+            <nav class="flex items-center rounded-lg bg-slate-100 p-1 text-sm font-bold shrink-0" aria-label="Módulos de notificaciones">
+                <a href="index.html" class="px-3 py-2 rounded-md text-slate-600 hover:bg-white hover:text-[#1c6628] transition">Circulares</a>
+                <a href="chapolas.html" class="px-3 py-2 rounded-md bg-white text-[#1c6628] shadow-sm">Chapolas</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 grid xl:grid-cols-[390px_minmax(0,1fr)] gap-6 items-start">
+        <section class="no-print bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-200 bg-[#f4f9f5]">
+                <h2 class="font-bold text-[#1c6628]">Crear chapolas</h2>
+                <p class="mt-1 text-xs text-slate-600">Escriba un mensaje corto; el diseño se ajusta para cortar y entregar.</p>
+            </div>
+            <div class="p-5 space-y-5">
+                <label class="block text-sm font-semibold text-slate-700">Encabezado institucional
+                    <input id="school" class="field mt-1" maxlength="90" value="IER La Josefina · Sede Vallesol">
+                </label>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="block text-sm font-semibold text-slate-700">Rótulo
+                        <input id="label" class="field mt-1" maxlength="24" value="COMUNICADO">
+                    </label>
+                    <label class="block text-sm font-semibold text-slate-700">Formato por hoja
+                        <select id="format" class="field mt-1">
+                            <option value="1x3">1 columna × 3</option>
+                            <option value="2x2">2 columnas × 2</option>
+                            <option value="2x3" selected>2 columnas × 3</option>
+                        </select>
+                    </label>
+                </div>
+                <label class="block text-sm font-semibold text-slate-700">Título
+                    <input id="title" class="field mt-1" maxlength="55" value="Información para padres de familia">
+                </label>
+                <div class="flex items-end justify-between gap-3">
+                    <label class="block text-sm font-semibold text-slate-700">Mensaje <span id="message-limit-label" class="font-normal text-slate-400">(máximo 330 caracteres)</span></label>
+                    <label class="block shrink-0 text-xs font-semibold text-slate-600">Máximo
+                        <input id="message-limit" type="number" min="40" max="1000" step="10" value="330" class="mt-1 w-20 border border-slate-300 rounded-md px-2 py-1.5 text-sm text-slate-800 focus:ring-2 focus:ring-[#1c6628] focus:border-[#1c6628] outline-none"> caracteres
+                    </label>
+                </div>
+                <label class="block text-sm font-semibold text-slate-700">
+                    <textarea id="message" class="field mt-1 min-h-28 resize-y" maxlength="330">Apreciado padre de familia: le solicitamos leer esta información y devolver la presente chapola firmada como constancia de recibido.</textarea>
+                    <span id="counter" class="block text-right text-xs text-slate-500 mt-1">0 / 330</span>
+                </label>
+
+                <div class="rounded-xl border border-slate-200 p-4 space-y-3">
+                    <div class="flex items-center justify-between gap-3">
+                        <h3 class="font-bold text-sm text-slate-800">Destinatarios</h3>
+                        <label class="inline-flex items-center gap-2 text-xs font-semibold cursor-pointer text-[#1c6628]"><input id="show-student" type="checkbox" class="accent-[#1c6628]" checked> Mostrar estudiante</label>
+                    </div>
+                    <textarea id="students" class="field min-h-24 resize-y text-sm" placeholder="Un estudiante por línea o separado por comas. Opcional: Estudiante | Acudiente&#10;Ej.: Ana Pérez, Juan Gómez, Sofía Díaz"></textarea>
+                    <div class="flex flex-wrap gap-2">
+                        <label class="inline-flex items-center gap-2 cursor-pointer px-3 py-2 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold hover:bg-emerald-100 transition"><input id="csv-file" type="file" accept=".csv,text/csv" class="hidden">Importar CSV</label>
+                        <button id="paste-students" type="button" class="px-3 py-2 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold hover:bg-slate-200 transition">Pegar lista</button>
+                    </div>
+                    <p id="import-status" class="text-xs text-slate-500">Pegue una lista o importe un CSV. Se crea automáticamente una chapola por cada fila.</p>
+                    <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input id="repeat-generic" type="number" min="1" max="60" value="6" class="w-16 border border-slate-300 rounded-md px-2 py-1.5"> copias si no se usa una lista</label>
+                </div>
+
+                <div class="rounded-xl border border-slate-200 p-4 space-y-3">
+                    <div class="flex items-center justify-between gap-3"><h3 class="font-bold text-sm text-slate-800">Constancia de recibido</h3><label class="inline-flex items-center gap-2 text-xs font-semibold cursor-pointer text-[#1c6628]"><input id="signature-enabled" type="checkbox" class="accent-[#1c6628]" checked> Incluir</label></div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="text-sm text-slate-700">Firma organizada por
+                            <select id="signature-layout" class="field mt-1"><option value="row">Filas</option><option value="column">Columnas</option></select>
+                        </label>
+                        <label class="text-sm text-slate-700">Texto de firma
+                            <input id="signature-text" class="field mt-1" maxlength="50" value="Firma del padre o acudiente">
+                        </label>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input id="show-date" type="checkbox" class="accent-[#1c6628]" checked> Incluir fecha de recibido</label>
+                    <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input id="show-observations" type="checkbox" class="accent-[#1c6628]" checked> Incluir campo para observaciones del padre</label>
+                </div>
+
+                <div class="flex gap-3 pt-1">
+                    <button id="reset" type="button" class="flex-1 px-4 py-3 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition">Restablecer</button>
+                    <button id="print" type="button" class="flex-1 px-4 py-3 text-sm font-bold text-white bg-[#1c6628] hover:bg-[#144b1c] rounded-xl shadow-sm transition">Imprimir / PDF</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="min-w-0">
+            <div class="no-print flex items-center justify-between mb-3 px-1">
+                <div><h2 class="font-bold text-slate-800">Vista previa</h2><p id="page-info" class="text-xs text-slate-500 mt-0.5"></p></div>
+                <span class="text-xs text-slate-500">Las líneas punteadas indican el corte.</span>
+            </div>
+            <div class="overflow-auto pb-8"><div id="print-area" class="space-y-6"></div></div>
+        </section>
+    </main>
+
+    <style>.field { width: 100%; border: 1px solid #cbd5e1; border-radius: .625rem; padding: .6rem .7rem; color: #1e293b; outline: none; background: white; font-weight: 400; } .field:focus { border-color: #1c6628; box-shadow: 0 0 0 3px rgba(28,102,40,.13); }</style>
+    <script>
+        const ids = ['school', 'label', 'format', 'title', 'message', 'message-limit', 'show-student', 'students', 'repeat-generic', 'signature-enabled', 'signature-layout', 'signature-text', 'show-date', 'show-observations'];
+        const defaults = Object.fromEntries(ids.map(id => [id, document.getElementById(id).type === 'checkbox' ? document.getElementById(id).checked : document.getElementById(id).value]));
+        const get = id => document.getElementById(id);
+        const escapeHTML = value => String(value || '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[c]));
+        const capacity = () => ({ '1x3': 3, '2x2': 4, '2x3': 6 })[get('format').value];
+        const updateMessageLimit = () => {
+            const limit = Math.max(40, Math.min(1000, Number(get('message-limit').value) || 330));
+            get('message-limit').value = limit;
+            get('message').maxLength = limit;
+            if (get('message').value.length > limit) get('message').value = get('message').value.slice(0, limit);
+            get('message-limit-label').textContent = `(máximo ${limit} caracteres)`;
+            return limit;
+        };
+        const save = () => {
+            const values = {};
+            ids.forEach(id => values[id] = get(id).type === 'checkbox' ? get(id).checked : get(id).value);
+            localStorage.setItem('noti_chapolas_config', JSON.stringify(values));
+        };
+        const load = () => {
+            try { const values = JSON.parse(localStorage.getItem('noti_chapolas_config') || '{}'); ids.forEach(id => { if (values[id] !== undefined) get(id).type === 'checkbox' ? get(id).checked = values[id] : get(id).value = values[id]; }); } catch (_) {}
+        };
+        const recipients = () => {
+            const rows = get('students').value.split(/\r?\n/).flatMap(line => {
+                const cleanLine = line.trim();
+                if (!cleanLine) return [];
+                // Un registro con acudiente usa la barra vertical, por lo que
+                // conserva sus comas tal como fueron escritas.
+                return cleanLine.includes('|') ? [cleanLine] : cleanLine.split(',').map(name => name.trim()).filter(Boolean);
+            });
+            const list = rows.map(line => {
+                const [student, guardian] = line.split('|').map(part => (part || '').trim());
+                return { student, guardian };
+            });
+            return list.length ? list : Array.from({ length: Math.max(1, Math.min(60, Number(get('repeat-generic').value) || 1)) }, () => ({ student: '', guardian: '' }));
+        };
+        const splitCSVRow = (row, delimiter) => {
+            const values = []; let value = ''; let quoted = false;
+            for (let i = 0; i < row.length; i += 1) {
+                const char = row[i];
+                if (char === '"') { if (quoted && row[i + 1] === '"') { value += '"'; i += 1; } else { quoted = !quoted; } }
+                else if (char === delimiter && !quoted) { values.push(value.trim()); value = ''; }
+                else { value += char; }
+            }
+            values.push(value.trim());
+            return values;
+        };
+        const importCSV = (content, fileName) => {
+            const lines = content.replace(/^\uFEFF/, '').split(/\r?\n/).filter(line => line.trim());
+            if (!lines.length) { get('import-status').textContent = 'El archivo CSV no contiene filas.'; return; }
+            const delimiter = (lines[0].split(';').length > lines[0].split(',').length) ? ';' : ',';
+            const rows = lines.map(line => splitCSVRow(line, delimiter)).filter(row => row.some(value => value));
+            const header = rows[0] && /^(nombre|estudiante|alumno|apellidos?)/i.test(rows[0][0]);
+            const entries = (header ? rows.slice(1) : rows).map(row => [row[0], row[1]].filter((value, index) => value || index === 0).join(row[1] ? ' | ' : '')).filter(Boolean);
+            get('students').value = entries.join('\n');
+            get('import-status').textContent = `${entries.length} estudiante${entries.length === 1 ? '' : 's'} importado${entries.length === 1 ? '' : 's'} desde ${fileName}.`;
+            render();
+        };
+        function buildCard(person) {
+            const student = get('show-student').checked ? `<div class="student-box"><span class="student-name">Estudiante:</span> <span class="student-entry">${person.student ? escapeHTML(person.student) : '<span class="empty-note">________________________________</span>'}</span></div>` : '';
+            let signature = '';
+            if (get('signature-enabled').checked) {
+                const guardian = person.guardian ? ` <strong>${escapeHTML(person.guardian)}</strong>` : '';
+                const date = get('show-date').checked ? '<div class="date-line">Fecha de recibido: ____ / ____ / ______</div>' : '';
+                signature = `<div class="signature ${get('signature-layout').value}"><div><div class="sign-line"></div><span class="sign-label">${escapeHTML(get('signature-text').value)}${guardian}</span></div>${get('signature-layout').value === 'row' ? '<div><div class="sign-line"></div><span class="sign-label">Documento / teléfono</span></div>' : ''}</div>${date}`;
+            }
+            const observations = get('show-observations').checked ? '<div class="student-box"><span class="student-name">Observaciones del acudiente:</span><br><span class="empty-note">________________________________________________________________</span></div>' : '';
+            return `<article class="chapola"><div class="chapola-header"><div class="chapola-school">${escapeHTML(get('school').value)}</div><span class="chapola-label">${escapeHTML(get('label').value)}</span></div><h3 class="chapola-title">${escapeHTML(get('title').value)}</h3><div class="chapola-message">${escapeHTML(get('message').value)}</div>${student}${observations}${signature}</article>`;
+        }
+        function render() {
+            const messageLimit = updateMessageLimit();
+            save();
+            const people = recipients(), perPage = capacity(), pages = [];
+            for (let i = 0; i < people.length; i += perPage) {
+                const pagePeople = people.slice(i, i + perPage);
+                while (pagePeople.length < perPage) pagePeople.push({ student: '', guardian: '' });
+                pages.push(`<section class="paper"><div class="chapola-grid" data-format="${get('format').value}">${pagePeople.map(buildCard).join('')}</div></section>`);
+            }
+            get('print-area').innerHTML = pages.join('');
+            get('counter').textContent = `${get('message').value.length} / ${messageLimit}`;
+            get('page-info').textContent = `${people.length} chapola${people.length === 1 ? '' : 's'} · ${pages.length} hoja${pages.length === 1 ? '' : 's'} · ${perPage} por hoja`;
+        }
+        ids.forEach(id => get(id).addEventListener('input', render));
+        ids.forEach(id => get(id).addEventListener('change', render));
+        get('csv-file').addEventListener('change', event => {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => importCSV(String(reader.result || ''), file.name);
+            reader.onerror = () => { get('import-status').textContent = 'No se pudo leer el archivo CSV.'; };
+            reader.readAsText(file, 'UTF-8');
+        });
+        get('paste-students').addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (!text.trim()) throw new Error('empty');
+                get('students').value = text.trim();
+                get('import-status').textContent = 'Lista pegada. Se generará una chapola por cada línea.';
+                render();
+            } catch (_) {
+                get('students').focus();
+                get('import-status').textContent = 'Use Ctrl + V en el cuadro de lista para pegar los nombres.';
+            }
+        });
+        get('print').addEventListener('click', () => {
+            render();
+            // Dentro de módulo.php la aplicación vive en un iframe. Abrir una
+            // página independiente evita imprimir el menú de Guagua y el marco.
+            if (window.top !== window.self) {
+                const printWindow = window.open(`${window.location.pathname}?print=1`, '_blank');
+                if (!printWindow) window.top.location.href = `${window.location.pathname}?print=1`;
+                return;
+            }
+            window.print();
+        });
+        get('reset').addEventListener('click', () => { localStorage.removeItem('noti_chapolas_config'); ids.forEach(id => get(id).type === 'checkbox' ? get(id).checked = defaults[id] : get(id).value = defaults[id]); render(); });
+        load(); render();
+        if (new URLSearchParams(window.location.search).has('print')) {
+            document.body.classList.add('print-mode');
+            setTimeout(() => window.print(), 350);
+        }
+    </script>
+</body>
+</html>

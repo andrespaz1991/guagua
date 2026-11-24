@@ -1,0 +1,1672 @@
+{
+  "archivo": "reportes\\bd\\automatico\\guagua_20261119_183002.sql",
+  "tablas_totales": 91,
+  "nombres_tablas": [
+    "actividad",
+    "actividades",
+    "acudiente_estudiante",
+    "ano_lectivo",
+    "area",
+    "asignacion",
+    "asistencias",
+    "auditoria_planeador_vallesol",
+    "categoria_curso",
+    "citas",
+    "comentario",
+    "config",
+    "config_docentes",
+    "config_grupos",
+    "config_materias",
+    "config_sedes",
+    "configuracion",
+    "contenido",
+    "cuestionario",
+    "custom_rubrics",
+    "davinci_cuadernos",
+    "dba",
+    "docente",
+    "educational_apps",
+    "edunotas",
+    "eje_tematico",
+    "escala",
+    "estandar",
+    "estrategias",
+    "evaluacion",
+    "evaluations",
+    "eventos",
+    "evidencia_de_aprendizaje",
+    "evidencias_adjuntos_evidencia",
+    "evidencias_anos_lectivos",
+    "evidencias_competencias_evaluadas",
+    "evidencias_criterios_evaluacion",
+    "evidencias_docentes",
+    "evidencias_evaluaciones_anuales",
+    "evidencias_eventos_auditoria",
+    "evidencias_evidencias",
+    "figuras",
+    "formatos_desercion_acciones",
+    "formatos_observador",
+    "grado",
+    "grupos_seleccionados",
+    "horario",
+    "iconos",
+    "inicio_anual_borradores",
+    "inscripcion",
+    "institucion_educativa",
+    "isa_conversations",
+    "isa_messages",
+    "isa_profiles",
+    "kanban",
+    "links_queue",
+    "log",
+    "log_mercado",
+    "materia",
+    "materia_oficial",
+    "mensaje",
+    "menu_items2",
+    "mercado_categorias",
+    "mercado_compras",
+    "mercado_lista_compras",
+    "mercado_presupuesto",
+    "mercado_productos",
+    "notas_auditoria",
+    "objetivos",
+    "periodo",
+    "plan_clase",
+    "planeador_vallesol",
+    "planner_annual_checklist",
+    "planner_annual_items",
+    "planner_annual_phases",
+    "planner_annual_plans",
+    "plantilla",
+    "pregunta",
+    "preguntas_cuestionario",
+    "recursos",
+    "red",
+    "respuesta",
+    "respuesta_estudiante",
+    "resumenes_historicos",
+    "revision",
+    "seguimiento",
+    "seguimiento_categoria_ano",
+    "seguimiento_es",
+    "tarea_adjunto",
+    "tarjeta",
+    "usuario"
+  ],
+  "tablas": {
+    "ano_lectivo": {
+      "columns": [
+        [
+          "id_ano_lectivo",
+          "int(11) NOT NULL AUTO_INCREMENT,"
+        ],
+        [
+          "nombre_ano_lectivo",
+          "year(4) DEFAULT NULL,"
+        ],
+        [
+          "descripcion_ano",
+          "text DEFAULT NULL,"
+        ],
+        [
+          "estado",
+          "enum('Activo','Inactivo') CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'Inactivo',"
+        ]
+      ],
+      "engine": "MyISAM",
+      "constraints": [
+        "PRIMARY KEY (`id_ano_lectivo`),",
+        "UNIQUE KEY `ano_lectivo` (`nombre_ano_lectivo`)",
+        "DISABLE KEYS */",
+        "ENABLE KEYS */"
+      ]
+    },
+    "periodo": {
+      "columns": [
+        [
+          "id_periodo",
+          "int(11) NOT NULL,"
+        ],
+        [
+          "nombre_periodo",
+          "varchar(255) NOT NULL,"
+        ],
+        [
+          "descripcion_periodo",
+          "varchar(255) NOT NULL,"
+        ],
+        [
+          "fecha_inicio",
+          "date NOT NULL,"
+        ],
+        [
+          "fecha_fin",
+          "date NOT NULL,"
+        ],
+        [
+          "ano_lectivo",
+          "year(4) NOT NULL,"
+        ],
+        [
+          "estado_periodo",
+          "varchar(255) NOT NULL,"
+        ]
+      ],
+      "engine": "InnoDB",
+      "constraints": [
+        "PRIMARY KEY (`id_periodo`)",
+        "DISABLE KEYS */",
+        "ENABLE KEYS */"
+      ]
+    },
+    "institucion_educativa": {
+      "columns": [
+        [
+          "id_institucion_educativa",
+          "int(11) NOT NULL AUTO_INCREMENT,"
+        ],
+        [
+          "nombre_institucion",
+          "varchar(255) NOT NULL,"
+        ],
+        [
+          "logo_institucion",
+          "text DEFAULT NULL,"
+        ],
+        [
+          "direccion_institucion",
+          "text DEFAULT NULL,"
+        ],
+        [
+          "telefono_institucion",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "correo_institucion",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "BANNER_INSTITUCION",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "formatos_no_permitidos",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "tamano_maximo_adjunto",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "autoregistrarse",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "plantilla",
+          "int(11) DEFAULT 1,"
+        ]
+      ],
+      "engine": "MyISAM",
+      "constraints": [
+        "PRIMARY KEY (`id_institucion_educativa`)",
+        "DISABLE KEYS */",
+        "ENABLE KEYS */"
+      ]
+    },
+    "categoria_curso": {
+      "columns": [
+        [
+          "id_categoria_curso",
+          "int(11) NOT NULL AUTO_INCREMENT,"
+        ],
+        [
+          "nombre_categoria_curso",
+          "varchar(120) NOT NULL,"
+        ],
+        [
+          "descripcion_categoria_curso",
+          "varchar(255) NOT NULL,"
+        ],
+        [
+          "nivel_educativo",
+          "int(1) NOT NULL DEFAULT 1,"
+        ]
+      ],
+      "engine": "InnoDB",
+      "constraints": [
+        "PRIMARY KEY (`id_categoria_curso`)",
+        "DISABLE KEYS */",
+        "ENABLE KEYS */"
+      ]
+    },
+    "materia": {
+      "columns": [
+        [
+          "id_materia",
+          "int(11) NOT NULL,"
+        ],
+        [
+          "nombre_materia",
+          "varchar(255) NOT NULL,"
+        ],
+        [
+          "descripcion_materia",
+          "text NOT NULL,"
+        ],
+        [
+          "obligatoria",
+          "varchar(2) NOT NULL DEFAULT 'no',"
+        ],
+        [
+          "area",
+          "int(11) NOT NULL DEFAULT 9,"
+        ],
+        [
+          "icono_materia",
+          "varchar(255) NOT NULL DEFAULT 'agenda.png',"
+        ],
+        [
+          "institucion",
+          "int(11) NOT NULL DEFAULT 1"
+        ]
+      ],
+      "engine": "MyISAM",
+      "constraints": [
+        "DISABLE KEYS */",
+        "ENABLE KEYS */"
+      ]
+    },
+    "materia_oficial": {
+      "columns": [
+        [
+          "id_materia",
+          "int(11) NOT NULL AUTO_INCREMENT,"
+        ],
+        [
+          "nombre_materia",
+          "varchar(255) NOT NULL,"
+        ],
+        [
+          "descripcion",
+          "text DEFAULT NULL,"
+        ]
+      ],
+      "engine": "InnoDB",
+      "constraints": [
+        "PRIMARY KEY (`id_materia`)",
+        "DISABLE KEYS */",
+        "ENABLE KEYS */"
+      ]
+    },
+    "asignacion": {
+      "columns": [
+        [
+          "id_asignacion",
+          "int(255) NOT NULL AUTO_INCREMENT,"
+        ],
+        [
+          "institucion_educativa",
+          "int(12) NOT NULL DEFAULT 1,"
+        ],
+        [
+          "id_curso",
+          "int(11) NOT NULL,"
+        ],
+        [
+          "id_asignatura",
+          "int(11) NOT NULL,"
+        ],
+        [
+          "id_docente",
+          "int(12) NOT NULL DEFAULT 1085290375,"
+        ],
+        [
+          "ano_lectivo",
+          "int(8) NOT NULL,"
+        ],
+        [
+          "descripcion",
+          "varchar(240) DEFAULT NULL,"
+        ],
+        [
+          "id_categoria_curso",
+          "int(11) NOT NULL,"
+        ],
+        [
+          "visible",
+          "varchar(2) DEFAULT NULL,"
+        ],
+        [
+          "portada_asignacion",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "icono_asignacion",
+          "varchar(255) NOT NULL DEFAULT 'agenda.png',"
+        ],
+        [
+          "asistencia",
+          "int(1) NOT NULL DEFAULT 0,"
+        ]
+      ],
+      "engine": "MyISAM",
+      "constraints": [
+        "UNIQUE KEY `id_asignacion` (`id_asignacion`),",
+        "KEY `asignacion_ibfk_5` (`id_docente`)",
+        "DISABLE KEYS */",
+        "ENABLE KEYS */"
+      ]
+    },
+    "horario": {
+      "columns": [
+        [
+          "id_horario",
+          "int(11) NOT NULL AUTO_INCREMENT,"
+        ],
+        [
+          "id_asignacion",
+          "int(11) NOT NULL,"
+        ],
+        [
+          "fecha_inicio",
+          "date NOT NULL,"
+        ],
+        [
+          "hora_inicio",
+          "time NOT NULL,"
+        ],
+        [
+          "hora_fin",
+          "time NOT NULL,"
+        ],
+        [
+          "fecha_fin",
+          "date NOT NULL,"
+        ],
+        [
+          "dia",
+          "varchar(20) NOT NULL,"
+        ]
+      ],
+      "engine": "InnoDB",
+      "constraints": [
+        "PRIMARY KEY (`id_horario`)",
+        "DISABLE KEYS */",
+        "ENABLE KEYS */"
+      ]
+    },
+    "inscripcion": {
+      "columns": [
+        [
+          "id_inscripcion",
+          "int(16) NOT NULL AUTO_INCREMENT,"
+        ],
+        [
+          "id_asignacion",
+          "int(10) NOT NULL,"
+        ],
+        [
+          "id_estudiante",
+          "varchar(255) NOT NULL,"
+        ],
+        [
+          "fecha_inscripcion",
+          "date NOT NULL DEFAULT current_timestamp(),"
+        ],
+        [
+          "estado_inscripcion",
+          "enum('Aprobado','No aprobado','En curso','Retirado') NOT NULL,"
+        ],
+        [
+          "obserbaciones_inscripcion",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "fecha_retiro",
+          "timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),"
+        ]
+      ],
+      "engine": "InnoDB",
+      "constraints": [
+        "PRIMARY KEY (`id_inscripcion`)",
+        "DISABLE KEYS */",
+        "ENABLE KEYS */"
+      ]
+    },
+    "usuario": {
+      "columns": [
+        [
+          "id_usuario",
+          "varchar(255) NOT NULL,"
+        ],
+        [
+          "usuario",
+          "varchar(255) NOT NULL,"
+        ],
+        [
+          "clave",
+          "varchar(255) NOT NULL DEFAULT '58e43d5511a2f7de5c0172543b5d2dca0d4d18b7',"
+        ],
+        [
+          "mascota",
+          "varchar(5) DEFAULT 'NO',"
+        ],
+        [
+          "nombre",
+          "varchar(255) NOT NULL,"
+        ],
+        [
+          "apellido",
+          "varchar(255) NOT NULL,"
+        ],
+        [
+          "rol",
+          "varchar(255) NOT NULL DEFAULT 'estudiante',"
+        ],
+        [
+          "foto",
+          "varchar(255) NOT NULL DEFAULT 'user-icon.png',"
+        ],
+        [
+          "direccion",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "telefono",
+          "varchar(25) DEFAULT NULL,"
+        ],
+        [
+          "correo",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "ultima_sesion",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "num_visitas",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "puntos",
+          "varchar(255) DEFAULT NULL COMMENT 'Son los puntos que un usuario acumula',"
+        ],
+        [
+          "estado",
+          "varchar(255) NOT NULL DEFAULT 'activo',"
+        ],
+        [
+          "tipo_sangre",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "condicion_fisica",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "grupo",
+          "varchar(50) DEFAULT NULL,"
+        ],
+        [
+          "jornada",
+          "varchar(80) DEFAULT NULL,"
+        ],
+        [
+          "genero",
+          "varchar(2) NOT NULL DEFAULT 'f',"
+        ],
+        [
+          "observaciones",
+          "text DEFAULT NULL,"
+        ],
+        [
+          "fecha_nacimiento",
+          "date DEFAULT NULL,"
+        ],
+        [
+          "fecha_creacion",
+          "timestamp NOT NULL DEFAULT current_timestamp(),"
+        ],
+        [
+          "fecha_retiro",
+          "date DEFAULT NULL,"
+        ],
+        [
+          "tipo_documento",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "eps",
+          "varchar(150) DEFAULT NULL,"
+        ]
+      ],
+      "engine": "InnoDB",
+      "constraints": [
+        "PRIMARY KEY (`id_usuario`),",
+        "FULLTEXT KEY `nombre` (`nombre`)",
+        "DISABLE KEYS */",
+        "ENABLE KEYS */"
+      ]
+    },
+    "acudiente_estudiante": {
+      "columns": [
+        [
+          "id_acudiente_estudiante",
+          "int(11) NOT NULL AUTO_INCREMENT,"
+        ],
+        [
+          "id_acudiente",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "id_estudiante",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "parentesco",
+          "varchar(255) NOT NULL,"
+        ]
+      ],
+      "engine": "InnoDB",
+      "constraints": [
+        "UNIQUE KEY `id_acudiente_estudiante` (`id_acudiente_estudiante`)",
+        "DISABLE KEYS */",
+        "ENABLE KEYS */"
+      ]
+    },
+    "inicio_anual_borradores": {
+      "columns": [
+        [
+          "id",
+          "bigint(20) unsigned NOT NULL AUTO_INCREMENT,"
+        ],
+        [
+          "institucion",
+          "int(11) NOT NULL,"
+        ],
+        [
+          "usuario",
+          "varchar(255) NOT NULL,"
+        ],
+        [
+          "ano",
+          "int(11) NOT NULL,"
+        ],
+        [
+          "datos",
+          "longtext NOT NULL,"
+        ],
+        [
+          "paso",
+          "int(11) NOT NULL DEFAULT 0,"
+        ],
+        [
+          "revision",
+          "int(11) NOT NULL DEFAULT 1,"
+        ],
+        [
+          "estado",
+          "varchar(20) NOT NULL DEFAULT 'borrador',"
+        ],
+        [
+          "resultado",
+          "longtext DEFAULT NULL,"
+        ],
+        [
+          "actualizado",
+          "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),"
+        ]
+      ],
+      "engine": "InnoDB",
+      "constraints": [
+        "PRIMARY KEY (`id`),",
+        "UNIQUE KEY `propietario_ano` (`institucion`,`usuario`,`ano`)",
+        "DISABLE KEYS */",
+        "ENABLE KEYS */"
+      ]
+    },
+    "notas_auditoria": {
+      "columns": [
+        [
+          "id_nota_auditoria",
+          "bigint(20) unsigned NOT NULL AUTO_INCREMENT,"
+        ],
+        [
+          "id_estudiante",
+          "varchar(255) NOT NULL,"
+        ],
+        [
+          "id_asignacion",
+          "int(11) DEFAULT NULL,"
+        ],
+        [
+          "id_materia",
+          "int(11) DEFAULT NULL,"
+        ],
+        [
+          "id_periodo",
+          "int(11) NOT NULL,"
+        ],
+        [
+          "nombre_periodo",
+          "varchar(60) NOT NULL,"
+        ],
+        [
+          "grado",
+          "varchar(20) NOT NULL,"
+        ],
+        [
+          "materia",
+          "varchar(120) NOT NULL,"
+        ],
+        [
+          "nota",
+          "decimal(5,2) NOT NULL,"
+        ],
+        [
+          "fecha_nota",
+          "date NOT NULL,"
+        ],
+        [
+          "fecha_registro",
+          "datetime NOT NULL DEFAULT current_timestamp(),"
+        ],
+        [
+          "origen",
+          "varchar(60) NOT NULL DEFAULT 'ia_reporte_excel',"
+        ],
+        [
+          "hash_registro",
+          "char(64) NOT NULL,"
+        ]
+      ],
+      "engine": "InnoDB",
+      "constraints": [
+        "PRIMARY KEY (`id_nota_auditoria`),",
+        "UNIQUE KEY `uq_notas_auditoria_hash` (`hash_registro`),",
+        "KEY `idx_notas_auditoria_periodo` (`id_periodo`,`grado`,`materia`),",
+        "KEY `idx_notas_auditoria_estudiante` (`id_estudiante`,`fecha_nota`),",
+        "KEY `idx_notas_auditoria_asignacion` (`id_asignacion`,`fecha_nota`)",
+        "DISABLE KEYS */",
+        "ENABLE KEYS */"
+      ]
+    },
+    "asistencias": {
+      "columns": [
+        [
+          "id",
+          "int(11) NOT NULL AUTO_INCREMENT,"
+        ],
+        [
+          "estudiante",
+          "varchar(100) DEFAULT NULL,"
+        ],
+        [
+          "materia",
+          "varchar(50) DEFAULT NULL,"
+        ],
+        [
+          "asistencias",
+          "varchar(255) DEFAULT NULL,"
+        ],
+        [
+          "fechas_clase",
+          "text DEFAULT NULL,"
+        ],
+        [
+          "documento",
+          "varchar(255) NOT NULL,"
+        ],
+        [
+          "uniforme",
+          "varchar(255) NOT NULL,"
+        ],
+        [
+          "justificacion",
+          "text NOT NULL,"
+        ],
+        [
+          "fecha_actualizacion",
+          "datetime NOT NULL DEFAULT current_timestamp(),"
+        ]
+      ],
+      "engine": "InnoDB",
+      "constraints": [
+        "PRIMARY KEY (`id`),",
+        "UNIQUE KEY `uidx_asistencias` (`documento`,`materia`,`fechas_clase`) USING HASH",
+        "DISABLE KEYS */",
+        "ENABLE KEYS */"
+      ]
+    }
+  },
+  "menu_items2": [
+    {
+      "menu_item_id": "7",
+      "menu_item_name": "Institucion_educativa",
+      "menu_description": "",
+      "menu_url": "../Planeador/institucion_educativa.php",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "Administración",
+      "icono": "",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "32",
+      "menu_item_name": "Matricula",
+      "menu_description": "",
+      "menu_url": "../usuario/inscripcion.php",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Administración",
+      "icono": "",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "34",
+      "menu_item_name": "Calendario de planes",
+      "menu_description": "Todos los planes",
+      "menu_url": "../Planeador/calendario.php",
+      "menu_parent_id": "NULL",
+      "url_target": "_blank",
+      "categoria": "Planeacion",
+      "icono": "????",
+      "fav": "1",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "36",
+      "menu_item_name": "Importar malla",
+      "menu_description": "Importador de malla",
+      "menu_url": "../Planeador/importador_malla.php",
+      "menu_parent_id": "0",
+      "url_target": "_blank",
+      "categoria": "Planeacion",
+      "icono": "",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "38",
+      "menu_item_name": "Matrimonio",
+      "menu_description": "",
+      "menu_url": "../usuario/matrimonio.php",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "general",
+      "icono": "",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "46",
+      "menu_item_name": "Área",
+      "menu_description": "Gestión de áreas académicas.",
+      "menu_url": "../cursos/area.php",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Cursos",
+      "icono": "?️",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "47",
+      "menu_item_name": "Grados",
+      "menu_description": "Categorías de los cursos.",
+      "menu_url": "../cursos/categoria_curso.php",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "Cursos",
+      "icono": "?️",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "48",
+      "menu_item_name": "Año Lectivo",
+      "menu_description": "Administración de los años lectivos.",
+      "menu_url": "../cursos/ano_lectivo.php",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "Cursos",
+      "icono": "⏰",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "49",
+      "menu_item_name": "Periodos",
+      "menu_description": "Configuración de los periodos académicos.",
+      "menu_url": "../Planeador/periodo.php",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Configuracion",
+      "icono": "✉️",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "50",
+      "menu_item_name": "Mascotas",
+      "menu_description": "Gestión de mascotas (si aplica).",
+      "menu_url": "../comun/Mascotas.php",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "General",
+      "icono": "?",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "51",
+      "menu_item_name": "Iconos",
+      "menu_description": "Selector de iconos para el sistema.",
+      "menu_url": "../comun/iconos.php",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "General",
+      "icono": "?",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "52",
+      "menu_item_name": "Administradores",
+      "menu_description": "Gestión de usuarios administradores.",
+      "menu_url": "../usuario/usuario.php?u=admin",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "Usuarios",
+      "icono": "?",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "55",
+      "menu_item_name": "Acudientes",
+      "menu_description": "Gestión de usuarios acudientes.",
+      "menu_url": "../usuario/usuario.php?u=acudiente",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "Usuarios",
+      "icono": "?‍",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "58",
+      "menu_item_name": "Salir",
+      "menu_description": "Cerrar la sesión actual.",
+      "menu_url": "/usuario/login.php?logout",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "General",
+      "icono": "?",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "59",
+      "menu_item_name": "Sisga",
+      "menu_description": "",
+      "menu_url": "../sisga/index.html",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "cabecera",
+      "icono": "icon-sga-library",
+      "fav": "1",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "60",
+      "menu_item_name": "Asistencia",
+      "menu_description": "Llamado a asistencia",
+      "menu_url": "../asistencia/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Administración",
+      "icono": "fav-badge",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "62",
+      "menu_item_name": "Juego de ruleta",
+      "menu_description": "Juego de ruleta de preguntas",
+      "menu_url": "../apps/Ruleta/index.html",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "Administración",
+      "icono": "fa-sold",
+      "fav": "1",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "65",
+      "menu_item_name": "Generación de cursos",
+      "menu_description": "Generación de cursos",
+      "menu_url": "../apps/generacion_cursos/",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "Administración",
+      "icono": "fa-solid",
+      "fav": "1",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "66",
+      "menu_item_name": "Estructura de inicio de año",
+      "menu_description": "Crea la Estructura de carpeta de los grados al inicio de año",
+      "menu_url": "../apps/generador_vallesol",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "Administración",
+      "icono": "fa-solid",
+      "fav": "1",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "67",
+      "menu_item_name": "Configuración de reportes",
+      "menu_description": "Configuración de Reportes de alerta academica",
+      "menu_url": "../ia/config_reporte.php",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "Administración",
+      "icono": "fa-solid",
+      "fav": "1",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "70",
+      "menu_item_name": "Retirar Materias de Estudiante",
+      "menu_description": "Retirar Materias de Estudiante",
+      "menu_url": "../Planeador/retirar.php",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "Administración",
+      "icono": "fa-solid",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "71",
+      "menu_item_name": "Reporte de Inasistencias por Materia",
+      "menu_description": "Reporte de Inasistencias por Materia",
+      "menu_url": "../reportes/informe_asistencia.php",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "reportes",
+      "icono": "fa-solid",
+      "fav": "1",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "72",
+      "menu_item_name": "Observador del estudiante",
+      "menu_description": "Observador del estudiante",
+      "menu_url": "../seguimiento/citas.php",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "reportes",
+      "icono": "fa-solid",
+      "fav": "1",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "73",
+      "menu_item_name": "Usuario",
+      "menu_description": "Gestión de usuarios",
+      "menu_url": "../usuario/usuario.php",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Administración",
+      "icono": "🏃",
+      "fav": "1",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "75",
+      "menu_item_name": "Inasistencia para sisga",
+      "menu_description": "Inasistencia para sisga",
+      "menu_url": "../apps/asistencia/",
+      "menu_parent_id": "0",
+      "url_target": "_self",
+      "categoria": "Reportes",
+      "icono": "fa-solid",
+      "fav": "1",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "79",
+      "menu_item_name": "UTEL",
+      "menu_description": "Convierte un excel en csv",
+      "menu_url": "../apps/utel/index.php",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "cabecera",
+      "icono": "icon-sga-edit",
+      "fav": "1",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "80",
+      "menu_item_name": "Fotos Circulares",
+      "menu_description": "Crea Fotos Circulares",
+      "menu_url": "../apps/circular/index.html",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "apps",
+      "icono": "",
+      "fav": "1",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "81",
+      "menu_item_name": "Collage",
+      "menu_description": "Crea collage de fotos",
+      "menu_url": "../apps/collage/index.html",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "apps",
+      "icono": "",
+      "fav": "1",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "82",
+      "menu_item_name": "Edupreguntas",
+      "menu_description": "Edupreguntas creador de preguntas dinamicas",
+      "menu_url": "../apps/edupreguntasoficial/index.html",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "apps",
+      "icono": "",
+      "fav": "1",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "83",
+      "menu_item_name": "Gemini Chat",
+      "menu_description": "Chat de gemini",
+      "menu_url": "../apps/geminichat/index.php",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "apps",
+      "icono": "",
+      "fav": "1",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "87",
+      "menu_item_name": "Seguimiento",
+      "menu_description": "",
+      "menu_url": "../seguimiento/citas.php",
+      "menu_parent_id": "NULL",
+      "url_target": "_blank",
+      "categoria": "cabecera",
+      "icono": "icon-sga-edit-1",
+      "fav": "1",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "88",
+      "menu_item_name": "Alerta",
+      "menu_description": "",
+      "menu_url": "../ia/reporte.php",
+      "menu_parent_id": "NULL",
+      "url_target": "_blank",
+      "categoria": "cabecera",
+      "icono": "icon-sga-list-15",
+      "fav": "1",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "90",
+      "menu_item_name": "PAE",
+      "menu_description": "",
+      "menu_url": "../apps/restaurante/index.php",
+      "menu_parent_id": "NULL",
+      "url_target": "_blank",
+      "categoria": "cabecera",
+      "icono": "icon-sga-appleroja",
+      "fav": "1",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "91",
+      "menu_item_name": "NOTI",
+      "menu_description": "",
+      "menu_url": "/apps/noti/index.html",
+      "menu_parent_id": "NULL",
+      "url_target": "_blank",
+      "categoria": "cabecera",
+      "icono": "icon-sga-alarm-1",
+      "fav": "1",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "92",
+      "menu_item_name": "PlanIa",
+      "menu_description": "",
+      "menu_url": "/apps/PlanMind/index2.php",
+      "menu_parent_id": "NULL",
+      "url_target": "_blank",
+      "categoria": "cabecera",
+      "icono": "icon-sga-planeador",
+      "fav": "1",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "96",
+      "menu_item_name": "Merca",
+      "menu_description": "",
+      "menu_url": "../apps/MiMercado/index.php",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "cabecera",
+      "icono": "icon-sga-moneda",
+      "fav": "1",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "97",
+      "menu_item_name": "Bingo_fracciones",
+      "menu_description": "Carpeta sincronizada automáticamente",
+      "menu_url": "../apps/Bingo_fracciones/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Apps",
+      "icono": "📁",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "98",
+      "menu_item_name": "Fracciones",
+      "menu_description": "Carpeta sincronizada automáticamente",
+      "menu_url": "../apps/Fracciones/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Apps",
+      "icono": "📁",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "99",
+      "menu_item_name": "carnet",
+      "menu_description": "Carpeta sincronizada automáticamente",
+      "menu_url": "../apps/carnet/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Apps",
+      "icono": "📁",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "100",
+      "menu_item_name": "edutask",
+      "menu_description": "Carpeta sincronizada automáticamente",
+      "menu_url": "../apps/edutask/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "cabecera",
+      "icono": "icon-sga-edit-1",
+      "fav": "0",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "101",
+      "menu_item_name": "pdf",
+      "menu_description": "Carpeta sincronizada automáticamente",
+      "menu_url": "../apps/pdf/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "cabecera",
+      "icono": "icon-sga-notebook-5",
+      "fav": "1",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "102",
+      "menu_item_name": "rubrica",
+      "menu_description": "Carpeta sincronizada automáticamente",
+      "menu_url": "../apps/rubrica/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "cabecera",
+      "icono": "icon-sga-ereader",
+      "fav": "1",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "103",
+      "menu_item_name": "sopas",
+      "menu_description": "Carpeta sincronizada automáticamente",
+      "menu_url": "../apps/sopas/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Apps",
+      "icono": "📁",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "104",
+      "menu_item_name": "Davinci",
+      "menu_description": "",
+      "menu_url": "../apps/davinci",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "cabecera",
+      "icono": "icon-sga-photos",
+      "fav": "1",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "105",
+      "menu_item_name": "dba",
+      "menu_description": "",
+      "menu_url": "../apps/dba/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "cabecera",
+      "icono": "icon-sga-books",
+      "fav": "1",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "107",
+      "menu_item_name": "Diario",
+      "menu_description": "Diario de campo",
+      "menu_url": "../../wsp/index.html",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "cabecera",
+      "icono": "icon-sga-paper-plane-1",
+      "fav": "1",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "108",
+      "menu_item_name": "Plantilla",
+      "menu_description": "Plantilla guía",
+      "menu_url": "..\\comun\\doc\\Plantilla guía.docx",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "cabecera",
+      "icono": "icon-sga-bookmark-1",
+      "fav": "1",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "109",
+      "menu_item_name": "evidencias",
+      "menu_description": "Carpeta sincronizada automáticamente",
+      "menu_url": "../apps/evidencias/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "cabecera",
+      "icono": "icon-sga-diploma",
+      "fav": "1",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "110",
+      "menu_item_name": "Asignaciones",
+      "menu_description": "Gestiona las asignaciones al inicio y durante el año escolar",
+      "menu_url": "../Planeador/genasig.php",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "cabecera",
+      "icono": "icon-sga-bookshelf",
+      "fav": "1",
+      "is_cabecera": "1"
+    },
+    {
+      "menu_item_id": "111",
+      "menu_item_name": "Inscripciones",
+      "menu_description": "",
+      "menu_url": "../Planeador/inscripes.php",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Administración",
+      "icono": "📈",
+      "fav": "1",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "112",
+      "menu_item_name": "informe de asistencia",
+      "menu_description": "informe de asistencia",
+      "menu_url": "../reportes/informe_asistencia.php",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "reportes",
+      "icono": "✍️",
+      "fav": "1",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "113",
+      "menu_item_name": "Manual",
+      "menu_description": "Carpeta sincronizada automáticamente",
+      "menu_url": "../apps/Manual/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Apps",
+      "icono": "📁",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "114",
+      "menu_item_name": "configuracion_interfaz",
+      "menu_description": "Carpeta sincronizada automáticamente",
+      "menu_url": "../apps/configuracion_interfaz/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Apps",
+      "icono": "📁",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "115",
+      "menu_item_name": "customizador_menu",
+      "menu_description": "Carpeta sincronizada automáticamente",
+      "menu_url": "../apps/customizador_menu/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Apps",
+      "icono": "📁",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "116",
+      "menu_item_name": "formatos",
+      "menu_description": "Carpeta sincronizada automáticamente",
+      "menu_url": "../apps/formatos/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Apps",
+      "icono": "📁",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "117",
+      "menu_item_name": "prompts",
+      "menu_description": "Carpeta sincronizada automáticamente",
+      "menu_url": "../apps/prompts/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Apps",
+      "icono": "📁",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "118",
+      "menu_item_name": "slider-studio",
+      "menu_description": "Carpeta sincronizada automáticamente",
+      "menu_url": "../apps/slider-studio/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Apps",
+      "icono": "📁",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "119",
+      "menu_item_name": "inventario_tecnologico",
+      "menu_description": "Carpeta sincronizada automáticamente",
+      "menu_url": "../apps/inventario_tecnologico/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Apps",
+      "icono": "📁",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "120",
+      "menu_item_name": "Reporte de actividades",
+      "menu_description": "Seguimiento de actividades y notas desde los Excel de valoraciones. Filtros por materia, grado y estudiante, alertas, matriz, impresión y CSV.",
+      "menu_url": "apps/reporte_actividades/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Reportes",
+      "icono": "📊",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "121",
+      "menu_item_name": "Simulador de notas",
+      "menu_description": "Consulta P1, P2 y P3 y simula la nota final con el cuarto periodo.",
+      "menu_url": "apps/simulador_notas/index.php",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Académico",
+      "icono": "fa-solid fa-chart-line",
+      "fav": "0",
+      "is_cabecera": "0"
+    },
+    {
+      "menu_item_id": "122",
+      "menu_item_name": "balance_anual",
+      "menu_description": "Carpeta sincronizada automáticamente",
+      "menu_url": "../apps/balance_anual/",
+      "menu_parent_id": "NULL",
+      "url_target": "_self",
+      "categoria": "Apps",
+      "icono": "📁",
+      "fav": "0",
+      "is_cabecera": "0"
+    }
+  ],
+  "ano_lectivo": [
+    {
+      "id_ano_lectivo": "3",
+      "nombre_ano_lectivo": "2018",
+      "descripcion_ano": "2018b",
+      "estado": "Inactivo"
+    },
+    {
+      "id_ano_lectivo": "11",
+      "nombre_ano_lectivo": "2019",
+      "descripcion_ano": "",
+      "estado": "Inactivo"
+    },
+    {
+      "id_ano_lectivo": "12",
+      "nombre_ano_lectivo": "2020",
+      "descripcion_ano": "NULL",
+      "estado": "Inactivo"
+    },
+    {
+      "id_ano_lectivo": "13",
+      "nombre_ano_lectivo": "2021",
+      "descripcion_ano": "NULL",
+      "estado": "Inactivo"
+    },
+    {
+      "id_ano_lectivo": "14",
+      "nombre_ano_lectivo": "2023",
+      "descripcion_ano": "NULL",
+      "estado": "Inactivo"
+    },
+    {
+      "id_ano_lectivo": "15",
+      "nombre_ano_lectivo": "2024",
+      "descripcion_ano": "..",
+      "estado": "Inactivo"
+    },
+    {
+      "id_ano_lectivo": "16",
+      "nombre_ano_lectivo": "2025",
+      "descripcion_ano": "..",
+      "estado": "Inactivo"
+    },
+    {
+      "id_ano_lectivo": "17",
+      "nombre_ano_lectivo": "2026",
+      "descripcion_ano": "..",
+      "estado": "Activo"
+    }
+  ],
+  "periodo": [
+    {
+      "id_periodo": "0",
+      "nombre_periodo": "4",
+      "descripcion_periodo": "",
+      "fecha_inicio": "2026-09-14",
+      "fecha_fin": "2026-09-23",
+      "ano_lectivo": "2026",
+      "estado_periodo": "0"
+    },
+    {
+      "id_periodo": "1",
+      "nombre_periodo": "1",
+      "descripcion_periodo": "Democracia Seguridad",
+      "fecha_inicio": "2026-01-13",
+      "fecha_fin": "2026-03-27",
+      "ano_lectivo": "2026",
+      "estado_periodo": "0"
+    },
+    {
+      "id_periodo": "2",
+      "nombre_periodo": "2",
+      "descripcion_periodo": "Tiempo Libre",
+      "fecha_inicio": "2026-03-27",
+      "fecha_fin": "2026-06-27",
+      "ano_lectivo": "2026",
+      "estado_periodo": "0"
+    },
+    {
+      "id_periodo": "3",
+      "nombre_periodo": "3",
+      "descripcion_periodo": "Prae",
+      "fecha_inicio": "2026-07-05",
+      "fecha_fin": "2026-09-13",
+      "ano_lectivo": "2026",
+      "estado_periodo": "0"
+    },
+    {
+      "id_periodo": "4",
+      "nombre_periodo": "4",
+      "descripcion_periodo": "Educación Sexual",
+      "fecha_inicio": "2026-09-14",
+      "fecha_fin": "2026-11-20",
+      "ano_lectivo": "2026",
+      "estado_periodo": "1"
+    }
+  ],
+  "categoria_curso": [
+    {
+      "id_categoria_curso": "1",
+      "nombre_categoria_curso": "1",
+      "descripcion_categoria_curso": "",
+      "nivel_educativo": "1"
+    },
+    {
+      "id_categoria_curso": "2",
+      "nombre_categoria_curso": "2",
+      "descripcion_categoria_curso": "",
+      "nivel_educativo": "1"
+    },
+    {
+      "id_categoria_curso": "3",
+      "nombre_categoria_curso": "3",
+      "descripcion_categoria_curso": "",
+      "nivel_educativo": "1"
+    },
+    {
+      "id_categoria_curso": "4",
+      "nombre_categoria_curso": "4",
+      "descripcion_categoria_curso": "",
+      "nivel_educativo": "1"
+    },
+    {
+      "id_categoria_curso": "5",
+      "nombre_categoria_curso": "5",
+      "descripcion_categoria_curso": "",
+      "nivel_educativo": "1"
+    },
+    {
+      "id_categoria_curso": "6",
+      "nombre_categoria_curso": "6",
+      "descripcion_categoria_curso": "",
+      "nivel_educativo": "1"
+    },
+    {
+      "id_categoria_curso": "7",
+      "nombre_categoria_curso": "7",
+      "descripcion_categoria_curso": "",
+      "nivel_educativo": "1"
+    },
+    {
+      "id_categoria_curso": "8",
+      "nombre_categoria_curso": "8",
+      "descripcion_categoria_curso": "",
+      "nivel_educativo": "1"
+    },
+    {
+      "id_categoria_curso": "9",
+      "nombre_categoria_curso": "9",
+      "descripcion_categoria_curso": "",
+      "nivel_educativo": "1"
+    },
+    {
+      "id_categoria_curso": "10",
+      "nombre_categoria_curso": "10",
+      "descripcion_categoria_curso": "",
+      "nivel_educativo": "1"
+    },
+    {
+      "id_categoria_curso": "11",
+      "nombre_categoria_curso": "11",
+      "descripcion_categoria_curso": "",
+      "nivel_educativo": "1"
+    },
+    {
+      "id_categoria_curso": "12",
+      "nombre_categoria_curso": "tecnico1",
+      "descripcion_categoria_curso": "",
+      "nivel_educativo": "1"
+    },
+    {
+      "id_categoria_curso": "13",
+      "nombre_categoria_curso": "tecnico2",
+      "descripcion_categoria_curso": "",
+      "nivel_educativo": "1"
+    },
+    {
+      "id_categoria_curso": "14",
+      "nombre_categoria_curso": "tecnico3",
+      "descripcion_categoria_curso": "",
+      "nivel_educativo": "1"
+    },
+    {
+      "id_categoria_curso": "15",
+      "nombre_categoria_curso": "tecnico4",
+      "descripcion_categoria_curso": "",
+      "nivel_educativo": "1"
+    },
+    {
+      "id_categoria_curso": "16",
+      "nombre_categoria_curso": "Transición",
+      "descripcion_categoria_curso": "",
+      "nivel_educativo": "1"
+    }
+  ]
+}

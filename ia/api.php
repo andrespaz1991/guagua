@@ -1,17 +1,15 @@
 <?php
+require_once __DIR__ . '/../comun/database.php';
+
 // --- API para gestionar la configuración de reportes ---
 // Este archivo actúa como un puente entre la interfaz (config_module.php) y la base de datos.
 
 header('Content-Type: application/json'); // Asegura que la respuesta sea siempre JSON
 
 // --- Configuración de la Conexión a la Base de Datos ---
-$servername = "127.0.0.1:7000"; // o el host de tu BD, ej: "localhost"
-$username   = "root";           // tu usuario de la BD
-$password   = "";               // tu contraseña de la BD
-$dbname     = "guagua";         // el nombre de tu base de datos
 
 try {
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8", $username, $password);
+    $conn = guagua_db_pdo();
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     echo json_encode(['status' => 'error', 'message' => 'Error de conexión: ' . $e->getMessage()]);

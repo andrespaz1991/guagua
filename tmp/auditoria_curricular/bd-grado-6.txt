@@ -1,0 +1,725 @@
+
+EST 3 M9 P1 Vivencia la mentalidad emprendedora
+DESC: Comprende, vivencia y valora la mentalidad emprendedora como estrategia para mejorar su calidad de vida, la de su familia e impactar positivamente su entorno lejano y cercano.
+DBA 3: Comprende el emprendimiento con sus mitos y realidades. Reconoce en su entorno cercano actividades contables y analiza la diferencia entre decisiones democráticas y autocráticas que pueden tomarse dentro de una empresa.
+DESC: Comprende el emprendimiento con sus mitos y realidades. Reconoce en su entorno cercano actividades contables y analiza la diferencia entre decisiones democráticas y autocráticas que pueden tomarse dentro de una empresa.
+CLAVES: emprendimiento, plan de negocio, análisis de mercado, decisiones democráticas, decisiones autocráticas
+EJE 3: Emprendimiento | Emprendimiento, contabilidad y administración de empresas como herramientas para el desarrollo de proyectos sostenibles.
+EVID 3: Analiza la importancia de la mentalidad emprendedora como estrategia para mejorar su calidad de vida y la de su entorno cercano y lejano. Propone normas de seguridad en los proyectos emprendedores de la vereda y tiene en cuenta su entorno para beneficiarse del emprendimiento. | manual
+
+EST 6 M4 P1 Capacidades físicas y diseño de movimientos corporales
+DESC: Incrementa sus capacidades y posibilidades físicas en el contexto del respeto a la vida y del cuerpo humano. Calidad y eficiencia en el diseño de movimientos corporales. Muestra, reconoce y valora su potencial biológico y psicológico para realizar tareas motrices.
+DBA 6: Identifica la buena alimentación y cómo debe nutrirse un deportista. Reflexiona sobre sus actos y las consecuencias de estos como oportunidad para una mejor convivencia escolar. Conoce los posibles riesgos a su integridad física al realizar una actividad física.
+DESC: Identifica la buena alimentación y cómo debe nutrirse un deportista. Reflexiona sobre sus actos y las consecuencias de estos como oportunidad para una mejor convivencia escolar. Conoce los posibles riesgos a su integridad física al realizar una actividad física.
+CLAVES: nutrición, actividad física, bienestar, planificación
+EJE 6: Terminología básica y hábitos saludables | Terminología básica, el cuerpo humano (sistema óseo o esquelético), cultura física, hábitos de higiene, alimentación, nutrición e hidratación, anamnesis (diagnóstico físico), calentamiento general, lesiones en el atletismo y primeros auxilios.
+EVID 6: Asimila y emplea una terminología específica del área. Comprende la importancia del diagnóstico físico. Incluye el calentamiento como hábito de salud y prevención física. Valora la importancia del sistema esquelético para el desempeño personal. Identifica las lesiones más comunes en los atletas y la forma de prevenirlas. | manual
+
+EST 8 M7 P1 Reconocimiento de tecnología y transformaciones históricas
+DESC: Reconoce los principios y conceptos propios de la tecnología, así como momentos de la historia que le han permitido al hombre transformar el entorno para resolver problemas y satisfacer necesidades. Relaciona el funcionamiento de artefactos, productos, procesos y sistemas tecnológicos con su utilización segura.
+DBA 8: Identifica innovaciones e inventos trascendentales para la sociedad; los ubica y explica en su contexto histórico. Analiza y aplica las normas de seguridad que se deben tener en cuenta para el uso de artefactos, productos y sistemas tecnológicos.
+DESC: Identifica innovaciones e inventos trascendentales para la sociedad; los ubica y explica en su contexto histórico. Analiza y aplica las normas de seguridad que se deben tener en cuenta para el uso de artefactos, productos y sistemas tecnológicos.
+CLAVES: innovación tecnológica, contexto histórico, normas de seguridad
+EJE 8: Historia, hardware, software y sistemas informáticos | 1. ¿Qué es un computador?: utilidad del computador, proceso histórico de la computación, generaciones de las computadoras, clasificación de las computadoras. 2. Definición de hardware: estructura física, esquema funcional del computador, dispositivos de entrada y salida, dispositivos de almacenamiento, memoria principal, microprocesador y tarjeta principal, tarjetas de interfaz. 3. Definición de software: unidades de medida para la información, sistemas operativos, programas de aplicación, lenguajes de programación, programas de comunicaciones, aplicaciones comerciales.
+EVID 8: Ejemplifica cómo en el uso de artefactos, procesos o sistemas tecnológicos, existen principios de funcionamiento que los sustentan. Participa en actividades colaborativas para fortalecer el aprendizaje mediante interacción, respeto y tolerancia. | manual
+
+EST 17 M9 P2 Aplica el ciclo contable
+DESC: Aplica el ciclo contable
+DBA 17: Conoce, aplica y aprecia el ciclo contable de una empresa bajo una información financiera básica.
+Reconoce en el otro, aptitudes, actitudes y cualidades personales que les permita dilucidar en qué puede invertir su tiempo libre.
+DESC: Conoce, aplica y aprecia el ciclo contable de una empresa bajo una información financiera básica.
+Reconoce en el otro, aptitudes, actitudes y cualidades personales que les permita dilucidar en qué puede invertir su tiempo libre.
+CLAVES: ciclo contable, presupuesto, información financiera, recursos
+EJE 21: Comercio, emprendimiento, contabilidad y administración | Comercio
+Mentes emprendedoras
+Contabilidad y empresa
+Proceso administrativo
+EVID 23: Identifica elementos, características y metodologías del emprendimiento.
+Participa en actividades comerciales, cultivando su mentalidad emprendedora.
+Reconoce en empresas de su entorno cercano procesos administrativos.
+Resalta la importancia del papel de los emprendedores en el desarrollo y crecimiento económico de la comunidad.
+Genera un cronograma de actividades que le permitan dividir su tiempo de estudio y tiempo libre. | manual
+
+EST 19 M4 P2 Reconoce y valora mi potencial biológico y psicológico para realizar tareas motrices Interactúa motrizmente con mis compañeros para el logro de las metas colectivas Valoro la contribución de la práctica regular y sistemática de un programa de actividad física y salud mental
+DESC: Reconoce y valora mi potencial biológico y psicológico para realizar tareas motrices Interactúa motrizmente con mis compañeros para el logro de las metas colectivas Valoro la contribución de la práctica regular y sistemática de un programa de actividad física y salud mental
+DBA 19: Indica la importancia de algunos ejercicios para la realización de diversas actividades humanas.
+Manejo en forma segura instrumentos, herramientas y materiales de uso cotidiano, con algún propósito (tonificar, ejercitar, docilitar nuestro cuerpo).
+Identifica la educación física para la formación y la comunicación y la utilizo en diferentes actividades.
+Reflexiona sobre su propia actividad y sobre los resultados del trabajo mediante descripciones, comparaciones, ejercicios mediciones y explicaciones.
+DESC: Indica la importancia de algunos ejercicios para la realización de diversas actividades humanas.
+Manejo en forma segura instrumentos, herramientas y materiales de uso cotidiano, con algún propósito (tonificar, ejercitar, docilitar nuestro cuerpo).
+Identifica la educación física para la formación y la comunicación y la utilizo en diferentes actividades.
+Reflexiona sobre su propia actividad y sobre los resultados del trabajo mediante descripciones, comparaciones, ejercicios mediciones y explicaciones.
+CLAVES: potencial biológico, interacción motriz, plan de mejora
+EJE 23: Capacidades coordinativas, frecuencia cardíaca, respiración y capacidades físicas | Capacidades coordinativas básicas
+frecuencia cardiaca y pulso
+respiración y relajación
+Capacidades físicas
+Actividad física saludable
+EVID 25: Reconoce la coordinación, el equilibrio y el ritmo como capacidades coordinativas básicas.
+Comprende la importancia de la reconoce la coordinación, el equilibrio y el ritmo como capacidades coordinativas básicas.
+Respiración la relajación en el control y el dominio de su capacidad.
+Identifica las capacidades físicas en forma localizada.
+Relaciona la frecuencia cardíaca el pulso con su capacidad física. | manual
+
+EST 23 M7 P2 Relaciona el funcionamiento de algunos artefactos, productos, procesos y sistemas tecnológicos con su utilización segura. Propone estrategias para soluciones tecnológicas a problemas en diferentes contextos. Relaciona la transformación de los recursos naturales con el desarrollo tecnológico y su impacto en el bienestar de la sociedad.
+DESC: Relaciona el funcionamiento de algunos artefactos, productos, procesos y sistemas tecnológicos con su utilización segura. Propone estrategias para soluciones tecnológicas a problemas en diferentes contextos. Relaciona la transformación de los recursos naturales con el desarrollo tecnológico y su impacto en el bienestar de la sociedad.
+DBA 23: Utiliza las tecnologías de la información y la comunicación, para apoyar los procesos de aprendizaje y actividades personales (recolectar, seleccionar, organizar y procesar información).
+Reconozco y utilizo algunas formas de organización del trabajo para solucionar problemas con la ayuda de la tecnología.
+Participa en discusiones sobre el uso racional de algunos artefactos tecnológicos.
+DESC: Utiliza las tecnologías de la información y la comunicación, para apoyar los procesos de aprendizaje y actividades personales (recolectar, seleccionar, organizar y procesar información).
+Reconozco y utilizo algunas formas de organización del trabajo para solucionar problemas con la ayuda de la tecnología.
+Participa en discusiones sobre el uso racional de algunos artefactos tecnológicos.
+CLAVES: organización, tecnología, seguridad, uso responsable
+EVID 29: Utiliza eficientemente las ventanas, menús y objetos gráficos de las diferentes aplicaciones y del S.O. Windows.
+Reconoce y emplea alguno de los accesorios y utilidades del sistema operativo.
+Realiza correctamente las operaciones habituales de mantenimiento de ficheros, carpetas y discos (crear, copiar, borrar, cambiar el nombre, mover, etc.)
+Trabaja simultáneamente con varias aplicaciones e intercambia información y discuten sobre ellas. (Tiempo libre) | manual
+
+EST 31 M9 P3 Aplica los principios de organización empresarial
+DESC: Aplica los principios de organización empresarial
+DBA 31: •	Conoce; aplica y resalta los principios y estrategias de manejo; organización y estructuración empresarial
+DESC: None
+CLAVES: organización empresarial, plan de negocio, propuesta de valor, análisis de mercado, estrategia de marketing
+EJE 31: •	Emprendedor
+•	Comercio y comerciante
+•	Elemento de la administración de empresas
+•	Administración de empresas | •	Emprendedor
+•	Comercio y comerciante
+•	Elemento de la administración de empresas
+•	Administración de empresas
+EVID 37: •	Conoce los procedimientos básicos para empezar un proyecto empresarial.
+•	Entiende los elementos de la administración de empresas
+•	Cultiva sus cualidades para ser un buen emprendedor.
+•	Valora su actitud emprendedora en su proyecto de vida.
+•	Conoce actuales propuestas ambientales de aprovechamiento de residuos | manual
+
+EST 33 M4 P3 •	Reconoce mi potencial biológico y psíquico para realizar tareas motrices.
+•	Mantiene vigentes sus habilidades motrices que me permiten explorar y adaptarse al medio
+
+•	Incrementa mis capacidades físicas en un contexto de respeto y valoración de la vida y el cuerpo humano
+DESC: •	Reconoce mi potencial biológico y psíquico para realizar tareas motrices.
+•	Mantiene vigentes sus habilidades motrices que me permiten explorar y adaptarse al medio
+
+•	Incrementa mis capacidades físicas en un contexto de respeto y valoración de la vida y el cuerpo humano
+DBA 33: •	identifica algunas consecuencias ambientales en mi salud derivadas del mal uso que le damos  a las basuras cuando estamos en un campo de juego.
+•	Participa en equipos de trabajo para desarrollar distintas actividades que le permitan darse cuenta cuáles son sus capacidades físicas
+DESC: None
+CLAVES: investigación, consecuencias ambientales, respeto por el medio ambiente, habilidades motrices, actividad física
+EJE 33: •	Medición y evaluación diagnóstica
+•	Test psicomotores
+•	Concepto y finalidad del calentamiento
+•	Capacidades físicas básicas
+•	Deportes individuales; atletismo ajedrez; natación; | •	Medición y evaluación diagnóstica
+•	Test psicomotores
+•	Concepto y finalidad del calentamiento
+•	Capacidades físicas básicas
+•	Deportes individuales; atletismo ajedrez; natación;
+EVID 39: •	Identifico medios para valorar y mi estado físico
+•	Reconozco distintos métodos para valorar mi estado físico
+•	Reconozco las ventajas y beneficios del calentamiento
+•	Clasifico los deportes de acuerdo a características o recursos para mi desarrollo
+•	Domino los conceptos sobre capacidades físicas | manual
+
+EST 37 M7 P3 •	Relaciona el funcionamiento de algunos artefactos; productos; procesos y sistemas tecnológicos con su utilización segura.
+•	Propone estrategias para soluciones tecnológicas a problemas en diferentes contextos.
+•	Relaciona la transformación de los recursos naturales con el desarrollo tecnológico y su impacto en el bienestar de la sociedad.
+DESC: •	Relaciona el funcionamiento de algunos artefactos; productos; procesos y sistemas tecnológicos con su utilización segura.
+•	Propone estrategias para soluciones tecnológicas a problemas en diferentes contextos.
+•	Relaciona la transformación de los recursos naturales con el desarrollo tecnológico y su impacto en el bienestar de la sociedad.
+DBA 37: •	Utiliza las tecnologías de la información y la comunicación; para apoyar los procesos de aprendizaje y actividades personales (recolectar; seleccionar; organizar y procesar información).
+•	Reconozco y utilizo algunas formas de organización del trabajo para solucionar problemas con la ayuda de la tecnología.
+•	Participa en discusiones sobre el uso racional de algunos artefactos tecnológicos
+DESC: None
+CLAVES: tecnología, investigación, gestión de información, soluciones tecnológicas
+EVID 43: •	Utiliza eficientemente las ventanas; menús y objetos gráficos de las diferentes aplicaciones y del S.O. Windows.
+•	Reconoce y emplea alguno de los accesorios y utilidades del sistema operativo. 
+•	Realiza correctamente las operaciones habituales de mantenimiento de ficheros; carpetas y discos (crear; copiar; borrar; cambiar el nombre; mover; etc.)
+•	Trabaja simultáneamente con varias aplicaciones e intercambiar información y discuten sobre ellas. (Tiempo libre) | manual
+
+EST 157 M9 P4 Respeta la legislaci¢n comercial
+DESC: None
+DBA 145: Conoce  aplica y respeta la legislaci¢n comercial  tributaria y laboral vigente en un contexto empresarial
+DESC: None
+CLAVES: normativa laboral, normativa tributaria, plan de acción, prevención
+EJE 56: Historia de los Derechos Humanos | None
+EJE 57: DIH (Derecho Internacional Humanitario) | None
+EJE 58: Derechos Humanos en Colombia | None
+EVID 228: Comprende cultura emprendedora. | manual
+EVID 229: Describe la relaci¢n entre contabilidad y econom¡a. | manual
+EVID 230: Destaca el aporte de la cultura emprendedora el desarrollo individual y social de la comunidad. | manual
+EVID 231: Entiende c¢mo la toma de decisiones en su vida personal podr¡an influir en un proyecto emprendedor | manual
+
+EST 159 M4 P4 Reconoce las diferencias personales y el car cter £nico del ser humano y los respeto
+*	Acepta y comprende las limitaciones f¡sicas sensoriales  cognitivas en mis compa¤eros
+*	Interact£a motrizmente con mis compa¤eros para el logro de metas colectivas
+*	Atiende consejos y cr¡ticas de mis profesores y compa¤eros
+DESC: None
+DBA 147: Argumenta la importancia del juego la l£dica y la recreaci¢n en la edad escolar.
+DESC: None
+CLAVES: juego, desarrollo, socialización, cognitivo, físico
+EJE 64: El juego l£dica y recreaci¢n | None
+EJE 65: El deporte | None
+EJE 66: Expresiones art¡sticas y corporales | None
+EVID 236: Reconoce deporte como elemento socializador | manual
+EVID 237: Fortalece sus capacidades f¡sicas a trav‚s de las expresiones art¡sticas y corporales. | manual
+DBA 148: Fortalece sus capacidades f¡sicas a trav‚s de las expresiones art¡sticas y corporales.
+DESC: None
+CLAVES: respeto, empatía, trabajo en equipo, diversidad, adaptación
+EJE 67: El juego l£dica y recreaci¢n | None
+EJE 68: El deporte | None
+EJE 69: Expresiones art¡sticas y corporales | None
+EVID 238: Reconoce deporte como elemento socializador | manual
+EVID 239: Fortalece sus capacidades f¡sicas a trav‚s de las expresiones art¡sticas y corporales. | manual
+
+EST 163 M7 P4 Relaciona el funcionamiento de algunos artefactos  productos  procesos y sistemas tecnol¢gicos con su utilizaci¢n segura.
+*	Propone estrategias para soluciones tecnol¢gicas a problemas en diferentes contextos.
+*	Relaciona la transformaci¢n de los recursos naturales con el desarrollo tecnol¢gico y su impacto en el bienestar de la sociedad.
+DESC: None
+DBA 156: Utiliza las tecnolog¡as de la informaci¢n y la comunicaci¢n  para apoyar los procesos de aprendizaje y actividades personales (recolectar  seleccionar  organizar y procesar informaci¢n).
+DESC: None
+CLAVES: tecnología, gestión de información, solución de problemas
+EJE 83: Manteniªmiento y personaliªzaci¢n de Windows. | None
+EJE 84: Formatear y copiar un disco. | None
+EJE 85: El Scandisk. | None
+EJE 86: El Desfragmentador de disco. | None
+EJE 87: Informaci¢n del sistema. | None
+EJE 88: Liberador de espacio en disco. | None
+EJE 89: Papelera de reciclaje. | None
+EJE 90: Creaci¢n de accesos directos. | None
+EJE 91: Configurar el men£ Inicio y la Barra de tareas. | None
+EJE 92: El Panel de Control. | None
+EJE 93: Jornada de reciclaje | None
+EJE 94: Las redes de computadoras. | None
+EJE 95: Descripci¢n y utilidad de las redes. | None
+EJE 96: Tipos de redes de acuerdo con las distancias. | None
+EJE 97: Topolog¡as de las redes de  rea local. | None
+EJE 98: Tipos de conexi¢n. | None
+EJE 99: Ventajas y desventajas de una red de computadora. | None
+EJE 100: Componentes de una red. | None
+EJE 101: Compartir archivos  programas e impresoras en la red. | None
+EVID 308: Crea accesos directos diferenciando entre carpetas  archivos  discos y programas en el S.O. | manual
+EVID 309: Utiliza el panel de control para personalizar el ambiente de trabajo del sistema operativo Windows. | manual
+EVID 310: Utiliza las herramientas de Scandisk y desfragmentador de disco para solucionar problemas del sistema operativo. | manual
+EVID 311: Participa en jornadas de recolecci¢n y separaci¢n de residuos s¢lidos y elementos tecnol¢gicos en desuso. (Prae) | manual
+DBA 157: Detecta fallas en artefactos  procesos y sistemas tecnol¢gicos  siguiendo procedimientos de prueba y descarte  y propone estrategias de soluci¢n.
+DESC: None
+CLAVES: prueba, solución, tecnología
+EJE 102: Manteniªmiento y personaliªzaci¢n de Windows. | None
+EJE 103: Formatear y copiar un disco. | None
+EJE 104: El Scandisk. | None
+EJE 105: El Desfragmentador de disco. | None
+EJE 106: Informaci¢n del sistema. | None
+EJE 107: Liberador de espacio en disco. | None
+EJE 108: Papelera de reciclaje. | None
+EJE 109: Creaci¢n de accesos directos. | None
+EJE 110: Configurar el men£ Inicio y la Barra de tareas. | None
+EJE 111: El Panel de Control. | None
+EJE 112: Jornada de reciclaje | None
+EJE 113: Las redes de computadoras. | None
+EJE 114: Descripci¢n y utilidad de las redes. | None
+EJE 115: Tipos de redes de acuerdo con las distancias. | None
+EJE 116: Topolog¡as de las redes de  rea local. | None
+EJE 117: Tipos de conexi¢n. | None
+EJE 118: Ventajas y desventajas de una red de computadora. | None
+EJE 119: Componentes de una red. | None
+EJE 120: Compartir archivos  programas e impresoras en la red. | None
+EVID 312: Crea accesos directos diferenciando entre carpetas  archivos  discos y programas en el S.O. | manual
+EVID 313: Utiliza el panel de control para personalizar el ambiente de trabajo del sistema operativo Windows. | manual
+EVID 314: Utiliza las herramientas de Scandisk y desfragmentador de disco para solucionar problemas del sistema operativo. | manual
+EVID 315: Participa en jornadas de recolecci¢n y separaci¢n de residuos s¢lidos y elementos tecnol¢gicos en desuso. (Prae) | manual
+DBA 158: Se interesa por las tradiciones y valores de la comunidad y participa en la gesti¢n de iniciativas en favor del medio ambiente  la salud y la cultura (como jornadas de recolecci¢n de materiales reciclables  vacunaci¢n  bazares  festivales  etc.).
+DESC: None
+CLAVES: tecnología, solución, impacto
+EJE 121: Manteniªmiento y personaliªzaci¢n de Windows. | None
+EJE 122: Formatear y copiar un disco. | None
+EJE 123: El Scandisk. | None
+EJE 124: El Desfragmentador de disco. | None
+EJE 125: Informaci¢n del sistema. | None
+EJE 126: Liberador de espacio en disco. | None
+EJE 127: Papelera de reciclaje. | None
+EJE 128: Creaci¢n de accesos directos. | None
+EJE 129: Configurar el men£ Inicio y la Barra de tareas. | None
+EJE 130: El Panel de Control. | None
+EJE 131: Jornada de reciclaje | None
+EJE 132: Las redes de computadoras. | None
+EJE 133: Descripci¢n y utilidad de las redes. | None
+EJE 134: Tipos de redes de acuerdo con las distancias. | None
+EJE 135: Topolog¡as de las redes de  rea local. | None
+EJE 136: Tipos de conexi¢n. | None
+EJE 137: Ventajas y desventajas de una red de computadora. | None
+EJE 138: Componentes de una red. | None
+EJE 139: Compartir archivos  programas e impresoras en la red. | None
+EVID 316: Crea accesos directos diferenciando entre carpetas  archivos  discos y programas en el S.O. | manual
+EVID 317: Utiliza el panel de control para personalizar el ambiente de trabajo del sistema operativo Windows. | manual
+EVID 318: Utiliza las herramientas de Scandisk y desfragmentador de disco para solucionar problemas del sistema operativo. | manual
+EVID 319: Participa en jornadas de recolecci¢n y separaci¢n de residuos s¢lidos y elementos tecnol¢gicos en desuso. (Prae) | manual
+DBA 159: Asumo y promuevo comportamientos legales relacionados con el uso de los recursos tecnol¢gicos.
+DESC: None
+CLAVES: seguridad digital, optimización energética, soluciones tecnológicas
+EJE 140: Manteniªmiento y personaliªzaci¢n de Windows. | None
+EJE 141: Formatear y copiar un disco. | None
+EJE 142: El Scandisk. | None
+EJE 143: El Desfragmentador de disco. | None
+EJE 144: Informaci¢n del sistema. | None
+EJE 145: Liberador de espacio en disco. | None
+EJE 146: Papelera de reciclaje. | None
+EJE 147: Creaci¢n de accesos directos. | None
+EJE 148: Configurar el men£ Inicio y la Barra de tareas. | None
+EJE 149: El Panel de Control. | None
+EJE 150: Jornada de reciclaje | None
+EJE 151: Las redes de computadoras. | None
+EJE 152: Descripci¢n y utilidad de las redes. | None
+EJE 153: Tipos de redes de acuerdo con las distancias. | None
+EJE 154: Topolog¡as de las redes de  rea local. | None
+EJE 155: Tipos de conexi¢n. | None
+EJE 156: Ventajas y desventajas de una red de computadora. | None
+EJE 157: Componentes de una red. | None
+EJE 158: Compartir archivos  programas e impresoras en la red. | None
+EVID 320: Crea accesos directos diferenciando entre carpetas  archivos  discos y programas en el S.O. | manual
+EVID 321: Utiliza el panel de control para personalizar el ambiente de trabajo del sistema operativo Windows. | manual
+EVID 322: Utiliza las herramientas de Scandisk y desfragmentador de disco para solucionar problemas del sistema operativo. | manual
+EVID 323: Participa en jornadas de recolecci¢n y separaci¢n de residuos s¢lidos y elementos tecnol¢gicos en desuso. (Prae) | manual
+DBA 160: Analizo el impacto de artefactos  procesos y sistemas tecnol¢gicos en la soluci¢n de problemas y satisfacci¢n de necesidades.
+DESC: None
+CLAVES: seguridad digital, soluciones tecnológicas, impacto ambiental
+EJE 159: Manteniªmiento y personaliªzaci¢n de Windows. | None
+EJE 160: Formatear y copiar un disco. | None
+EJE 161: El Scandisk. | None
+EJE 162: El Desfragmentador de disco. | None
+EJE 163: Informaci¢n del sistema. | None
+EJE 164: Liberador de espacio en disco. | None
+EJE 165: Papelera de reciclaje. | None
+EJE 166: Creaci¢n de accesos directos. | None
+EJE 167: Configurar el men£ Inicio y la Barra de tareas. | None
+EJE 168: El Panel de Control. | None
+EJE 169: Jornada de reciclaje | None
+EJE 170: Las redes de computadoras. | None
+EJE 171: Descripci¢n y utilidad de las redes. | None
+EJE 172: Tipos de redes de acuerdo con las distancias. | None
+EJE 173: Topolog¡as de las redes de  rea local. | None
+EJE 174: Tipos de conexi¢n. | None
+EJE 175: Ventajas y desventajas de una red de computadora. | None
+EJE 176: Componentes de una red. | None
+EJE 177: Compartir archivos  programas e impresoras en la red. | None
+EVID 324: Crea accesos directos diferenciando entre carpetas  archivos  discos y programas en el S.O. | manual
+EVID 325: Utiliza el panel de control para personalizar el ambiente de trabajo del sistema operativo Windows. | manual
+EVID 326: Utiliza las herramientas de Scandisk y desfragmentador de disco para solucionar problemas del sistema operativo. | manual
+EVID 327: Participa en jornadas de recolecci¢n y separaci¢n de residuos s¢lidos y elementos tecnol¢gicos en desuso. (Prae) | manual
+
+EST 563 M1 P1 1. Estableciendo relaciones con números decimales
+DESC: Unidad sobre números decimales y sus operaciones.
+DBA 574: DBA 1: Interpreta números enteros y racionales (fracción y decimal) con sus operaciones.
+DBA 2: Utiliza propiedades de racionales para proponer procedimientos de cálculo.
+DESC: 1. Representar cantidades utilizando expresiones decimales en contextos de medida.
+2. Realizar adiciones y sustracciones con números decimales para resolver problemas.
+3. Aplicar algoritmos de multiplicación y división con decimales en situaciones comerciales.
+CLAVES: fracción, decimal, conversión
+EJE 825: Lectura y escritura decimal, Valor posicional (décimas, centésimas), Operaciones básicas con decimales, Conversión fracción-decimal | None
+EVID 431: El estudiante realiza una tabla que representa la conversión de fracciones a decimales y viceversa, utilizando ejemplos de situaciones cotidianas. | ia_pendiente
+
+EST 564 M1 P1 2. Los números enteros (Conceptos)
+DESC: Introducción a los números enteros.
+DBA 575: DBA 1: Resuelve problemas en contextos de medidas relativas.
+DBA 3: Reconoce y establece relaciones de orden y equivalencia entre dominios numéricos.
+DESC: 1. Usar números relativos para describir situaciones de ganancia, pérdida y posición.
+2. Comprender el concepto de valor absoluto como distancia al cero.
+3. Ubicar y ordenar números enteros en la recta numérica y el plano cartesiano.
+CLAVES: relativo, plano cartesiano, orden, distancia al cero
+EJE 826: Números relativos (+ y -), El cero como punto de referencia, Valor absoluto y opuestos, Plano cartesiano | None
+EVID 432: El estudiante realiza un problema de contexto real utilizando números relativos para describir una situación, como la ganancia o pérdida de dinero en un mercado. | ia_pendiente
+
+EST 565 M1 P2 2. Los números enteros (Conceptos) - Continuación
+DESC: Refuerzo de números enteros.
+DBA 576: DBA 1: Resuelve problemas en contextos de medidas relativas.
+DBA 3: Reconoce y establece relaciones de orden y equivalencia.
+DESC: 1. Usar números relativos para describir situaciones de ganancia, pérdida y posición.
+2. Comprender el concepto de valor absoluto como distancia al cero.
+3. Ubicar y ordenar números enteros en la recta numérica y el plano cartesiano.
+CLAVES: relativo, distancia al cero, plano cartesiano, recta numérica
+EJE 827: Profundización en recta numérica y plano cartesiano | None
+EVID 433: El estudiante elabora un problema contextualizado en el que se usan números relativos para describir una situación de ganancia y pérdida, utilizando la recta numérica y el plano cartesiano. El estudiante presenta una solución con un razonamiento lógico y un cálculo preciso. | ia_pendiente
+
+EST 566 M1 P2 3. Operaciones con números enteros
+DESC: Operaciones básicas con enteros.
+DBA 577: DBA 2: Utiliza propiedades de los enteros y sus operaciones para proponer estrategias de cálculo.
+DBA 9 (G.4-Referente): Opera sobre números desconocidos.
+DESC: 1. Justificar procedimientos de adición y sustracción de enteros mediante desplazamientos.
+2. Resolver problemas multiplicativos y de división exacta en el conjunto Z.
+3. Utilizar propiedades de la potenciación para simplificar expresiones numéricas.
+CLAVES: operaciones con enteros, desplazamiento, adición, sustracción
+EJE 828: Adición y sustracción en Z, Multiplicación y división (ley de signos), Potenciación y sus propiedades, Ecuaciones informales | None
+EVID 434: El estudiante justifica el procedimiento de adición y sustracción de enteros mediante desplazamientos en una tabla de operaciones, mostrando la equivalencia entre los métodos y su aplicación en un problema concreto. | ia_pendiente
+
+EST 567 M1 P3 4. Algunos sistemas de medidas
+DESC: Medición y sistemas de unidades.
+DBA 578: DBA 5: Propone y desarrolla estrategias de estimación, medición y cálculo de longitudes, áreas y tiempo.
+DESC: 1. Identificar relaciones entre múltiplos y submúltiplos de magnitudes básicas.
+2. Estimar superficies y calcular áreas por composición de figuras.
+3. Resolver problemas que involucren equivalencias en unidades de tiempo.
+CLAVES: magnitudes básicas, equivalencias en unidades de tiempo, estimación, comportamiento de figuras
+EJE 829: Sistema Internacional (SI), Longitud, Superficie y Tiempo, Unidades agrarias (Hectárea), Escalas en planos | None
+EVID 435: El estudiante realiza un diagrama con las diferentes magnitudes básicas y sus múltiplos/submúltiplos, así como una tabla que relaciona las unidades de tiempo y su equivalencia. | ia_pendiente
+
+EST 568 M1 P3 5. Algunas exploraciones con la geometría
+DESC: Geometría básica.
+DBA 579: DBA 4: Utiliza y explica estrategias (plantillas) e instrumentos para la construcción de figuras y cuerpos.
+DESC: 1. Diferenciar conceptos de punto, recta, semirrecta y segmento.
+2. Clasificar ángulos (agudo, recto, obtuso) según su amplitud.
+3. Identificar propiedades de polígonos según su número de lados y vértices.
+CLAVES: geometría, puntos, rectas, segmentos, ángulos
+EJE 830: Elementos básicos (punto, recta), Ángulos y uso del transportador, Rectas paralelas y perpendiculares, Polígonos y cuadriláteros | None
+EVID 436: El estudiante elabora un diagrama que represente las relaciones entre puntos, rectas y segmentos utilizando una plantilla de diagramas geométricos. El diagrama incluye la identificación de ángulos según su amplitud. | ia_pendiente
+
+EST 569 M1 P4 6. Recolección e interpretación de información
+DESC: Estadística descriptiva.
+DBA 580: DBA 10: Recopila datos en tablas de doble entrada y los representa en gráficos de barras o líneas.
+DBA 12: Compara frecuencias esperadas con observadas en experimentos aleatorios.
+DESC: 1. Recolectar datos mediante encuestas y organizarlos en tablas de frecuencia.
+2. Interpretar y producir diagramas de barras y circulares.
+3. Analizar la frecuencia relativa y acumulada para deducir porcentajes.
+CLAVES: tabla de doble entrada, diagrama de barras, frecuencia relativa, acumulada, experimento aleatorio
+EJE 831: Recolección de datos (Dato), Frecuencia absoluta y relativa, Porcentajes en estadística, Diagramas de barras y circulares | None
+EVID 437: El estudiante elabora una tabla de doble entrada con datos recolectados a través de una encuesta, incluyendo la frecuencia relativa y acumulada para cada variable. El estudiante utiliza un diagrama de barras para representar los resultados. | ia_pendiente
+
+EST 570 M6 P1 1. ¿Cómo es lo que nos rodea?
+DESC: Materia y energía.
+DBA 581: DBA 3 (Grado 6.°): Comprende la clasificación de los materiales a partir de grupos de sustancias y mezclas.
+DBA 1 (Grado 6.°): Comprende las formas y transformaciones de energía en un sistema mecánico.
+DESC: 1. Establecer relaciones entre las características macroscópicas y microscópicas de la materia.
+2. Comparar diferentes puntos de vista sobre el origen del Universo y de las sustancias.
+3. Interpretar modelos sobre la estructura de la materia para explicar sus propiedades físicas y químicas.
+CLAVES: clasificación de materiales, sustancias y mezclas, formas de energía, transformaciones de energía
+EJE 832: El universo y el Big Bang, Átomos y moléculas, Elementos, compuestos y mezclas, Masa, peso, volumen y densidad, Energía y movimiento | None
+EVID 438: El estudiante realiza una clasificación de materiales según su composición, identificando los grupos de sustancias y mezclas. | ia_pendiente
+
+EST 571 M6 P1 2. La vida
+DESC: Biología celular y sistémica.
+DBA 582: DBA 4 (Grado 6.°): Comprende algunas funciones de la célula (transporte, energía y división)
+DBA 5 (Grado 6.°): Comprende la clasificación de los organismos en grupos taxonómicos según su tipo de célula.
+DESC: 1. Comparar diferentes puntos de vista sobre el origen de la vida a partir de diversas teorías.
+2. Describir la estructura de los seres vivos y establecer relaciones funcionales entre sus partes.
+3. Explicar cómo los organismos realizan funciones básicas a partir de su organización celular y sistémica.
+CLAVES: transporte, organización celular, función
+EJE 833: Teorías del origen de la vida, Célula (procariota y eucariota), Tejidos animales y vegetales, Sistemas óseo, muscular y circulatorio, Clasificación taxonómica | None
+EVID 439: El estudiante elabora un video corto (3-5 minutos) que explica la función del transporte en una célula, utilizando imágenes y animaciones para ilustrar el proceso. El video debe incluir ejemplos de cómo se realiza el transporte en diferentes tipos de células. | ia_pendiente
+
+EST 572 M6 P2 2. La vida (Continuación)
+DESC: Refuerzo biología celular.
+DBA 583: DBA 4 (Grado 6.°): Comprende algunas funciones de la célula.
+DBA 5 (Grado 6.°): Comprende la clasificación de los organismos.
+DESC: 1. Comparar diferentes puntos de vista sobre el origen de la vida a partir de diversas teorías.
+2. Describir la estructura de los seres vivos y establecer relaciones funcionales entre sus partes.
+3. Explicar cómo los organismos realizan funciones básicas a partir de su organización celular y sistémica.
+CLAVES: célula, organismos, estructura, funciones
+EJE 834: Profundización en funciones celulares y sistémicas | None
+EVID 440: La estudiante realiza un dibujo a escala del modelo de la célula vegetal, incluyendo las estructuras principales y sus funciones. | ia_pendiente
+
+EST 573 M6 P2 3. ¿Cómo funciona tu entorno?
+DESC: Ecología y medio ambiente.
+DBA 584: DBA 3 (Grado 7.° - Contexto Grado 6.°): Comprende que en las redes tróficas existen flujos de materia y energía.
+DBA 2 (Grado 4.° - Referente): Máquinas simples en el cuerpo de seres vivos.
+DESC: 1. Identificar la organización de los organismos y su relación con los factores bióticos y abióticos.
+2. Reconocer las características de los ecosistemas y la manera como fluye la energía entre los niveles tróficos.
+3. Identificar factores de contaminación en el entorno y sus implicaciones para la salud.
+CLAVES: ecosistemas, flujo de energía, contaminación
+EJE 835: Sistemas mecánicos y palancas en el cuerpo, Ecosistemas terrestres y acuáticos, Redes tróficas y transformación de energía | None
+EVID 441: El estudiante elabora un modelo tridimensional que representa un ecosistema, incluyendo los niveles tróficos y las interacciones entre organismos y factores abióticos. | ia_pendiente
+
+EST 574 M6 P3 4. ¿Cómo actuar frente a los problemas del entorno y cuerpo?
+DESC: Salud y medio ambiente.
+DBA 585: DBA 5 (Grado 11.° - Referente): Argumenta sobre los efectos de actividades humanas en la biodiversidad.
+DESC: 1. Evaluar el potencial de los recursos naturales y las consecuencias de la acción humana sobre ellos.
+2. Identificar la forma en la cual actúan las sustancias nocivas (drogas, alcohol) en el entorno y en el cuerpo.
+3. Reconocer la importancia de la salud física, sexual y mental para obtener bienestar individual y colectivo.
+CLAVES: contaminación, biodiversidad, ecosistema, educación ambiental
+EJE 836: Ciclos del oxígeno y carbono, Contaminación y capa de ozono, Separación de mezclas, Efectos nocivos de cafeína, tabaco y drogas, Salud física y sexual | None
+EVID 442: El estudiante elabora un ensayo argumentativo de 300 palabras, utilizando evidencia científica, sobre las consecuencias negativas de la contaminación por plásticos en el ecosistema marino. El ensayo debe incluir una introducción, desarrollo y conclusión. | ia_pendiente
+
+EST 575 M6 P3 5. ¿Por qué es importante la energía?
+DESC: Recursos energéticos.
+DBA 586: DBA 1 (Grado 6.°): Comprende las formas y transformaciones de energía y su disipación en el medio.
+DESC: 1. Analizar los recursos naturales del entorno para determinar su utilidad en la producción de energía sostenible.
+2. Relacionar los diferentes modos de obtención de energía por parte de los seres vivos (fotosíntesis y nutrición).
+3. Determinar problemáticas relacionadas con el uso de energía y establecer acciones para minimizarlas.
+CLAVES: energía, sostenibilidad, producción energética, fotosíntesis, nutrición
+EJE 837: Energía en la naturaleza, Obtención de energía (autótrofos y heterótrofos), Energía eléctrica (hídrica, eólica, solar), Energía en diagnóstico médico | None
+EVID 443: El estudiante elabora un plan de acción para reducir el consumo energético en su hogar, basándose en la información aprendida sobre fuentes de energía y sus impactos. | ia_pendiente
+
+EST 576 M6 P4 6. ¿Podemos ser investigadores?
+DESC: Investigación científica.
+DBA 587: Competencia Transversal (DBA): Diseña y propone investigaciones sobre especies de su entorno.
+DESC: 1. Aprender a formular proyectos de investigación para analizar el entorno y proponer soluciones a problemas reales.
+2. Establecer parámetros de observación técnica y formular hipótesis comprobables.
+3. Diseñar instrumentos de recolección de datos y analizar información para generar conclusiones científicas.
+CLAVES: investigación, biodiversidad, metodología, análisis
+EJE 838: El problema de investigación y su delimitación, Objetivos e hipótesis de trabajo, Variables dependientes e independientes, Análisis de datos | None
+EVID 444: El estudiante presenta un proyecto de investigación con una hipótesis, instrumentos de recolección de datos y un plan de análisis para investigar la biodiversidad del río. | ia_pendiente
+
+EST 577 M3 P1 1. Pueblos originarios del mundo: habitantes de ayer y de hoy
+DESC: Historia antigua.
+DBA 588: DBA 1: Diversas explicaciones y teorías sobre el origen del universo.
+DBA 5: Legados de las sociedades americanas prehispánicas.
+DESC: 1. Aprender sobre los legados de diversos pueblos para el desarrollo de la humanidad.
+2. Apropiarse de conceptos como cultura, sociedad e identidad.
+3. Establecer relaciones entre hechos del pasado y su ubicación espacial.
+CLAVES: cultura, sociedad, identidad
+EJE 839: El universo (teorías y mitos), Tradiciones y costumbres, Conceptos de Sociedad y Cultura, La Tierra como hogar de la humanidad | None
+EVID 445: El estudiante elabora un mural que representa la cultura de una sociedad prehispánica, incluyendo elementos arquitectónicos, vestimenta y objetos cotidianos. El mural incluye información sobre su ubicación geográfica y sus principales características. | ia_pendiente
+
+EST 578 M3 P1 2. Saberes de los pueblos originarios del mundo
+DESC: Cultura prehispánica.
+DBA 589: DBA 5: Aportes tecnológicos y culturales de sociedades prehispánicas.
+DBA 6: Diferentes formas de gobierno en la antigüedad vs. mundo contemporáneo.
+DESC: 1. Aprender sobre legados espirituales, tecnológicos, artísticos y sociales.
+2. Reconocer diversos puntos de vista sobre la creación de saberes.
+3. Reflexionar sobre cómo estos legados influyen en la comunidad actual.
+CLAVES: tecnología, impacto social, legado cultural
+EJE 840: Creencias, mitos y religiones, Tecnologías que cambiaron la vida, El arte como representación de la vida, Vida social y familiar | None
+EVID 446: El estudiante elabora un mural que represente una tecnología prehispánica y su impacto en la comunidad actual. | ia_pendiente
+
+EST 579 M3 P2 2. Saberes de los pueblos originarios (Continuación)
+DESC: Refuerzo cultura prehispánica.
+DBA 590: DBA 6: Diferentes formas de gobierno en la antigüedad vs. mundo contemporáneo.
+DESC: 1. Aprender sobre legados espirituales, tecnológicos, artísticos y sociales.
+2. Reconocer diversos puntos de vista sobre la creación de saberes.
+3. Reflexionar sobre cómo estos legados influyen en la comunidad actual.
+CLAVES: gobierno, legado, sociedad, creación de saberes
+EJE 841: Influencia de legados antiguos en la comunidad actual | None
+EVID 447: El estudiante elabora un mural digital que sintetiza las principales características del gobierno en la antigüedad y el mundo contemporáneo, incluyendo ejemplos de sistemas políticos y sus impactos sociales. | ia_pendiente
+
+EST 580 M3 P2 3. Los pueblos originarios y sus territorios
+DESC: Geografía humana y territorio.
+DBA 591: DBA 2: La Tierra en constante transformación y cambios en el relieve.
+DBA 5: Representación y situación espacial de sociedades prehispánicas.
+DESC: 1. Aprender cómo los pueblos organizaron su vida adaptándose a espacios naturales.
+2. Analizar la interacción de elementos físicos y relaciones sociales.
+3. Proponer acciones para la preservación de los territorios rurales.
+CLAVES: territorio, comunidad, conservación, dinámicas, medio ambiente
+EJE 842: Espacio geográfico y territorio, Cartografía: mapas y planos, Relaciones socioespaciales, Luchas ancestrales por la tierra | None
+EVID 448: El estudiante elabora un plan de acción para la conservación de un ecosistema local, basándose en la comprensión de las dinámicas del territorio y la interacción entre la comunidad y el medio ambiente. | ia_pendiente
+
+EST 581 M3 P3 4. Economía, población y uso de los recursos naturales
+DESC: Economía y población.
+DBA 592: DBA 4: Surgimiento de ciudades y papel de la agricultura y comercio.
+DBA 5: Estructura económica de sociedades prehispánicas vs. actuales.
+DESC: 1. Identificar que las sociedades deben producir bienes para su subsistencia.
+2. Reconocer la importancia de los medios de producción y los trabajadores.
+3. Identificar pautas de crecimiento y desarrollo demográfico.
+CLAVES: producción agrícola, crecimiento demográfico, medios de producción, sociedad prehispánica
+EJE 843: Sistemas de producción y relaciones sociales, Natalidad, mortalidad y migración, Recursos renovables y no renovables | None
+EVID 449: El estudiante elabora un mapa conceptual que relaciona la producción agrícola con el crecimiento poblacional en una sociedad prehispánica, incluyendo ejemplos específicos de cultivos y su impacto en la economía local. | ia_pendiente
+
+EST 582 M3 P3 5. Poder y política en los pueblos originarios
+DESC: Organización política.
+DBA 593: DBA 6: Formas de gobierno antiguas y ejercicio del poder político contemporáneo.
+DBA 7: Escenario político democrático e intereses sociales.
+DESC: 1. Aprender sobre diversas formas de organización política y distribución del poder.
+2. Identificar la construcción de normas en la vida rural.
+3. Diferenciar sistemas de autoridad (monarquía, teocracia, democracia).
+CLAVES: forma de gobierno, poder, democracia, monarquía, teocracia
+EJE 844: Relaciones de poder y líderes, Elementos de los sistemas políticos, Democracia y participación indígena | None
+EVID 450: El estudiante elabora un mapa conceptual que relaciona las diferentes formas de gobierno (monarquía, teocracia, democracia) con ejemplos históricos y características propias de cada sistema. El mapa incluye la descripción de las funciones del poder en cada sistema. | ia_pendiente
+
+EST 583 M3 P4 6. Conflictos, derechos y participación
+DESC: Derechos humanos y conflicto.
+DBA 594: DBA 7: Participación activa en decisiones colectivas y democracia.
+DBA 8: No aceptabilidad de la discriminación en sociedades democráticas.
+DESC: 1. Reconocer que los pueblos originarios son referentes para entender las disputas políticas.
+2. Identificar el legado en la resolución de conflictos y diálogo social.
+3. Comprender el papel de la ciudadanía en la exigencia de derechos.
+CLAVES: conflictos, participación, pueblos originarios, democracia
+EJE 845: Conflicto y relación con el Estado, Resolución pacífica y convivencia, Organización ciudadana y expresiones políticas | None
+EVID 451: El estudiante elabora un mural participativo que refleja las diferentes perspectivas sobre la resolución de conflictos en la comunidad, integrando el conocimiento adquirido sobre los pueblos originarios y su rol en la construcción de una sociedad democrática. | ia_pendiente
+
+EST 660 M8 P4 Identifico las necesidades y los puntos de vista de personas o grupos en una situación de conflicto, aunque no esté involucrado, y comprendo que las intenciones pueden ser mejores de lo que inicialmente pensaba.
+DESC: Convivencia, resolución de conflictos y comprensión de perspectivas ajenas en la familia y la escuela.
+DBA 670: Identifica los puntos de vista de las personas con quienes tiene conflictos, poniéndose en su lugar.
+DESC: Comprende los derechos y deberes de la familia, reconoce la importancia de las leyes, la democracia y las políticas públicas, y participa en los órganos institucionales.
+CLAVES: perspectiva, conflicto, solución conciliatoria
+EJE 920: Unidad 4. La familia y la escuela: la escuela, deberes del Estado con la familia y discusiones familiares. | Incluye tránsito y movilidad peatonal, honestidad cotidiana, identidad cultural, historia afrocolombiana y rechazo de la discriminación.
+EVID 527: El estudiante elabora un mapa conceptual que identifica los puntos de vista de diferentes actores involucrados en un conflicto urbano, utilizando ejemplos concretos. | ia_pendiente
+
+EST 667 M4 P1 Incrementa sus capacidades físicas respetando la vida y el cuerpo humano.
+DESC: Reconoce y valora su potencial biológico y psicológico para realizar tareas motrices.
+DBA 677: Identifica alimentación, nutrición, hidratación, riesgos físicos y normas de convivencia escolar.
+DESC: Aplica autocuidado y prácticas seguras durante la actividad física.
+CLAVES: alimentación, nutrición, hidratación, riesgos físicos, normas de convivencia
+EJE 927: Cuerpo humano, autocuidado y seguridad. | Terminología básica, sistema óseo, higiene, nutrición, diagnóstico físico, calentamiento, lesiones y primeros auxilios.
+EVID 534: El estudiante realiza una encuesta sobre hábitos alimenticios en la escuela, identificando las opciones más comunes y sus posibles beneficios o riesgos. El estudiante presenta un plan de alimentación saludable para el día a día. | ia_pendiente
+
+EST 668 M4 P2 Reconoce su potencial motriz e interactúa con compañeros para lograr metas colectivas.
+DESC: Valora actividad física regular, salud mental y trabajo cooperativo.
+DBA 678: Reconoce ejercicios, capacidades coordinativas, frecuencia cardíaca, respiración y relajación.
+DESC: Evalúa su actividad mediante descripciones, mediciones y explicaciones.
+CLAVES: coordinación, fuerza, resistencia, frecuencia cardíaca, respiración
+EJE 928: Capacidades físicas y actividad saludable. | Capacidades coordinativas, pulso, respiración, relajación, capacidades físicas y actividad física saludable.
+EVID 535: El estudiante realiza correctamente una serie de ejercicios físicos que involucran coordinación, fuerza y resistencia. | ia_pendiente
+
+EST 669 M4 P3 Reconoce su potencial motriz y mejora capacidades físicas valorando la vida y el cuerpo humano.
+DESC: Explora habilidades motrices y se adapta al medio.
+DBA 679: Reconoce efectos del manejo inadecuado de residuos sobre la salud y participa en equipos de trabajo.
+DESC: Identifica capacidades físicas mediante pruebas y actividades cooperativas.
+CLAVES: manejo de residuos, salud, investigación, gestión de residuos, equipo de trabajo
+EJE 929: Evaluación motriz y ambiente. | Medición diagnóstica, test psicomotores, calentamiento, capacidades físicas básicas, atletismo, ajedrez y natación.
+EVID 536: El estudiante realiza una investigación sobre los riesgos para la salud asociados al manejo inadecuado de residuos, presentando sus hallazgos en un informe escrito y una exposición oral. | ia_pendiente
+
+EST 670 M4 P4 Reconoce diferencias personales y participa con compañeros en metas colectivas respetando limitaciones y orientaciones.
+DESC: Fortalece capacidades físicas mediante actividades lúdicas y corporales.
+DBA 680: Argumenta la importancia del juego, la lúdica y la recreación en edad escolar.
+DESC: Desarrolla expresión artística y corporal en actividades grupales.
+CLAVES: juego, ludi, recreación, desarrollo integral, educación física
+EJE 930: Juego, recreación y expresión corporal. | Juego, lúdica, recreación, deporte y expresiones artísticas y corporales.
+EVID 537: El estudiante elabora un discurso de 5 minutos argumentando la importancia del juego para el desarrollo integral del niño de 6 años, utilizando ejemplos concretos de juegos tradicionales y modernos. | ia_pendiente
+
+EST 691 M9 P1 Módulo 1: reconoce el entorno y sus relaciones.
+DESC: Diagnostica características sociales y ambientales de la vereda.
+DBA 701: Analiza información sobre el entorno escolar y comunitario.
+DESC: Desarrolla las guías 1 y 2 del PPP.
+CLAVES: entorno, fortalezas, debilidades, oportunidades, amenazas
+EJE 951: Módulo 1 - Guías 1 y 2. | ¿Cómo es mi entorno? y características biofísicas de la vereda.
+EVID 558: El estudiante elabora un mapa conceptual que identifica las fortalezas, debilidades, oportunidades y amenazas del entorno escolar y comunitario. | ia_pendiente
+
+EST 692 M9 P1 Módulo 2: interpreta información del diagnóstico.
+DESC: Relaciona actividades humanas, entorno y alternativas de emprendimiento.
+DBA 702: Analiza actividades de habitantes y relaciones ser humano-entorno.
+DESC: Desarrolla las guías 3 y 4 del PPP.
+CLAVES: actividades, comunidad, necesidades, recursos
+EJE 952: Módulo 2 - Guías 3 y 4. | Actividades de la vereda y relación de los seres humanos con el entorno.
+EVID 559: El estudiante elabora un diagrama que muestre las diferentes actividades que realizan los habitantes de una comunidad, identificando sus principales necesidades y recursos. | ia_pendiente
+
+EST 693 M9 P2 Módulo 3: analiza emprendimiento e información del contexto.
+DESC: Reconoce propósitos económicos y sociales de los emprendimientos.
+DBA 703: Identifica alternativas de emprendimiento y analiza información del diagnóstico.
+DESC: Desarrolla las guías 5 y 6 del PPP.
+CLAVES: alternativas de emprendimiento, diagnóstico de mercado, propuesta de negocio
+EJE 953: Módulo 3 - Guías 5 y 6. | Finalidades del emprendimiento y análisis de información.
+EVID 560: El estudiante identifica al menos tres alternativas de emprendimiento innovadoras en el mercado actual, presentando un análisis de sus ventajas e inconvenientes. | ia_pendiente
+
+EST 694 M9 P2 Módulo 4: formula un Proyecto Pedagógico Productivo.
+DESC: Define idea, propósito y diseño inicial del proyecto.
+DBA 704: Identifica problemas, objetivos y componentes básicos de un proyecto.
+DESC: Desarrolla las guías 7, 8 y 9 del PPP.
+CLAVES: identificación de problemas, planificación, componentes básicos
+EJE 954: Módulo 4 - Guías 7 a 9. | Idea, propósito y diseño del Proyecto Pedagógico Productivo.
+EVID 561: El estudiante identifica los problemas relevantes para el proyecto, elabora un plan con objetivos específicos y define los componentes básicos del mismo. | ia_pendiente
+
+EST 695 M9 P3 Módulo 5: planifica la gestión del proyecto.
+DESC: Organiza actividades y criterios de acción para el PPP.
+DBA 705: Selecciona actividades y orienta un plan de acción.
+DESC: Desarrolla las guías 10 y 11 del PPP.
+CLAVES: plan de acción, actividades, recursos, estrategias de marketing
+EJE 955: Módulo 5 - Guías 10 y 11. | Selección de actividades y orientación del plan de acción.
+EVID 562: El estudiante elabora un plan de acción con actividades específicas para implementar una idea de negocio, incluyendo la identificación de recursos y estrategias de marketing. | ia_pendiente
+
+EST 696 M9 P3 Módulo 6: produce con responsabilidad y hace seguimiento.
+DESC: Reconoce compromisos de producción responsable en su proyecto.
+DBA 706: Aplica criterios de responsabilidad en actividades del PPP.
+DESC: Desarrolla las guías 12 y 13 del PPP.
+CLAVES: planificación, responsabilidad, análisis de riesgos
+EJE 956: Módulo 6 - Guías 12 y 13. | Producción responsable y verificación de compromisos.
+EVID 563: El estudiante elabora un plan de acción con indicadores de éxito para la implementación del proyecto, considerando las necesidades y recursos disponibles. | ia_pendiente
+
+EST 697 M9 P4 Módulo 7: registra y evalúa resultados del proyecto.
+DESC: Relaciona cuentas, resultados y cumplimiento de objetivos.
+DBA 707: Registra información y evalúa avances del PPP.
+DESC: Desarrolla las guías 14, 15 y 16 del PPP.
+CLAVES: registro, evaluación, progreso, metas, obstáculos
+EJE 957: Módulo 7 - Guías 14 a 16. | Registro de cuentas, evaluación del proyecto y alternativas de proyección comunitaria.
+EVID 564: El estudiante realiza un registro diario de los avances del proyecto en el cuaderno de seguimiento, incluyendo las metas alcanzadas, los obstáculos encontrados y las soluciones implementadas. | ia_pendiente
+
+EST 698 M9 P4 Módulo 8: proyecta el PPP hacia la comunidad.
+DESC: Socializa resultados y reconoce beneficios comunitarios.
+DBA 708: Organiza y participa en espacios de difusión del proyecto.
+DESC: Desarrolla las guías 17 y 18 del PPP.
+CLAVES: planificación, comunicación, difusión
+EJE 958: Módulo 8 - Guías 17 y 18. | Feria de proyectos y beneficios comunitarios de los PPP.
+EVID 565: El estudiante elabora un plan estratégico para la difusión del proyecto, incluyendo estrategias de comunicación y canales de distribución. El estudiante presenta el plan a la comunidad educativa y participa activamente en la difusión del proyecto. | ia_pendiente
+
+EST 731 M7 P1 Reconoce computadores y normas de uso seguro.
+DESC: Comprende componentes y evolución de la computación.
+DBA 741: Identifica inventos, hardware y funcionamiento básico.
+DESC: Aplica seguridad tecnológica.
+CLAVES: inventos, funcionamiento básico, circuito electrónico
+EJE 991: Computador y hardware. | Computación, generaciones, clasificación y estructura física.
+EVID 598: El estudiante podrá identificar al menos tres inventos tecnológicos de la historia, describir su funcionamiento básico y explicar su impacto en la sociedad. | ia_pendiente
+
+EST 732 M7 P2 Usa TIC para aprender y organizar información.
+DESC: Maneja entorno operativo de Windows.
+DBA 742: Utiliza aplicaciones y accesorios básicos.
+DESC: Organiza archivos y actividades personales.
+CLAVES: aplicaciones, accesorios, productividad, conexión
+EJE 992: Sistema operativo Windows. | Escritorio, ventanas, menús, aplicaciones y accesorios.
+EVID 599: El estudiante podrá utilizar una aplicación de productividad básica como Google Docs para crear un documento colaborativo. | ia_pendiente
+
+EST 733 M7 P3 Mantiene y personaliza sistemas tecnológicos sencillos.
+DESC: Reconoce funciones de mantenimiento básico.
+DBA 743: Detecta fallas y propone soluciones.
+DESC: Cuida equipos y archivos.
+CLAVES: falla, solución, análisis, programa, desarrollo
+EJE 993: Mantenimiento de Windows. | Disco, limpieza, accesos directos y configuración.
+EVID 600: El estudiante identifica tres fallos en un programa informático, explica sus causas y propone dos soluciones alternativas. | ia_pendiente
+
+EST 734 M7 P4 Comprende redes y comunicación digital.
+DESC: Reconoce componentes y utilidad de redes.
+DBA 744: Usa TIC responsablemente para comunicarse.
+DESC: Distingue tipos de redes y conexiones.
+CLAVES: tic, comunicación, responsabilidad
+EJE 994: Redes de computadoras. | Tipos, topologías, conexiones y componentes de red.
+EVID 601: El estudiante diseñó una presentación digital utilizando herramientas de software libre, integrando imágenes y videos con un mensaje claro sobre la importancia del uso responsable de las TIC. | ia_pendiente
+
+EST 755 M5 P1 Reconoce y clasifica figuras geométricas del entorno.
+DESC: Usa el lenguaje geométrico para describir puntos, rectas, segmentos y ángulos.
+DBA 765: Construye y clasifica ángulos y figuras planas.
+DESC: Utiliza regla, escuadra, compás y transportador con precisión.
+CLAVES: ángulos, figuras planas, triángulo rectángulo
+EJE 1015: Elementos básicos de geometría. | Punto, recta, semirrecta, segmento, ángulos y uso de instrumentos geométricos.
+EVID 622: El estudiante construye un triángulo rectángulo con sus medidas proporcionales y clasifica los ángulos según su medida. | ia_pendiente
+
+EST 756 M5 P2 Reconoce propiedades de polígonos y figuras planas.
+DESC: Compara lados, vértices y ángulos en polígonos regulares e irregulares.
+DBA 766: Calcula perímetros y áreas de figuras planas.
+DESC: Resuelve situaciones de medida con cuadrados, rectángulos, triángulos y polígonos.
+CLAVES: perímetro, área, triángulo rectángulo, teorema de pitágoras, figuras planas
+EJE 1016: Polígonos, perímetro y área. | Clasificación de polígonos; perímetro y área de figuras planas.
+EVID 623: El estudiante realiza correctamente la aplicación del teorema de Pitágoras para calcular el perímetro y área de un triángulo rectángulo. | ia_pendiente
+
+EST 757 M5 P3 Representa objetos tridimensionales desde distintas vistas.
+DESC: Relaciona cuerpos geométricos con sus desarrollos planos.
+DBA 767: Construye cuerpos geométricos a partir de plantillas.
+DESC: Identifica caras, aristas y vértices en prismas y pirámides.
+CLAVES: construcción, plantilla, geometría
+EJE 1017: Cuerpos geométricos. | Prismas, pirámides, desarrollos planos, caras, aristas y vértices.
+EVID 624: El estudiante construye un cuerpo geométrico utilizando una plantilla y siguiendo las instrucciones del docente, mostrando precisión en la aplicación de los cortes y las medidas. | ia_pendiente
+
+EST 758 M5 P4 Aplica relaciones de medida en situaciones geométricas.
+DESC: Selecciona unidades apropiadas para longitud, superficie y capacidad.
+DBA 768: Resuelve problemas de perímetro, área y volumen básico.
+DESC: Interpreta medidas en contextos cotidianos y escolares.
+CLAVES: perímetro, área, volumen
+EJE 1018: Medición y resolución de problemas. | Unidades de longitud, superficie y volumen; problemas geométricos.
+EVID 625: El estudiante resuelve un problema de perímetro y área de un rectángulo con precisión, utilizando la fórmula correcta. | ia_pendiente
+
+EST 779 M8 P1 Practica valores y actitudes que forman en la ciudadanía.
+DESC: Convivencia, participación, paz y responsabilidad democrática.
+DBA 789: Comprende que el autocuidado y los hábitos saludables favorecen su bienestar y sus relaciones.
+DESC: Reconoce deberes morales, normas de urbanidad, aseo, higiene y formas adecuadas de comportamiento.
+CLAVES: autocuidado, saludable, bienestar, relaciones
+EJE 1039: Unidad 1. Generalidades de urbanidad. | Deberes morales, urbanidad y relaciones, aseo e higiene y modo de comportarse.
+EVID 646: El estudiante elabora un plan de autocuidado personalizado para una semana, incluyendo rutinas de alimentación saludable, ejercicio físico y tiempo para descanso. | ia_pendiente
+
+EST 780 M8 P2 Construye relaciones prácticas que facilitan la convivencia.
+DESC: Reconoce derechos, deberes y condiciones que favorecen la vida en comunidad.
+DBA 790: Identifica acciones que vulneran los derechos de otras personas y comprende por qué lo hacen.
+DESC: Distingue mecanismos de solución de conflictos y valora la convivencia armónica.
+CLAVES: derechos humanos, acoso, discriminación, respeto, diversidad
+EJE 1040: Unidad 2. La convivencia. | Factores que afectan la convivencia, valores, normas de convivencia y convivencia escolar.
+EVID 647: El estudiante identifica tres acciones que vulneran los derechos humanos en la ciudad, como el acoso escolar o la discriminación por género, y explica las consecuencias negativas de cada una. El estudiante elabora un plan para prevenir estas acciones. | ia_pendiente
+
+EST 781 M8 P3 Aporta a la negociación y resolución de conflictos.
+DESC: Promueve el respeto familiar, ambiental y por la diversidad como bases de la paz.
+DBA 791: Expone sus posiciones y escucha en situaciones de conflicto.
+DESC: Reconoce valores humanos, derechos y deberes, y propone soluciones a problemas de convivencia.
+CLAVES: respeto, escucha activa, solución pacífica
+EJE 1041: Unidad 3. El conflicto. | Ventajas y desventajas, mediación de conflictos, conflicto y construcción de paz.
+EVID 648: El estudiante, durante una discusión sobre un tema de urbanidad, expresa sus puntos de vista con respeto a los demás y demuestra interés en escuchar las diferentes perspectivas. | ia_pendiente

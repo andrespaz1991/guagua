@@ -1,0 +1,42 @@
+Preparando Whisper para 9 archivo(s).
+Archivados 36 archivos anteriores en D:\xampp\htdocs\whisper\output\archivo_2026-11-01_21-37-29_8079bc9d
+Input directory: D:\xampp\htdocs\whisper\input
+Output directory: D:\xampp\htdocs\whisper\output
+Using device: cuda
+Transcribing: audio_2026-10-15T21-36-04-000Z_true_120363395026501872@g.us_3A59B6F4C2BE9F383DDE_56749553926282@lid.ogg
+Detected language: Spanish
+  0%|          | 0/4117 [00:00<?, ?frames/s] 63%|██████▎   | 2584/4117 [00:11<00:06, 220.84frames/s]100%|██████████| 4117/4117 [00:15<00:00, 273.72frames/s]100%|██████████| 4117/4117 [00:15<00:00, 261.91frames/s]
+Finished transcribing: audio_2026-10-15T21-36-04-000Z_true_120363395026501872@g.us_3A59B6F4C2BE9F383DDE_56749553926282@lid.ogg
+Transcribing: audio_2026-10-19T19-32-49-000Z_true_120363395026501872@g.us_3A38E81765F1AF6413A1_56749553926282@lid.ogg
+Detected language: Spanish
+  0%|          | 0/6611 [00:00<?, ?frames/s] 39%|███▊      | 2556/6611 [00:07<00:12, 325.86frames/s] 81%|████████  | 5356/6611 [00:17<00:04, 298.96frames/s]100%|██████████| 6611/6611 [00:22<00:00, 287.94frames/s]100%|██████████| 6611/6611 [00:22<00:00, 294.17frames/s]
+Finished transcribing: audio_2026-10-19T19-32-49-000Z_true_120363395026501872@g.us_3A38E81765F1AF6413A1_56749553926282@lid.ogg
+Transcribing: audio_2026-10-21T19-19-54-000Z_true_120363395026501872@g.us_3AB5D942AE718EC16D25_56749553926282@lid.ogg
+Detected language: Spanish
+  0%|          | 0/5633 [00:00<?, ?frames/s] 42%|████▏     | 2386/5633 [00:07<00:10, 302.71frames/s] 88%|████████▊ | 4982/5633 [00:15<00:02, 316.78frames/s]100%|██████████| 5633/5633 [00:17<00:00, 322.61frames/s]100%|██████████| 5633/5633 [00:17<00:00, 318.62frames/s]
+Finished transcribing: audio_2026-10-21T19-19-54-000Z_true_120363395026501872@g.us_3AB5D942AE718EC16D25_56749553926282@lid.ogg
+Transcribing: audio_2026-10-21T19-21-13-000Z_true_120363395026501872@g.us_3A5278D08AAC070B3A8C_56749553926282@lid.ogg
+Detected language: Spanish
+  0%|          | 0/6371 [00:00<?, ?frames/s] 38%|███▊      | 2444/6371 [00:07<00:11, 334.53frames/s] 85%|████████▍ | 5404/6371 [00:16<00:02, 335.74frames/s]100%|██████████| 6371/6371 [00:19<00:00, 313.16frames/s]100%|██████████| 6371/6371 [00:19<00:00, 320.26frames/s]
+Finished transcribing: audio_2026-10-21T19-21-13-000Z_true_120363395026501872@g.us_3A5278D08AAC070B3A8C_56749553926282@lid.ogg
+Transcribing: audio_2026-10-22T21-13-31-000Z_true_120363395026501872@g.us_3A467CC753C5A4B6C616_56749553926282@lid.ogg
+Detected language: Spanish
+  0%|          | 0/6607 [00:00<?, ?frames/s] 33%|███▎      | 2182/6607 [00:06<00:13, 321.63frames/s] 67%|██████▋   | 4426/6607 [00:14<00:07, 291.88frames/s]100%|██████████| 6607/6607 [00:22<00:00, 292.14frames/s]100%|██████████| 6607/6607 [00:22<00:00, 294.76frames/s]
+Finished transcribing: audio_2026-10-22T21-13-31-000Z_true_120363395026501872@g.us_3A467CC753C5A4B6C616_56749553926282@lid.ogg
+Transcribing: audio_2026-10-26T22-10-52-000Z_true_120363395026501872@g.us_3ACACD74873B9A8D2977_56749553926282@lid.ogg
+Detected language: Spanish
+  0%|          | 0/10671 [00:00<?, ?frames/s] 25%|██▍       | 2620/10671 [00:09<00:30, 266.13frames/s] 49%|████▊     | 5200/10671 [00:17<00:17, 309.88frames/s] 77%|███████▋  | 8168/10671 [00:27<00:08, 294.64frames/s]100%|██████████| 10671/10671 [00:37<00:00, 279.38frames/s]100%|██████████| 10671/10671 [00:37<00:00, 284.32frames/s]
+Finished transcribing: audio_2026-10-26T22-10-52-000Z_true_120363395026501872@g.us_3ACACD74873B9A8D2977_56749553926282@lid.ogg
+Transcribing: audio_2026-10-27T22-05-13-000Z_true_120363395026501872@g.us_3ADB62B5E0637210B4F7_56749553926282@lid.ogg
+Detected language: Spanish
+  0%|          | 0/10651 [00:00<?, ?frames/s] 24%|██▍       | 2608/10651 [00:07<00:23, 336.16frames/s] 46%|████▌     | 4908/10651 [00:13<00:14, 384.91frames/s] 62%|██████▏   | 6604/10651 [00:18<00:11, 367.75frames/s] 89%|████████▉ | 9496/10651 [00:27<00:03, 331.32frames/s]100%|██████████| 10651/10651 [00:31<00:00, 335.01frames/s]100%|██████████| 10651/10651 [00:31<00:00, 343.56frames/s]
+Finished transcribing: audio_2026-10-27T22-05-13-000Z_true_120363395026501872@g.us_3ADB62B5E0637210B4F7_56749553926282@lid.ogg
+Transcribing: audio_2026-10-28T21-47-21-000Z_true_120363395026501872@g.us_3A7E298EB79CDE51A0BB_56749553926282@lid.ogg
+Detected language: Spanish
+  0%|          | 0/9501 [00:00<?, ?frames/s] 29%|██▊       | 2716/9501 [00:07<00:18, 358.22frames/s] 52%|█████▏    | 4952/9501 [00:15<00:14, 307.87frames/s] 76%|███████▌  | 7208/9501 [00:24<00:08, 286.59frames/s]100%|██████████| 9501/9501 [00:34<00:00, 253.91frames/s]100%|██████████| 9501/9501 [00:34<00:00, 271.97frames/s]
+Finished transcribing: audio_2026-10-28T21-47-21-000Z_true_120363395026501872@g.us_3A7E298EB79CDE51A0BB_56749553926282@lid.ogg
+Transcribing: audio_2026-10-29T20-01-54-000Z_true_120363395026501872@g.us_3AB29F9B66CA59CDA0B6_56749553926282@lid.ogg
+Detected language: Spanish
+  0%|          | 0/7043 [00:00<?, ?frames/s] 33%|███▎      | 2296/7043 [00:06<00:13, 347.15frames/s] 67%|██████▋   | 4724/7043 [00:11<00:05, 408.60frames/s]100%|██████████| 7043/7043 [00:18<00:00, 378.66frames/s]100%|██████████| 7043/7043 [00:18<00:00, 380.07frames/s]
+Finished transcribing: audio_2026-10-29T20-01-54-000Z_true_120363395026501872@g.us_3AB29F9B66CA59CDA0B6_56749553926282@lid.ogg
+Transcripción completada: 9 audios, 36 archivos generados.

@@ -1,0 +1,77 @@
+﻿nombre,precio,categoria,duracion_dias,cantidad,origen,fecha,precio_total,existencia
+Arriendo,225000,Vivienda,30,1,gastos_fijos,,,SI
+Comida,,Alimentación,30,1,gastos_fijos,,,SI
+Pasajes,14000,Transportes,15,2,gastos_fijos,,,SI
+Plan de tigo,50000,Comunicación,30,1,gastos_fijos,,,SI
+Universidad,1027000,Estudios,30,1,gastos_fijos,,,SI
+Icetex,150000,Estudios,30,1,gastos_fijos,,,RECARGAR
+Sistecredito,150000,Varios,30,1,gastos_fijos,,,RECARGAR
+Gafas,200000,Varios,30,1,gastos_fijos,,,RECARGAR
+Addie,250000,Varios,30,1,gastos_fijos,,,SI
+Caja de Noxpirin,4500,Salud,,2,remesa,,9000,RECARGAR
+Acetaminofen,,Salud,,,remesa,,0,RECARGAR
+Lenteja,3500,Basicos,30,1,remesa,,3500,RECARGAR
+Frijol,4000,Basicos,30,1,remesa,,4000,NO
+Lomo de Cerdo,11000,Carnes,15,1,remesa,,11000,RECARGAR
+Chuleta de cerdo,12000,Carnes,15,1,remesa,,12000,NO
+Pechuga de pollo,17000,Carnes,15,1,remesa,,17000,RECARGAR
+Mortadela,2400,Carnes,,1,remesa,,2400,NO
+Bolsa de yogurt,4000,Bebidas,15,2,remesa,,8000,DESEABLE
+Pan,4000,Bebidas,15,2,remesa,,8000,RECARGAR
+Botellon de agua,15000,Basicos,30,1,remesa,2025-01-18,15000,SI
+Limpído,,Basicos,,,remesa,,0,NO
+Condimento Comino,,Basicos,60,,remesa,,0,RECARGAR
+Condimento Color,,Basicos,60,,remesa,,0,RECARGAR
+Condimento Sal Cebolla,,Basicos,60,,remesa,,0,RECARGAR
+Salsa de tomate,3000,Basicos,60,1,remesa,,3000,RECARGAR
+Mayonesa,4950,Basicos,60,1,remesa,,4950,RECARGAR
+Sal,,Basicos,60,1,remesa,,0,RECARGAR
+Atún rayado,3500,Basicos,60,4,remesa,,14000,RECARGAR
+Panela,4800,Basicos,60,1,remesa,,4800,RECARGAR
+Arveja,2800,Basicos,30,1,remesa,,2800,SI
+Azucar Morena,5000,Basicos,30,1,remesa,,5000,NO
+Arroz Estandar,10000,Basicos,30,1,remesa,,10000,SI
+Fideos,2250,Basicos,30,2,remesa,,4500,RECARGAR
+Suntea en polvo,12000,Basicos,15,1,remesa,,12000,RECARGAR
+Desorante para pies,8900,Aseo,15,1,remesa,,8900,RECARGAR
+Jabon de coco,2000,Aseo,15,2,remesa,2025-01-18,4000,RECARGAR
+Seda Dental,,Aseo,90,1,remesa,,0,NO
+Lavaloza Liquido,5250,Aseo,60,1,remesa,2025-01-18,5250,RECARGAR
+Papel higenico x2,3,Aseo,30,1,remesa,2025-01-18,3,RECARGAR
+Enjuague bucal,6600,Aseo,30,1,remesa,2025-01-18,6600,RECARGAR
+Bolsa de basura,1200,Aseo,30,2,remesa,2025-01-18,2400,RECARGAR
+Limpia Pisos,,Aseo,,,remesa,,0,RECARGAR
+Limpia Vidrios,,Aseo,30,,remesa,2025-01-18,0,NO
+Esponja de platos,,Aseo,90,,remesa,2025-01-18,0,RECARGAR
+Bloqueador Solar,,Aseo,60,,remesa,2025-01-18,0,NO
+Detergente,,Aseo,,,remesa,,0,SI
+Raid Pastas,,Aseo,,,remesa,,0,SI
+Trapera,,,,,remesa,,0,RECARGAR
+Escoba,,,,,remesa,,0,NO
+Suavitel,,Aseo,,4300,remesa,,0,SI
+Jabón de baño,,Aseo,,,remesa,2025-01-18,0,NO
+Crema Dental,,Aseo,60,,remesa,2025-01-18,0,SI
+Crema tapa verde,12000,Aseo,60,,remesa,2025-01-18,0,NO
+Jabon de manos,,Aseo,90,,remesa,2025-01-18,0,NO
+Pastillas azules para el baño,,Aseo,,,remesa,,,RECARGAR
+Desodorante Dove,,Aseo,30,,remesa,2025-01-12,0,RECARGAR
+Globos,,,,,pendientes,,,RECARGAR
+Vela,,,,,pendientes,,,RECARGAR
+Pegatinas para colgar,,,,,pendientes,,,RECARGAR
+Ganchos negros,,Estudio,,,pendientes,,,NO
+Ganchos de apretar ropa,,Estudio,,,pendientes,,,SI
+Regleta,,,,,pendientes,,,NO
+Cobija,,,,,pendientes,,,SI
+Veneno para rata,,,,,pendientes,,,RECARGAR
+Multipuerto,,,,,pendientes,,,NO
+ray en pastillas,,,,,pendientes,,,RECARGAR
+Vela aromatizante,,,,,pendientes,,,NO
+Porta comidas,,,,,pendientes,,,NO
+Bolsas de comida del d1,,,,,pendientes,,,RECARGAR
+CURAS LEUKOPLAST PIEL,100,,,5,salud,,,SI
+VITAMINA C 500 MG VICAL MANDA MAST 144 T:,3000,,,1,salud,,,RECARGAR
+MAREOL 72 TABLETAS:,700,,,4,salud,,,RECARGAR
+SUERO,1700,,,2,salud,,,RECARGAR
+ALKA SELTZER 60 TABLETAS,1000,,,1,salud,,,SI
+NEXT GEL GRIPA 48 CAPSULAS BLANDAS (SF),1900,,,4,salud,,,SI
+Sobres de next,,,,,salud,,,RECARGAR

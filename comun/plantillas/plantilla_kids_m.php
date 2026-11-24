@@ -1,6 +1,7 @@
 <?php
 require_once (dirname(__FILE__)."/../config.php");
 require_once (dirname(__FILE__)."/../funciones.php");
+require_once dirname(__DIR__) . '/vista_modulo.php';
 @session_start();
 ?>
 <!DOCTYPE html>
@@ -46,7 +47,7 @@ require_once (dirname(__FILE__)."/../funciones.php");
     <script src="<?php echo SGA_COMUN_URL ?>/js/jquery.contextMenu.js" type="text/javascript"></script>
     <link href="<?php echo SGA_COMUN_URL ?>/css/checkbox_animado.css" rel="stylesheet" type="text/css" /><link href="<?php echo SGA_COMUN_URL ?>/css/colores.css.php" rel="stylesheet" type="text/css" />
 </head>
-<body contextmenu="menu_body" class="menu_body">
+<body contextmenu="menu_body" class="menu_body<?php echo !empty($es_pagina_inicio) ? ' home-page' : ''; ?>">
 <?php if (isset($_GET['guia']) and $_GET['guia'] == "SI") require("guia.php") ?>
 <a contextmenu="menu_body" class="menu_body"></a>
 <menu id="menu_body" style="display:none;" class="showcase">
@@ -58,7 +59,7 @@ require_once (dirname(__FILE__)."/../funciones.php");
 <command label="Mensajes" onclick="document.location.href='<?php echo SGA_URL?>/mensajes'">
 <command label="Red" onclick="document.location.href='<?php echo SGA_URL?>/red'">
 </menu>
-<?php if (!isset($_GET['embebido'])) 
+<?php if (!guagua_modulo_embebido())
     require(SGA_COMUN_SERVER."/menu.php"); ?>
     <div class="container" style="padding-top: 0; margin-top: 0;">
        	<main style="padding-top: 15px;">
@@ -69,7 +70,8 @@ require_once (dirname(__FILE__)."/../funciones.php");
     </div>
     <span id="txt_alertas"></span>
     <br><br>
-     <?php if (!isset($_GET['embebido'])) 
+     <?php if (!guagua_modulo_embebido())
      require("footer.php"); ?>
+    <link rel="stylesheet" href="<?php echo SGA_COMUN_URL; ?>/css/interface_custom.css?v=<?php echo file_exists(dirname(__DIR__) . '/css/interface_custom.css') ? filemtime(dirname(__DIR__) . '/css/interface_custom.css') : time(); ?>">
 </body>
 </html>

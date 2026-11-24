@@ -1,0 +1,8 @@
+.sg-tabs{flex-wrap:wrap}.sg-tabs button{flex:1 1 155px}
+#sp-periodos .sp-config{display:flex;gap:24px;align-items:end}
+#sp-periodos .sp-config label{flex:1;max-width:280px}
+#sp-periodos .sp-config button{min-width:190px}
+#sp-periodos .sp-scope{margin-top:22px;border-top:1px solid #e2e8f0;padding-top:18px;color:#526078;font-size:14px;line-height:1.7}
+#sp-periodos .sp-filename{font:13px/1.6 Consolas,monospace;overflow-wrap:anywhere;color:#526078;margin-bottom:14px}
+#sp-periodos #sp-script{background:#12213b;color:#b9e6ee;border-color:#233758;height:280px;font:12px/1.6 Consolas,monospace;margin-top:20px}
+@media(max-width:640px){#sp-periodos .sp-config{display:block}#sp-periodos .sp-config label{max-width:none}#sp-periodos .sp-config button{margin-top:16px;width:100%}}

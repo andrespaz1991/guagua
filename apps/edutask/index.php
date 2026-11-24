@@ -1,18 +1,18 @@
 <?php
+require_once __DIR__ . '/../../comun/config.php';
+guagua_exigir_rol(['admin', 'directivo', 'docente']);
+$csrfToken = guagua_csrf_token();
 // ==========================================
 // CONFIGURACIÓN DE BASE DE DATOS Y BACKEND
 // ==========================================
-$host = '127.0.0.1';
-$user = 'root';
-$pass = '';
-$dbname = 'edutask_db';
-$port = 7000;
+$dbname = GuaguaDatabase::settings('edutask')['database'];
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 try {
-    $mysqli = new mysqli($host, $user, $pass, "", $port);
-    $mysqli->query("CREATE DATABASE IF NOT EXISTS `$dbname` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+    $mysqli = guagua_db_mysqli('edutask', ['database' => '']);
+    $quotedDatabase = str_replace('`', '``', $dbname);
+    $mysqli->query("CREATE DATABASE IF NOT EXISTS `$quotedDatabase` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
     $mysqli->select_db($dbname);
 
     // Tabla de Materias
@@ -53,13 +53,20 @@ try {
         }
     }
 } catch (Exception $e) {
-    if (!isset($_GET['action'])) die("Error de conexión: " . $e->getMessage());
+    error_log('apps/edutask/index.php database: ' . $e->getMessage());
+    if (!isset($_GET['action'])) {
+        http_response_code(500);
+        exit('No fue posible iniciar EduTask.');
+    }
 }
 
 // API HANDLER
 if (isset($_GET['action'])) {
     header('Content-Type: application/json');
     $action = $_GET['action'];
+    if ($action !== 'get_all') {
+        guagua_exigir_csrf();
+    }
     try {
         if ($action === 'get_all') {
             $subjects = [];
@@ -106,7 +113,8 @@ if (isset($_GET['action'])) {
         exit;
     } catch (Exception $e) {
         http_response_code(500);
-        echo json_encode(['error' => $e->getMessage()]);
+        error_log('apps/edutask/index.php: ' . $e->getMessage());
+        echo json_encode(['error' => 'No fue posible completar la operación.']);
         exit;
     }
 }
@@ -117,10 +125,11 @@ if (isset($_GET['action'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduTask Pro - Andrés Paz</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <meta name="csrf-token" content="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
+    <link href="/guagua/comun/vendor/fontawesome/css/all.min.css" rel="stylesheet">
+    <link href="/guagua/comun/css/quill.snow.css" rel="stylesheet">
+    <script src="/guagua/comun/js/quill.js"></script>
     <style>
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -319,7 +328,10 @@ if (isset($_GET['action'])) {
         async function fetchAPI(action, data = null) {
             try {
                 const opt = { method: data ? 'POST' : 'GET', body: data ? JSON.stringify(data) : null };
-                const res = await fetch(`?action=${action}`, opt);
+                // Evita que .htaccess redirija las solicitudes de la API al
+                // contenedor comun/modulo.php cuando EduTask está integrado.
+                opt.headers = { ...(opt.headers || {}), 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content };
+                const res = await fetch(`?action=${action}&guagua_embedded=1`, opt);
                 if (!res.ok) throw new Error("Error en servidor");
                 return res.json();
             } catch (e) {

@@ -15,14 +15,11 @@ require '../../comun/conexion.php'; // Consistencia del sistema
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Sopa de Letras - Guagua</title>
     
-    <!-- Google Fonts - Outfit para lectura limpia y JetBrains Mono para grillas tipográficas -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS local -->
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
     
     <!-- FontAwesome 6 para íconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/guagua/comun/vendor/fontawesome/css/all.min.css">
 
     <script>
         tailwind.config = {

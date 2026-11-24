@@ -1,0 +1,1160 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Mapa interactivo de Guagua</title><style>body{margin:0}#guagua-map{--gm-ink:#162a3b;--gm-muted:#586b7b;--gm-border:#dfe6eb;--gm-bg:#f3f6f8;--gm-teal:#126b63;--gm-soft:#e6f2ef;--gm-gap:#b33742;--gm-gap-bg:#fbecef;--gm-merge:#8d5e12;--gm-merge-bg:#fff5df;color:var(--gm-ink);font:16px/1.5 "Segoe UI",Arial,sans-serif;background:var(--gm-bg);min-height:100vh;padding:28px 32px 15px;box-sizing:border-box;isolation:isolate}
+#guagua-map *,#guagua-map *::before,#guagua-map *::after{box-sizing:border-box}
+#guagua-map h1,#guagua-map h2,#guagua-map h3,#guagua-map p{margin:0;color:inherit;font-family:inherit;line-height:inherit}
+#guagua-map button,#guagua-map input{font:inherit;letter-spacing:normal}
+#guagua-map button,#guagua-map a{-webkit-tap-highlight-color:transparent}
+#guagua-map button{cursor:pointer}
+#guagua-map button:focus-visible,#guagua-map a:focus-visible,#guagua-map input:focus-visible{outline:3px solid #218dba;outline-offset:3px}
+#guagua-map [hidden]{display:none!important}
+#guagua-map .gm-header{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-bottom:27px}
+#guagua-map .gm-brand{display:flex;align-items:center;gap:18px}
+#guagua-map .gm-brand-mark{width:52px;height:58px;display:grid;place-items:center;background:var(--gm-ink);border-radius:15px;color:#fff;flex-shrink:0}
+#guagua-map .gm-brand-mark svg{width:34px;height:34px;fill:var(--gm-ink);stroke:currentColor;stroke-width:1.7}
+#guagua-map .gm-eyebrow{font-size:12px;letter-spacing:.13em;font-weight:600;color:var(--gm-teal);margin-bottom:4px}
+#guagua-map h1{font-size:29px;font-weight:650;letter-spacing:-.8px;line-height:1.2}
+#guagua-map .gm-brand p{font-size:15px;color:var(--gm-muted);margin-top:6px}
+#guagua-map .gm-header-actions{display:flex;gap:9px;align-items:center}
+#guagua-map .gm-button{border:1px solid var(--gm-border);border-radius:9px;background:#fff;color:var(--gm-ink);padding:9px 14px;text-decoration:none;display:inline-flex;justify-content:center;align-items:center;gap:8px;font-size:14px;font-weight:600;line-height:1.5;min-height:41px}
+#guagua-map .gm-button:hover{background:#edf3f5;text-decoration:none}
+#guagua-map .gm-button.gm-quiet{background:transparent;border-color:transparent;color:var(--gm-muted)}
+#guagua-map .gm-button.gm-primary{background:var(--gm-teal);color:#fff;border-color:var(--gm-teal)}
+#guagua-map .gm-toolbar{display:flex;gap:20px;align-items:center;justify-content:space-between;margin-bottom:20px;position:relative;z-index:6}
+#guagua-map .gm-tabs{display:flex;padding:4px;background:#e6ecef;border-radius:11px;gap:3px}
+#guagua-map .gm-tabs button{border:0;background:transparent;color:var(--gm-muted);padding:9px 17px;border-radius:8px;font-size:14px;font-weight:600;white-space:nowrap}
+#guagua-map .gm-tabs button[aria-pressed=true]{background:#fff;color:var(--gm-ink);box-shadow:0 1px 5px #20394c12}
+#guagua-map .gm-search{position:relative;width:310px;max-width:100%}
+#guagua-map .gm-search>svg{position:absolute;width:18px;height:18px;top:13px;left:13px;fill:none;stroke:var(--gm-muted);stroke-width:1.7;pointer-events:none}
+#guagua-map .gm-search input{width:100%;border:1px solid var(--gm-border);background:#fff;border-radius:9px;height:44px;padding:9px 32px 9px 40px;color:var(--gm-ink);font-size:14px}
+#guagua-map .gm-search-results{position:absolute;right:0;top:50px;width:390px;max-width:85vw;padding:6px;background:#fff;border:1px solid var(--gm-border);box-shadow:0 16px 40px #142f4426;border-radius:12px;max-height:440px;overflow-y:auto}
+#guagua-map .gm-search-results button{display:block;width:100%;border:0;background:none;text-align:left;padding:11px;border-radius:7px;color:var(--gm-ink)}
+#guagua-map .gm-search-results button:hover{background:var(--gm-soft)}
+#guagua-map .gm-search-results small{display:block;color:var(--gm-muted);font-size:12px}
+#guagua-map .gm-search-results p{padding:14px;color:var(--gm-muted);font-size:14px}
+#guagua-map .gm-workspace{display:grid;grid-template-columns:minmax(0,1fr) 350px;align-items:start;gap:18px}
+#guagua-map .gm-main{min-width:0;background:#fff;border:1px solid var(--gm-border);border-radius:14px;overflow:hidden}
+#guagua-map .gm-map-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:17px 20px 11px;min-height:56px}
+#guagua-map #gm-breadcrumb{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:14px;font-weight:600}
+#guagua-map #gm-breadcrumb button{border:0;background:none;color:var(--gm-teal);padding:0;font-size:14px;font-weight:600}
+#guagua-map #gm-breadcrumb button[aria-current=page]{color:var(--gm-ink)}
+#guagua-map #gm-breadcrumb{min-width:0;overflow-wrap:anywhere}
+#guagua-map .gm-map-heading{flex-wrap:wrap}
+#guagua-map #gm-breadcrumb .gm-divider{color:#94a4af;font-weight:400}
+#guagua-map .gm-counter{font-size:12px;color:var(--gm-muted);white-space:nowrap}
+#guagua-map .gm-filters{display:flex;gap:6px;flex-wrap:wrap;padding:0 20px 13px;border-bottom:1px solid var(--gm-border)}
+#guagua-map .gm-filters button{display:inline-flex;align-items:center;gap:6px;border:1px solid transparent;background:transparent;padding:5px 9px;border-radius:6px;color:var(--gm-muted);font-size:12px;min-height:30px}
+#guagua-map .gm-filters button[aria-pressed=true]{background:#edf2f5;color:var(--gm-ink);border-color:#dbe4e9}
+#guagua-map .gm-dot{display:inline-block;width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--gm-teal)}
+#guagua-map .gm-dot.merge{background:var(--gm-merge)}
+#guagua-map .gm-dot.gap{background:var(--gm-gap)}
+#guagua-map .gm-dot.optional{background:#71818e}
+#guagua-map .gm-canvas{position:relative;height:635px;overflow:hidden;background-color:#fbfcfd;background-image:radial-gradient(#ccd9e1 .8px,transparent .8px);background-size:19px 19px;touch-action:none;cursor:grab}
+#guagua-map .gm-canvas.is-dragging{cursor:grabbing}
+#guagua-map .gm-world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+#guagua-map #gm-edges{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+#guagua-map .gm-edge{fill:none;stroke:#b3c3ce;stroke-width:1.6}
+#guagua-map .gm-edge.gm-missing{stroke:var(--gm-gap);stroke-dasharray:5 5;opacity:.7}
+#guagua-map .gm-edge.gm-highlight{stroke:var(--gm-teal);stroke-width:2.4;opacity:1}
+#guagua-map .gm-node{position:absolute;width:270px;min-height:88px;padding:15px 17px;display:flex;flex-direction:column;justify-content:center;gap:7px;border:1px solid #d7e1e7;border-radius:12px;background:#fff;color:var(--gm-ink);box-shadow:0 3px 10px #16374b05;text-align:left;transition:border-color .15s,box-shadow .15s;font-size:17px;line-height:1.25;cursor:pointer}
+#guagua-map .gm-node:hover{border-color:#71a59e;box-shadow:0 5px 20px #19394d12}
+#guagua-map .gm-node.is-selected{border-color:var(--gm-teal);box-shadow:0 0 0 2px #126b6329}
+#guagua-map .gm-node.is-root{background:var(--gm-ink);color:#fff;border-color:var(--gm-ink);width:205px;padding:21px;min-height:112px}
+#guagua-map .gm-node.is-root .gm-node-meta{color:#d7e5ed}
+#guagua-map .gm-node.is-branch{width:285px}
+#guagua-map .gm-node.module{background:#f5f9fc;font-size:15px;box-shadow:none}
+#guagua-map .gm-node[aria-expanded] .gm-node-name{padding-right:28px}
+#guagua-map .gm-node-toggle{position:absolute;z-index:2;width:26px;height:26px;border:1px solid #d6e2e7;background:#f4f8fa;border-radius:7px;padding:0;line-height:1;color:var(--gm-teal);font-size:18px;display:grid;place-items:center}
+#guagua-map .gm-node-toggle:hover{background:var(--gm-soft);border-color:#71a59e}
+#guagua-map .gm-node-name{font-weight:600;display:block;padding-right:18px}
+#guagua-map .gm-node-top{display:flex;align-items:start;justify-content:space-between;gap:10px}
+#guagua-map .gm-node-icon{font-size:18px;opacity:.7}
+#guagua-map .gm-node-meta{display:flex;align-items:center;gap:7px;color:var(--gm-muted);font-size:13px;line-height:1.25;font-weight:400;flex-wrap:wrap}
+#guagua-map .gm-node-sub{color:var(--gm-muted);font-size:13px;line-height:1.25;font-weight:400}
+#guagua-map .gm-node.gap .gm-node-name::before{content:"";display:inline-block;width:7px;height:7px;background:var(--gm-gap);border-radius:50%;margin:0 7px 2px 0}
+#guagua-map .gm-map-tools{position:absolute;bottom:15px;left:16px;display:flex;align-items:center;gap:0;border:1px solid var(--gm-border);border-radius:9px;background:#fff;box-shadow:0 3px 10px #20394c0a;cursor:auto}
+#guagua-map .gm-map-tools button{border:0;background:transparent;color:var(--gm-ink);min-width:36px;height:36px;padding:0 10px;font-size:17px}
+#guagua-map .gm-map-tools button:hover{background:#edf3f5}
+#guagua-map .gm-map-tools #gm-fit{font-size:12px;border-left:1px solid var(--gm-border)}
+#guagua-map .gm-map-tools output{font-size:12px;color:var(--gm-muted);width:49px;text-align:center;white-space:nowrap}
+#guagua-map .gm-canvas-caption{display:flex;justify-content:space-between;gap:12px;padding:12px 20px;background:#fff;border-top:1px solid var(--gm-border);font-size:12px;color:var(--gm-muted)}
+#guagua-map .gm-detail{background:#fff;border:1px solid var(--gm-border);border-radius:14px;padding:23px;max-height:797px;overflow-y:auto;scrollbar-width:thin}
+#guagua-map .gm-detail .gm-eyebrow{letter-spacing:.09em;margin-bottom:11px;font-size:11px}
+#guagua-map .gm-mobile-back{display:none}
+#guagua-map .gm-detail h2{font-size:23px;font-weight:650;line-height:1.2;letter-spacing:-.5px;margin-bottom:12px}
+#guagua-map .gm-detail h3{font-size:13px;font-weight:650;margin:22px 0 7px;color:var(--gm-ink)}
+#guagua-map .gm-detail p{font-size:14px;color:var(--gm-muted);line-height:1.65}
+#guagua-map .gm-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;border-radius:5px;padding:4px 7px;background:var(--gm-soft);color:var(--gm-teal)}
+#guagua-map .gm-badge.merge{color:var(--gm-merge);background:var(--gm-merge-bg)}
+#guagua-map .gm-badge.gap{color:var(--gm-gap);background:var(--gm-gap-bg)}
+#guagua-map .gm-badge.optional{color:#526472;background:#edf1f4}
+#guagua-map .gm-detail .gm-intro{padding-top:14px}
+#guagua-map .gm-detail .gm-owner{display:flex;flex-wrap:wrap;gap:6px;margin-top:13px;font-size:12px;color:var(--gm-muted)}
+#guagua-map .gm-detail .gm-owner strong{color:var(--gm-ink);font-weight:600}
+#guagua-map .gm-detail .gm-module-links{display:flex;flex-direction:column;gap:8px}
+#guagua-map .gm-detail .gm-module-links a{justify-content:space-between;text-align:left;gap:10px;white-space:normal;font-size:13px}
+#guagua-map .gm-detail .gm-module-links a small{display:block;margin-top:3px;color:var(--gm-muted);font-size:11px;font-weight:400}
+#guagua-map .gm-detail .gm-module-links a span{display:block}
+#guagua-map .gm-detail .gm-module-links a b{font-size:15px;font-weight:400;color:var(--gm-muted)}
+#guagua-map .gm-detail .gm-note{font-size:12px;color:var(--gm-muted);padding-top:10px}
+#guagua-map .gm-related{display:flex;flex-direction:column;gap:5px}
+#guagua-map .gm-related button{border:0;border-radius:6px;padding:8px 9px;background:#f1f5f7;text-align:left;font-size:13px;color:var(--gm-ink);display:flex;align-items:center;justify-content:space-between;gap:8px}
+#guagua-map .gm-related button:hover{background:var(--gm-soft)}
+#guagua-map .gm-related small{display:block;font-size:11px;color:var(--gm-muted);font-weight:400}
+#guagua-map .gm-evidence{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+#guagua-map .gm-evidence span{font-size:11px;padding:3px 6px;background:#f0f3f5;color:var(--gm-muted);border-radius:4px}
+#guagua-map .gm-overview-list{display:flex;flex-direction:column;gap:9px;margin-top:18px}
+#guagua-map .gm-overview-list button{display:flex;align-items:center;justify-content:space-between;width:100%;border:0;background:#f1f5f7;border-radius:8px;padding:11px;text-align:left;font-size:13px;color:var(--gm-ink)}
+#guagua-map .gm-overview-list button:hover{background:var(--gm-soft)}
+#guagua-map .gm-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:24px;background:var(--gm-bg)}
+#guagua-map .gm-empty h2{font-size:20px}
+#guagua-map .gm-empty p{font-size:14px;color:var(--gm-muted)}
+#guagua-map .gm-directory{padding:6px 20px 20px;min-height:635px;max-height:741px;overflow-y:auto}
+#guagua-map .gm-directory-row{display:flex;gap:16px;justify-content:space-between;align-items:center;border-bottom:1px solid var(--gm-border);padding:16px 0}
+#guagua-map .gm-directory-row h3{font-size:16px;font-weight:600;margin:0 0 3px}
+#guagua-map .gm-directory-row p{font-size:12px;color:var(--gm-muted);overflow-wrap:anywhere}
+#guagua-map .gm-directory-row .gm-directory-actions{display:flex;gap:6px;flex-shrink:0}
+#guagua-map .gm-directory-row .gm-button{font-size:12px;padding:6px 9px;min-height:34px}
+#guagua-map .gm-route-note{font-size:11px;color:var(--gm-gap);display:block;margin-top:4px}
+#guagua-map .gm-footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:15px;color:var(--gm-muted);font-size:11px}
+#guagua-map dialog{border:1px solid var(--gm-border);border-radius:16px;padding:28px;max-width:620px;width:calc(100% - 36px);color:var(--gm-ink);box-shadow:0 24px 100px #142b4055;max-height:85vh;overflow:auto;background:#fff}
+#guagua-map dialog::backdrop{background:#14283c66}
+#guagua-map .gm-dialog-heading{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:16px}
+#guagua-map dialog h2{font-size:23px;font-weight:600}
+#guagua-map dialog p,#guagua-map dialog dd{font-size:14px;color:var(--gm-muted);line-height:1.65}
+#guagua-map dialog dt{margin-top:17px;font-weight:600;font-size:14px}
+#guagua-map dialog dd{margin:4px 0 0}
+#guagua-map .gm-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(min-width:1600px){#guagua-map{padding:32px 48px 18px}#guagua-map .gm-workspace{grid-template-columns:minmax(0,1fr) 390px}#guagua-map .gm-canvas{height:700px}#guagua-map .gm-detail{max-height:862px}}
+@media(max-width:1150px){#guagua-map{padding:22px 20px 14px}#guagua-map .gm-workspace{grid-template-columns:minmax(0,1fr) 305px;gap:12px}#guagua-map .gm-detail{padding:19px}#guagua-map .gm-tabs button{padding:9px 11px}#guagua-map .gm-search{width:260px}#guagua-map .gm-header-actions{flex-direction:column;gap:1px}#guagua-map .gm-canvas{height:610px}#guagua-map .gm-canvas-caption{flex-direction:column;gap:2px}}
+@media(max-width:850px){#guagua-map .gm-workspace{grid-template-columns:1fr}#guagua-map .gm-detail{max-height:none}#guagua-map .gm-toolbar{flex-wrap:wrap;gap:12px}#guagua-map .gm-search{width:100%}#guagua-map .gm-search-results{width:100%;max-width:100%}#guagua-map .gm-tabs{width:100%}#guagua-map .gm-tabs button{flex:1}#guagua-map .gm-canvas{height:640px}#guagua-map .gm-header-actions .gm-quiet{display:none}#guagua-map .gm-directory{max-height:none}#guagua-map .gm-detail h2{font-size:23px}#guagua-map .gm-mobile-back{display:inline-flex;margin-bottom:18px}}
+@media(max-width:520px){#guagua-map{padding:18px 12px 12px}#guagua-map .gm-header{align-items:flex-start;margin-bottom:19px;gap:12px}#guagua-map .gm-brand{gap:10px}#guagua-map .gm-brand-mark{width:37px;height:42px;border-radius:10px}#guagua-map .gm-brand-mark svg{width:26px;height:26px}#guagua-map .gm-eyebrow{font-size:9px;letter-spacing:.07em}#guagua-map h1{font-size:23px}#guagua-map .gm-brand p{font-size:13px;max-width:210px}#guagua-map .gm-header-actions .gm-button{font-size:11px;padding:7px 8px;min-height:36px}#guagua-map .gm-tabs button{font-size:12px;padding:8px 6px;white-space:normal}#guagua-map .gm-map-heading{padding:14px 13px 10px}#guagua-map .gm-counter{font-size:11px}#guagua-map .gm-filters{padding:0 10px 10px;gap:1px}#guagua-map .gm-filters button{padding:6px 7px;font-size:11px}#guagua-map .gm-canvas{height:670px}#guagua-map .gm-canvas-caption{padding:10px 13px;font-size:11px}#guagua-map .gm-directory{padding:0 13px 14px}#guagua-map .gm-directory-row{align-items:flex-start;flex-direction:column;gap:9px}#guagua-map .gm-detail p{font-size:15px}#guagua-map .gm-footer{font-size:10px}#guagua-map .gm-search input{font-size:16px}}
+@media(prefers-reduced-motion:reduce){#guagua-map *{transition:none!important;scroll-behavior:auto!important}}
+</style></head><body><main id="guagua-map" data-base="http://localhost/guagua/">
+  <header class="gm-header">
+    <div class="gm-brand"><span class="gm-brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M8 7v18M8 11h10v-4h6M8 21h10v4h6"/><circle cx="8" cy="7" r="3"/><circle cx="8" cy="25" r="3"/><circle cx="24" cy="7" r="3"/><circle cx="24" cy="25" r="3"/></svg></span><div><div class="gm-eyebrow">GUAGUA · ARQUITECTURA DEL PROCESO</div><h1>Mapa de procesos</h1><p>Explora cada rama, sus módulos y lo que necesita mejorar.</p></div></div>
+    <div class="gm-header-actions"><button type="button" class="gm-button gm-quiet" id="gm-sources">Fuentes y alcance</button><a class="gm-button" id="gm-home" href="../../index.php">Volver a Guagua</a></div>
+  </header>
+  <div class="gm-toolbar">
+    <div class="gm-tabs" role="group" aria-label="Vista del sistema"><button type="button" data-mode="actual" aria-pressed="true">Mapa actual</button><button type="button" data-mode="propuesto" aria-pressed="false">Flujo recomendado</button><button type="button" data-mode="modulos" aria-pressed="false">Directorio de módulos</button></div>
+    <div class="gm-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg><input type="search" id="gm-search" placeholder="Buscar un proceso o módulo" aria-label="Buscar un proceso o módulo" autocomplete="off"><div class="gm-search-results" id="gm-search-results" hidden></div></div>
+  </div>
+  <div class="gm-workspace">
+    <section class="gm-main" aria-label="Explorador de procesos">
+      <div class="gm-map-heading"><nav aria-label="Ubicación en el mapa" id="gm-breadcrumb"></nav><span class="gm-counter" id="gm-count"></span></div>
+      <div class="gm-filters" id="gm-filters" role="group" aria-label="Condición del proceso"><button type="button" data-filter="all" aria-pressed="true">Todos</button><button type="button" data-filter="core" aria-pressed="false"><i class="gm-dot core"></i>Fundamentales</button><button type="button" data-filter="merge" aria-pressed="false"><i class="gm-dot merge"></i>A unificar</button><button type="button" data-filter="gap" aria-pressed="false"><i class="gm-dot gap"></i>Brechas</button><button type="button" data-filter="optional" aria-pressed="false"><i class="gm-dot optional"></i>Complementarios</button></div>
+      <div class="gm-canvas" id="gm-canvas" aria-label="Mapa navegable de Guagua">
+        <div class="gm-world" id="gm-world"><svg id="gm-edges" aria-hidden="true"></svg><div id="gm-nodes"></div></div>
+        <div id="gm-empty" class="gm-empty" hidden><h2>No hay procesos con esta condición</h2><p>Prueba otra rama o vuelve a mostrar todos.</p><button type="button" class="gm-button" id="gm-show-all">Mostrar todos</button></div>
+        <div class="gm-map-tools" aria-label="Controles del mapa"><button type="button" id="gm-zoom-out" aria-label="Alejar mapa">−</button><output id="gm-zoom-label" aria-label="Nivel de zoom">100 %</output><button type="button" id="gm-zoom-in" aria-label="Acercar mapa">+</button><button type="button" id="gm-fit">Ajustar</button></div>
+      </div>
+      <div class="gm-canvas-caption" id="gm-caption"><span>Un clic despliega; doble clic abre una ventana nueva.</span><span>Usa las migas para recorrer tu ruta.</span></div>
+      <section id="gm-directory" class="gm-directory" hidden aria-label="Directorio de módulos"></section>
+    </section>
+    <aside class="gm-detail" id="gm-detail" aria-label="Detalle del proceso"></aside>
+  </div>
+  <footer class="gm-footer"><span>Diagnóstico del 19 nov 2026 · Código y respaldo local</span><span>Los estados describen el diagnóstico, no actividad en tiempo real.</span></footer>
+  <p id="gm-announcement" class="gm-sr" role="status" aria-live="polite"></p>
+  <dialog id="gm-source-dialog" aria-labelledby="gm-source-title"><div class="gm-dialog-heading"><h2 id="gm-source-title">Fuentes y alcance</h2><button class="gm-button gm-quiet" type="button" id="gm-close-sources">Cerrar</button></div><p>Este mapa representa la revisión del código de Guagua y del respaldo local del 19 de noviembre de 2026. No consulta ni modifica registros académicos.</p><dl><dt>Mapa actual</dt><dd>Agrupa los módulos por su función. Las líneas continuas agrupan procesos; las discontinuas señalan una brecha descrita en el diagnóstico.</dd><dt>Flujo recomendado</dt><dd>Muestra la secuencia propuesta y sus dependencias. Incluye procesos que todavía necesitan implementarse o integrarse.</dd><dt>Directorio</dt><dd>Conserva las 61 entradas del menú del respaldo. Una entrada de navegación no equivale necesariamente a un módulo distinto. Las rutas se contrastaron con el proyecto local.</dd><dt>Enlaces a los módulos</dt><dd>Abren pantallas existentes en otra pestaña y conservan los permisos de Guagua. No ejecutan instalaciones, inscripciones, eliminaciones ni cierres.</dd></dl><p>Las referencias F01 a F10 corresponden al informe de diagnóstico. La falta de uso de una herramienta no está demostrada: «complementario» significa que no pertenece al recorrido obligatorio de apertura escolar.</p></dialog>
+</main>
+<script>/* Modelo editorial del diagnóstico. No representa datos académicos en tiempo real. */
+window.GUAGUA_MAPA = {
+  reviewed: '2026-11-19',
+  branches: [
+    {id:'plataforma',name:'Instalación y plataforma',short:'Plataforma',summary:'La base técnica y la identidad institucional que necesita todo el sistema.',owner:'Administración técnica',target:'Instalar una vez y mantener el esquema con migraciones; la apertura escolar es un proceso diferente.'},
+    {id:'apertura',name:'Apertura del año escolar',short:'Apertura del año',summary:'Prepara el ciclo, los períodos, la oferta docente y los horarios antes de activar el año.',owner:'Dirección y coordinación',target:'Usar el asistente como entrada oficial y aplicar las mismas reglas en todos los mantenimientos.'},
+    {id:'familias',name:'Estudiantes y familias',short:'Estudiantes y familias',summary:'Identifica personas, matrícula, ubicación académica y vínculos con acudientes.',owner:'Secretaría y coordinación',target:'Separar persona, matrícula anual, inscripción a asignatura y vínculo familiar.'},
+    {id:'academico',name:'Trabajo académico',short:'Trabajo académico',summary:'Conecta cursos, currículo, planeación y actividades con el ciclo escolar.',owner:'Docentes y coordinación',target:'Mantener la planeación y los recursos dentro del trabajo del docente, conectados a su oferta y sus estudiantes.'},
+    {id:'operacion',name:'Asistencia y seguimiento',short:'Operación escolar',summary:'La operación cotidiana y las intervenciones que acompañan a los estudiantes.',owner:'Docentes y coordinación',target:'Compartir horarios y matrícula; conciliar la captura manual y los archivos importados.'},
+    {id:'evaluacion',name:'Evaluación y cierre',short:'Evaluación y cierre',summary:'Consolida resultados y permite terminar períodos y renovar el ciclo con trazabilidad.',owner:'Dirección y coordinación',target:'Distinguir notas, auditoría y proyecciones; formalizar cierre, reapertura y continuidad.'},
+    {id:'herramientas',name:'Herramientas de apoyo',short:'Herramientas',summary:'Servicios institucionales, utilidades y preferencias que acompañan el núcleo escolar.',owner:'Según el servicio',target:'Habilitar por necesidad y perfil. No convertir las utilidades en pasos obligatorios de apertura.'}
+  ],
+  processes: [
+    {id:'instalacion',branch:'plataforma',name:'Instalar la plataforma',kind:'gap',priority:'P0',owner:'Administración técnica',purpose:'Preparar conexión, esquema y cuenta inicial.',current:'El instalador crea estructuras históricas distintas de las que usan los módulos actuales. Su alternativa de no inscribir estudiantes también habilita la inscripción automática.',target:'Versionar el esquema y separar instalación técnica de preparación escolar. Elegir no inscribir debe producir cero inscripciones automáticas.',refs:['F01','instalar/index.php'],links:[['Instalador','instalar/index.php']]},
+    {id:'institucion',branch:'plataforma',name:'Identidad institucional',kind:'core',owner:'Dirección',purpose:'Mantener los datos y opciones de la institución.',current:'La institución forma parte de la sesión y del asistente; varios catálogos y la activación académica siguen compartidos.',target:'Definir el alcance de institución y sede, y usarlo en calendario, oferta, matrículas y permisos.',refs:['F02','Planeador/institucion_educativa.php'],links:[['Instituciones educativas','Planeador/institucion_educativa.php']]},
+    {id:'respaldo',branch:'plataforma',name:'Respaldos y mantenimiento',kind:'core',owner:'Administración técnica',purpose:'Preservar información y mantener el esquema.',current:'Existen respaldos y una configuración central de conexión. El asistente convierte algunas tablas a InnoDB al instalar un año.',target:'Preparar migraciones y ensayar restauración antes de una apertura o transición de datos.',refs:['F09','comun/BASE_DE_DATOS.md'],links:[['Copias de seguridad','reportes/copia.php']]},
+    {id:'asistente',branch:'apertura',name:'Asistente de inicio de año',kind:'core',owner:'Dirección y coordinación',purpose:'Preparar un año desde cero o copiando estructura, revisar y activar.',current:'Ya dispone de ocho pasos, borradores, revisión de concurrencia, validaciones y preparación sin activación. Convive con rutas que modifican los mismos datos.',target:'Convertirlo en el recorrido oficial e integrar verificaciones de matrícula, familias y autorización de apertura.',refs:['Planeador/INICIO_ANUAL.md','F02'],links:[['Abrir asistente anual','Planeador/inicio_anual.php']]},
+    {id:'anio',branch:'apertura',name:'Gestionar el año lectivo',kind:'merge',priority:'P0',owner:'Dirección',purpose:'Definir el ciclo y seleccionar cuál está operativo.',current:'La pantalla Año Lectivo cambia el año activo sin coordinar el período como lo hace el asistente. La selección activa es global.',target:'Usar un servicio único para preparar, abrir y cerrar el ciclo, con alcance institucional explícito.',refs:['F02','cursos/ano_lectivo.php'],links:[['Años lectivos','cursos/ano_lectivo.php'],['Asistente anual','Planeador/inicio_anual.php']]},
+    {id:'periodos',branch:'apertura',name:'Configurar períodos',kind:'gap',priority:'P0',owner:'Coordinación',purpose:'Dividir el ciclo en períodos con fechas y orden.',current:'El asistente asigna claves manuales y valida solapamientos. El CRUD crea sin indicar clave, aunque el respaldo no tiene autoincremento, y no replica todas las validaciones.',target:'Migrar la clave y compartir las reglas de fechas, pertenencia al ciclo, activación y conservación del histórico.',refs:['F03','Planeador/periodo.php'],links:[['Períodos académicos','Planeador/periodo.php']]},
+    {id:'carga',branch:'apertura',name:'Oferta y carga docente',kind:'merge',owner:'Coordinación',purpose:'Asignar docentes, materias y grados al ciclo.',current:'El asistente, Crear curso y Asignaciones ofrecen entradas diferentes para crear oferta académica.',target:'Una única oferta con vista individual y masiva, usando las mismas reglas y límites por docente e institución.',refs:['F02','Planeador/genasig.php'],links:[['Asignaciones académicas','Planeador/genasig.php'],['Crear curso','cursos/crear_curso.php']]},
+    {id:'horario',branch:'apertura',name:'Organizar horarios',kind:'merge',owner:'Coordinación',purpose:'Establecer cuándo se imparte cada asignatura.',current:'Existen horarios en la base y en el asistente, pero la aplicación de asistencia mantiene además una programación escrita en código.',target:'Una sola programación vigente para planeación, captura e importaciones. Detectar conflictos antes de abrir.',refs:['F07','asistencia/horario.php'],links:[['Horarios','asistencia/horario.php'],['Asistente anual','Planeador/inicio_anual.php']]},
+    {id:'activacion',branch:'apertura',name:'Revisar y abrir el ciclo',kind:'merge',priority:'P0',owner:'Dirección',purpose:'Revisar la preparación y activar año y período de forma coordinada.',current:'El asistente puede activar el año y el período conjuntamente, pero el mantenimiento histórico del año conserva otro recorrido.',target:'Resolver errores bloqueantes, documentar excepciones y activar en una operación común, verificando la entrada de cada perfil.',refs:['F02','Planeador/lib/InicioAnual.php'],links:[['Revisión en el asistente','Planeador/inicio_anual.php']]},
+    {id:'archivos',branch:'apertura',name:'Preparar archivos académicos',kind:'optional',owner:'Personal autorizado',purpose:'Crear carpetas y revisar rutas de archivos.',current:'Generación de cursos y Estructura de inicio de año crean carpetas; sus nombres pueden confundirse con instalar o generar oferta.',target:'Reunirlas como utilidades de archivos. Generar estructura desde la oferta y períodos configurados.',refs:['apps/generacion_cursos/index.php','apps/generador_vallesol/index.php'],links:[['Carpetas por grado y materia','apps/generacion_cursos/index.php'],['Estructura de archivos','apps/generador_vallesol/index.php']]},
+    {id:'personas',branch:'familias',name:'Personas y cuentas',kind:'core',owner:'Secretaría o personal autorizado',purpose:'Identificar estudiantes, docentes, directivos y acudientes.',current:'Hay un directorio por perfiles e importación de usuarios. Los roles y su acceso no siempre se reconocen igual entre pantallas.',target:'Una identidad por persona, permisos por operación y cuenta independiente de su matrícula anual.',refs:['F08','usuario/usuario.php'],links:[['Directorio de personas','usuario/usuario.php'],['Importar usuarios','usuario/importar.php']]},
+    {id:'grados',branch:'familias',name:'Grados y grupos',kind:'merge',owner:'Coordinación',purpose:'Distinguir el grado curricular y el grupo operativo.',current:'Se usa usuario.observaciones como grado para selecciones académicas. La pantalla histórica llama grupo a un id_curso que el asistente llena con una asignatura.',target:'Ubicar grado y grupo en la matrícula anual, con soporte multigrado sin perder el grado individual.',refs:['F05','Planeador/inscripes.php'],links:[['Catálogo de grados','cursos/categoria_curso.php'],['Áreas','cursos/area.php']]},
+    {id:'matricula',branch:'familias',name:'Matrícula anual',kind:'gap',priority:'P1',owner:'Secretaría',purpose:'Registrar la pertenencia del estudiante a la institución y ciclo.',current:'La entrada Matrícula escribe una inscripción por asignatura. No constituye una cabecera inequívoca de matrícula anual en el recorrido revisado.',target:'Crear matrícula estudiante–ciclo–institución con grado, grupo y movimientos; derivar las inscripciones de esa matrícula.',refs:['F04','F05'],links:[['Matrícula actual por asignatura','usuario/inscripcion.php']]},
+    {id:'inscripciones',branch:'familias',name:'Inscribir a las asignaturas',kind:'merge',owner:'Secretaría y coordinación',purpose:'Vincular cada estudiante con la oferta que debe cursar.',current:'Matrícula, Inscripciones, cursos y asistente escriben en inscripcion. Algunas altas usan Aprobado; el asistente usa En curso.',target:'Unificar entradas y reglas. Una alta no debe implicar aprobación. Registrar retiros con fecha y motivo sin borrar trayectoria.',refs:['F04','Planeador/inscripes.php'],links:[['Inscripciones individuales y masivas','Planeador/inscripes.php'],['Matrícula histórica','usuario/inscripcion.php'],['Retiro de asignaturas','Planeador/retirar.php']]},
+    {id:'acudientes',branch:'familias',name:'Familias y acudientes',kind:'gap',priority:'P0',owner:'Secretaría',purpose:'Relacionar acudientes y estudiantes, y habilitar consulta autorizada.',current:'Matrimonio y Acudientes y estudiantes administran el mismo vínculo con campos distintos. La selección de hijo remite a elegir_hijo.php, ausente del árbol revisado.',target:'Un solo módulo con parentesco, contacto y vigencia. Selector único de estudiantes que compruebe el vínculo en cada consulta.',refs:['F06','clases/Persona.Class.php'],links:[['Vínculos con parentesco','usuario/matrimonio.php'],['Segundo gestor de vínculos','usuario/acudiente_estudiante.php']]},
+    {id:'ficha',branch:'familias',name:'Ficha del estudiante',kind:'core',owner:'Docentes y personal autorizado',purpose:'Consultar su trayectoria, asistencia y seguimiento.',current:'Existe una hoja de vida con información del estudiante y sus registros.',target:'Usarla como punto de consulta de matrícula, familia y trayectoria por ciclo, preservando el alcance del perfil.',refs:['usuario/hoja_vida_estudiante.php'],links:[['Hoja de vida del estudiante','usuario/hoja_vida_estudiante.php']]},
+    {id:'cursos',branch:'academico',name:'Mis cursos',kind:'core',owner:'Docente y estudiante',purpose:'Entrar al trabajo de la oferta académica asignada.',current:'La consulta considera el año activo, institución y perfil; para acudientes depende del estudiante seleccionado.',target:'Iniciar aquí la jornada docente y conectar planeación, estudiantes, asistencia y evaluación de cada asignación.',refs:['cursos/mis_cursos.php','F06'],links:[['Mis cursos','cursos/mis_cursos.php']]},
+    {id:'malla',branch:'academico',name:'Currículo y malla',kind:'core',owner:'Coordinación y docentes',purpose:'Organizar estándares, DBA y referentes curriculares.',current:'Existen gestión de malla, importación y herramientas de DBA.',target:'Mantener el currículo como catálogo común; la importación debe ser una acción del mismo proceso.',refs:['Planeador/admin_malla.php'],links:[['Gestión de malla','Planeador/admin_malla.php'],['Importar malla','Planeador/importador_malla.php'],['DBA','apps/dba/index.php']]},
+    {id:'planeacion',branch:'academico',name:'Planeación de clases',kind:'core',owner:'Docente',purpose:'Organizar clases dentro de la oferta y períodos.',current:'El calendario de planes y las herramientas de planeación tienen un propósito pedagógico distinto de abrir el año.',target:'Relacionar planeación con ciclo, período, curso y currículo. Mantener separado el plan institucional de compromisos.',refs:['Planeador/calendario.php'],links:[['Calendario de planes','Planeador/calendario.php'],['PlanIa','apps/PlanMind/index2.php']]},
+    {id:'actividades',branch:'academico',name:'Actividades y evidencias',kind:'core',owner:'Docente',purpose:'Registrar el trabajo y las evidencias de aprendizaje.',current:'Guagua dispone de cursos y aplicaciones de evidencias, rúbricas y reportes de actividades.',target:'Conectar cada evidencia con estudiante, asignación y período para que pueda alimentar seguimiento y evaluación.',refs:['apps/evidencias/index.php'],links:[['Evidencias','apps/evidencias/index.php'],['Rúbricas','apps/rubrica/index.php'],['Reporte de actividades','apps/reporte_actividades/index.php']]},
+    {id:'recursos',branch:'academico',name:'Recursos de aula',kind:'optional',owner:'Docente',purpose:'Apoyar las clases con contenidos, objetivos, juegos y recursos.',current:'Los catálogos y herramientas de aula aparecen como muchas entradas independientes.',target:'Agrupar bajo Trabajo académico. Su uso es opcional y no bloquea la apertura del ciclo.',refs:['comun/catalog_definitions.php'],links:[['Recursos educativos','Planeador/recursos.php'],['Contenidos','Planeador/contenido.php'],['Objetivos','Planeador/objetivos.php']]},
+    {id:'asistencia',branch:'operacion',name:'Capturar asistencia',kind:'core',owner:'Docente',purpose:'Registrar presencia, ausencias y justificaciones.',current:'Existe un módulo general y un panel alimentado por planilla.',target:'Unificar captura, importaciones, conciliación e informes bajo una sola experiencia.',refs:['F07','asistencia/index.php'],links:[['Registro de asistencia','asistencia/index.php'],['Informes de asistencia','reportes/informe_asistencia.php']]},
+    {id:'excel_asistencia',branch:'operacion',name:'Sincronizar planilla',kind:'merge',owner:'Personal autorizado',purpose:'Importar asistencia desde archivos externos.',current:'El sincronizador contiene una programación de respaldo que puede tener prioridad sobre el horario de la base.',target:'Usar horario vigente y equivalencias configurables; mostrar rechazos y diferencias, conservar origen y prevenir duplicados.',refs:['F07','apps/asistencia/sincronizar.php'],links:[['Panel de planilla','apps/asistencia/index.php'],['Sincronizador de asistencia','apps/asistencia/sincronizar.php'],['Herramientas Sisga','sisga/index.html']]},
+    {id:'seguimiento',branch:'operacion',name:'Acompañar al estudiante',kind:'core',owner:'Docente y coordinación',purpose:'Registrar observaciones, citas e intervenciones.',current:'Observador del estudiante y Seguimiento apuntan a la misma pantalla desde dos registros del menú.',target:'Conservar una sola entrada y enlazar la ficha del estudiante, familia y actuaciones.',refs:['seguimiento/citas.php','Menú duplicado'],links:[['Observador y seguimiento','seguimiento/citas.php']]},
+    {id:'comunicaciones',branch:'operacion',name:'Comunicación con familias',kind:'core',owner:'Personal autorizado',purpose:'Comunicar novedades del estudiante y de la institución.',current:'Existen mensajes y herramientas de reportes y comunicación; requieren una relación familiar y contacto coherentes.',target:'Consultar vínculos vigentes y registrar comunicaciones dentro del contexto del estudiante. Este mapa solo abre pantallas.',refs:['F06','mensajes/index.php'],links:[['Mensajes','mensajes/index.php']]},
+    {id:'pae',branch:'operacion',name:'Servicio de alimentación',kind:'optional',owner:'Responsable del servicio',purpose:'Apoyar la gestión del servicio institucional.',current:'PAE dispone de una aplicación independiente. Su necesidad debe decidirse por el uso institucional.',target:'Conservar si se utiliza, con permisos y responsable propios, dentro de Servicios institucionales.',refs:['apps/Restaurante/index.php'],links:[['PAE','apps/Restaurante/index.php']]},
+    {id:'reportes',branch:'evaluacion',name:'Consolidar e informar',kind:'core',owner:'Docente y coordinación',purpose:'Consultar resultados y alertas del ciclo.',current:'Existen reportes académicos, alertas e informes docentes y de asistencia.',target:'Compartir ciclo, período y matrícula. Identificar el origen de los datos y el alcance de cada informe.',refs:['ia/reporte.php'],links:[['Reporte académico y alertas','ia/reporte.php'],['Informe docente','reportes/informe_docente.php'],['Configurar fuentes de reportes','ia/config_reporte.php']]},
+    {id:'notas',branch:'evaluacion',name:'Auditar notas importadas',kind:'core',owner:'Coordinación',purpose:'Conservar el historial de notas importadas.',current:'NotasAuditoriaService guarda instantáneas de importaciones del período activo.',target:'Mantener auditoría e identificarla como historial de origen, diferenciada del resultado oficial aprobado.',refs:['apps/notas/lib/NotasAuditoriaService.php'],links:[['Auditoría de notas','apps/notas/index.php']]},
+    {id:'proyeccion',branch:'evaluacion',name:'Simular y proyectar',kind:'optional',owner:'Docente y coordinación',purpose:'Analizar escenarios y anticipar resultados.',current:'Balance anual importa dos períodos y presupone cuatro de igual peso. Las proyecciones no constituyen un cierre aprobado.',target:'Leer las reglas de evaluación del ciclo y presentar con claridad qué es simulación y qué es consolidado oficial.',refs:['F10','apps/balance_anual/index.php'],links:[['Balance anual','apps/balance_anual/index.php'],['Simulador de notas','apps/simulador_notas/index.php']]},
+    {id:'cierre_periodo',branch:'evaluacion',name:'Cerrar y reabrir período',kind:'gap',priority:'P1',owner:'Dirección o coordinación delegada',purpose:'Aprobar el consolidado de un período y controlar cambios posteriores.',current:'La activación o inactivación no equivale a un cierre con pendientes resueltos, bloqueo y reapertura motivada en el núcleo revisado.',target:'Validar pendientes, conciliar importaciones, registrar aprobación y bloquear captura ordinaria. Reabrir con permiso y motivo.',refs:['F10'],links:[]},
+    {id:'cierre_anual',branch:'evaluacion',name:'Cerrar el año escolar',kind:'gap',priority:'P1',owner:'Dirección',purpose:'Conservar una versión aprobada del resultado anual.',current:'No se identificó un proceso integral de cierre anual en las entradas centrales revisadas. Balancear notas no cubre ese recorrido.',target:'Completar períodos, resolver resultados, aprobar decisiones de continuidad y archivar el consolidado sin perder trazabilidad.',refs:['F10'],links:[]},
+    {id:'promocion',branch:'evaluacion',name:'Renovar matrícula y promover',kind:'gap',priority:'P1',owner:'Dirección y secretaría',purpose:'Dar continuidad al estudiante en el siguiente ciclo.',current:'Copiar estructura desde el asistente deja la selección de estudiantes explícita; no sustituye un proceso formal de promoción y renovación.',target:'Registrar la decisión y preparar la nueva matrícula sin sobrescribir el grado, notas o vínculos históricos.',refs:['F04','F05','F10'],links:[['Preparar el ciclo siguiente','Planeador/inicio_anual.php']]},
+    {id:'apariencia',branch:'herramientas',name:'Apariencia y navegación',kind:'merge',owner:'Administración autorizada',purpose:'Configurar presentación y accesos.',current:'Interfaz, personalizador, iconos, tarjetas y gestor de menú reparten ajustes relacionados.',target:'Unificar bajo Apariencia, distinguiendo preferencias personales y cambios globales.',refs:['comun/configuracion_opciones.php'],links:[['Apariencia de la plataforma','apps/configuracion_interfaz/index.php'],['Diseño del menú','apps/customizador_menu/index.php'],['Accesos y favoritos','comun/gestor_menu.php']]},
+    {id:'plan_institucional',branch:'herramientas',name:'Plan anual institucional',kind:'optional',owner:'Dirección y coordinación',purpose:'Organizar compromisos y entregables institucionales.',current:'El planeador anual administra planes, procesos y actividades; no es el asistente de apertura ni el calendario de clases.',target:'Conservar como planeación institucional con nombre claro y vínculos a las tareas escolares que acompaña.',refs:['apps/planeador_anual/api.php'],links:[['Plan anual institucional','apps/planeador_anual/index.php']]},
+    {id:'utilidades',branch:'herramientas',name:'Utilidades y formatos',kind:'optional',owner:'Usuario autorizado',purpose:'Crear documentos, imágenes y material de apoyo.',current:'PDF, carnet, collage, formatos y otras utilidades tienen entradas propias.',target:'Reunir en Herramientas, sin hacerlas requisitos de apertura o cierre escolar.',refs:['Directorio de módulos'],links:[['Formatos','apps/formatos/index.php'],['PDF','apps/pdf/index.html'],['Carnet','apps/carnet/carnet.html']]},
+    {id:'personales',branch:'herramientas',name:'Herramientas personales',kind:'optional',owner:'Cada usuario',purpose:'Apoyar tareas personales ajenas al ciclo obligatorio.',current:'Hay aplicaciones de mercado, finanzas, salud y organización personal. No se ha demostrado que estén sin uso.',target:'Confirmar su finalidad y mantenerlas en un espacio personal cuando no sean un servicio escolar.',refs:['Diagnóstico de módulos auxiliares'],links:[['Mercado','apps/MiMercado/index.php'],['Diario','comun/whatsapp_diario.php']]},
+    {id:'inventario',branch:'herramientas',name:'Inventario tecnológico',kind:'optional',owner:'Responsable institucional',purpose:'Apoyar la gestión de equipos y recursos.',current:'Existe como herramienta auxiliar independiente.',target:'Conservar si responde a un servicio institucional, con responsable y permisos propios.',refs:['apps/inventario_tecnologico'],links:[['Inventario tecnológico','apps/inventario_tecnologico/index.html']]},
+    {id:'ia',branch:'herramientas',name:'Asistentes y creación con IA',kind:'optional',owner:'Docente',purpose:'Apoyar elaboración de material y trabajo docente.',current:'Guagua incluye varias aplicaciones de conversación, creación y prompts.',target:'Agrupar por tarea y mantener el contexto escolar cuando sea pertinente. No sustituir datos o decisiones oficiales por una generación.',refs:['Directorio de módulos'],links:[['Gemini Chat','apps/geminichat/index.php'],['Prompts','apps/prompts/index.php']]}
+  ],
+  dependencies: [
+    ['instalacion','institucion','Prepara la plataforma'],['respaldo','asistente','Protege la transición'],['institucion','asistente','Define el alcance'],
+    ['asistente','anio','Prepara el ciclo'],['anio','periodos','Define el calendario'],['grados','carga','Define la oferta'],['periodos','planeacion','Delimita el trabajo'],
+    ['carga','horario','Organiza la programación'],['personas','matricula','Identifica al estudiante'],['grados','matricula','Define su ubicación'],
+    ['horario','activacion','Revisión de programación'],['inscripciones','activacion','Revisión de distribución'],['periodos','activacion','Revisión del calendario'],['activacion','cursos','Abre el trabajo del ciclo'],
+    ['personas','acudientes','Relaciona a la familia'],['matricula','inscripciones','Conexión por formalizar'],['carga','inscripciones','Determina las asignaturas'],
+    ['inscripciones','cursos','Habilita la participación'],['acudientes','cursos','Habilita la consulta familiar'],['matricula','ficha','Conserva trayectoria anual'],
+    ['malla','planeacion','Aporta referentes'],['horario','planeacion','Programa las clases'],['planeacion','actividades','Organiza evidencias'],
+    ['horario','excel_asistencia','Fuente que debe unificarse'],['inscripciones','asistencia','Define a quién registrar'],['excel_asistencia','asistencia','Importa y concilia'],
+    ['asistencia','seguimiento','Informa intervenciones'],['acudientes','comunicaciones','Define contactos autorizados'],['seguimiento','comunicaciones','Comunica novedades'],
+    ['actividades','reportes','Aporta resultados'],['notas','reportes','Aporta historial importado'],['reportes','proyeccion','Permite analizar escenarios'],
+    ['reportes','cierre_periodo','Consolidado por aprobar'],['asistencia','cierre_periodo','Pendientes por conciliar'],['cierre_periodo','cierre_anual','Completa los períodos'],
+    ['cierre_anual','promocion','Autoriza continuidad'],['promocion','matricula','Crea la matrícula siguiente']
+  ],
+  flow: [
+    {id:'instalacion',title:'Instalar',sub:'Plataforma y esquema',x:22,y:32},
+    {id:'asistente',title:'Preparar el ciclo',sub:'Borrador del año siguiente',x:306,y:32},
+    {id:'periodos',title:'Calendario',sub:'Períodos y evaluación',x:590,y:32},
+    {id:'personas',title:'Personas y familias',sub:'Identidad y vínculos',x:22,y:196},
+    {id:'carga',title:'Oferta y horarios',sub:'Grados, materias y docentes',x:306,y:196},
+    {id:'matricula',title:'Matricular',sub:'Ubicación e inscripciones',x:590,y:196},
+    {id:'activacion',title:'Abrir el ciclo',sub:'Revisión y activación común',x:22,y:366},
+    {id:'cursos',title:'Operar el año',sub:'Clases, asistencia y seguimiento',x:306,y:366},
+    {id:'cierre_periodo',title:'Cerrar períodos',sub:'Conciliación y aprobación',x:590,y:366},
+    {id:'cierre_anual',title:'Cerrar el año',sub:'Consolidado y archivo',x:306,y:536},
+    {id:'promocion',title:'Continuidad',sub:'Preparar la matrícula siguiente',x:590,y:536}
+  ],
+  flowEdges: [
+    ['instalacion','asistente'],['asistente','periodos'],['asistente','personas'],['asistente','carga'],['periodos','matricula'],['personas','matricula'],['carga','matricula'],
+    ['matricula','activacion'],['activacion','cursos'],['cursos','cierre_periodo'],['cierre_periodo','cierre_anual'],['cierre_anual','promocion']
+  ],
+  modules: []
+};
+
+/* Entradas de navegación del respaldo local del 19 de noviembre de 2026. */
+window.GUAGUA_MAPA.modules = [
+  {
+    "id": 7,
+    "name": "Institucion_educativa",
+    "route": "Planeador/institucion_educativa.php",
+    "process": "institucion",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 32,
+    "name": "Matricula",
+    "route": "usuario/inscripcion.php",
+    "process": "inscripciones",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 34,
+    "name": "Calendario de planes",
+    "route": "Planeador/calendario.php",
+    "process": "planeacion",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 36,
+    "name": "Importar malla",
+    "route": "Planeador/importador_malla.php",
+    "process": "malla",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 38,
+    "name": "Matrimonio",
+    "route": "usuario/matrimonio.php",
+    "process": "acudientes",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 46,
+    "name": "Área",
+    "route": "cursos/area.php",
+    "process": "grados",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 47,
+    "name": "Grados",
+    "route": "cursos/categoria_curso.php",
+    "process": "grados",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 48,
+    "name": "Año Lectivo",
+    "route": "cursos/ano_lectivo.php",
+    "process": "anio",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 49,
+    "name": "Periodos",
+    "route": "Planeador/periodo.php",
+    "process": "periodos",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 50,
+    "name": "Mascotas",
+    "route": "comun/Mascotas.php",
+    "process": "apariencia",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 51,
+    "name": "Iconos",
+    "route": "comun/iconos.php",
+    "process": "apariencia",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 52,
+    "name": "Administradores",
+    "route": "usuario/usuario.php?u=admin",
+    "process": "personas",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 55,
+    "name": "Acudientes",
+    "route": "usuario/usuario.php?u=acudiente",
+    "process": "personas",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 58,
+    "name": "Salir",
+    "route": "usuario/login.php?logout",
+    "process": null,
+    "available": false,
+    "note": "Acción de sesión. No se ejecuta desde el mapa."
+  },
+  {
+    "id": 59,
+    "name": "Sisga",
+    "route": "sisga/index.html",
+    "process": "excel_asistencia",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 60,
+    "name": "Asistencia",
+    "route": "asistencia/",
+    "process": "asistencia",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 62,
+    "name": "Juego de ruleta",
+    "route": "apps/Ruleta/index.html",
+    "process": "recursos",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 65,
+    "name": "Generación de cursos",
+    "route": "apps/generacion_cursos/",
+    "process": "archivos",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 66,
+    "name": "Estructura de inicio de año",
+    "route": "apps/generador_vallesol",
+    "process": "archivos",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 67,
+    "name": "Configuración de reportes",
+    "route": "ia/config_reporte.php",
+    "process": "reportes",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 70,
+    "name": "Retirar Materias de Estudiante",
+    "route": "Planeador/retirar.php",
+    "process": "inscripciones",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 71,
+    "name": "Reporte de Inasistencias por Materia",
+    "route": "reportes/informe_asistencia.php",
+    "process": "asistencia",
+    "available": true,
+    "note": "Comparte destino con informe de asistencia."
+  },
+  {
+    "id": 72,
+    "name": "Observador del estudiante",
+    "route": "seguimiento/citas.php",
+    "process": "seguimiento",
+    "available": true,
+    "note": "Comparte destino con Seguimiento."
+  },
+  {
+    "id": 73,
+    "name": "Usuario",
+    "route": "usuario/usuario.php",
+    "process": "personas",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 75,
+    "name": "Inasistencia para sisga",
+    "route": "apps/asistencia/",
+    "process": "excel_asistencia",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 79,
+    "name": "UTEL",
+    "route": "apps/utel/index.php",
+    "process": "utilidades",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 80,
+    "name": "Fotos Circulares",
+    "route": "apps/circular/index.html",
+    "process": "utilidades",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 81,
+    "name": "Collage",
+    "route": "apps/collage/index.html",
+    "process": "utilidades",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 82,
+    "name": "Edupreguntas",
+    "route": "apps/edupreguntasoficial/index.html",
+    "process": "recursos",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 83,
+    "name": "Gemini Chat",
+    "route": "apps/geminichat/index.php",
+    "process": "ia",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 87,
+    "name": "Seguimiento",
+    "route": "seguimiento/citas.php",
+    "process": "seguimiento",
+    "available": true,
+    "note": "Comparte destino con Observador del estudiante."
+  },
+  {
+    "id": 88,
+    "name": "Alerta",
+    "route": "ia/reporte.php",
+    "process": "reportes",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 90,
+    "name": "PAE",
+    "route": "apps/Restaurante/index.php",
+    "process": "pae",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 91,
+    "name": "NOTI",
+    "route": "apps/noti/index.html",
+    "process": "comunicaciones",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 92,
+    "name": "PlanIa",
+    "route": "apps/PlanMind/index2.php",
+    "process": "planeacion",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 96,
+    "name": "Merca",
+    "route": "apps/MiMercado/index.php",
+    "process": "personales",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 97,
+    "name": "Bingo_fracciones",
+    "route": "apps/Bingo_fracciones/",
+    "process": "recursos",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 98,
+    "name": "Fracciones",
+    "route": "apps/Fracciones/",
+    "process": "recursos",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 99,
+    "name": "carnet",
+    "route": "apps/carnet/",
+    "process": "utilidades",
+    "available": false,
+    "note": "Ruta sin pantalla de entrada confirmada en el proyecto local."
+  },
+  {
+    "id": 100,
+    "name": "edutask",
+    "route": "apps/edutask/",
+    "process": "personales",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 101,
+    "name": "pdf",
+    "route": "apps/pdf/",
+    "process": "utilidades",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 102,
+    "name": "rubrica",
+    "route": "apps/rubrica/",
+    "process": "actividades",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 103,
+    "name": "sopas",
+    "route": "apps/sopas/",
+    "process": "recursos",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 104,
+    "name": "Davinci",
+    "route": "apps/davinci",
+    "process": "ia",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 105,
+    "name": "dba",
+    "route": "apps/dba/",
+    "process": "malla",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 107,
+    "name": "Diario",
+    "route": "comun/whatsapp_diario.php",
+    "process": "personales",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 108,
+    "name": "Plantilla",
+    "route": "comun/doc/Plantilla guía.docx",
+    "process": "utilidades",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 109,
+    "name": "evidencias",
+    "route": "apps/evidencias/",
+    "process": "actividades",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 110,
+    "name": "Asignaciones",
+    "route": "Planeador/genasig.php",
+    "process": "carga",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 111,
+    "name": "Inscripciones",
+    "route": "Planeador/inscripes.php",
+    "process": "inscripciones",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 112,
+    "name": "informe de asistencia",
+    "route": "reportes/informe_asistencia.php",
+    "process": "asistencia",
+    "available": true,
+    "note": "Comparte destino con Reporte de Inasistencias por Materia."
+  },
+  {
+    "id": 113,
+    "name": "Manual",
+    "route": "apps/Manual/",
+    "process": "utilidades",
+    "available": false,
+    "note": "Ruta sin pantalla de entrada confirmada en el proyecto local."
+  },
+  {
+    "id": 114,
+    "name": "configuracion_interfaz",
+    "route": "apps/configuracion_interfaz/",
+    "process": "apariencia",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 115,
+    "name": "customizador_menu",
+    "route": "apps/customizador_menu/",
+    "process": "apariencia",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 116,
+    "name": "formatos",
+    "route": "apps/formatos/",
+    "process": "utilidades",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 117,
+    "name": "prompts",
+    "route": "apps/prompts/",
+    "process": "ia",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 118,
+    "name": "slider-studio",
+    "route": "apps/slider-studio/",
+    "process": "utilidades",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 119,
+    "name": "inventario_tecnologico",
+    "route": "apps/inventario_tecnologico/",
+    "process": "inventario",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 120,
+    "name": "Reporte de actividades",
+    "route": "apps/reporte_actividades/",
+    "process": "actividades",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 121,
+    "name": "Simulador de notas",
+    "route": "apps/simulador_notas/index.php",
+    "process": "proyeccion",
+    "available": true,
+    "note": ""
+  },
+  {
+    "id": 122,
+    "name": "balance_anual",
+    "route": "apps/balance_anual/",
+    "process": "proyeccion",
+    "available": true,
+    "note": ""
+  }
+];
+
+(() => {
+  'use strict';
+  const root = document.getElementById('guagua-map');
+  if (!root || !window.GUAGUA_MAPA) return;
+  const data = window.GUAGUA_MAPA;
+  const $ = id => root.querySelector('#gm-' + id);
+  const byId = Object.assign(Object.create(null),Object.fromEntries(data.processes.map(p => [p.id, p])));
+  const branches = Object.assign(Object.create(null),Object.fromEntries(data.branches.map(b => [b.id, b])));
+  const modules = Object.create(null);
+  data.processes.forEach(p=>p.links.forEach(([name,path,available],index)=>{
+    const id='modulo:'+p.id+':'+index;
+    modules[id]={id,name,path,available:available!==false,process:p.id,branch:p.branch};
+  }));
+  const labels = {core:'Fundamental',merge:'A unificar',gap:'Brecha del flujo',optional:'Complementario'};
+  const targetLabels = {core:'Conservar y conectar',merge:'Unificar',gap:'Incorporar o corregir',optional:'Apoyo opcional'};
+  const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const normalize = value => String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  const basePath = location.pathname.includes('/apps/mapa_procesos/') ? location.pathname.split('/apps/mapa_procesos/')[0] + '/' : root.dataset.base;
+  const base = new URL(basePath || '/guagua/', location.protocol === 'file:' ? 'http://localhost/' : location.origin);
+  const moduleUrl = path => new URL(path, base).href;
+  let state = {mode:'actual',branch:null,selected:'root',filter:'all',openBranches:new Set(),openProcesses:new Set()};
+  let view = {scale:1,x:0,y:0,width:650,height:680};
+  let positions = new Map();
+  let treeChildren = new Map();
+  let drag = null;
+  let nodeClickTimer = null;
+
+  function mapNodeUrl(id){
+    const url=new URL(location.href),q=new URLSearchParams({vista:'actual'});
+    const module=modules[id],process=module?byId[module.process]:byId[id];
+    const branch=process?.branch||(branches[id]?id:null);
+    const openBranches=new Set(state.openBranches),openProcesses=new Set(state.openProcesses);
+    if(branch){q.set('rama',branch);openBranches.add(branch);}
+    if(id!=='root')q.set('proceso',id);
+    if(process?.links.length)openProcesses.add(process.id);
+    q.set('abiertas',[...openBranches].join(','));
+    if(openProcesses.size)q.set('desplegados',[...openProcesses].join(','));
+    url.hash=q.toString();
+    return url.href;
+  }
+  function nodeDestination(id){
+    const module=modules[id];
+    if(module?.available)return {url:moduleUrl(module.path),name:module.name};
+    const process=byId[id],link=process?.links.find(l=>l[2]!==false);
+    if(link)return {url:moduleUrl(link[1]),name:link[0]};
+    return {url:mapNodeUrl(id),name:process?.name||branches[id]?.name||'Guagua'};
+  }
+  function cancelNodeClick(){clearTimeout(nodeClickTimer);nodeClickTimer=null;}
+  function openNodeWindow(id){
+    if(id!=='root'&&!byId[id]&&!branches[id]&&!modules[id])return;
+    cancelNodeClick();
+    const destination=nodeDestination(id);
+    window.open(destination.url,'_blank','popup=yes,width=1280,height=860,resizable=yes,scrollbars=yes,noopener,noreferrer');
+    announce('Abrir en ventana nueva: '+destination.name);
+  }
+  function activateNode(id){
+    if(id==='root')overview();
+    else if(branches[id])openBranch(id);
+    else select(id);
+  }
+
+  function readLocation() {
+    const q = new URLSearchParams(location.hash.slice(1));
+    const mode = q.get('vista'), branch = q.get('rama'), selected = q.get('proceso'), filter = q.get('condicion');
+    const openBranches=new Set((q.get('abiertas')||'').split(',').filter(id=>branches[id]));
+    const openProcesses=new Set((q.get('desplegados')||'').split(',').filter(id=>byId[id]));
+    const validSelected=byId[selected]||branches[selected]||modules[selected];
+    state = {
+      mode:['actual','propuesto','modulos'].includes(mode) ? mode : 'actual',
+      branch:branches[branch] ? branch : null,
+      selected:validSelected ? selected : 'root',
+      filter:['core','merge','gap','optional'].includes(filter) ? filter : 'all',
+      openBranches,openProcesses
+    };
+    if (state.mode === 'actual') {
+      const owner=modules[state.selected] ? byId[modules[state.selected].process] : byId[state.selected];
+      if(owner)state.branch=owner.branch;
+      if(state.branch && !q.has('abiertas'))state.openBranches.add(state.branch);
+      if(owner)state.openBranches.add(owner.branch);
+      if(modules[state.selected])state.openProcesses.add(owner.id);
+    }
+  }
+  function save() {
+    const q = new URLSearchParams({vista:state.mode});
+    if (state.branch) q.set('rama',state.branch);
+    if (state.selected !== 'root') q.set('proceso',state.selected);
+    if (state.filter !== 'all') q.set('condicion',state.filter);
+    q.set('abiertas',[...state.openBranches].join(','));
+    if(state.openProcesses.size)q.set('desplegados',[...state.openProcesses].join(','));
+    history.replaceState(null,'','#' + q.toString());
+  }
+  function announce(text) { $('announcement').textContent = text; }
+  function badge(kind, target = false) { return `<span class="gm-badge ${kind}"><i class="gm-dot ${kind}"></i>${escape((target ? targetLabels : labels)[kind])}</span>`; }
+  function children(branch) { return data.processes.filter(p => p.branch === branch && (state.filter === 'all' || p.kind === state.filter)); }
+
+  function render(options={}) {
+    root.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed',String(b.dataset.mode === state.mode)));
+    root.querySelectorAll('[data-filter]').forEach(b => b.setAttribute('aria-pressed',String(b.dataset.filter === state.filter)));
+    $('canvas').hidden = state.mode === 'modulos';
+    $('caption').hidden = state.mode === 'modulos';
+    $('directory').hidden = state.mode !== 'modulos';
+    $('filters').hidden = state.mode === 'propuesto';
+    if (state.mode === 'modulos') renderDirectory();
+    else renderGraph(options);
+    renderDetail();
+  }
+
+  function route(id) {
+    const m=modules[id],p=m?byId[m.process]:byId[id];
+    const branch=p?.branch||(branches[id]?id:null);
+    const path=[{id:'root',name:'Guagua'}];
+    if(branch)path.push({id:branch,name:branches[branch].short});
+    if(p)path.push({id:p.id,name:p.name});
+    if(m)path.push({id:m.id,name:m.name});
+    return path;
+  }
+  function renderBreadcrumb() {
+    $('breadcrumb').innerHTML=route(state.selected).map((part,index,parts)=>{
+      const action=part.id==='root'?'data-overview':branches[part.id]?`data-branch="${part.id}"`:modules[part.id]?`data-module="${part.id}"`:`data-select="${part.id}"`;
+      return `${index?'<span class="gm-divider" aria-hidden="true">/</span>':''}<button type="button" ${action}${index===parts.length-1?' aria-current="page"':''}>${escape(part.name)}</button>`;
+    }).join('');
+  }
+
+  function node(id,x,y,title,meta,options={}) {
+    const p = byId[id],m=modules[id];
+    const width = options.width || (options.root ? 205 : (options.branch ? 285 : (options.flow ? 240 : 285)));
+    const kind = p?.kind || (m?'module':'');
+    const b = document.createElement('button');
+    b.type = 'button';b.className = `gm-node ${kind} ${options.root ? 'is-root' : ''} ${options.branch ? 'is-branch' : ''} ${id === state.selected ? 'is-selected' : ''}`;
+    b.dataset.node = id;b.style.left = x + 'px';b.style.top = y + 'px';b.style.width = width + 'px';
+    b.id='gm-node-'+id.replace(/[^a-z0-9_-]/gi,'-');
+    b.setAttribute('aria-label',title + '. ' + meta + (options.expandable ? '. Desplegar hijos.' : '. Ver detalle.'));
+    b.setAttribute('aria-pressed',String(id === state.selected));
+    b.title='Un clic: desplegar o seleccionar. Doble clic: abrir '+nodeDestination(id).name+' en una ventana nueva.';
+    b.setAttribute('aria-keyshortcuts','Shift+Enter');
+    if(options.expandable)b.setAttribute('aria-expanded',String(options.expanded));
+    b.innerHTML = `<span class="gm-node-top"><span class="gm-node-name">${escape(title)}</span></span><span class="gm-node-meta">${p ? `<i class="gm-dot ${p.kind}"></i>` : ''}${escape(meta)}</span>${options.sub ? `<span class="gm-node-sub">${escape(options.sub)}</span>` : ''}`;
+    $('nodes').append(b);
+    let toggle=null;
+    if(options.expandable){
+      toggle=document.createElement('button');toggle.type='button';toggle.className='gm-node-toggle';toggle.dataset.toggle=id;
+      toggle.textContent=options.expanded?'−':'+';
+      toggle.setAttribute('aria-label',(options.expanded?'Contraer ':'Desplegar ')+title);
+      toggle.setAttribute('aria-expanded',String(options.expanded));
+      $('nodes').append(toggle);
+    }
+    positions.set(id,{x,y,width,height:b.offsetHeight,button:b,toggle});
+    placeNode(id,x,y);
+  }
+
+  function placeNode(id,x,y){
+    const pos=positions.get(id);pos.x=x;pos.y=y;
+    pos.button.style.left=x+'px';pos.button.style.top=y+'px';
+    if(pos.toggle){pos.toggle.style.left=(x+pos.width-33)+'px';pos.toggle.style.top=(y+10)+'px';}
+  }
+
+  function renderTree(){
+    const mobile=$('canvas').clientWidth<520;
+    const visibleBranches=data.branches.filter(b=>children(b.id).length);
+    const branchTrees=visibleBranches.map(b=>({id:b.id,kids:state.openBranches.has(b.id)?children(b.id).map(p=>({id:p.id,kids:state.openProcesses.has(p.id)?Object.values(modules).filter(m=>m.process===p.id).map(m=>({id:m.id,kids:[]})):[]})):[]}));
+    const tree={id:'root',kids:branchTrees};
+    treeChildren=new Map();
+    function materialize(t,depth=0){
+      treeChildren.set(t.id,t.kids.map(c=>c.id));
+      const p=byId[t.id],b=branches[t.id],m=modules[t.id];
+      const gaps=b?data.processes.filter(p=>p.branch===b.id&&p.kind==='gap').length:0;
+      const title=p?.name||b?.name||m?.name||'Guagua';
+      const meta=p?labels[p.kind]:b?`${children(b.id).length} procesos · ${gaps} ${gaps===1?'brecha':'brechas'}`:m?(m.available?'Pantalla existente':'Ruta por revisar'):'Sistema de gestión escolar';
+      const expandable=!!b||!!(p&&p.links.length);
+      const expanded=b?state.openBranches.has(b.id):!!(p&&state.openProcesses.has(p.id));
+      const width=mobile?Math.max(180,$('canvas').clientWidth-38-depth*15):(depth===0?205:285);
+      node(t.id,0,0,title,meta,{root:depth===0,branch:!!b,width,expandable,expanded});
+      t.kids.forEach(c=>materialize(c,depth+1));
+    }
+    materialize(tree);
+    const edges=[];
+    if(mobile){
+      let y=22;
+      const layout=(t,depth=0)=>{placeNode(t.id,18+depth*15,y);y+=positions.get(t.id).height+22;t.kids.forEach(c=>{edges.push([t.id,c.id]);layout(c,depth+1);});};
+      layout(tree);view.width=$('canvas').clientWidth;view.height=y+20;
+      $('canvas').style.height=(view.height+65)+'px';
+    }else{
+      const measure=t=>{const size=positions.get(t.id);t.extent=Math.max(size.height,t.kids.reduce((n,c)=>n+measure(c),0)+Math.max(0,t.kids.length-1)*20);return t.extent;};
+      measure(tree);let maxX=0;
+      const layout=(t,depth=0,top=22)=>{
+        const pos=positions.get(t.id),x=depth===0?28:330+(depth-1)*340;
+        placeNode(t.id,x,top+(t.extent-pos.height)/2);maxX=Math.max(maxX,x+pos.width);
+        const childHeight=t.kids.reduce((sum,c)=>sum+c.extent,0)+Math.max(0,t.kids.length-1)*20;
+        let y=top+(t.extent-childHeight)/2;
+        t.kids.forEach(c=>{edges.push([t.id,c.id]);layout(c,depth+1,y);y+=c.extent+20;});
+      };
+      layout(tree);view.width=maxX+28;view.height=tree.extent+44;$('canvas').style.height='';
+    }
+    renderBreadcrumb();
+    $('count').textContent=visibleBranches.length+' ramas · '+(positions.size-1-visibleBranches.length)+' nodos desplegados';
+    $('empty').hidden=visibleBranches.length>0;
+    $('caption').innerHTML='<span>Un clic despliega; doble clic abre una ventana nueva.</span><span>Usa − para contraer y las migas para volver.</span>';
+    return edges;
+  }
+
+  function renderGraph(options={}) {
+    const previousMode=$('world').dataset.mode;
+    const focused=document.activeElement?.dataset;
+    positions = new Map();$('nodes').replaceChildren();$('edges').replaceChildren();
+    let edgeList = [];
+    if (state.mode === 'propuesto') {
+      $('breadcrumb').innerHTML = '<span>Flujo recomendado</span><span class="gm-divider">/</span><span>Ciclo escolar completo</span>';
+      $('count').textContent = data.flow.length + ' etapas';
+      const narrow=$('canvas').clientWidth<520;
+      data.flow.forEach((s,i) => node(s.id,narrow?34:s.x,narrow?22+i*142:s.y,s.title,targetLabels[byId[s.id].kind],{flow:true,sub:s.sub,width:narrow?$('canvas').clientWidth-68:240}));
+      view.width=narrow?$('canvas').clientWidth:856;view.height=narrow?data.flow.length*142+25:670;
+      $('canvas').style.height=narrow?(view.height+85)+'px':'';
+      edgeList=narrow?data.flow.slice(1).map((s,i)=>[data.flow[i].id,s.id]):data.flowEdges;
+      $('caption').innerHTML = '<span>Las flechas muestran dependencias propuestas; personas y oferta se preparan en paralelo.</span><span>Selecciona una etapa para explorarla.</span>';
+    } else {
+      edgeList=renderTree();
+    }
+    if (state.mode === 'propuesto') $('empty').hidden = true;
+    $('world').style.width = view.width + 'px';$('world').style.height = view.height + 'px';
+    $('edges').setAttribute('width',view.width);$('edges').setAttribute('height',view.height);
+    drawEdges(edgeList);
+    $('world').dataset.mode=state.mode;
+    if(focused?.node)positions.get(focused.node)?.button.focus({preventScroll:true});
+    if(focused?.toggle)positions.get(focused.toggle)?.toggle?.focus({preventScroll:true});
+    if(state.mode==='actual'&&(options.focusId||state.openBranches.size))requestAnimationFrame(()=>reveal(options.focusId||state.selected));
+    else if(previousMode!==state.mode||options.fitAll||!previousMode)requestAnimationFrame(fit);
+    else transform();
+  }
+
+  function reveal(id){
+    if(state.mode!=='actual')return;
+    const pos=positions.get(id)||positions.get('root');if(!pos)return;
+    const c=$('canvas');
+    if(c.clientWidth<520){fit();return;}
+    const immediate=(treeChildren.get(id)||[]).map(k=>positions.get(k));
+    const family=[pos,...immediate];
+    const parent=route(id).at(-2),parentPos=parent&&positions.get(parent.id);
+    if(parentPos)family.push(parentPos);
+    const ancestors=route(id).map(p=>positions.get(p.id)).filter(Boolean);
+    const pathFamily=[...family,...ancestors];
+    const pathWidth=Math.max(...pathFamily.map(p=>p.x+p.width))-Math.min(...pathFamily.map(p=>p.x));
+    if((c.clientWidth-48)/pathWidth>=.72)family.push(...ancestors);
+    const minX=Math.min(...family.map(p=>p.x)),maxX=Math.max(...family.map(p=>p.x+p.width));
+    const scaleToFit=(c.clientWidth-48)/(maxX-minX);
+    view.scale=Math.min(Math.max(view.scale,.82),Math.max(.72,Math.min(1,scaleToFit)));
+    view.x=scaleToFit>=.72?(c.clientWidth-(maxX-minX)*view.scale)/2-minX*view.scale:30-pos.x*view.scale;
+    view.y=(c.clientHeight-40)/2-(pos.y+pos.height/2)*view.scale;
+    transform();
+  }
+
+  function drawEdges(edges) {
+    const ns = 'http://www.w3.org/2000/svg';
+    $('edges').innerHTML = '<defs><marker id="gm-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9" fill="none" stroke="#819aa9" stroke-width="1.5"/></marker></defs>';
+    for (const [from,to] of edges) {
+      const a = positions.get(from), b = positions.get(to);if (!a || !b) continue;
+      let d;
+      if (state.mode === 'propuesto') {
+        if (a.y === b.y && b.x-a.x < 350 && b.x > a.x) {
+          d = `M${a.x+a.width},${a.y+52} H${b.x-7}`;
+        } else {
+          const sx = a.x+a.width/2, sy = a.y+a.height, ex = b.x+b.width/2;
+          const mid = a.y===b.y ? sy+26 : sy+(b.y-sy)/2;
+          const end = a.y===b.y ? b.y+b.height+5 : b.y-7;
+          d = `M${sx},${sy} V${mid} H${ex} V${end}`;
+        }
+      } else if ($('canvas').clientWidth < 520) {
+        const sx = a.x+8, sy = a.y+a.height;
+        d = `M${sx},${sy} V${b.y+b.height/2} H${b.x}`;
+      } else {
+        const sx=a.x+a.width, sy=a.y+a.height/2, ex=b.x, ey=b.y+b.height/2, mid=sx+(ex-sx)/2;
+        d=`M${sx},${sy} C${mid},${sy} ${mid},${ey} ${ex},${ey}`;
+      }
+      const path = document.createElementNS(ns,'path');
+      path.dataset.to=to;
+      path.setAttribute('d',d);
+      path.setAttribute('class','gm-edge' + ((byId[to]?.kind === 'gap' || byId[from]?.kind === 'gap') && state.mode==='actual' ? ' gm-missing' : '') + (to===state.selected ? ' gm-highlight' : ''));
+      if(state.mode==='propuesto') path.setAttribute('marker-end','url(#gm-arrow)');
+      $('edges').append(path);
+    }
+  }
+
+  function fit() {
+    if (state.mode === 'modulos') return;
+    const c=$('canvas');const padding=c.clientWidth<520?12:32;
+    view.scale=Math.min(1.12,(c.clientWidth-padding*2)/view.width,(c.clientHeight-60)/view.height);
+    view.x=(c.clientWidth-view.width*view.scale)/2;view.y=(c.clientHeight-36-view.height*view.scale)/2;
+    transform();
+  }
+  function transform() {
+    $('world').style.transform=`translate(${view.x}px,${view.y}px) scale(${view.scale})`;
+    $('zoom-label').value=Math.round(view.scale*100)+' %';
+  }
+  function zoom(delta) {
+    const next=Math.max(.35,Math.min(2,view.scale+delta)), c=$('canvas');
+    const ratio=next/view.scale;view.x=c.clientWidth/2-(c.clientWidth/2-view.x)*ratio;view.y=c.clientHeight/2-(c.clientHeight/2-view.y)*ratio;view.scale=next;transform();
+  }
+
+  function renderDetail() {
+    const d=$('detail'), selected=byId[state.selected], branch=branches[state.selected];
+    const module=modules[state.selected];
+    if(module){
+      const owner=byId[module.process];
+      d.innerHTML=`<button type="button" class="gm-button gm-mobile-back" data-back-map>Volver al mapa</button><div class="gm-eyebrow">MÓDULO DEL PROCESO</div><h2>${escape(module.name)}</h2><span class="gm-badge ${module.available?'':'gap'}">${module.available?'Pantalla existente':'Ruta por revisar'}</span><h3>Forma parte de</h3><div class="gm-related"><button type="button" data-select="${owner.id}">${escape(owner.name)}</button></div><h3>Situación del proceso</h3><p>${escape(owner.current)}</p><h3>Cambio recomendado</h3><p>${escape(owner.target)}</p>${module.available?`<h3>Abrir en Guagua</h3><div class="gm-module-links"><a class="gm-button gm-primary" href="${escape(moduleUrl(module.path))}" target="_blank" rel="noopener noreferrer">Abrir ${escape(module.name)}</a></div><p class="gm-note">La pantalla se abre en otra pestaña con los permisos de Guagua.</p>`:''}<h3>Evidencia del diagnóstico</h3><div class="gm-evidence">${owner.refs.map(r=>`<span>${escape(r)}</span>`).join('')}</div>`;
+      return;
+    }
+    if (selected) {
+      const incoming=data.dependencies.filter(e=>e[1]===selected.id), outgoing=data.dependencies.filter(e=>e[0]===selected.id);
+      const related=(edges,index) => edges.map(e=>`<button type="button" data-select="${e[index]}"><span>${escape(byId[e[index]].name)}<small>${escape(e[2])}</small></span></button>`).join('');
+      const validLinks=selected.links.filter(l=>l[2]!==false);
+      d.innerHTML=`<button type="button" class="gm-button gm-mobile-back" data-back-map>Volver al mapa</button><div class="gm-eyebrow">${escape(branches[selected.branch].short)}</div><h2>${escape(selected.name)}</h2>${badge(selected.kind,state.mode==='propuesto')}<p class="gm-intro">${escape(selected.purpose)}</p><div class="gm-owner"><strong>Responsable</strong><span>${escape(selected.owner)}</span>${selected.priority ? `<strong>· ${selected.priority}</strong>`:''}</div><h3>Situación actual</h3><p>${escape(selected.current)}</p><h3>Cambio recomendado</h3><p>${escape(selected.target)}</p><h3>Pantallas actuales de referencia</h3><div class="gm-module-links">${validLinks.map(([name,path])=>`<a class="gm-button" href="${escape(moduleUrl(path))}" target="_blank" rel="noopener noreferrer"><span>${escape(name)}<small>Abre en otra pestaña</small></span></a>`).join('')}</div>${!validLinks.length?'<p>No hay una pantalla integral identificada para este proceso. La conexión está propuesta.</p>':''}${selected.links.some(l=>l[2]===false)?'<p class="gm-note">Alguna ruta de referencia no tiene una entrada disponible en el proyecto local.</p>':''}${incoming.length?`<h3>Necesita o se apoya en</h3><div class="gm-related">${related(incoming,0)}</div>`:''}${outgoing.length?`<h3>Conecta con</h3><div class="gm-related">${related(outgoing,1)}</div>`:''}<h3>Evidencia del diagnóstico</h3><div class="gm-evidence">${selected.refs.map(r=>`<span>${escape(r)}</span>`).join('')}</div><div style="margin-top:20px"><button type="button" class="gm-button" data-branch="${selected.branch}">Ver toda esta rama</button></div>`;
+      return;
+    }
+    if (branch) {
+      const items=data.processes.filter(p=>p.branch===branch.id);
+      d.innerHTML=`<div class="gm-eyebrow">RAMA DEL SISTEMA</div><h2>${escape(branch.name)}</h2><p>${escape(branch.summary)}</p><div class="gm-owner"><strong>Responsable</strong><span>${escape(branch.owner)}</span></div><h3>Organización recomendada</h3><p>${escape(branch.target)}</p><h3>Procesos de la rama</h3><div class="gm-overview-list">${items.map(p=>`<button type="button" data-select="${p.id}"><span>${escape(p.name)}</span><i class="gm-dot ${p.kind}" aria-label="${labels[p.kind]}"></i></button>`).join('')}</div>`;
+      return;
+    }
+    const gaps=data.processes.filter(p=>p.kind==='gap').length, merges=data.processes.filter(p=>p.kind==='merge').length;
+    d.innerHTML=`<div class="gm-eyebrow">LECTURA DEL SISTEMA</div><h2>Un ciclo escolar completo</h2><p>Empieza por una rama del mapa. Cada proceso reúne su función, las pantallas existentes y sus conexiones.</p><h3>Lo que muestra el diagnóstico</h3><p><strong>${gaps} procesos con brechas</strong> y <strong>${merges} por unificar</strong> dentro del modelo revisado. Son condiciones del diseño, no mediciones de uso.</p><h3>Por dónde empezar</h3><div class="gm-overview-list"><button type="button" data-select="instalacion"><span>Revisar la instalación</span><i class="gm-dot gap"></i></button><button type="button" data-branch="apertura"><span>Recorrer la apertura del año</span><i class="gm-dot core"></i></button><button type="button" data-select="matricula"><span>Entender matrícula e inscripciones</span><i class="gm-dot gap"></i></button><button type="button" data-select="acudientes"><span>Conectar a las familias</span><i class="gm-dot gap"></i></button></div><h3>Cómo leer las conexiones</h3><p>En el mapa actual, cada rama agrupa procesos. El detalle permite saltar a sus dependencias. En el flujo recomendado, las flechas describen la secuencia propuesta.</p><p class="gm-note">La ausencia de uso no está demostrada. Una herramienta complementaria puede seguir siendo necesaria para la institución.</p>`;
+  }
+
+  function renderDirectory() {
+    const query=normalize($('search').value.trim());
+    const items=data.modules.filter(m=>(!query||normalize(m.name+' '+m.route+' '+(byId[m.process]?.name||'')).includes(query)) && (state.filter==='all'||byId[m.process]?.kind===state.filter));
+    $('breadcrumb').innerHTML='<span>Directorio de módulos</span><span class="gm-divider">/</span><span>Registro del respaldo</span>';
+    $('count').textContent=items.length+' de '+data.modules.length+' entradas';
+    $('directory').innerHTML=items.map(m=>`<article class="gm-directory-row"><div><h3>${escape(m.name)}</h3><p>${escape(m.route)}</p>${m.note?`<span class="gm-route-note">${escape(m.note)}</span>`:''}</div><div class="gm-directory-actions">${m.process?`<button class="gm-button" type="button" data-select="${m.process}">Ver proceso</button>`:''}${m.available?`<a class="gm-button" href="${escape(moduleUrl(m.route))}" target="_blank" rel="noopener noreferrer">Abrir</a>`:''}</div></article>`).join('')||'<div class="gm-directory-row"><p>No hay entradas para esta búsqueda y condición.</p></div>';
+  }
+
+  function updateSelection(){
+    renderDetail();
+    if(state.mode==='actual')renderBreadcrumb();
+    root.querySelectorAll('[data-node]').forEach(b=>{b.classList.toggle('is-selected',b.dataset.node===state.selected);b.setAttribute('aria-pressed',String(b.dataset.node===state.selected));});
+    root.querySelectorAll('.gm-edge').forEach(e=>e.classList.toggle('gm-highlight',e.dataset.to===state.selected));
+  }
+  function select(id,options={}) {
+    const module=modules[id],p=module?byId[module.process]:byId[id];if(!p)return;
+    let changed=false;
+    if(module||state.mode==='modulos'||(state.mode==='propuesto'&&!data.flow.some(s=>s.id===id))){changed=state.mode!=='actual';state.mode='actual';}
+    state.selected=id;state.branch=p.branch;
+    if(state.filter!=='all'&&p.kind!==state.filter){state.filter='all';changed=true;}
+    if(state.mode==='actual'){
+      if(!state.openBranches.has(p.branch)){state.openBranches.add(p.branch);changed=true;}
+      if(p.links.length&&!state.openProcesses.has(p.id)){state.openProcesses.add(p.id);changed=true;}
+    }
+    if(changed)render({focusId:id});else{updateSelection();if(options.focus)reveal(id);}
+    $('detail').scrollTop=0;save();announce('Seleccionado: '+(module?.name||p.name));
+    if(innerWidth<=850&&(!changed||module))requestAnimationFrame(()=>$('detail').scrollIntoView({block:'start',behavior:'smooth'}));
+  }
+  function openBranch(id) {
+    if(!branches[id])return;
+    const changed=state.mode!=='actual'||!state.openBranches.has(id);
+    state.mode='actual';state.branch=id;state.selected=id;state.openBranches.add(id);
+    if(changed)render({focusId:id});else{updateSelection();reveal(id);}
+    save();announce('Rama desplegada: '+branches[id].name);
+    if(innerWidth<=850)$('canvas').scrollIntoView({block:'start',behavior:'smooth'});
+  }
+  function toggle(id){
+    const set=branches[id]?state.openBranches:state.openProcesses;
+    if(!set.has(id)){if(branches[id])openBranch(id);else select(id);return;}
+    set.delete(id);
+    state.selected=id;state.branch=branches[id]?id:byId[id].branch;
+    render({focusId:id});save();announce('Nodo contraído: '+(branches[id]?.name||byId[id]?.name));
+  }
+  function overview() {state.mode='actual';state.branch=null;state.selected='root';render({focusId:'root'});save();announce('Guagua. Se conservan las ramas desplegadas.');}
+
+  function renderSearch() {
+    const input=$('search').value.trim(), q=normalize(input);
+    if(state.mode==='modulos'){renderDirectory();$('search-results').hidden=true;return;}
+    if(!q){$('search-results').hidden=true;return;}
+    const matches=data.processes.filter(p=>normalize([p.name,p.purpose,...p.links.map(l=>l[0]),...data.modules.filter(m=>m.process===p.id).map(m=>m.name)].join(' ')).includes(q)).slice(0,8);
+    $('search-results').innerHTML=matches.map(p=>`<button type="button" data-search-select="${p.id}"><span>${escape(p.name)}</span><small>${escape(branches[p.branch].short)} · ${labels[p.kind]}</small></button>`).join('')||'<p>No se encontró un proceso con ese nombre.</p>';
+    $('search-results').hidden=false;
+  }
+
+  root.addEventListener('click',event=>{
+    const t=event.target.closest('button');
+    cancelNodeClick();
+    if(!t)return;
+    if(t.hasAttribute('data-node')){
+      if(event.detail>1)return;
+      if(event.detail===0)activateNode(t.dataset.node);
+      else nodeClickTimer=setTimeout(()=>{nodeClickTimer=null;activateNode(t.dataset.node);},500);
+      return;
+    }
+    if(t.hasAttribute('data-search-select')){$('search-results').hidden=true;$('search').value='';select(t.dataset.searchSelect);return;}
+    if(t.hasAttribute('data-back-map')){$('canvas').scrollIntoView({block:'start',behavior:'smooth'});return;}
+    if(t.hasAttribute('data-toggle')){toggle(t.dataset.toggle);return;}
+    if(t.hasAttribute('data-module')){select(t.dataset.module,{focus:true});return;}
+    if(t.hasAttribute('data-select')){select(t.dataset.select,{focus:t.closest('#gm-breadcrumb')!==null});return;}
+    if(t.hasAttribute('data-branch')){openBranch(t.dataset.branch);return;}
+    if(t.hasAttribute('data-overview')){overview();return;}
+    if(t.hasAttribute('data-mode')){state.mode=t.dataset.mode;state.selected='root';state.filter='all';state.branch=null;$('search').value='';$('search-results').hidden=true;render();save();announce(t.textContent);return;}
+    if(t.hasAttribute('data-filter')){state.filter=t.dataset.filter;render();save();announce('Condición: '+t.textContent.trim());}
+  });
+  root.addEventListener('dblclick',event=>{
+    const node=event.target.closest('[data-node]');
+    if(!node||event.button!==0)return;
+    event.preventDefault();
+    openNodeWindow(node.dataset.node);
+  });
+  root.addEventListener('keydown',event=>{
+    const node=event.target.closest('[data-node]');
+    if(!node||event.key!=='Enter'||!event.shiftKey||event.repeat)return;
+    event.preventDefault();
+    openNodeWindow(node.dataset.node);
+  });
+  $('search').addEventListener('input',renderSearch);
+  $('search').addEventListener('keydown',e=>{if(e.key==='Escape')$('search-results').hidden=true;});
+  document.addEventListener('click',e=>{if(!e.target.closest('.gm-search'))$('search-results').hidden=true;});
+  $('show-all').addEventListener('click',()=>{state.filter='all';render();save();});
+  $('zoom-in').addEventListener('click',()=>zoom(.12));$('zoom-out').addEventListener('click',()=>zoom(-.12));$('fit').addEventListener('click',fit);
+  $('sources').addEventListener('click',()=>$('source-dialog').showModal());$('close-sources').addEventListener('click',()=>$('source-dialog').close());
+  $('source-dialog').addEventListener('click',e=>{if(e.target===$('source-dialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});
+  $('canvas').addEventListener('pointerdown',e=>{if(e.target.closest('button,output')||e.button!==0)return;drag={x:e.clientX,y:e.clientY,originX:view.x,originY:view.y};$('canvas').setPointerCapture(e.pointerId);$('canvas').classList.add('is-dragging');});
+  $('canvas').addEventListener('pointermove',e=>{if(!drag)return;view.x=drag.originX+e.clientX-drag.x;view.y=drag.originY+e.clientY-drag.y;transform();});
+  const release=()=>{drag=null;$('canvas').classList.remove('is-dragging');};
+  $('canvas').addEventListener('pointerup',release);$('canvas').addEventListener('pointercancel',release);
+  $('canvas').addEventListener('wheel',e=>{if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();zoom(e.deltaY>0?-.08:.08);},{passive:false});
+  $('home').href=moduleUrl('index.php');
+  window.addEventListener('hashchange',()=>{cancelNodeClick();readLocation();render();});
+  let resizeTimer;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(state.mode!=='modulos')renderGraph({fitAll:true});},100);});
+  readLocation();render();
+})();
+</script></body></html>

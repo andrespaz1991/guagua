@@ -1,4 +1,7 @@
 <?php
+// La respuesta completa de esta página se entrega siempre en UTF-8.
+header('Content-Type: text/html; charset=UTF-8');
+
 /**
  * ====================================================================
  * MÓDULO DE GENERACIÓN DE FORMATO PAE (Sede Vallesol)
@@ -49,19 +52,44 @@ function obtener_dato($doc_val, $campo){
 }
 
 function normalizar_texto($string) {
-    if (empty($string)) return $string;
-    $string = (string)$string;
-    // Fix non-UTF8 strings
+    if ($string === null) return '';
+
+    $string = trim((string)$string);
+    if ($string === '') return $string;
+
+    // Los CSV de SIMAT y algunos registros antiguos pueden llegar en
+    // Windows-1252/ISO-8859-1, aunque la página se sirva en UTF-8.
     if (!mb_check_encoding($string, 'UTF-8')) {
         $string = mb_convert_encoding($string, 'UTF-8', 'Windows-1252');
-    } else {
-        // Fix double encoded UTF-8 strings (like DÃ‰CIMO -> DÉCIMO)
-        $decoded = @utf8_decode($string);
-        if ($decoded !== false && mb_check_encoding($decoded, 'UTF-8') && preg_match('/[\xC2-\xDF][\x80-\xBF]/', $decoded)) {
-            $string = $decoded;
-        }
     }
+
+    // Repara una o dos capas de texto UTF-8 interpretado erróneamente como
+    // Windows-1252, por ejemplo: "DÃ‰CIMO" -> "DÉCIMO".
+    for ($intento = 0; $intento < 2; $intento++) {
+        if (!preg_match('/(?:Ã.|Â.|â.|ð.)/u', $string)) {
+            break;
+        }
+
+        // Convertimos los caracteres Unicode mal interpretados de vuelta a
+        // sus bytes Windows-1252; esos bytes vuelven a formar UTF-8 válido.
+        $reparado = mb_convert_encoding($string, 'Windows-1252', 'UTF-8');
+        if (!mb_check_encoding($reparado, 'UTF-8') || $reparado === $string) {
+            break;
+        }
+        $string = $reparado;
+    }
+
     return trim($string);
+}
+
+// Todas las variables que se imprimen en HTML pasan por la misma reparación
+// y escape. ENT_SUBSTITUTE evita que una secuencia corrupta deje un texto vacío.
+function texto_para_html($valor) {
+    return htmlspecialchars(
+        normalizar_texto($valor),
+        ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5,
+        'UTF-8'
+    );
 }
 
 $resultados = [];
@@ -81,7 +109,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo_bd'])) {
         if ($handle) {
             // Detección del delimitador
             $headers = fgetcsv($handle, 10000, ',');
-            if (count($headers) === 1 && strpos($headers[0], ';') !== false) {
+            if (!is_array($headers) || $headers === [] || (count($headers) === 1 && trim((string)$headers[0]) === '')) {
+                $error = 'El archivo está vacío o no contiene una fila de encabezados válida.';
+                fclose($handle);
+            } else {
+            if (count($headers) === 1 && strpos((string)$headers[0], ';') !== false) {
                 rewind($handle);
                 $headers = fgetcsv($handle, 10000, ';');
                 $delimitador = ';';
@@ -99,7 +131,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo_bd'])) {
             };
 
             // Normalizar cabeceras
-            $headers_norm = array_map(function($h) { 
+            $headers_norm = array_map(function($h) {
+                $h = normalizar_texto($h);
                 $h = preg_replace('/^\xEF\xBB\xBF/', '', $h);
                 return strtoupper(trim($h)); 
             }, $headers);
@@ -122,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo_bd'])) {
                 if (array_filter($data) === []) continue;
 
                 // Filtro para Vallesol
-                if ($idx_sede !== false && isset($data[$idx_sede]) && stripos($data[$idx_sede], 'VALLESOL') === false) {
+                if ($idx_sede !== false && isset($data[$idx_sede]) && stripos(normalizar_texto($data[$idx_sede]), 'VALLESOL') === false) {
                     continue; 
                 }
 
@@ -194,6 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo_bd'])) {
             }
             fclose($handle);
             $procesado = true;
+            }
         } else {
             $error = 'No se pudo abrir el archivo.';
         }
@@ -208,9 +242,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo_bd'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador Formato PAE</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/guagua/comun/js/tailwindcss.js"></script>
     <!-- Incluir SheetJS para procesamiento XLSX -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="/guagua/comun/vendor/xlsx.full.min.js"></script>
     <style>
         .tab-active { border-bottom-color: transparent; background-color: white; color: #1d4ed8; font-weight: 700; }
         .tab-inactive { background-color: #f3f4f6; color: #4b5563; }
@@ -247,7 +281,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo_bd'])) {
             
             <?php if ($error): ?>
                 <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
-                    <p><?= htmlspecialchars($error) ?></p>
+                    <p><?= texto_para_html($error) ?></p>
                 </div>
             <?php endif; ?>
 
@@ -263,7 +297,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo_bd'])) {
                         $errores_unicos = array_slice(array_unique($db_errors), 0, 10);
                         foreach($errores_unicos as $err): 
                         ?>
-                            <li><?= htmlspecialchars($err) ?></li>
+                            <li><?= texto_para_html($err) ?></li>
                         <?php endforeach; ?>
                     </ul>
                 </div>
@@ -347,15 +381,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo_bd'])) {
                         <tbody>
                             <?php foreach ($resultados as $fila): ?>
                                 <tr class="bg-white border-b hover:bg-gray-50">
-                                    <td class="px-4 py-2 font-medium text-gray-900"><?= htmlspecialchars($fila['N°']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($fila['NIVEL ESCOLARIDAD']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($fila['NÚMERO DE DOCUMENTO DEL BENEFICIARIO']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($fila['TIPO DE DOCUMENTO']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($fila['APELLIDOS DEL BENEFICIARIO']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($fila['NOMBRES DEL BENEFICIARIO']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($fila['EDAD']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($fila['PERTENENCIA ÉTNICA']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($fila['GÉNERO']) ?></td>
+                                    <td class="px-4 py-2 font-medium text-gray-900"><?= texto_para_html($fila['N°']) ?></td>
+                                    <td class="px-4 py-2"><?= texto_para_html($fila['NIVEL ESCOLARIDAD']) ?></td>
+                                    <td class="px-4 py-2"><?= texto_para_html($fila['NÚMERO DE DOCUMENTO DEL BENEFICIARIO']) ?></td>
+                                    <td class="px-4 py-2"><?= texto_para_html($fila['TIPO DE DOCUMENTO']) ?></td>
+                                    <td class="px-4 py-2"><?= texto_para_html($fila['APELLIDOS DEL BENEFICIARIO']) ?></td>
+                                    <td class="px-4 py-2"><?= texto_para_html($fila['NOMBRES DEL BENEFICIARIO']) ?></td>
+                                    <td class="px-4 py-2"><?= texto_para_html($fila['EDAD']) ?></td>
+                                    <td class="px-4 py-2"><?= texto_para_html($fila['PERTENENCIA ÉTNICA']) ?></td>
+                                    <td class="px-4 py-2"><?= texto_para_html($fila['GÉNERO']) ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -401,15 +435,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo_bd'])) {
                             <tbody>
                                 <?php foreach ($incompletos as $fila): ?>
                                     <tr class="bg-white border-b hover:bg-red-50">
-                                        <td class="px-4 py-2 font-medium text-gray-900"><?= htmlspecialchars($fila['N°']) ?></td>
-                                        <td class="px-4 py-2 <?= trim((string)$fila['NIVEL ESCOLARIDAD']) === '' ? 'bg-red-200' : '' ?>"><?= htmlspecialchars($fila['NIVEL ESCOLARIDAD']) ?></td>
-                                        <td class="px-4 py-2 <?= trim((string)$fila['NÚMERO DE DOCUMENTO DEL BENEFICIARIO']) === '' ? 'bg-red-200' : '' ?>"><?= htmlspecialchars($fila['NÚMERO DE DOCUMENTO DEL BENEFICIARIO']) ?></td>
-                                        <td class="px-4 py-2 <?= trim((string)$fila['TIPO DE DOCUMENTO']) === '' ? 'bg-red-200' : '' ?>"><?= htmlspecialchars($fila['TIPO DE DOCUMENTO']) ?></td>
-                                        <td class="px-4 py-2 <?= trim((string)$fila['APELLIDOS DEL BENEFICIARIO']) === '' ? 'bg-red-200' : '' ?>"><?= htmlspecialchars($fila['APELLIDOS DEL BENEFICIARIO']) ?></td>
-                                        <td class="px-4 py-2 <?= trim((string)$fila['NOMBRES DEL BENEFICIARIO']) === '' ? 'bg-red-200' : '' ?>"><?= htmlspecialchars($fila['NOMBRES DEL BENEFICIARIO']) ?></td>
-                                        <td class="px-4 py-2 <?= trim((string)$fila['EDAD']) === '' ? 'bg-red-200' : '' ?>"><?= htmlspecialchars($fila['EDAD']) ?></td>
-                                        <td class="px-4 py-2 <?= trim((string)$fila['PERTENENCIA ÉTNICA']) === '' ? 'bg-red-200' : '' ?>"><?= htmlspecialchars($fila['PERTENENCIA ÉTNICA']) ?></td>
-                                        <td class="px-4 py-2 <?= trim((string)$fila['GÉNERO']) === '' ? 'bg-red-200' : '' ?>"><?= htmlspecialchars($fila['GÉNERO']) ?></td>
+                                        <td class="px-4 py-2 font-medium text-gray-900"><?= texto_para_html($fila['N°']) ?></td>
+                                        <td class="px-4 py-2 <?= trim((string)$fila['NIVEL ESCOLARIDAD']) === '' ? 'bg-red-200' : '' ?>"><?= texto_para_html($fila['NIVEL ESCOLARIDAD']) ?></td>
+                                        <td class="px-4 py-2 <?= trim((string)$fila['NÚMERO DE DOCUMENTO DEL BENEFICIARIO']) === '' ? 'bg-red-200' : '' ?>"><?= texto_para_html($fila['NÚMERO DE DOCUMENTO DEL BENEFICIARIO']) ?></td>
+                                        <td class="px-4 py-2 <?= trim((string)$fila['TIPO DE DOCUMENTO']) === '' ? 'bg-red-200' : '' ?>"><?= texto_para_html($fila['TIPO DE DOCUMENTO']) ?></td>
+                                        <td class="px-4 py-2 <?= trim((string)$fila['APELLIDOS DEL BENEFICIARIO']) === '' ? 'bg-red-200' : '' ?>"><?= texto_para_html($fila['APELLIDOS DEL BENEFICIARIO']) ?></td>
+                                        <td class="px-4 py-2 <?= trim((string)$fila['NOMBRES DEL BENEFICIARIO']) === '' ? 'bg-red-200' : '' ?>"><?= texto_para_html($fila['NOMBRES DEL BENEFICIARIO']) ?></td>
+                                        <td class="px-4 py-2 <?= trim((string)$fila['EDAD']) === '' ? 'bg-red-200' : '' ?>"><?= texto_para_html($fila['EDAD']) ?></td>
+                                        <td class="px-4 py-2 <?= trim((string)$fila['PERTENENCIA ÉTNICA']) === '' ? 'bg-red-200' : '' ?>"><?= texto_para_html($fila['PERTENENCIA ÉTNICA']) ?></td>
+                                        <td class="px-4 py-2 <?= trim((string)$fila['GÉNERO']) === '' ? 'bg-red-200' : '' ?>"><?= texto_para_html($fila['GÉNERO']) ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -446,15 +480,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo_bd'])) {
                         <tbody>
                             <?php foreach ($resultados as $fila): ?>
                                 <tr class="bg-white border-b hover:bg-gray-50">
-                                    <td class="px-4 py-2 font-medium text-gray-900"><?= htmlspecialchars($fila['N°']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($fila['NIVEL ESCOLARIDAD']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($fila['NÚMERO DE DOCUMENTO DEL BENEFICIARIO']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($fila['TIPO DE DOCUMENTO']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($fila['APELLIDOS DEL BENEFICIARIO']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($fila['NOMBRES DEL BENEFICIARIO']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($fila['EDAD']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($fila['PERTENENCIA ÉTNICA']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($fila['GÉNERO']) ?></td>
+                                    <td class="px-4 py-2 font-medium text-gray-900"><?= texto_para_html($fila['N°']) ?></td>
+                                    <td class="px-4 py-2"><?= texto_para_html($fila['NIVEL ESCOLARIDAD']) ?></td>
+                                    <td class="px-4 py-2"><?= texto_para_html($fila['NÚMERO DE DOCUMENTO DEL BENEFICIARIO']) ?></td>
+                                    <td class="px-4 py-2"><?= texto_para_html($fila['TIPO DE DOCUMENTO']) ?></td>
+                                    <td class="px-4 py-2"><?= texto_para_html($fila['APELLIDOS DEL BENEFICIARIO']) ?></td>
+                                    <td class="px-4 py-2"><?= texto_para_html($fila['NOMBRES DEL BENEFICIARIO']) ?></td>
+                                    <td class="px-4 py-2"><?= texto_para_html($fila['EDAD']) ?></td>
+                                    <td class="px-4 py-2"><?= texto_para_html($fila['PERTENENCIA ÉTNICA']) ?></td>
+                                    <td class="px-4 py-2"><?= texto_para_html($fila['GÉNERO']) ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

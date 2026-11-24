@@ -1,0 +1,21 @@
+from pathlib import Path
+p=Path('apps/inventario_tecnologico/index.html')
+s=p.read_text(encoding='utf-8')
+for a,b in [('Inventario tecnológico','Inventario general'),('<span>tecnológico</span>','<span>general</span>'),('Tecnología y accesorios.','Mobiliario, tecnología y recursos de la sede.'),('Equipos registrados','Unidades inventariadas'),('Todos los equipos','Todos los elementos'),('No encontramos equipos','No encontramos elementos'),('Ver todos los equipos','Ver todos los elementos'),('Galería de equipos','Galería del inventario'),('cada uno de nuestros equipos.','todos los elementos de nuestra sede.'),('Ficha del equipo','Ficha del elemento'),('Este equipo aún','Este elemento aún'),('este equipo se','este elemento se'),('Tipo de equipo','Tipo de elemento')]:
+    s=s.replace(a,b)
+s=s.replace("$('stat-total').textContent=items.length;", "$('stat-total').textContent=items.reduce((n,i)=>n+i.cantidad,0);")
+s=s.replace("items.filter(i=>i.estado==='BUENO').length", "items.filter(i=>i.estado==='BUENO').reduce((n,i)=>n+i.cantidad,0)")
+s=s.replace('`${result.length} de ${items.length} equipos`','`${result.length} de ${items.length} fichas · ${result.reduce((n,i)=>n+i.cantidad,0)} unidades`')
+s=s.replace("item.detalle,item.ubicacion].join(' ')","item.detalle,item.ubicacion,...(item.registros||[]).flatMap(r=>[r.id,r.placa])].join(' ')")
+s=s.replace("body.append(footer);", "body.append(el('div','quantity-label',`${item.cantidad} ${item.cantidad===1?'unidad':'unidades'}`));body.append(footer);")
+s=s.replace("||'Referencia sin registrar'));", "||item.detalle||'Referencia sin registrar'));")
+s=s.replace("field('Adquisición',dateLabel(item.fecha_adquisicion))", "field('Adquisición',item.fecha_adquisicion?dateLabel(item.fecha_adquisicion):(item.registros?.length>1?'Consultar fechas originales':'Sin registrar'))")
+s=s.replace("$('preview-description').textContent=item.detalle", "const originals=el('section','original-records');originals.append(el('h3','',`Registros originales (${(item.registros||[]).length||1})`));const list=el('ul');(item.registros||[{id:item.id,placa:item.placa,cantidad:item.cantidad,fecha_adquisicion:item.fecha_adquisicion}]).forEach(r=>list.append(el('li','',`ID ${r.id} · ${r.placa||'Sin placa'} · ${r.cantidad} ${r.cantidad===1?'unidad':'unidades'} · ${dateLabel(r.fecha_adquisicion)}`)));originals.append(list);$('original-records').replaceChildren(originals);$('preview-description').textContent=item.detalle")
+s=s.replace('<p class="path-hint" id="preview-hint">','<div id="original-records"></div><p class="path-hint" id="preview-hint">')
+s=s.replace('  </style>', '    #categories{overflow-y:auto;min-height:0}.side-bottom{flex-shrink:0}.quantity-label{display:inline-block;margin-top:10px;background:#eaf2e6;color:#3d7256;border-radius:5px;padding:4px 8px;font-size:11px;font-weight:650}.original-records{margin-top:20px}.original-records h3{font-size:12px}.original-records ul{max-height:180px;overflow:auto;padding-left:18px;font-size:11px;color:#66776b;line-height:1.8}.results-head{gap:12px}.results-count{text-align:right}\n  </style>')
+p.write_text(s,encoding='utf-8')
+guide=Path('apps/inventario_tecnologico/LEEME.md')
+g=guide.read_text(encoding='utf-8')
+g += '''\n\n## Inventario completo y agrupación\n\nIncluye los 130 registros del Excel: 138 unidades distribuidas en 56 fichas. Las cantidades originales se suman, incluidas cinco ollas y cinco colchonetas.\n\nSe agrupan únicamente elementos con el mismo tipo, descripción (marca, referencia y color), estado y ubicación. No se asume una marca cuando el Excel no la indica. Diferentes colores o referencias conservan fichas distintas.\n\nCada ficha conserva todos los IDs, placas, cantidades, fechas y filas del Excel en `registros`. La búsqueda encuentra también los IDs y placas de los integrantes de un grupo. La vista previa permite consultarlos. El ID principal es el del primer integrante y determina la carpeta de fotografías del grupo.\n\nLos indicadores muestran unidades; las categorías y los resultados muestran fichas. Por ejemplo, diez sillas RIMAX blancas forman una ficha con cantidad 10 y sus diez registros originales.\n'''
+guide.write_text(g.replace('Inventario tecnológico','Inventario general'),encoding='utf-8')
+print('HTML y guía actualizados')

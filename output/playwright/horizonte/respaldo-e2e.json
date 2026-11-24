@@ -1,0 +1,1402 @@
+{
+  "schema": 1,
+  "currency": "COP",
+  "selected": "2026-11",
+  "months": [
+    {
+      "key": "2026-11",
+      "status": "closed",
+      "example": false,
+      "income": {
+        "salario": 5500000,
+        "freelance": 500000,
+        "arriendos": 0,
+        "otros": 0
+      },
+      "expenses": {
+        "vivienda": 1700000,
+        "alimentacion": 450000,
+        "transporte": 100000,
+        "deuda": 300000,
+        "ocio": 0,
+        "otros": 0
+      },
+      "passive": 0,
+      "emergency": 1000000,
+      "notes": "",
+      "pendingExamples": {
+        "assets": false,
+        "debts": false,
+        "reserves": false,
+        "investments": false
+      },
+      "assets": [
+        {
+          "id": "cash-main",
+          "name": "Cuenta principal",
+          "value": 3850000,
+          "account": "main"
+        },
+        {
+          "id": "cdt",
+          "name": "CDT y fondo de inversión",
+          "value": 12000000
+        },
+        {
+          "id": "apt",
+          "name": "Participación en inmueble",
+          "value": 65000000
+        }
+      ],
+      "debts": [
+        {
+          "id": "card",
+          "name": "Tarjeta de crédito",
+          "balance": 4800000,
+          "rate": 28,
+          "min": 300000,
+          "bad": true
+        },
+        {
+          "id": "loan",
+          "name": "Libre inversión",
+          "balance": 8500000,
+          "rate": 19,
+          "min": 350000,
+          "bad": true
+        }
+      ],
+      "accounts": [
+        {
+          "id": "main",
+          "name": "Cuenta principal",
+          "opening": 1000000,
+          "manualIn": 0,
+          "manualOut": 0,
+          "closing": 3850000,
+          "confirmed": true
+        }
+      ],
+      "ledger": [
+        {
+          "id": "94af9ce184a2a4c62473",
+          "date": "2026-11-01",
+          "description": "Abono nomina",
+          "amount": 5500000,
+          "kind": "ingreso",
+          "category": "salario",
+          "evidence": "01/11/2026 Abono nomina 5.500.000,00",
+          "include": true,
+          "document": "2026-11/a54a741b136831466c9ab0f0bc50b0ae01e1c86bb5b58e9d201444b4417dec3d",
+          "account": "main"
+        },
+        {
+          "id": "82e934ccb29e4b7db245",
+          "date": "2026-11-02",
+          "description": "Pago arriendo",
+          "amount": 1700000,
+          "kind": "gasto",
+          "category": "vivienda",
+          "evidence": "02/11/2026 Pago arriendo -1.800.000,00",
+          "include": true,
+          "document": "2026-11/a54a741b136831466c9ab0f0bc50b0ae01e1c86bb5b58e9d201444b4417dec3d",
+          "account": "main"
+        },
+        {
+          "id": "975cba6e71532b912a95",
+          "date": "2026-11-03",
+          "description": "Compra supermercado",
+          "amount": 450000,
+          "kind": "gasto",
+          "category": "alimentacion",
+          "evidence": "03/11/2026 Compra supermercado -450.000,00",
+          "include": true,
+          "document": "2026-11/a54a741b136831466c9ab0f0bc50b0ae01e1c86bb5b58e9d201444b4417dec3d",
+          "account": "main"
+        },
+        {
+          "id": "129ebda51baa4f309d98",
+          "date": "2026-11-04",
+          "description": "Pago cuota tarjeta",
+          "amount": 300000,
+          "kind": "gasto",
+          "category": "deuda",
+          "evidence": "04/11/2026 Pago cuota tarjeta -300.000,00",
+          "include": true,
+          "document": "2026-11/a54a741b136831466c9ab0f0bc50b0ae01e1c86bb5b58e9d201444b4417dec3d",
+          "account": "main"
+        },
+        {
+          "id": "e42c44102fac79023f2c",
+          "date": "2026-11-05",
+          "description": "Transferencia a mi otra cuenta",
+          "amount": 200000,
+          "kind": "transferOut",
+          "category": "otros",
+          "evidence": "05/11/2026 Transferencia a mi otra cuenta -200.000,00",
+          "include": true,
+          "document": "2026-11/a54a741b136831466c9ab0f0bc50b0ae01e1c86bb5b58e9d201444b4417dec3d",
+          "account": "main"
+        },
+        {
+          "id": "8be15ebe89607dfa7dfb",
+          "date": "2026-11-06",
+          "description": "Aporte CDT",
+          "amount": 400000,
+          "kind": "inversion",
+          "category": "fija",
+          "evidence": "06/11/2026 Aporte CDT -400.000,00",
+          "include": true,
+          "document": "2026-11/a54a741b136831466c9ab0f0bc50b0ae01e1c86bb5b58e9d201444b4417dec3d",
+          "account": "main"
+        },
+        {
+          "id": "a995bdf3a9d78a054336",
+          "date": "2026-11-07",
+          "description": "Abono freelance",
+          "amount": 500000,
+          "kind": "ingreso",
+          "category": "freelance",
+          "evidence": "07/11/2026 Abono freelance 500.000,00",
+          "include": true,
+          "document": "2026-11/81e217ce207cdcf2c0797bf3366fd68deaf4a9b27aced6c8c5e672e4a55a1464",
+          "account": "main"
+        },
+        {
+          "id": "a70c7244587f4612d9f2",
+          "date": "2026-11-08",
+          "description": "Pago gasolina",
+          "amount": 100000,
+          "kind": "gasto",
+          "category": "transporte",
+          "evidence": "08/11/2026 Pago gasolina -100.000,00",
+          "include": true,
+          "document": "2026-11/81e217ce207cdcf2c0797bf3366fd68deaf4a9b27aced6c8c5e672e4a55a1464",
+          "account": "main"
+        }
+      ],
+      "applied": [
+        "2026-11/a54a741b136831466c9ab0f0bc50b0ae01e1c86bb5b58e9d201444b4417dec3d",
+        "2026-11/81e217ce207cdcf2c0797bf3366fd68deaf4a9b27aced6c8c5e672e4a55a1464"
+      ],
+      "investments": {
+        "fija": {
+          "capital": 8000000,
+          "contribution": 400000,
+          "rate": 8
+        },
+        "variable": {
+          "capital": 4000000,
+          "contribution": 0,
+          "rate": 10
+        },
+        "raiz": {
+          "capital": 65000000,
+          "contribution": 0,
+          "rate": 5
+        }
+      },
+      "checks": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "assessment": {
+        "at": "2026-11-07T00:14:17.994Z",
+        "totals": {
+          "income": 6000000,
+          "expenses": 2550000,
+          "profit": 3450000,
+          "contribution": 400000,
+          "available": 3050000,
+          "assets": 80850000,
+          "debts": 13300000
+        },
+        "change": null,
+        "health": [
+          {
+            "name": "Ingreso destinado a deudas",
+            "value": "5.0 %",
+            "level": "green",
+            "ratio": 5,
+            "rule": "Sano <15 % · crítico >30 %"
+          },
+          {
+            "name": "Tasa de ahorro",
+            "value": "57.5 %",
+            "level": "green",
+            "ratio": 57.5,
+            "rule": "Utilidad / ingresos · sana >15 % · crítica <5 %"
+          },
+          {
+            "name": "Fondo de emergencia",
+            "value": "0.4 meses",
+            "level": "red",
+            "ratio": 6.535947712418301,
+            "rule": "Referencia: 3–6 meses de gasto; >6 es un colchón mayor"
+          },
+          {
+            "name": "Gasto cubierto por ingreso pasivo",
+            "value": "0.0 %",
+            "level": "red",
+            "ratio": 0,
+            "rule": "Meta editable mediante ingresos · verde ≥100 %, amarillo ≥25 %"
+          }
+        ],
+        "advice": [
+          [
+            "Ponle nombre a tu prioridad",
+            "Tarjeta de crédito tiene una tasa de 28 % EA. Compara avalancha y bola de nieve con tu pago extra disponible."
+          ],
+          [
+            "Construye tu reserva de emergencia",
+            "Faltan $ 6.650.000 para cubrir tres meses de gastos al nivel actual."
+          ]
+        ],
+        "decision": "Reservar 300.000 para reducir la tarjeta el próximo mes."
+      },
+      "decision": "Reservar 300.000 para reducir la tarjeta el próximo mes."
+    },
+    {
+      "key": "2026-12",
+      "status": "open",
+      "example": false,
+      "income": {
+        "salario": 5500000,
+        "freelance": 500000,
+        "arriendos": 0,
+        "otros": 0
+      },
+      "expenses": {
+        "vivienda": 1700000,
+        "alimentacion": 450000,
+        "transporte": 100000,
+        "deuda": 300000,
+        "ocio": 0,
+        "otros": 0
+      },
+      "passive": 0,
+      "emergency": 1000000,
+      "notes": "Reservar 300.000 para reducir la tarjeta el próximo mes.",
+      "pendingExamples": {
+        "assets": false,
+        "debts": false,
+        "reserves": false,
+        "investments": false
+      },
+      "assets": [
+        {
+          "id": "cash-main",
+          "name": "Cuenta principal",
+          "value": 3850000,
+          "account": "main"
+        },
+        {
+          "id": "cdt",
+          "name": "CDT y fondo de inversión",
+          "value": 12000000
+        },
+        {
+          "id": "apt",
+          "name": "Participación en inmueble",
+          "value": 65000000
+        }
+      ],
+      "debts": [
+        {
+          "id": "card",
+          "name": "Tarjeta de crédito",
+          "balance": 4800000,
+          "rate": 28,
+          "min": 300000,
+          "bad": true
+        },
+        {
+          "id": "loan",
+          "name": "Libre inversión",
+          "balance": 8500000,
+          "rate": 19,
+          "min": 350000,
+          "bad": true
+        }
+      ],
+      "accounts": [
+        {
+          "id": "main",
+          "name": "Cuenta principal",
+          "opening": 3850000,
+          "closing": 8500000,
+          "manualIn": 0,
+          "manualOut": 0,
+          "confirmed": false
+        }
+      ],
+      "ledger": [],
+      "applied": [],
+      "investments": {
+        "fija": {
+          "capital": 8000000,
+          "contribution": 400000,
+          "rate": 8
+        },
+        "variable": {
+          "capital": 4000000,
+          "contribution": 0,
+          "rate": 10
+        },
+        "raiz": {
+          "capital": 65000000,
+          "contribution": 0,
+          "rate": 5
+        }
+      },
+      "checks": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "assessment": null,
+      "decision": ""
+    },
+    {
+      "key": "2027-01",
+      "status": "open",
+      "example": true,
+      "income": {
+        "salario": 5500000,
+        "freelance": 800000,
+        "arriendos": 650000,
+        "otros": 0
+      },
+      "expenses": {
+        "vivienda": 1800000,
+        "alimentacion": 850000,
+        "transporte": 350000,
+        "deuda": 650000,
+        "ocio": 350000,
+        "otros": 250000
+      },
+      "passive": 650000,
+      "emergency": 7500000,
+      "notes": "",
+      "pendingExamples": {
+        "assets": true,
+        "debts": true,
+        "reserves": true,
+        "investments": true
+      },
+      "assets": [
+        {
+          "id": "cash-main",
+          "name": "Cuenta principal",
+          "value": 8500000,
+          "account": "main"
+        },
+        {
+          "id": "cdt",
+          "name": "CDT y fondo de inversión",
+          "value": 12000000
+        },
+        {
+          "id": "apt",
+          "name": "Participación en inmueble",
+          "value": 65000000
+        }
+      ],
+      "debts": [
+        {
+          "id": "card",
+          "name": "Tarjeta de crédito",
+          "balance": 4800000,
+          "rate": 28,
+          "min": 300000,
+          "bad": true
+        },
+        {
+          "id": "loan",
+          "name": "Libre inversión",
+          "balance": 8500000,
+          "rate": 19,
+          "min": 350000,
+          "bad": true
+        }
+      ],
+      "accounts": [
+        {
+          "id": "main",
+          "name": "Cuenta principal",
+          "opening": 6400000,
+          "manualIn": 6950000,
+          "manualOut": 4850000,
+          "closing": 8500000,
+          "confirmed": false
+        }
+      ],
+      "ledger": [],
+      "applied": [],
+      "investments": {
+        "fija": {
+          "capital": 8000000,
+          "contribution": 400000,
+          "rate": 8
+        },
+        "variable": {
+          "capital": 4000000,
+          "contribution": 200000,
+          "rate": 10
+        },
+        "raiz": {
+          "capital": 65000000,
+          "contribution": 0,
+          "rate": 5
+        }
+      },
+      "checks": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "assessment": null,
+      "decision": ""
+    },
+    {
+      "key": "2027-02",
+      "status": "open",
+      "example": true,
+      "income": {
+        "salario": 5500000,
+        "freelance": 800000,
+        "arriendos": 650000,
+        "otros": 0
+      },
+      "expenses": {
+        "vivienda": 1800000,
+        "alimentacion": 850000,
+        "transporte": 350000,
+        "deuda": 650000,
+        "ocio": 350000,
+        "otros": 250000
+      },
+      "passive": 650000,
+      "emergency": 7500000,
+      "notes": "",
+      "pendingExamples": {
+        "assets": true,
+        "debts": true,
+        "reserves": true,
+        "investments": true
+      },
+      "assets": [
+        {
+          "id": "cash-main",
+          "name": "Cuenta principal",
+          "value": 8500000,
+          "account": "main"
+        },
+        {
+          "id": "cdt",
+          "name": "CDT y fondo de inversión",
+          "value": 12000000
+        },
+        {
+          "id": "apt",
+          "name": "Participación en inmueble",
+          "value": 65000000
+        }
+      ],
+      "debts": [
+        {
+          "id": "card",
+          "name": "Tarjeta de crédito",
+          "balance": 4800000,
+          "rate": 28,
+          "min": 300000,
+          "bad": true
+        },
+        {
+          "id": "loan",
+          "name": "Libre inversión",
+          "balance": 8500000,
+          "rate": 19,
+          "min": 350000,
+          "bad": true
+        }
+      ],
+      "accounts": [
+        {
+          "id": "main",
+          "name": "Cuenta principal",
+          "opening": 6400000,
+          "manualIn": 6950000,
+          "manualOut": 4850000,
+          "closing": 8500000,
+          "confirmed": false
+        }
+      ],
+      "ledger": [],
+      "applied": [],
+      "investments": {
+        "fija": {
+          "capital": 8000000,
+          "contribution": 400000,
+          "rate": 8
+        },
+        "variable": {
+          "capital": 4000000,
+          "contribution": 200000,
+          "rate": 10
+        },
+        "raiz": {
+          "capital": 65000000,
+          "contribution": 0,
+          "rate": 5
+        }
+      },
+      "checks": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "assessment": null,
+      "decision": ""
+    },
+    {
+      "key": "2027-03",
+      "status": "open",
+      "example": true,
+      "income": {
+        "salario": 5500000,
+        "freelance": 800000,
+        "arriendos": 650000,
+        "otros": 0
+      },
+      "expenses": {
+        "vivienda": 1800000,
+        "alimentacion": 850000,
+        "transporte": 350000,
+        "deuda": 650000,
+        "ocio": 350000,
+        "otros": 250000
+      },
+      "passive": 650000,
+      "emergency": 7500000,
+      "notes": "",
+      "pendingExamples": {
+        "assets": true,
+        "debts": true,
+        "reserves": true,
+        "investments": true
+      },
+      "assets": [
+        {
+          "id": "cash-main",
+          "name": "Cuenta principal",
+          "value": 8500000,
+          "account": "main"
+        },
+        {
+          "id": "cdt",
+          "name": "CDT y fondo de inversión",
+          "value": 12000000
+        },
+        {
+          "id": "apt",
+          "name": "Participación en inmueble",
+          "value": 65000000
+        }
+      ],
+      "debts": [
+        {
+          "id": "card",
+          "name": "Tarjeta de crédito",
+          "balance": 4800000,
+          "rate": 28,
+          "min": 300000,
+          "bad": true
+        },
+        {
+          "id": "loan",
+          "name": "Libre inversión",
+          "balance": 8500000,
+          "rate": 19,
+          "min": 350000,
+          "bad": true
+        }
+      ],
+      "accounts": [
+        {
+          "id": "main",
+          "name": "Cuenta principal",
+          "opening": 6400000,
+          "manualIn": 6950000,
+          "manualOut": 4850000,
+          "closing": 8500000,
+          "confirmed": false
+        }
+      ],
+      "ledger": [],
+      "applied": [],
+      "investments": {
+        "fija": {
+          "capital": 8000000,
+          "contribution": 400000,
+          "rate": 8
+        },
+        "variable": {
+          "capital": 4000000,
+          "contribution": 200000,
+          "rate": 10
+        },
+        "raiz": {
+          "capital": 65000000,
+          "contribution": 0,
+          "rate": 5
+        }
+      },
+      "checks": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "assessment": null,
+      "decision": ""
+    },
+    {
+      "key": "2027-04",
+      "status": "open",
+      "example": true,
+      "income": {
+        "salario": 5500000,
+        "freelance": 800000,
+        "arriendos": 650000,
+        "otros": 0
+      },
+      "expenses": {
+        "vivienda": 1800000,
+        "alimentacion": 850000,
+        "transporte": 350000,
+        "deuda": 650000,
+        "ocio": 350000,
+        "otros": 250000
+      },
+      "passive": 650000,
+      "emergency": 7500000,
+      "notes": "",
+      "pendingExamples": {
+        "assets": true,
+        "debts": true,
+        "reserves": true,
+        "investments": true
+      },
+      "assets": [
+        {
+          "id": "cash-main",
+          "name": "Cuenta principal",
+          "value": 8500000,
+          "account": "main"
+        },
+        {
+          "id": "cdt",
+          "name": "CDT y fondo de inversión",
+          "value": 12000000
+        },
+        {
+          "id": "apt",
+          "name": "Participación en inmueble",
+          "value": 65000000
+        }
+      ],
+      "debts": [
+        {
+          "id": "card",
+          "name": "Tarjeta de crédito",
+          "balance": 4800000,
+          "rate": 28,
+          "min": 300000,
+          "bad": true
+        },
+        {
+          "id": "loan",
+          "name": "Libre inversión",
+          "balance": 8500000,
+          "rate": 19,
+          "min": 350000,
+          "bad": true
+        }
+      ],
+      "accounts": [
+        {
+          "id": "main",
+          "name": "Cuenta principal",
+          "opening": 6400000,
+          "manualIn": 6950000,
+          "manualOut": 4850000,
+          "closing": 8500000,
+          "confirmed": false
+        }
+      ],
+      "ledger": [],
+      "applied": [],
+      "investments": {
+        "fija": {
+          "capital": 8000000,
+          "contribution": 400000,
+          "rate": 8
+        },
+        "variable": {
+          "capital": 4000000,
+          "contribution": 200000,
+          "rate": 10
+        },
+        "raiz": {
+          "capital": 65000000,
+          "contribution": 0,
+          "rate": 5
+        }
+      },
+      "checks": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "assessment": null,
+      "decision": ""
+    },
+    {
+      "key": "2027-05",
+      "status": "open",
+      "example": true,
+      "income": {
+        "salario": 5500000,
+        "freelance": 800000,
+        "arriendos": 650000,
+        "otros": 0
+      },
+      "expenses": {
+        "vivienda": 1800000,
+        "alimentacion": 850000,
+        "transporte": 350000,
+        "deuda": 650000,
+        "ocio": 350000,
+        "otros": 250000
+      },
+      "passive": 650000,
+      "emergency": 7500000,
+      "notes": "",
+      "pendingExamples": {
+        "assets": true,
+        "debts": true,
+        "reserves": true,
+        "investments": true
+      },
+      "assets": [
+        {
+          "id": "cash-main",
+          "name": "Cuenta principal",
+          "value": 8500000,
+          "account": "main"
+        },
+        {
+          "id": "cdt",
+          "name": "CDT y fondo de inversión",
+          "value": 12000000
+        },
+        {
+          "id": "apt",
+          "name": "Participación en inmueble",
+          "value": 65000000
+        }
+      ],
+      "debts": [
+        {
+          "id": "card",
+          "name": "Tarjeta de crédito",
+          "balance": 4800000,
+          "rate": 28,
+          "min": 300000,
+          "bad": true
+        },
+        {
+          "id": "loan",
+          "name": "Libre inversión",
+          "balance": 8500000,
+          "rate": 19,
+          "min": 350000,
+          "bad": true
+        }
+      ],
+      "accounts": [
+        {
+          "id": "main",
+          "name": "Cuenta principal",
+          "opening": 6400000,
+          "manualIn": 6950000,
+          "manualOut": 4850000,
+          "closing": 8500000,
+          "confirmed": false
+        }
+      ],
+      "ledger": [],
+      "applied": [],
+      "investments": {
+        "fija": {
+          "capital": 8000000,
+          "contribution": 400000,
+          "rate": 8
+        },
+        "variable": {
+          "capital": 4000000,
+          "contribution": 200000,
+          "rate": 10
+        },
+        "raiz": {
+          "capital": 65000000,
+          "contribution": 0,
+          "rate": 5
+        }
+      },
+      "checks": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "assessment": null,
+      "decision": ""
+    },
+    {
+      "key": "2027-06",
+      "status": "open",
+      "example": true,
+      "income": {
+        "salario": 5500000,
+        "freelance": 800000,
+        "arriendos": 650000,
+        "otros": 0
+      },
+      "expenses": {
+        "vivienda": 1800000,
+        "alimentacion": 850000,
+        "transporte": 350000,
+        "deuda": 650000,
+        "ocio": 350000,
+        "otros": 250000
+      },
+      "passive": 650000,
+      "emergency": 7500000,
+      "notes": "",
+      "pendingExamples": {
+        "assets": true,
+        "debts": true,
+        "reserves": true,
+        "investments": true
+      },
+      "assets": [
+        {
+          "id": "cash-main",
+          "name": "Cuenta principal",
+          "value": 8500000,
+          "account": "main"
+        },
+        {
+          "id": "cdt",
+          "name": "CDT y fondo de inversión",
+          "value": 12000000
+        },
+        {
+          "id": "apt",
+          "name": "Participación en inmueble",
+          "value": 65000000
+        }
+      ],
+      "debts": [
+        {
+          "id": "card",
+          "name": "Tarjeta de crédito",
+          "balance": 4800000,
+          "rate": 28,
+          "min": 300000,
+          "bad": true
+        },
+        {
+          "id": "loan",
+          "name": "Libre inversión",
+          "balance": 8500000,
+          "rate": 19,
+          "min": 350000,
+          "bad": true
+        }
+      ],
+      "accounts": [
+        {
+          "id": "main",
+          "name": "Cuenta principal",
+          "opening": 6400000,
+          "manualIn": 6950000,
+          "manualOut": 4850000,
+          "closing": 8500000,
+          "confirmed": false
+        }
+      ],
+      "ledger": [],
+      "applied": [],
+      "investments": {
+        "fija": {
+          "capital": 8000000,
+          "contribution": 400000,
+          "rate": 8
+        },
+        "variable": {
+          "capital": 4000000,
+          "contribution": 200000,
+          "rate": 10
+        },
+        "raiz": {
+          "capital": 65000000,
+          "contribution": 0,
+          "rate": 5
+        }
+      },
+      "checks": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "assessment": null,
+      "decision": ""
+    },
+    {
+      "key": "2027-07",
+      "status": "open",
+      "example": true,
+      "income": {
+        "salario": 5500000,
+        "freelance": 800000,
+        "arriendos": 650000,
+        "otros": 0
+      },
+      "expenses": {
+        "vivienda": 1800000,
+        "alimentacion": 850000,
+        "transporte": 350000,
+        "deuda": 650000,
+        "ocio": 350000,
+        "otros": 250000
+      },
+      "passive": 650000,
+      "emergency": 7500000,
+      "notes": "",
+      "pendingExamples": {
+        "assets": true,
+        "debts": true,
+        "reserves": true,
+        "investments": true
+      },
+      "assets": [
+        {
+          "id": "cash-main",
+          "name": "Cuenta principal",
+          "value": 8500000,
+          "account": "main"
+        },
+        {
+          "id": "cdt",
+          "name": "CDT y fondo de inversión",
+          "value": 12000000
+        },
+        {
+          "id": "apt",
+          "name": "Participación en inmueble",
+          "value": 65000000
+        }
+      ],
+      "debts": [
+        {
+          "id": "card",
+          "name": "Tarjeta de crédito",
+          "balance": 4800000,
+          "rate": 28,
+          "min": 300000,
+          "bad": true
+        },
+        {
+          "id": "loan",
+          "name": "Libre inversión",
+          "balance": 8500000,
+          "rate": 19,
+          "min": 350000,
+          "bad": true
+        }
+      ],
+      "accounts": [
+        {
+          "id": "main",
+          "name": "Cuenta principal",
+          "opening": 6400000,
+          "manualIn": 6950000,
+          "manualOut": 4850000,
+          "closing": 8500000,
+          "confirmed": false
+        }
+      ],
+      "ledger": [],
+      "applied": [],
+      "investments": {
+        "fija": {
+          "capital": 8000000,
+          "contribution": 400000,
+          "rate": 8
+        },
+        "variable": {
+          "capital": 4000000,
+          "contribution": 200000,
+          "rate": 10
+        },
+        "raiz": {
+          "capital": 65000000,
+          "contribution": 0,
+          "rate": 5
+        }
+      },
+      "checks": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "assessment": null,
+      "decision": ""
+    },
+    {
+      "key": "2027-08",
+      "status": "open",
+      "example": true,
+      "income": {
+        "salario": 5500000,
+        "freelance": 800000,
+        "arriendos": 650000,
+        "otros": 0
+      },
+      "expenses": {
+        "vivienda": 1800000,
+        "alimentacion": 850000,
+        "transporte": 350000,
+        "deuda": 650000,
+        "ocio": 350000,
+        "otros": 250000
+      },
+      "passive": 650000,
+      "emergency": 7500000,
+      "notes": "",
+      "pendingExamples": {
+        "assets": true,
+        "debts": true,
+        "reserves": true,
+        "investments": true
+      },
+      "assets": [
+        {
+          "id": "cash-main",
+          "name": "Cuenta principal",
+          "value": 8500000,
+          "account": "main"
+        },
+        {
+          "id": "cdt",
+          "name": "CDT y fondo de inversión",
+          "value": 12000000
+        },
+        {
+          "id": "apt",
+          "name": "Participación en inmueble",
+          "value": 65000000
+        }
+      ],
+      "debts": [
+        {
+          "id": "card",
+          "name": "Tarjeta de crédito",
+          "balance": 4800000,
+          "rate": 28,
+          "min": 300000,
+          "bad": true
+        },
+        {
+          "id": "loan",
+          "name": "Libre inversión",
+          "balance": 8500000,
+          "rate": 19,
+          "min": 350000,
+          "bad": true
+        }
+      ],
+      "accounts": [
+        {
+          "id": "main",
+          "name": "Cuenta principal",
+          "opening": 6400000,
+          "manualIn": 6950000,
+          "manualOut": 4850000,
+          "closing": 8500000,
+          "confirmed": false
+        }
+      ],
+      "ledger": [],
+      "applied": [],
+      "investments": {
+        "fija": {
+          "capital": 8000000,
+          "contribution": 400000,
+          "rate": 8
+        },
+        "variable": {
+          "capital": 4000000,
+          "contribution": 200000,
+          "rate": 10
+        },
+        "raiz": {
+          "capital": 65000000,
+          "contribution": 0,
+          "rate": 5
+        }
+      },
+      "checks": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "assessment": null,
+      "decision": ""
+    },
+    {
+      "key": "2027-09",
+      "status": "open",
+      "example": true,
+      "income": {
+        "salario": 5500000,
+        "freelance": 800000,
+        "arriendos": 650000,
+        "otros": 0
+      },
+      "expenses": {
+        "vivienda": 1800000,
+        "alimentacion": 850000,
+        "transporte": 350000,
+        "deuda": 650000,
+        "ocio": 350000,
+        "otros": 250000
+      },
+      "passive": 650000,
+      "emergency": 7500000,
+      "notes": "",
+      "pendingExamples": {
+        "assets": true,
+        "debts": true,
+        "reserves": true,
+        "investments": true
+      },
+      "assets": [
+        {
+          "id": "cash-main",
+          "name": "Cuenta principal",
+          "value": 8500000,
+          "account": "main"
+        },
+        {
+          "id": "cdt",
+          "name": "CDT y fondo de inversión",
+          "value": 12000000
+        },
+        {
+          "id": "apt",
+          "name": "Participación en inmueble",
+          "value": 65000000
+        }
+      ],
+      "debts": [
+        {
+          "id": "card",
+          "name": "Tarjeta de crédito",
+          "balance": 4800000,
+          "rate": 28,
+          "min": 300000,
+          "bad": true
+        },
+        {
+          "id": "loan",
+          "name": "Libre inversión",
+          "balance": 8500000,
+          "rate": 19,
+          "min": 350000,
+          "bad": true
+        }
+      ],
+      "accounts": [
+        {
+          "id": "main",
+          "name": "Cuenta principal",
+          "opening": 6400000,
+          "manualIn": 6950000,
+          "manualOut": 4850000,
+          "closing": 8500000,
+          "confirmed": false
+        }
+      ],
+      "ledger": [],
+      "applied": [],
+      "investments": {
+        "fija": {
+          "capital": 8000000,
+          "contribution": 400000,
+          "rate": 8
+        },
+        "variable": {
+          "capital": 4000000,
+          "contribution": 200000,
+          "rate": 10
+        },
+        "raiz": {
+          "capital": 65000000,
+          "contribution": 0,
+          "rate": 5
+        }
+      },
+      "checks": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "assessment": null,
+      "decision": ""
+    },
+    {
+      "key": "2027-10",
+      "status": "open",
+      "example": true,
+      "income": {
+        "salario": 5500000,
+        "freelance": 800000,
+        "arriendos": 650000,
+        "otros": 0
+      },
+      "expenses": {
+        "vivienda": 1800000,
+        "alimentacion": 850000,
+        "transporte": 350000,
+        "deuda": 650000,
+        "ocio": 350000,
+        "otros": 250000
+      },
+      "passive": 650000,
+      "emergency": 7500000,
+      "notes": "",
+      "pendingExamples": {
+        "assets": true,
+        "debts": true,
+        "reserves": true,
+        "investments": true
+      },
+      "assets": [
+        {
+          "id": "cash-main",
+          "name": "Cuenta principal",
+          "value": 8500000,
+          "account": "main"
+        },
+        {
+          "id": "cdt",
+          "name": "CDT y fondo de inversión",
+          "value": 12000000
+        },
+        {
+          "id": "apt",
+          "name": "Participación en inmueble",
+          "value": 65000000
+        }
+      ],
+      "debts": [
+        {
+          "id": "card",
+          "name": "Tarjeta de crédito",
+          "balance": 4800000,
+          "rate": 28,
+          "min": 300000,
+          "bad": true
+        },
+        {
+          "id": "loan",
+          "name": "Libre inversión",
+          "balance": 8500000,
+          "rate": 19,
+          "min": 350000,
+          "bad": true
+        }
+      ],
+      "accounts": [
+        {
+          "id": "main",
+          "name": "Cuenta principal",
+          "opening": 6400000,
+          "manualIn": 6950000,
+          "manualOut": 4850000,
+          "closing": 8500000,
+          "confirmed": false
+        }
+      ],
+      "ledger": [],
+      "applied": [],
+      "investments": {
+        "fija": {
+          "capital": 8000000,
+          "contribution": 400000,
+          "rate": 8
+        },
+        "variable": {
+          "capital": 4000000,
+          "contribution": 200000,
+          "rate": 10
+        },
+        "raiz": {
+          "capital": 65000000,
+          "contribution": 0,
+          "rate": 5
+        }
+      },
+      "checks": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "assessment": null,
+      "decision": ""
+    }
+  ],
+  "settings": {
+    "strategy": "snowball",
+    "extra": 300000
+  },
+  "documentArchive": [
+    {
+      "id": "2026-11/81e217ce207cdcf2c0797bf3366fd68deaf4a9b27aced6c8c5e672e4a55a1464",
+      "name": "otro-extracto-demo.pdf",
+      "month": "2026-11",
+      "size": 1459
+    },
+    {
+      "id": "2026-11/a54a741b136831466c9ab0f0bc50b0ae01e1c86bb5b58e9d201444b4417dec3d",
+      "name": "extracto-demo.pdf",
+      "month": "2026-11",
+      "size": 2687
+    }
+  ]
+}

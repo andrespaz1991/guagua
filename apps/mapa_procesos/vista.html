@@ -1,0 +1,27 @@
+<main id="guagua-map" data-base="/guagua/">
+  <header class="gm-header">
+    <div class="gm-brand"><span class="gm-brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M8 7v18M8 11h10v-4h6M8 21h10v4h6"/><circle cx="8" cy="7" r="3"/><circle cx="8" cy="25" r="3"/><circle cx="24" cy="7" r="3"/><circle cx="24" cy="25" r="3"/></svg></span><div><div class="gm-eyebrow">GUAGUA · ARQUITECTURA DEL PROCESO</div><h1>Mapa de procesos</h1><p>Explora cada rama, sus módulos y lo que necesita mejorar.</p></div></div>
+    <div class="gm-header-actions"><button type="button" class="gm-button gm-quiet" id="gm-sources">Fuentes y alcance</button><a class="gm-button" id="gm-home" href="../../index.php">Volver a Guagua</a></div>
+  </header>
+  <div class="gm-toolbar">
+    <div class="gm-tabs" role="group" aria-label="Vista del sistema"><button type="button" data-mode="actual" aria-pressed="true">Mapa actual</button><button type="button" data-mode="propuesto" aria-pressed="false">Flujo recomendado</button><button type="button" data-mode="modulos" aria-pressed="false">Directorio de módulos</button></div>
+    <div class="gm-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg><input type="search" id="gm-search" placeholder="Buscar un proceso o módulo" aria-label="Buscar un proceso o módulo" autocomplete="off"><div class="gm-search-results" id="gm-search-results" hidden></div></div>
+  </div>
+  <div class="gm-workspace">
+    <section class="gm-main" aria-label="Explorador de procesos">
+      <div class="gm-map-heading"><nav aria-label="Ubicación en el mapa" id="gm-breadcrumb"></nav><span class="gm-counter" id="gm-count"></span></div>
+      <div class="gm-filters" id="gm-filters" role="group" aria-label="Condición del proceso"><button type="button" data-filter="all" aria-pressed="true">Todos</button><button type="button" data-filter="core" aria-pressed="false"><i class="gm-dot core"></i>Fundamentales</button><button type="button" data-filter="merge" aria-pressed="false"><i class="gm-dot merge"></i>A unificar</button><button type="button" data-filter="gap" aria-pressed="false"><i class="gm-dot gap"></i>Brechas</button><button type="button" data-filter="optional" aria-pressed="false"><i class="gm-dot optional"></i>Complementarios</button></div>
+      <div class="gm-canvas" id="gm-canvas" aria-label="Mapa navegable de Guagua">
+        <div class="gm-world" id="gm-world"><svg id="gm-edges" aria-hidden="true"></svg><div id="gm-nodes"></div></div>
+        <div id="gm-empty" class="gm-empty" hidden><h2>No hay procesos con esta condición</h2><p>Prueba otra rama o vuelve a mostrar todos.</p><button type="button" class="gm-button" id="gm-show-all">Mostrar todos</button></div>
+        <div class="gm-map-tools" aria-label="Controles del mapa"><button type="button" id="gm-zoom-out" aria-label="Alejar mapa">−</button><output id="gm-zoom-label" aria-label="Nivel de zoom">100 %</output><button type="button" id="gm-zoom-in" aria-label="Acercar mapa">+</button><button type="button" id="gm-fit">Ajustar</button></div>
+      </div>
+      <div class="gm-canvas-caption" id="gm-caption"><span>Un clic despliega; doble clic abre una ventana nueva.</span><span>Usa las migas para recorrer tu ruta.</span></div>
+      <section id="gm-directory" class="gm-directory" hidden aria-label="Directorio de módulos"></section>
+    </section>
+    <aside class="gm-detail" id="gm-detail" aria-label="Detalle del proceso"></aside>
+  </div>
+  <footer class="gm-footer"><span>Diagnóstico del 19 nov 2026 · Código y respaldo local</span><span>Los estados describen el diagnóstico, no actividad en tiempo real.</span></footer>
+  <p id="gm-announcement" class="gm-sr" role="status" aria-live="polite"></p>
+  <dialog id="gm-source-dialog" aria-labelledby="gm-source-title"><div class="gm-dialog-heading"><h2 id="gm-source-title">Fuentes y alcance</h2><button class="gm-button gm-quiet" type="button" id="gm-close-sources">Cerrar</button></div><p>Este mapa representa la revisión del código de Guagua y del respaldo local del 19 de noviembre de 2026. No consulta ni modifica registros académicos.</p><dl><dt>Mapa actual</dt><dd>Agrupa los módulos por su función. Las líneas continuas agrupan procesos; las discontinuas señalan una brecha descrita en el diagnóstico.</dd><dt>Flujo recomendado</dt><dd>Muestra la secuencia propuesta y sus dependencias. Incluye procesos que todavía necesitan implementarse o integrarse.</dd><dt>Directorio</dt><dd>Conserva las 61 entradas del menú del respaldo. Una entrada de navegación no equivale necesariamente a un módulo distinto. Las rutas se contrastaron con el proyecto local.</dd><dt>Enlaces a los módulos</dt><dd>Abren pantallas existentes en otra pestaña y conservan los permisos de Guagua. No ejecutan instalaciones, inscripciones, eliminaciones ni cierres.</dd></dl><p>Las referencias F01 a F10 corresponden al informe de diagnóstico. La falta de uso de una herramienta no está demostrada: «complementario» significa que no pertenece al recorrido obligatorio de apertura escolar.</p></dialog>
+</main>

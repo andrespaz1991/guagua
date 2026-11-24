@@ -1,4 +1,8 @@
 <?php
+require_once __DIR__ . "/../comun/database.php";
+require_once __DIR__ . '/../comun/seguridad.php';
+guagua_exigir_rol(['admin', 'directivo']);
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') guagua_exigir_csrf();
 #printf("<pre>%s</pre>",print_r($_POST,true));
 @session_start();
 if (isset($_GET['logout'])){
@@ -13,21 +17,7 @@ exit();
 }
 
 function conexion($servidorbd,$usuariobd,$passwordbd,$basededatos=""){
-if ($basededatos!="") $mysqli = new mysqli ($servidorbd,$usuariobd,$passwordbd,$basededatos);
-else $mysqli = new mysqli ($servidorbd,$usuariobd,$passwordbd);
-if (mysqli_connect_errno()){
-#echo "error".mysqli_connect_errno();
-echo "Error de conexión con al base de datos";
-?>
-<meta http-equiv="refresh" content="0; url=?logout" />
-<?php
-exit();
-}else{
-if($mysqli){
-mysqli_set_charset($mysqli,'utf8');
-}
-}
-return $mysqli;
+return guagua_db_mysqli('default', ['host' => $servidorbd, 'user' => $usuariobd, 'password' => $passwordbd, 'database' => $basededatos]);
 }
 ?>
 <!doctype html>
@@ -56,7 +46,7 @@ if (isset($_POST['loginusuario'],$_POST['loginclave'],$_POST['Host'])){
 $usuarion = $_POST['loginusuario'];
 $claven = $_POST['loginclave'];
 $host = $_POST['Host'];
-$mysqli = conexion($servidorbd,$usuarion,$claven);
+$mysqli = conexion(GuaguaDatabase::settings()['host'] . ':' . GuaguaDatabase::settings()['port'],$usuarion,$claven);
 $sql = "SELECT * FROM `mysql`.`user` WHERE `Host` = '$host' and `User` = '$usuarion' and `Password`= PASSWORD('$claven');";
 echo $sql."<br>";
 $consulta = $mysqli->query($sql);
@@ -71,8 +61,9 @@ if (!isset($_SESSION['user'])){
 ?>
  <h1>Login</h1>
 <form method="post">
-    <div class="form-group"><label for="Host">Host<input type="text" class="form-control" name="Host" id="Host" value="localhost"></label>    </div>
-    <div class="form-group"><label for="loginusuario">Usuario<input type="text" class="form-control" name="loginusuario" id="loginusuario" value="root"></label></div>
+<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(guagua_csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
+    <div class="form-group"><label for="Host">Host<input type="text" class="form-control" name="Host" id="Host" value="<?php echo htmlspecialchars(GuaguaDatabase::settings()['host'], ENT_QUOTES, 'UTF-8'); ?>"></label>    </div>
+    <div class="form-group"><label for="loginusuario">Usuario<input type="text" class="form-control" name="loginusuario" id="loginusuario" value="<?php echo htmlspecialchars(GuaguaDatabase::settings()['user'], ENT_QUOTES, 'UTF-8'); ?>"></label></div>
     <div class="form-group"><label for="loginclave">Clave<input type="password" class="form-control" name="loginclave" id="loginclave"></label></div>
     <div class="form-group"><label for="enviar"><input type="submit" class="form-control btn btn-primary" id="enviar" value="Ingresar"></label></div>
 </form>
@@ -125,17 +116,20 @@ $consulta = $mysqli->query($sql);
    
     <h1>Crear Usuario</h1>
 <form method="post">
+<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(guagua_csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
     <div class="form-group"><label for="usuario">Usuario<input type="text" class="form-control" name="usuario" id="usuario"></label></div>
     <div class="form-group"><label for="Clave">Clave<input type="password" class="form-control" name="clave" id="Clave"></label></div>
     <div class="form-group"><label for="enviar"><button type="submit" class="form-control btn btn-primary" id="enviar" >Crear</button></label></div>
 </form>
 <h1>Crear Base de datos</h1>
 <form method="post">
+<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(guagua_csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
     <div class="form-group"><label for="basededatos">Base de datos<input type="text" class="form-control" name="basededatos" id="basededatos"></label></div>
     <div class="form-group"><label for="enviar"><input type="submit" class="form-control btn btn-primary" id="enviar" value="Crear"></label></div>
 </form>
 <h1>Asignar Privilegios</h1>
 <form method="post">
+<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(guagua_csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
     <div class="form-group"><label for="usuario">Usuario
         <?php
         $sql = "select distinct(User) from mysql.user";

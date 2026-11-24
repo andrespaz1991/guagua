@@ -1,0 +1,274 @@
+{
+  "menu": [
+    {
+      "menu_item_id": "7",
+      "menu_item_name": "Institucion_educativa",
+      "menu_url": "../Planeador/institucion_educativa.php"
+    },
+    {
+      "menu_item_id": "32",
+      "menu_item_name": "Matricula",
+      "menu_url": "../usuario/inscripcion.php"
+    },
+    {
+      "menu_item_id": "34",
+      "menu_item_name": "Calendario de planes",
+      "menu_url": "../Planeador/calendario.php"
+    },
+    {
+      "menu_item_id": "36",
+      "menu_item_name": "Importar malla",
+      "menu_url": "../Planeador/importador_malla.php"
+    },
+    {
+      "menu_item_id": "38",
+      "menu_item_name": "Matrimonio",
+      "menu_url": "../usuario/matrimonio.php"
+    },
+    {
+      "menu_item_id": "46",
+      "menu_item_name": "Área",
+      "menu_url": "../cursos/area.php"
+    },
+    {
+      "menu_item_id": "47",
+      "menu_item_name": "Grados",
+      "menu_url": "../cursos/categoria_curso.php"
+    },
+    {
+      "menu_item_id": "48",
+      "menu_item_name": "Año Lectivo",
+      "menu_url": "../cursos/ano_lectivo.php"
+    },
+    {
+      "menu_item_id": "49",
+      "menu_item_name": "Periodos",
+      "menu_url": "../Planeador/periodo.php"
+    },
+    {
+      "menu_item_id": "50",
+      "menu_item_name": "Mascotas",
+      "menu_url": "../comun/Mascotas.php"
+    },
+    {
+      "menu_item_id": "51",
+      "menu_item_name": "Iconos",
+      "menu_url": "../comun/iconos.php"
+    },
+    {
+      "menu_item_id": "52",
+      "menu_item_name": "Administradores",
+      "menu_url": "../usuario/usuario.php?u=admin"
+    },
+    {
+      "menu_item_id": "55",
+      "menu_item_name": "Acudientes",
+      "menu_url": "../usuario/usuario.php?u=acudiente"
+    },
+    {
+      "menu_item_id": "58",
+      "menu_item_name": "Salir",
+      "menu_url": "/usuario/login.php?logout"
+    },
+    {
+      "menu_item_id": "59",
+      "menu_item_name": "Sisga",
+      "menu_url": "../sisga/index.html"
+    },
+    {
+      "menu_item_id": "60",
+      "menu_item_name": "Asistencia",
+      "menu_url": "../asistencia/"
+    },
+    {
+      "menu_item_id": "62",
+      "menu_item_name": "Juego de ruleta",
+      "menu_url": "../apps/Ruleta/index.html"
+    },
+    {
+      "menu_item_id": "65",
+      "menu_item_name": "Generación de cursos",
+      "menu_url": "../apps/generacion_cursos/"
+    },
+    {
+      "menu_item_id": "66",
+      "menu_item_name": "Estructura de inicio de año",
+      "menu_url": "../apps/generador_vallesol"
+    },
+    {
+      "menu_item_id": "67",
+      "menu_item_name": "Configuración de reportes",
+      "menu_url": "../ia/config_reporte.php"
+    },
+    {
+      "menu_item_id": "70",
+      "menu_item_name": "Retirar Materias de Estudiante",
+      "menu_url": "../Planeador/retirar.php"
+    },
+    {
+      "menu_item_id": "71",
+      "menu_item_name": "Reporte de Inasistencias por Materia",
+      "menu_url": "../reportes/informe_asistencia.php"
+    },
+    {
+      "menu_item_id": "72",
+      "menu_item_name": "Observador del estudiante",
+      "menu_url": "../seguimiento/citas.php"
+    },
+    {
+      "menu_item_id": "73",
+      "menu_item_name": "Usuario",
+      "menu_url": "../usuario/usuario.php"
+    },
+    {
+      "menu_item_id": "75",
+      "menu_item_name": "Inasistencia para sisga",
+      "menu_url": "../apps/asistencia/"
+    },
+    {
+      "menu_item_id": "79",
+      "menu_item_name": "UTEL",
+      "menu_url": "../apps/utel/index.php"
+    },
+    {
+      "menu_item_id": "80",
+      "menu_item_name": "Fotos Circulares",
+      "menu_url": "../apps/circular/index.html"
+    },
+    {
+      "menu_item_id": "81",
+      "menu_item_name": "Collage",
+      "menu_url": "../apps/collage/index.html"
+    },
+    {
+      "menu_item_id": "82",
+      "menu_item_name": "Edupreguntas",
+      "menu_url": "../apps/edupreguntasoficial/index.html"
+    },
+    {
+      "menu_item_id": "83",
+      "menu_item_name": "Gemini Chat",
+      "menu_url": "../apps/geminichat/index.php"
+    },
+    {
+      "menu_item_id": "87",
+      "menu_item_name": "Seguimiento",
+      "menu_url": "../seguimiento/citas.php"
+    },
+    {
+      "menu_item_id": "88",
+      "menu_item_name": "Alerta",
+      "menu_url": "../ia/reporte.php"
+    },
+    {
+      "menu_item_id": "90",
+      "menu_item_name": "PAE",
+      "menu_url": "../apps/restaurante/index.php"
+    },
+    {
+      "menu_item_id": "91",
+      "menu_item_name": "NOTI",
+      "menu_url": "/apps/noti/index.html"
+    },
+    {
+      "menu_item_id": "92",
+      "menu_item_name": "PlanIa",
+      "menu_url": "/apps/PlanMind/index2.php"
+    },
+    {
+      "menu_item_id": "96",
+      "menu_item_name": "Merca",
+      "menu_url": "../apps/MiMercado/index.php"
+    },
+    {
+      "menu_item_id": "97",
+      "menu_item_name": "Bingo_fracciones",
+      "menu_url": "../apps/Bingo_fracciones/"
+    },
+    {
+      "menu_item_id": "98",
+      "menu_item_name": "Fracciones",
+      "menu_url": "../apps/Fracciones/"
+    },
+    {
+      "menu_item_id": "99",
+      "menu_item_name": "carnet",
+      "menu_url": "../apps/carnet/"
+    },
+    {
+      "menu_item_id": "100",
+      "menu_item_name": "edutask",
+      "menu_url": "../apps/edutask/"
+    },
+    {
+      "menu_item_id": "101",
+      "menu_item_name": "pdf",
+      "menu_url": "../apps/pdf/"
+    },
+    {
+      "menu_item_id": "102",
+      "menu_item_name": "rubrica",
+      "menu_url": "../apps/rubrica/"
+    },
+    {
+      "menu_item_id": "103",
+      "menu_item_name": "sopas",
+      "menu_url": "../apps/sopas/"
+    },
+    {
+      "menu_item_id": "104",
+      "menu_item_name": "Davinci",
+      "menu_url": "../apps/davinci"
+    },
+    {
+      "menu_item_id": "105",
+      "menu_item_name": "dba",
+      "menu_url": "../apps/dba/"
+    },
+    {
+      "menu_item_id": "107",
+      "menu_item_name": "Diario",
+      "menu_url": "../../wsp/index.html"
+    },
+    {
+      "menu_item_id": "108",
+      "menu_item_name": "Plantilla",
+      "menu_url": "..\\comun\\doc\\Plantilla guía.docx"
+    },
+    {
+      "menu_item_id": "109",
+      "menu_item_name": "evidencias",
+      "menu_url": "../apps/evidencias/"
+    },
+    {
+      "menu_item_id": "110",
+      "menu_item_name": "Asignaciones",
+      "menu_url": "../Planeador/genasig.php"
+    },
+    {
+      "menu_item_id": "111",
+      "menu_item_name": "Inscripciones",
+      "menu_url": "../Planeador/inscripes.php"
+    },
+    {
+      "menu_item_id": "112",
+      "menu_item_name": "informe de asistencia",
+      "menu_url": "../reportes/informe_asistencia.php"
+    },
+    {
+      "menu_item_id": "113",
+      "menu_item_name": "Manual",
+      "menu_url": "../apps/Manual/"
+    },
+    {
+      "menu_item_id": "114",
+      "menu_item_name": "configuracion_interfaz",
+      "menu_url": "../apps/configuracion_interfaz/"
+    },
+    {
+      "menu_item_id": "115",
+      "menu_item_name": "customizador_menu",
+      "menu_url": "../apps/customizador_menu/"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - link "G Guagua" [ref=e3] [cursor=pointer]:
+      - /url: ../../index.php
+    - paragraph [ref=e4]: TU BIBLIOTECA PERSONAL
+    - heading "Mis prompts" [level=2] [ref=e5]
+    - button "＋ Nuevo prompt" [ref=e6] [cursor=pointer]
+    - navigation "Filtrar por categoría" [ref=e7]:
+      - button "Todos los prompts 2" [ref=e56] [cursor=pointer]:
+        - text: Todos los prompts
+        - generic [ref=e58]: "2"
+      - button "Favoritos 2" [ref=e60] [cursor=pointer]:
+        - text: Favoritos
+        - generic [ref=e62]: "2"
+      - button "Sin categoría 0" [ref=e64] [cursor=pointer]:
+        - text: Sin categoría
+        - generic [ref=e66]: "0"
+      - paragraph [ref=e67]: CATEGORÍAS
+      - generic [ref=e68]:
+        - button "Clases 2" [ref=e69] [cursor=pointer]:
+          - text: Clases
+          - generic [ref=e71]: "2"
+        - button "Editar Clases" [ref=e72] [cursor=pointer]: ⋯
+    - button "＋ Crear categoría" [ref=e26] [cursor=pointer]
+    - link "← Volver al inicio" [ref=e27] [cursor=pointer]:
+      - /url: ../../index.php
+    - generic [ref=e28]: Privados y guardados en tu cuenta.
+  - main [ref=e29]:
+    - generic [ref=e30]:
+      - generic [ref=e31]:
+        - paragraph [ref=e32]: IDEAS QUE VALE LA PENA REUTILIZAR
+        - heading "Tu próxima idea empieza aquí." [level=1] [ref=e33]
+        - paragraph [ref=e34]: Organiza tus instrucciones favoritas y tenlas siempre a mano.
+      - button "↓ Exportar JSON" [ref=e35] [cursor=pointer]
+    - generic [ref=e36]:
+      - searchbox "Buscar prompts" [ref=e37]
+      - combobox "Ordenar" [ref=e38]:
+        - option "Más recientes" [selected]
+        - option "Título A–Z"
+    - status [ref=e39]: Prompt duplicado. Puedes editar la nueva tarjeta.
+    - region "Prompts" [ref=e40]:
+      - article [ref=e73]:
+        - generic [ref=e74]:
+          - generic [ref=e75]: Clases
+          - button "Quitar de favoritos" [pressed] [ref=e76] [cursor=pointer]: ★
+        - heading "Preparar una clase (copia)" [level=2] [ref=e77]
+        - paragraph [ref=e78]: Organiza una clase con actividades y evaluación.
+        - generic [ref=e79]:
+          - generic [ref=e80]: "#clases"
+          - generic [ref=e81]: "#evaluación"
+        - generic [ref=e82]:
+          - button "⧉ Copiar" [ref=e83] [cursor=pointer]
+          - button "Duplicar Preparar una clase (copia)" [ref=e84] [cursor=pointer]: Duplicar
+          - button "Editar" [ref=e85] [cursor=pointer]
+          - button "Eliminar Preparar una clase (copia)" [ref=e86] [cursor=pointer]: Eliminar
+      - article [ref=e87]:
+        - generic [ref=e88]:
+          - generic [ref=e89]: Clases
+          - button "Quitar de favoritos" [pressed] [ref=e90] [cursor=pointer]: ★
+        - heading "Preparar una clase" [level=2] [ref=e91]
+        - paragraph [ref=e92]: Organiza una clase con actividades y evaluación.
+        - generic [ref=e93]:
+          - generic [ref=e94]: "#clases"
+          - generic [ref=e95]: "#evaluación"
+        - generic [ref=e96]:
+          - button "⧉ Copiar" [ref=e97] [cursor=pointer]
+          - button "Duplicar Preparar una clase" [ref=e98] [cursor=pointer]: Duplicar
+          - button "Editar" [ref=e99] [cursor=pointer]
+          - button "Eliminar Preparar una clase" [ref=e100] [cursor=pointer]: Eliminar

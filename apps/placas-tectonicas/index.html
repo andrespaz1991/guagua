@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Simulador educativo interactivo sobre terremotos y formación de montañas por convergencia de placas tectónicas.">
+  <title>Laboratorio de placas tectónicas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero">
+      <div class="hero__brand" aria-hidden="true">
+        <svg viewBox="0 0 64 64" role="img">
+          <path d="M7 49 22 28l8 10L42 18l15 31Z" fill="currentColor" opacity=".24"/>
+          <path d="m7 49 15-21 8 10 12-20 15 31" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 54h56" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <p class="eyebrow">Laboratorio interactivo de Ciencias de la Tierra</p>
+        <h1>Cuando la Tierra se mueve</h1>
+        <p class="hero__intro">Comprime dos placas continentales y observa cómo la energía acumulada produce terremotos y levanta montañas.</p>
+      </div>
+      <div class="hero__tag"><span></span> Modelo continental</div>
+    </header>
+
+    <section class="dashboard" aria-label="Simulador de placas tectónicas">
+      <aside class="controls-panel">
+        <div class="panel-heading">
+          <p class="section-kicker">Panel de control</p>
+          <h2>Configura el movimiento</h2>
+        </div>
+
+        <label class="slider-control" for="speed">
+          <span class="slider-control__row">
+            <span>Velocidad de convergencia</span>
+            <output id="speedValue" for="speed">5 cm/año</output>
+          </span>
+          <input id="speed" type="range" min="1" max="9" value="5" step="1">
+          <span class="range-hints"><span>Lenta</span><span>Rápida</span></span>
+        </label>
+
+        <label class="slider-control" for="friction">
+          <span class="slider-control__row">
+            <span>Fricción entre placas</span>
+            <output id="frictionValue" for="friction">65 %</output>
+          </span>
+          <input id="friction" type="range" min="20" max="90" value="65" step="5">
+          <span class="range-hints"><span>Baja</span><span>Alta</span></span>
+        </label>
+
+        <div class="control-actions">
+          <button class="button button--primary" id="playButton" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z"/></svg>
+            <span>Iniciar</span>
+          </button>
+          <button class="button button--secondary" id="stepButton" type="button" aria-label="Avanzar un intervalo de tiempo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 5 8 7-8 7Zm10 0h2v14h-2Z"/></svg>
+            <span>Avanzar</span>
+          </button>
+          <button class="icon-button" id="resetButton" type="button" aria-label="Reiniciar simulación" title="Reiniciar">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v6h6M5.4 15a7 7 0 1 0 .3-6.4L4 10"/></svg>
+          </button>
+        </div>
+
+        <div class="learning-note" id="learningNote">
+          <div class="learning-note__icon" aria-hidden="true">!</div>
+          <div>
+            <strong>Prueba científica</strong>
+            <p>Aumenta la fricción y compara la magnitud del próximo terremoto.</p>
+          </div>
+        </div>
+      </aside>
+
+      <div class="simulation-panel">
+        <div class="simulation-toolbar">
+          <div>
+            <p class="section-kicker">Corte transversal de la corteza</p>
+            <h2>Zona de convergencia continental</h2>
+          </div>
+          <div class="status-chip" id="statusChip"><span></span><strong id="statusText">En pausa</strong></div>
+        </div>
+
+        <div class="canvas-wrap" id="canvasWrap">
+          <canvas id="earthCanvas" role="img" aria-label="Corte transversal animado de dos placas continentales que chocan, acumulan tensión y forman una cordillera."></canvas>
+          <div class="canvas-label canvas-label--left"><span>→</span> Placa continental A</div>
+          <div class="canvas-label canvas-label--right">Placa continental B <span>←</span></div>
+          <div class="time-readout"><span>Tiempo simulado</span><strong id="timeValue">0,0 millones de años</strong></div>
+          <div class="quake-banner" id="quakeBanner" role="status" aria-live="polite" aria-hidden="true">
+            <span>Evento sísmico</span><strong id="quakeMagnitude">M 0,0</strong>
+          </div>
+        </div>
+
+        <div class="metrics" aria-label="Indicadores de la simulación">
+          <article class="metric">
+            <div class="metric__icon metric__icon--stress" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M13 2 4.5 13H11l-1 9 9.5-13H13Z"/></svg>
+            </div>
+            <div class="metric__body">
+              <span>Tensión acumulada</span>
+              <strong id="stressValue">12 %</strong>
+              <div class="meter"><span id="stressMeter" style="width:12%"></span></div>
+            </div>
+          </article>
+          <article class="metric">
+            <div class="metric__icon metric__icon--mountain" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="m3 19 6-9 3 4 3-6 6 11Z"/></svg>
+            </div>
+            <div class="metric__body">
+              <span>Elevación de la cordillera</span>
+              <strong id="mountainValue">0,3 km</strong>
+              <small id="mountainDelta">↑ crece con la compresión</small>
+            </div>
+          </article>
+          <article class="metric">
+            <div class="metric__icon metric__icon--quake" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M2 12h4l2-5 4 11 3-8 2 2h5"/></svg>
+            </div>
+            <div class="metric__body">
+              <span>Último terremoto</span>
+              <strong id="magnitudeValue">Sin eventos</strong>
+              <small id="eventCount">0 eventos registrados</small>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="process-section" aria-labelledby="processTitle">
+      <div class="process-heading">
+        <div>
+          <p class="section-kicker">Lo que ocurre bajo tus pies</p>
+          <h2 id="processTitle">Del choque a la cordillera</h2>
+        </div>
+        <p id="explanationText" aria-live="polite">Las placas se empujan lentamente. La falla permanece trabada por la fricción y comienza a almacenar energía elástica.</p>
+      </div>
+
+      <ol class="process-steps" id="processSteps">
+        <li class="process-step is-active" data-step="0">
+          <span class="process-step__number">01</span>
+          <div><strong>Convergencia</strong><p>Las placas se aproximan unos centímetros cada año.</p></div>
+        </li>
+        <li class="process-step" data-step="1">
+          <span class="process-step__number">02</span>
+          <div><strong>Acumulación</strong><p>La fricción bloquea la falla y la roca se deforma.</p></div>
+        </li>
+        <li class="process-step" data-step="2">
+          <span class="process-step__number">03</span>
+          <div><strong>Ruptura sísmica</strong><p>La roca cede y libera energía en forma de ondas.</p></div>
+        </li>
+        <li class="process-step" data-step="3">
+          <span class="process-step__number">04</span>
+          <div><strong>Levantamiento</strong><p>La corteza se pliega, se engrosa y forma montañas.</p></div>
+        </li>
+      </ol>
+    </section>
+
+    <footer>
+      <p><strong>Modelo educativo simplificado.</strong> En la naturaleza, estos procesos ocurren durante miles o millones de años y dependen de muchas variables geológicas.</p>
+      <span>Simulador de tectónica de placas</span>
+    </footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
